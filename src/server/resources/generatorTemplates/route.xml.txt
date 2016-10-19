@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<route>
+    <!--
+    <views>
+        <section layout="Arrow\Package\Application\PresentationLayout">
+            <view path="/index" front-name="index"/>
+        </section>
+        <section layout="Arrow\Package\Common\AdministrationLayout">
+
+        </section>
+        <section layout="Arrow\Package\Common\AdministrationPopupLayout">
+
+        </section>
+        <section layout="Arrow\Package\Common\EmptyLayout">
+
+        </section>
+    </views>
+    <operations>
+        <operation path="/test/operation" controller="Arrow\Package\Application\Controller" />
+    </operations>
+    -->
+</route>

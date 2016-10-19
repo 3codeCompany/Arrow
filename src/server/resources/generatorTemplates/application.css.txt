@@ -1,0 +1,7 @@
+body{
+    padding-top: 30px;
+}
+
+img{
+    border: 0;
+}

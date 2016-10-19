@@ -1,0 +1,30 @@
+<ui:ajax ctrlId="page-list-ajax">
+    <ui:table title="cms | struktura serwisu" footer="0" onPage="1000000" ctrlId="page-list" selectable="0" >
+        <data:source>
+            <data:model model="Arrow\Package\CMS\Page"/>
+            <data:order field="sort"/>
+            <data:condition field="depth" value="0" type="!="/>
+        </data:source>
+
+        <ui:tablesearch fields="id;name;rewrite_name"/>
+        <table:column name="Id" field="id" width="20"/>
+        <table:column name="Online" field="active" type="editable" editType="boolswitch" width="-1"/>
+        <table:column name="Mapa strony" field="sitemap" type="editable" editType="boolswitch" width="-1"/>
+        <table:column name="Menu" field="showinmenu" type="editable" editType="boolswitch" width="-1"/>
+        <table:column name="Nazwa" field="name" type="tree" />
+        <table:column name="Nazwa rewrite" field="rewrite_name" width="25"/>
+        <table:column name="Stan" field="depth;parent_id;type" width="-1"/>
+        <ui:actionsGroup name="top">
+            <ui:action icon="file" type="dialog" template="cms::pages/add" name="Dodaj stronę">
+                <ui:param name="parentId" value="1"/>
+            </ui:action>
+        </ui:actionsGroup>
+
+        <ui:actionsGroup name="row">
+            <ui:action id="save" name="Edytuj" type="dialog" template="cms::pages/edit">
+                <ui:param name="id" value="#id#"/>
+            </ui:action>
+            <ui:action id="delete" name="Usuń" type="execute" confirm="1"></ui:action>
+        </ui:actionsGroup>
+    </ui:table>
+</ui:ajax>

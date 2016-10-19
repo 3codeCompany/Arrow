@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<schema class-namespace="Arrow\Package\Utils">
+    <table name="lang_languages" class="Lang" >
+        <trackers>
+            <tracker  class="Arrow\Package\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Package\Common\ORMObjectsArchiver" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="code" type="VARCHAR" required="true" size="2"/>
+        <field name="name" type="VARCHAR" required="true" size="20"/>
+        <field name="is_default" type="TINYINT"/>
+    </table>
+    <table name="lang_string_translations" class="LangTranslations">
+        <trackers>
+            <tracker  class="Arrow\Package\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Package\Common\ORMObjectsArchiver" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id_lang" type="CHAR" required="true" size="2"/>
+        <field name="name" type="VARCHAR" required="true" size="15"/>
+        <field name="value" type="VARCHAR" size="255"/>
+        <!--<field name="position" type="VARCHAR" size="10"/>-->
+    </table>
+    <table name="lang_objects_translsection" class="Translation">
+        <trackers>
+            <tracker  class="Arrow\Package\Common\ORMObjectsTracker" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id_object" type="INTEGER" required="true"/>
+        <field name="class" type="VARCHAR" required="true" size="25"/>
+        <field name="lang" type="CHAR" required="true" size="2"/>
+        <field name="field" type="VARCHAR" required="true" size="20"/>
+        <field name="value" type="LONGVARCHAR" size="65000"/>
+    </table>
+</schema>

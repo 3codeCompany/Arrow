@@ -1,0 +1,24 @@
+<?=$this["generator"]->generate()?>
+
+<script type="text/javascript">
+    function changeGroups(){
+
+        $(".group-select").change(function(){
+            var checked = $(this).is(":checked");
+            $.post('o:/access/changePointGroup',{
+                accessPoint: $(this).attr("context"),
+                groups: $(this).val(),
+                include: checked?1:0
+            },function(){
+                SerenityCommon.info( 'Uprawnienia dla grupy zostały zmienione');
+            });
+        });
+    }
+
+    setTimeout(function(){
+        //Serenity.scanForWidgets();
+        Serenity.get("access").on("htmlLoaded", changeGroups);
+        changeGroups();
+    }, 1500);
+
+</script>

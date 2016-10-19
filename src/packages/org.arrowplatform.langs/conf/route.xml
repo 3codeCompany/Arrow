@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<route>
+    <views>
+        <section name="Administration">
+            <section layout="Arrow\Package\Common\AdministrationLayout">
+                <view path="/langs/list" />
+                <view path="/langs/edit" />
+                <view path="/langs/edit_group" />
+                <view path="/langs/list_transtations" />
+                <view path="/langs/edit_lang" />
+            </section>
+            <section layout="Arrow\Package\Common\AdministrationPopupLayout">
+
+            </section>
+            <section layout="Arrow\Package\Common\EmptyLayout">
+            </section>
+        </section>
+    </views>
+</route>

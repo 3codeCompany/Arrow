@@ -1,0 +1,12 @@
+<a href="v:media::browser" class="module" style="background-color:#BE203D;">
+        <img src="r:common::/graphic/dashboard/files.png" />
+        <div style="float: left;">
+            <b>Obecnie załadowanych plików: </b> <?=\Arrow\ORM\Criteria::query(\Arrow\Package\Media\Element::getClass())->count()?><br />
+            <?
+            $q = 'select sum(size) as size from '.\Arrow\Package\Media\Element::getTable();
+            $db = \Arrow\Models\Project::getInstance()->getDB();
+            $res = $db->query($q)->fetchColumn();
+            ?>
+            <b>Łączna wielkość plików: </b> <?=round($res/1024/1024,1)?> MB
+        </div>
+    </a>

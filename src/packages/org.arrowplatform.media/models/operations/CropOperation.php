@@ -1,0 +1,21 @@
+<?php
+namespace Arrow\Package\Media;
+
+class MediaCropOperation extends \Arrow\Object implements IMediaOperation{
+
+	public static function getConfigurationOptions(){
+		return array( "szerokosc" => 200, "wysokosc" => 200 );
+	}
+	public static function doOperation(  MediaElement $element, MediaVersionResult $version = null, $onOrginal , $config ){
+		if($onOrginal)
+			$resource = $element[ MediaElement::F_PATH ];
+		else
+			$resource = $version[ MediaVersionResult::F_PATH ];
+		
+		$imTransform = new ImageTransform();
+		$imTransform->load( $resource );
+		$imTransform->setTargetFile( $resource );
+		$imTransform->crop( $config['szerokosc'], $config['wysokosc'] );
+	}
+}
+?>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+  <section name="Komunikacja i powiadomienia">
+    <setting name="CONTACT_FORM_TARGET.SEND" value="">
+      <description>Użytkownicy do których będzie wysyłany email z formularza kontaktowego.</description>
+      <title>Formularz kontaktowy - użytkownicy</title>
+    </setting>
+  </section>
+  <section name="Konfiguracja wysyłki maili">
+    <setting name="mailer.from_mail" value="mailer@domain.com">
+      <description>email z którego są wysyłane wiadomości</description>
+      <title>email wyjściowy</title>
+    </setting>
+    <setting name="mailer.from_name" value="Mailer deamon">
+      <title>Nazwa maila wyjściowego</title>
+      <description>Nazwa jaka pojawia się w mailach wychodzących</description>
+    </setting>
+    <setting name="mailer.reply_to" value="mailer@domain.com">
+      <description>Email zwrotny dla wiadomości wysyłanych mailerem</description>
+      <title>Nazwa maila wyjściowego</title>
+    </setting>
+    <setting name="mailer.host" value="poczta.domain.com">
+      <description>Host z którego wysyłana jest poczta</description>
+      <title>Host</title>
+    </setting>
+    <setting name="mailer.username" value="mailer@comain.com">
+      <description>nazwa użytkownika skrzynki pocztowej</description>
+      <title>nazwa użytkownika emaiala</title>
+    </setting>
+    <setting name="mailer.password" value="mailerPass">
+      <description>hasło skrzynki pocztowej z której wysyłana jest poczta zaplikacji</description>
+      <type>password</type>
+      <title>hasło do konta pocztowego poczty</title>
+    </setting>
+    <setting name="mailer.port" value="465">
+      <description>Port smtp ( Default: 25, Gmail [SSL]: 465, [TLS]: 587 )</description>
+      <type>number</type>
+      <title>port dla mailera</title>
+    </setting>
+    <setting name="mailer.secure_type" value="ssl">
+      <description>Sposób autentykacji serwera pocztowego</description>
+      <type>set</type>
+      <title>Sposób autentyfikacji</title>
+      <options>
+        <option value="0" label="-- brak --"/>
+        <option value="tls" label="TLS"/>
+        <option value="ssl" label="SSL"/>
+      </options>
+    </setting>
+  </section>
+</settings>

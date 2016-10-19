@@ -1,0 +1,29 @@
+<ui:ajax>
+    <ui:table title="cms | Zapytania" selectable="0" sort="id" sortDir="desc">
+        <data:source>
+            <data:model model="Arrow\Package\Communication\ContactForm"/>
+        </data:source>
+        <table:column name="Id" field="id" width="15"/>
+        <table:column name="Odp." field="response" type="editable" editType="boolswitch" width="20"/>
+        <table:column name="Data" field="date" type="template" width="80">
+            <common:template>
+                <?=$context['date']?>
+            </common:template>
+        </table:column>
+        <table:column name="Imię" field="firstname" width="-1"/>
+        <table:column name="Nazwisko" field="lastname"/>
+        <table:column name="Telefon" field="telephone" width="80"/>
+        <table:column name="Email" field="email"/>
+        <table:column name="Temat" field="topic" width="-1"/>
+        <table:column name="Treść" field="content" type="template">
+            <common:template>
+                <?=nl2br($context['content'])?>
+            </common:template>
+        </table:column>
+        <ui:actionsGroup name="top">
+        </ui:actionsGroup>
+        <ui:actionsGroup name="row">
+            <ui:action id="delete" name="Usuń" type="execute" confirm="1"></ui:action>
+        </ui:actionsGroup>
+    </ui:table>
+</ui:ajax>

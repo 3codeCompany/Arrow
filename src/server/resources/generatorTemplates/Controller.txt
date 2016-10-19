@@ -1,0 +1,34 @@
+<?php
+namespace Arrow\Package\Application;
+use Arrow\ORM\Criteria, Arrow\View, Arrow\RequestContext, Arrow\Models\View, Arrow\Models\Operation, Arrow\Models\Project;
+
+/**
+ * Application controller
+ */
+
+class Controller extends \Arrow\Models\Controller
+{
+    public function __construct()
+    {
+    }
+
+    public function viewRunEventBefore(Action $view, \Arrow\View $template)
+    {
+        parent::viewRunEventBefore($view, $template);
+        //view run event
+        $project = Project::getInstance();
+        $class = $project->getSetting("application.view.default.layout");
+        $view->setLayout( new $class );
+    }
+
+    public function index(Action $view, RequestContext $request)
+    {
+
+    }
+
+    public function error(Action $view, RequestContext $request)
+    {
+
+    }
+
+}

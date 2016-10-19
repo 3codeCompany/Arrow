@@ -1,0 +1,43 @@
+<div id="subMenu">
+    <ul class="breadcrumb">
+        <li><a href="./admin"><i class="icon-home"></i>Start</a> <span class="divider">/</span></li>
+        <li class="active">CMS<span class="divider">/</span></li>
+        <li><a href="v:./list" target="_parent">Lista galeri</a> <span class="divider">/</span></li>
+        <li class="active">Dodaj galerię</li>
+    </ul>
+    <?=$this->getLayout()->printStandartMenu("Dodanie galerii", "Edycja galerii", $this["gallery"])?>
+</div>
+<div>
+    <form:form action="o:common::/data/operation" ctrlId="data">
+        <form:hidden namespace="0" name="model" value="Arrow\Package\CMS\Gallery"/>
+        <form:hidden namespace="0" name="key" value="$request['id']"/>
+        <form:hidden namespace="0" name="action" value="save"/>
+
+        <data:source key="$request['id']">
+            <data:model model="Arrow\Package\CMS\Gallery"/>
+        </data:source>
+
+        <table class="list-table">
+            <tr>
+                <td class="label">Nazwa</td>
+                <td>
+                    <form:text name="name" size="30" alert="Podaj nazwę" length="1,"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Priorytet</td>
+                <td>
+                    <form:number name="sort" size="30" default="0" alert="Priorytet musi być liczbą" />
+                </td>
+            </tr>
+            <tr>
+                <td class="label">Opis</td>
+                <td>
+                    <form:textarea name="description" check="0" style="width: 400px; height: 200px;"  />
+                </td>
+            </tr>
+
+        </table>
+    </form:form>
+
+</div>

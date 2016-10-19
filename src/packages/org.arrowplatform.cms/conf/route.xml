@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<route controller="Arrow\Package\CMS\Controller">
+    <views>
+        <section layout="Arrow\Package\Common\AdministrationLayout">
+            <view path="/pages/structure" front-name="pages"/>
+            <view path="/pages/add"/>
+            <view path="/pages/popupEdit/modules"/>
+            <view path="/pages/popupEdit/content"/>
+            <view path="/pages/places/list"/>
+            <view path="/pages/modules/list"/>
+            <view path="/application/error_action"/>
+            <view path="/application/plugins/content"/>
+            <view path="/pages/layouts/list"/>
+            <view path="/pages/layouts/edit"/>
+            <view path="/news/list"/>
+            <view path="/news/edit"/>
+            <view path="/application/plugins/news"/>
+            <view path="/application/plugins/contactForm"/>
+            <view path="/application/plugins/bannerTop"/>
+            <view path="/pages/popupBrowser"/>
+            <view path="/dashboard/main"/>
+            <view path="/banners/list"/>
+            <view path="/banners/edit"/>
+        </section>
+        <section layout="Arrow\Package\Common\AdministrationPopupLayout">
+            <view path="/pages/modules/edit"/>
+            <view path="/pages/edit"/>
+            <view path="/pages/places/edit"/>
+            <view path="/pages/add"/>
+        </section>
+        <section layout="Arrow\Package\Application\PresentationLayout">
+            <view path="/front/page"/>
+        </section>
+
+    </views>
+</route>

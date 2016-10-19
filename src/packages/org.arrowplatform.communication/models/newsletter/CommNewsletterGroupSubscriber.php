@@ -1,0 +1,22 @@
+<?php
+
+
+
+class CommNewsletterGroupSubscriber extends \Arrow\Package\Database\ProjectPersistent{
+
+	const TCLASS = __CLASS__;
+	const F_ID = "id";
+	const F_SUBSCRIBER_ID = "subscriber_id";
+	const F_GROUP_ID = "group_id";
+
+
+//*USER AREA*//
+
+public static function create( $initialValues, $class=self::TCLASS ){
+	$object = parent::create($initialValues, $class);
+	return $object;
+}
+
+//*END OF USER AREA*//
+}
+?>

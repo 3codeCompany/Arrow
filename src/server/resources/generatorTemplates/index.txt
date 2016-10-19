@@ -1,0 +1,12 @@
+<?php
+if(isset($_SERVER["HTTP_HOST"]) && $_SERVER["HTTP_HOST"] == "deploy-server.com"){
+    define( "ARROW_DOCUMENTS_ROOT", __DIR__ );
+    define( "ARROW_ROOT_PATH", "/arrowplatform/" );
+    define( "ARROW_APPLICATION_PATH", __DIR__ );
+}else{
+    define( "ARROW_DOCUMENTS_ROOT", '{documentsRoot}/' );
+    define( "ARROW_ROOT_PATH", '{arrowRootPath}/' );
+    define( "ARROW_APPLICATION_PATH", '{applicationPath}/' );
+}
+
+require_once ARROW_ROOT_PATH."/src/server/core/Bootstrap.php";

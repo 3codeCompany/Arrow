@@ -1,0 +1,28 @@
+<ul class="breadcrumb">
+    <li><a href="./admin"><i class="icon-home"></i>Start</a> <span class="divider">/</span></li>
+    <li class="active">CMS<span class="divider">/</span></li>
+    <li class="active">Lista galeri</li>
+</ul>
+
+<ui:ajax ctrlId="news">
+	<ui:table ctrlId="news-list" title="Galerie"  selectable="0" >
+        <data:source>
+            <data:model model="Arrow\Package\CMS\Gallery" />
+            <data:order field="sort" />
+        </data:source>
+		<table:column name="Id" field="id" width="15" />
+        <table:column name="Nazwa" field="name" />
+        <table:column name="Priorytet" field="sort" width="20" type="editable" />
+
+		<ui:actionsGroup name="top">
+			<ui:action id="create" type="dialog"  template="cms::galleries/edit" name="Dodaj"  >
+			</ui:action>
+		</ui:actionsGroup>
+		<ui:actionsGroup name="row">
+			<ui:action id="save" type="dialog" template="cms::galleries/edit" name="Edytuj" width="800" height="600" >
+				<ui:param name="id" value="#id#" />
+			</ui:action>
+			<ui:action id="delete" name="Usuń" type="execute" confirm="1" />
+		</ui:actionsGroup>
+	</ui:table>
+</ui:ajax>

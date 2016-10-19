@@ -1,0 +1,19 @@
+<?php
+namespace Arrow\Package\Application;
+use Arrow\RequestContext, Arrow\Package\Access\AccessAPI, Arrow\Package\Access\Auth, Arrow\View;
+
+class PresentationLayout extends \Arrow\Models\AbstractLayout
+{
+    public function createLayout(Action $view)
+    {
+        $descriptor = $view->getTemplateDescriptor();
+        AccessAPI::accessPoint("view", $descriptor->getPackage(), "show", $descriptor->getMappingPath(), $descriptor->getDescription() );
+        $view->assign("user",\Arrow\Package\Access\Auth::getDefault()->getUser());
+
+    }
+
+    public function getLayoutFile()
+    {
+        return  __DIR__."/PresentationLayout.phtml";
+    }
+}

@@ -1,0 +1,18 @@
+<phpunit stopOnFailure="true"> <!--bootstrap="C:\www\arrowplatform\tests\bootstrap\bootstrap.php"-->
+    <php>
+        <var name="DB_DSN" value="mysql:dbname=test;host=127.0.0.1"/>
+        <var name="DB_USER" value="root"/>
+        <var name="DB_PASSWD" value="root"/>
+        <var name="DOCUMENTS_ROOT" value="C:\www" />
+    </php>
+    <logging>
+        <log type="coverage-clover" target="logs/clover.xml"/>
+        <log type="coverage-html" target="coverage" title="ORM"/>
+        <log type="junit" target="logs/junit.xml"/>
+    </logging>
+    <testsuites>
+        <testsuite name="ORM Test suite">
+            <file>./tests/unit/ProjectGenerationTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
