@@ -1,29 +1,33 @@
 {
-    "name": "arrow/arrow-engine",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Artur Kmera",
-            "email": "artur.kmera@3code.pl"
-        }
-    ],
-    "require": {
-        "robloach/component-installer": "*"
-    },
-    "extra": {
-        "component": {
-            "scripts": [
-                "js/bootstrap.js"
-            ],
-            "styles": [
-                "css/bootstrap.css"
-            ],
-            "files": [
-                "src/packages/org.arrowplatform.common/layouts/admin/styles/*.css",
-                "src/packages/org.arrowplatform.common/layouts/admin/scripts/*.js",
-                "src/packages/org.arrowplatform.common/layouts/admin/images/*.*"
-
-            ]
-        }
+  "name": "arrow/arrow-engine",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Artur Kmera",
+      "email": "artur.kmera@3code.pl"
     }
+  ],
+  "require": {
+    "robloach/component-installer": "*"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  },
+  "extra": {
+    "component": {
+      "scripts": [
+        "js/bootstrap.js"
+      ],
+      "styles": [
+        "css/bootstrap.css"
+      ],
+      "files": [
+        "src/packages/org.arrowplatform.common/layouts/admin/styles/*.css",
+        "src/packages/org.arrowplatform.common/layouts/admin/scripts/*.js",
+        "src/packages/org.arrowplatform.common/layouts/admin/images/*.*"
+      ]
+    }
+  }
 }
