@@ -80,6 +80,7 @@ class Dispatcher implements \Arrow\ICacheable
 
     public function findByRewrite( $path ){
         $action = null;
+
         foreach( $this->configuration["rewrites"] as $rewrite ){
 
             if(preg_match_all("/".$rewrite["queryString"]."/", $path, $regs, PREG_SET_ORDER)){

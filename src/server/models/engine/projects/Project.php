@@ -130,54 +130,39 @@ class Project implements \Arrow\ICacheable
 
         $confFile = $this->getPath() . "/" . self :: PROJECT_CONF_FILE;
 
-        if (!\Arrow\Controller::isInCLIMode()) {
-            $app = str_replace(ARROW_DOCUMENTS_ROOT, "", $this->path);
-            $server = str_replace(ARROW_DOCUMENTS_ROOT, "", ARROW_ROOT_PATH);
 
-            $this->projectToServerRelative = \Arrow\Controller::getRelativePath($app, $server);
-
-            //todo zbadać co to za wpis - tymczasem false
-            if (!(strpos($app, "arrowplatform") === 0) && false)
-                $this->projectToServerRelative .= "arrowplatform/";
-
-        }
         $this->configuration = \Arrow\CacheProvider::getFileCache($this, $confFile, array("file_prefix" => "project_config"));
+        if($this->configuration) {
+            $this->id = $this->configuration["id"];
 
-        $this->id = $this->configuration["id"];
-
-        date_default_timezone_set($this->configuration["timezone"]);
+            date_default_timezone_set($this->configuration["timezone"]);
 
 
-        $this->configuration["settings"] = Settings::init($this->configuration["settings"]);
+            $this->configuration["settings"] = Settings::init($this->configuration["settings"]);
 
-        //register package autoloaders
-        foreach ($this->getPackages() as $package) {
-            require($package["dir"] . "/Loader.php");
-            call_user_func(array("\\Arrow\\Package\\" . $package["namespace"] . "\\Loader", "registerAutoload"));
+
+
+            $dbConf = Settings::getDefault()->getSetting("application.db");
+            try {
+                $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
+            } catch (\Exception $ex) {
+                //todo Rozwiązać inaczej :]
+                exit("DB connection problem ".$ex->getMessage());
+            }
+            $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->defaultDbConnection->exec("SET NAMES utf8");
+            $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
+
+
+            require_once $this->path . "/application/bootstrap.php";
+
+            $this->getHandler(self::IErrorHandler);
+            $this->getHandler(self::IExceptionHandler);
+            $this->getHandler(self::ISessionHandler);
+            $this->getHandler(self::IAuthHandler);
+            $this->accesManager = $this->getHandler(self::IAccessHandler);
+
         }
-
-
-        $dbConf = Settings::getDefault()->getSetting("application.db");
-        try {
-            $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
-        } catch (\Exception $ex) {
-            //todo Rozwiązać inaczej :]
-            exit("DB connection problem ".$ex->getMessage());
-        }
-        $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->defaultDbConnection->exec("SET NAMES utf8");
-        $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
-
-
-        require_once $this->path . "/application/bootstrap.php";
-
-        $this->getHandler(self::IErrorHandler);
-        $this->getHandler(self::IExceptionHandler);
-        $this->getHandler(self::ISessionHandler);
-        $this->getHandler(self::IAuthHandler);
-        $this->accesManager = $this->getHandler(self::IAccessHandler);
-
-
 
     }
 
@@ -190,34 +175,37 @@ class Project implements \Arrow\ICacheable
     {
         $tmp = array();
         $projectConf = $this->getXmlConfDocument();
-        $tmp["id"] = "" . $projectConf->id;
-        $tmp["timezone"] = "" . $projectConf->timezone;
 
-        $tmp["settings"] = \Arrow\Models\Settings::getDefault()->parseSetingsXML($projectConf->settings->section, "application");
+        if($projectConf instanceof  \SimpleXMLElement) {
+            $tmp["id"] = "" . $projectConf->id;
+            $tmp["timezone"] = "" . $projectConf->timezone;
 
-        $tmp["handlers"] = array();
-        foreach ($projectConf->handlers->handler as $handler) {
-            $tmp["handlers"][(string)$handler["name"]] = (string)$handler["model"];
-        }
+            $tmp["settings"] = \Arrow\Models\Settings::getDefault()->parseSetingsXML($projectConf->settings->section, "application");
+
+            $tmp["handlers"] = array();
+            foreach ($projectConf->handlers->handler as $handler) {
+                $tmp["handlers"][(string)$handler["name"]] = (string)$handler["model"];
+            }
 
 
-        $tmp["packages"] = array();
+            $tmp["packages"] = array();
 
-        $tmp["packages"]["application"] = array("namespace" => "application", "name" => "application", "dir" => $this->path . "/application");
+            $tmp["packages"]["application"] = array("namespace" => "application", "name" => "application", "dir" => $this->path . "/application");
 
-        foreach ($projectConf->packages->package as $package) {
-            $dir = (string)isset($package["dir"]) ? "" . $package["dir"] : ARROW_PACKAGES_PATH . DIRECTORY_SEPARATOR . $package["name"];
-            $tmp["packages"][(string)$package["namespace"]] = array(
-                "namespace" => (string)$package["namespace"],
-                "name" => (string)$package["name"],
-                "dir" => $dir
-            );
-            $settingsFile = $dir . "/conf/settings.xml";
-            if (file_exists($settingsFile)) {
-                $xml = simplexml_load_file($settingsFile);
-                $tmpSettings = \Arrow\Models\Settings::getDefault()->parseSetingsXML($xml->section, $package["namespace"] . "");
+            foreach ($projectConf->packages->package as $package) {
+                $dir = (string)isset($package["dir"]) ? "" . $package["dir"] : ARROW_PACKAGES_PATH . DIRECTORY_SEPARATOR . $package["name"];
+                $tmp["packages"][(string)$package["namespace"]] = array(
+                    "namespace" => (string)$package["namespace"],
+                    "name" => (string)$package["name"],
+                    "dir" => $dir
+                );
+                $settingsFile = $dir . "/conf/settings.xml";
+                if (file_exists($settingsFile)) {
+                    $xml = simplexml_load_file($settingsFile);
+                    $tmpSettings = \Arrow\Models\Settings::getDefault()->parseSetingsXML($xml->section, $package["namespace"] . "");
 
-                $tmp["settings"] = array_merge($tmp["settings"], $tmpSettings);
+                    $tmp["settings"] = array_merge($tmp["settings"], $tmpSettings);
+                }
             }
         }
 
@@ -243,7 +231,9 @@ class Project implements \Arrow\ICacheable
      */
     private function getXmlConfDocument()
     {
-        return simplexml_load_file($this->path . "/application/" . self :: PROJECT_CONF_FILE);
+        if(file_exists(ARROW_APPLICATION_PATH. self :: PROJECT_CONF_FILE))
+            return simplexml_load_file(ARROW_APPLICATION_PATH. self :: PROJECT_CONF_FILE);
+        return null;
     }
 
 

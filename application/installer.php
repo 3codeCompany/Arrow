@@ -1,0 +1,3 @@
+<?
+
+print 'instaluje zajebiście arrowa';
