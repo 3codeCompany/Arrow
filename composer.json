@@ -15,11 +15,6 @@
       "src/"
     ]
   },
-  "scripts": {
-    "post-create-project-cmd": [
-      "application/installer.php"
-    ]
-  },
   "extra": {
     "component": {
       "scripts": [
