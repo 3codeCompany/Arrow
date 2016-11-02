@@ -1,3 +1,3 @@
 <?
 
-print 'instaluje zajebiście arrowa';
+print 'instaluje zajebiście arrowa ';
