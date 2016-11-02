@@ -34,7 +34,7 @@ if (!defined("ARROW_APPLICATION_PATH")) {
 }
 Logger::log("[Main] Starting..");
 
-Controller::init();
+
 
 
 

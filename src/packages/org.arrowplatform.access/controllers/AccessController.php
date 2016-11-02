@@ -380,7 +380,7 @@ class AccessController extends \Arrow\Models\Controller
         $list
 
             ->formField("Email", Text::_new(User::F_EMAIL))
-            ->formField("External id", Text::_new(User::F_EXTERNAL_ID))
+            //->formField("External id", Text::_new(User::F_EXTERNAL_ID))
             ->formField("Aktywny", SwitchF::_bool(User::F_ACTIVE,1))
             ->formField(null,Hidden::_new("accessGroups][","")->setNamespace("parameters"))
             ->formField("Grupy dostępu",

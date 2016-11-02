@@ -27,13 +27,6 @@ class Controller extends \Arrow\Object
         Router::setupAction();
         CacheProvider::init();
 
-        require ARROW_SERVER_PATH . "/models/loader/LoaderSetup.php";
-        \Arrow\Models\LoaderSetup::registerAutoload();
-
-        //when we using only server
-        if( !defined( "ARROW_APPLICATION_PATH" ) )
-            return;
-
         self::$project = new \Arrow\Models\Project(ARROW_APPLICATION_PATH);
 
     }
@@ -41,27 +34,19 @@ class Controller extends \Arrow\Object
     public static function processCall(){
 
         //paths for server only
-        if (!defined("ARROW_APPLICATION_PATH")) {
-            if (Controller::isInCLIMode()) {
-                \Arrow\Models\ConsoleCommands::process();
-            }else{
-                //outher actions
-            }
 
-        //if application is defined
+        Router::$INDEX_FILE = basename(__FILE__);
+        $rq = RequestContext::getDefault();
+        Router::getDefault($rq);
+
+        if (Controller::isInCLIMode()) {
+            print "Arrowplatform CLI mode. Application '" . ARROW_APPLICATION_PATH . "' " . PHP_EOL;
+            \Arrow\Models\ConsoleCommands::process();
         } else {
-            Router::$INDEX_FILE = basename(__FILE__);
-            $rq = RequestContext::getDefault();
-            Router::getDefault($rq);
-
-            if (Controller::isInCLIMode()) {
-                print "Arrowplatform CLI mode. Application '" . ARROW_APPLICATION_PATH . "' " . PHP_EOL;
-                \Arrow\Models\ConsoleCommands::process();
-            } else {
-                \Arrow\Router::getDefault()->process();
-                \Arrow\Controller::end();
-            }
+            \Arrow\Router::getDefault()->process();
+            \Arrow\Controller::end();
         }
+
     }
 
     /**
