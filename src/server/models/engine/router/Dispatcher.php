@@ -23,7 +23,7 @@ class Dispatcher implements \Arrow\ICacheable
 
         }
         $path = $path[0] == "/" ? $path :  "/".$path;
-        $data = ["package" => 'application', "path" => $path, "shortPath" => $path, "controller" => 'Arrow\\Package\\application\\Controller'];
+        $data = ["package" => 'application', "path" => $path, "shortPath" => $path, "controller" => 'App\\Controllers\\Controller'];
 
         $equateConf = false;
 

@@ -142,6 +142,7 @@ class Project implements \Arrow\ICacheable
 
 
 
+            /*//@todo wywalić obsługę bazy danych podczas ładowaania silnik
             $dbConf = Settings::getDefault()->getSetting("application.db");
             try {
                 $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
@@ -151,14 +152,14 @@ class Project implements \Arrow\ICacheable
             }
             $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->defaultDbConnection->exec("SET NAMES utf8");
-            $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
+            $this->defaultDbConnection->exec("SET CHARACTER SET utf8");*/
 
 
-            require_once $this->path . "/application/bootstrap.php";
+            require_once ARROW_APPLICATION_PATH . "/bootstrap.php";
 
             $this->getHandler(self::IErrorHandler);
             $this->getHandler(self::IExceptionHandler);
-            $this->getHandler(self::ISessionHandler);
+            //$this->getHandler(self::ISessionHandler);
             $this->getHandler(self::IAuthHandler);
             $this->accesManager = $this->getHandler(self::IAccessHandler);
 
@@ -176,52 +177,43 @@ class Project implements \Arrow\ICacheable
         $tmp = array();
         $projectConf = $this->getXmlConfDocument();
 
-        if($projectConf instanceof  \SimpleXMLElement) {
-            $tmp["id"] = "" . $projectConf->id;
-            $tmp["timezone"] = "" . $projectConf->timezone;
 
-            $tmp["settings"] = \Arrow\Models\Settings::getDefault()->parseSetingsXML($projectConf->settings->section, "application");
+        $tmp["id"] = "" . $projectConf->id;
+        $tmp["timezone"] = "" . $projectConf->timezone;
 
-            $tmp["handlers"] = array();
-            foreach ($projectConf->handlers->handler as $handler) {
-                $tmp["handlers"][(string)$handler["name"]] = (string)$handler["model"];
-            }
+        $tmp["settings"] = \Arrow\Models\Settings::getDefault()->parseSetingsXML($projectConf->settings->section, "application");
+
+        $tmp["handlers"] = array();
+        foreach ($projectConf->handlers->handler as $handler) {
+            $tmp["handlers"][(string)$handler["name"]] = (string)$handler["model"];
+        }
 
 
-            $tmp["packages"] = array();
+        $tmp["packages"] = array();
 
-            $tmp["packages"]["application"] = array("namespace" => "application", "name" => "application", "dir" => $this->path . "/application");
+        $tmp["packages"]["application"] = array("namespace" => "application", "name" => "application", "dir" => ARROW_APPLICATION_PATH );
 
-            foreach ($projectConf->packages->package as $package) {
-                $dir = (string)isset($package["dir"]) ? "" . $package["dir"] : ARROW_PACKAGES_PATH . DIRECTORY_SEPARATOR . $package["name"];
-                $tmp["packages"][(string)$package["namespace"]] = array(
-                    "namespace" => (string)$package["namespace"],
-                    "name" => (string)$package["name"],
-                    "dir" => $dir
-                );
-                $settingsFile = $dir . "/conf/settings.xml";
-                if (file_exists($settingsFile)) {
-                    $xml = simplexml_load_file($settingsFile);
-                    $tmpSettings = \Arrow\Models\Settings::getDefault()->parseSetingsXML($xml->section, $package["namespace"] . "");
+        foreach ($projectConf->packages->package as $package) {
+            $dir = (string)isset($package["dir"]) ? "" . $package["dir"] : ARROW_PACKAGES_PATH . DIRECTORY_SEPARATOR . $package["name"];
+            $tmp["packages"][(string)$package["namespace"]] = array(
+                "namespace" => (string)$package["namespace"],
+                "name" => (string)$package["name"],
+                "dir" => $dir
+            );
+            $settingsFile = $dir . "/conf/settings.xml";
+            if (file_exists($settingsFile)) {
+                $xml = simplexml_load_file($settingsFile);
+                $tmpSettings = \Arrow\Models\Settings::getDefault()->parseSetingsXML($xml->section, $package["namespace"] . "");
 
-                    $tmp["settings"] = array_merge($tmp["settings"], $tmpSettings);
-                }
+                $tmp["settings"] = array_merge($tmp["settings"], $tmpSettings);
             }
         }
+
 
 
         return $tmp;
     }
 
-    public function installPackages(array $listOfPackages = array())
-    {
-        //register package autoloaders
-        foreach ($this->getPackages() as $package) {
-            if (method_exists("\\Arrow\\Package\\" . $package["namespace"] . "\\Loader", "install")) {
-                call_user_func(array("\\Arrow\\Package\\" . $package["namespace"] . "\\Loader", "install"));
-            }
-        }
-    }
 
 
     /**

@@ -44,6 +44,9 @@ class AccessAPI
     public static function checkAccess($pointType, $pointAction, $pointObjectFriendlyId, $pointObject = null, $additionalInfo = "")
     {
 
+        //@todo wywalic obsluge bazy danych do handlera póki co ten if musi wystarczyc
+        if(!class_exists('Arrow\ORM\Criteria' ))
+            return true;
 
 
         $point = Criteria::query('Arrow\Package\Access\AccessPoint')

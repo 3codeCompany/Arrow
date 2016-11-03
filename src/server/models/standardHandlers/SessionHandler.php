@@ -40,7 +40,7 @@ class SessionHandler implements ISessionHandler
 
         $this->db = Project::getInstance()->getDB();
 
-        session_set_save_handler(
+ /*       session_set_save_handler(
             array($this, 'open'),
             array($this, 'close'),
             array($this, 'read'),
@@ -60,7 +60,7 @@ class SessionHandler implements ISessionHandler
         ini_set("session.use_only_cookies", "1");
 
         session_name(self::$sessionCookieName);
-        session_set_cookie_params(time() + $time, "/");
+        session_set_cookie_params(time() + $time, "/");*/
 
 
 
