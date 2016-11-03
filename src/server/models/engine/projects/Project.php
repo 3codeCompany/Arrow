@@ -223,9 +223,7 @@ class Project implements \Arrow\ICacheable
      */
     private function getXmlConfDocument()
     {
-        if(file_exists(ARROW_APPLICATION_PATH. self :: PROJECT_CONF_FILE))
-            return simplexml_load_file(ARROW_APPLICATION_PATH. self :: PROJECT_CONF_FILE);
-        return null;
+        return simplexml_load_file(ARROW_APPLICATION_PATH. self :: PROJECT_CONF_FILE);
     }
 
 
