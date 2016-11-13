@@ -1,9 +1,9 @@
 <a href="<link:template path="communication::contact_form/list" />" class="module"  style="background-color:#5235AC">
         <img src="r:common::/graphic/dashboard/Apollo.png"  />
         <div style="float: left;">
-            <b>Nie odpowiedziano na: </b> <?=\Arrow\ORM\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->c('response', 0)->count()?> zapytań<br />
-            <b>Zapytań dzsiaj: </b> <?=\Arrow\ORM\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->c('date', date("Y-m-d"), '>=')->count()?><br />
-            <b>Zapytań w tym miesiącu: </b> <?=\Arrow\ORM\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->c('date', date("Y-m-01"), '>=')->count()?><br />
-            <b>Zapytań łącznie:</b> <?=\Arrow\ORM\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->count()?> <br />
+            <b>Nie odpowiedziano na: </b> <?=\Arrow\ORM\Persistent\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->c('response', 0)->count()?> zapytań<br />
+            <b>Zapytań dzsiaj: </b> <?=\Arrow\ORM\Persistent\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->c('date', date("Y-m-d"), '>=')->count()?><br />
+            <b>Zapytań w tym miesiącu: </b> <?=\Arrow\ORM\Persistent\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->c('date', date("Y-m-01"), '>=')->count()?><br />
+            <b>Zapytań łącznie:</b> <?=\Arrow\ORM\Persistent\Criteria::query(\Arrow\Package\Communication\ContactForm::getClass())->count()?> <br />
         </div>
     </a>

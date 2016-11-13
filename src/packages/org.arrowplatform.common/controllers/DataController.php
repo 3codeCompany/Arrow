@@ -6,7 +6,7 @@ use Arrow\Exception;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
-use Arrow\ORM\Criteria,
+use Arrow\ORM\Persistent\Criteria,
     \Arrow\Package\Access\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\Operation,
     Arrow\Router;

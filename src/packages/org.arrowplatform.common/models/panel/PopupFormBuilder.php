@@ -27,7 +27,7 @@ use Arrow\Controls\api\Layout\schemas\Bootstrap;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Models\Logger\ConsoleStream;
 use Arrow\Models\Logger\Logger;
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\PersistentObject;
 use Arrow\Package\Access\AccessAPI;
 use Arrow\Package\Application\Language;

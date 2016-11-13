@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Package\Access;
 
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\RequestContext;
 use Arrow\Router;
 use Arrow\ViewManager, Arrow\Controller, Arrow\Models\Action;
@@ -45,7 +45,7 @@ class AccessAPI
     {
 
         //@todo wywalic obsluge bazy danych do handlera póki co ten if musi wystarczyc
-        if(!class_exists('Arrow\ORM\Criteria' ))
+        if(!class_exists('Arrow\ORM\Persistent\Criteria' ))
             return true;
 
 

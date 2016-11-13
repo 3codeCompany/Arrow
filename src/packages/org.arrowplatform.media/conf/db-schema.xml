@@ -2,7 +2,7 @@
 <schema class-namespace="Arrow\Package\Media">
   <table name="media_folders" class="Folder" baseclass="\Arrow\Package\Database\ProjectPersistentTreeNode">
     <extensions>
-        <extension class="Arrow\ORM\Tree" />
+        <extension class="Arrow\ORM\Extensions\Tree" />
     </extensions>
     <trackers>
         <tracker  class="Arrow\Package\Common\ORMObjectsTracker" />

@@ -3,7 +3,7 @@
 namespace Arrow\Package\Media;
 
 use Arrow\Models\Operation;
-use Arrow\ORM\Criteria,
+use Arrow\ORM\Persistent\Criteria,
     \Arrow\Package\Access\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\View;
 use Arrow\Package\Common\EmptyLayout;

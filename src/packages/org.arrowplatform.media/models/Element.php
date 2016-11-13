@@ -134,7 +134,7 @@ class Element extends \Arrow\ORM\ORM_Arrow_Package_Media_Element
         if (isset($this->parameters["upload_name"]) || isset($_FILES["file"]["name"])) {
 
 
-            $folder = \Arrow\ORM\Criteria::query(Folder::getClass())->findByKey($this[self::F_FOLDER_ID]);
+            $folder = \Arrow\ORM\Persistent\Criteria::query(Folder::getClass())->findByKey($this[self::F_FOLDER_ID]);
 
 
 

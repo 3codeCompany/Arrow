@@ -1,6 +1,6 @@
 <?php
 namespace Arrow\Package\Access;
-use \Arrow\ORM\Criteria;
+use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\JoinCriteria;
 
 class User extends \Arrow\ORM\ORM_Arrow_Package_Access_User implements \Arrow\Models\IUser

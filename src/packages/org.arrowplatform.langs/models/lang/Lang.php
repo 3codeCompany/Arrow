@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Package\Langs;
 
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 
 class Lang extends \Arrow\ORM\ORM_Arrow_Package_Langs_Lang
 {

@@ -2,7 +2,7 @@
 namespace Arrow\Package\CMS;
 
 
-use \Arrow\ORM\Criteria;
+use \Arrow\ORM\Persistent\Criteria;
 
 class PagePlaceConf extends \Arrow\ORM\ORM_Arrow_Package_CMS_PagePlaceConf{
 

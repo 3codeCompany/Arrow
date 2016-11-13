@@ -5,7 +5,7 @@ use Arrow\Controls\api\common\Icons;
 use Arrow\Controls\api\WidgetsSet;
 use Arrow\Models\Project;
 use
-Arrow\ORM\Criteria,
+Arrow\ORM\Persistent\Criteria,
 Arrow\Package\Access\Auth,
 \Arrow\RequestContext,
 \Arrow\Package\Access\AccessAPI, \Arrow\Package\Access\User,

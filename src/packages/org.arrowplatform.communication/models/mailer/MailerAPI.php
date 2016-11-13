@@ -1,6 +1,6 @@
 <?php
 namespace Arrow\Package\Communication;
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 
 class MailerAPI extends \Arrow\Object{
 

@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Package\Utils;
 
-use \Arrow\ORM\Criteria,\Arrow\ORM\SqlRouter,\Arrow\Package\Utils\UtilsDictionary;
+use \Arrow\ORM\Persistent\Criteria,\Arrow\ORM\SqlRouter,\Arrow\Package\Utils\UtilsDictionary;
 class DictionaryCtrl extends \Arrow\Controls\FormField{
 
 	/*

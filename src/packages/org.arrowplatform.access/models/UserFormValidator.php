@@ -26,7 +26,7 @@ class UserFormValidator extends \Arrow\Controls\FormDefaultValidator{
 		}
 
         if($this->fieldsValues["key"] == ""){
-            $user = \Arrow\ORM\Criteria::query("Arrow\Package\Access\User")->c("login", $this->fieldsValues["login"])->findFirst();
+            $user = \Arrow\ORM\Persistent\Criteria::query("Arrow\Package\Access\User")->c("login", $this->fieldsValues["login"])->findFirst();
             if(!empty($user)){
                 $this->alerts[] = "Podany login już istnieje w bazie użytkowników";
                 $this->validationPass = false;

@@ -23,7 +23,7 @@ use Arrow\Controls\API\Table\Columns\Menu;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\View;
-use Arrow\ORM\Criteria,
+use Arrow\ORM\Persistent\Criteria,
     \Arrow\Package\Access\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext;
 use Arrow\Package\Access\AccessGroup;

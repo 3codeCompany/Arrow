@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Package\Utils;
 
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 
 class UtilsDictionary extends \Arrow\ORM\ORM_Arrow_Package_Utils_UtilsDictionary{
 

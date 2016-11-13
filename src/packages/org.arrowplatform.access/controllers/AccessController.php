@@ -44,7 +44,7 @@ use Arrow\Router;
 use Arrow\Controls\API\Table\Table;
 use
     \Arrow\RequestContext,
-    \Arrow\ORM\Criteria,
+    \Arrow\ORM\Persistent\Criteria,
     Arrow\Package\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
 

@@ -2,7 +2,7 @@
 
 namespace Arrow\Package\Langs;
 
-use Arrow\ORM\Criteria,
+use Arrow\ORM\Persistent\Criteria,
 \Arrow\Package\Access\Auth,
 \Arrow\ViewManager, \Arrow\RequestContext;
 

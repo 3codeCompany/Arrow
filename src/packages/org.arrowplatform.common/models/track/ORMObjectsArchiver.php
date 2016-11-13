@@ -1,5 +1,8 @@
 <?php
 namespace Arrow\Package\Common;
+use Arrow\ORM\Extensions\BaseTracker;
+use Arrow\ORM\Persistent\PersistentObject;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: artur
@@ -7,7 +10,7 @@ namespace Arrow\Package\Common;
  * Time: 21:13
  * To change this template use File | Settings | File Templates.
  */
-class ORMObjectsArchiver extends \Arrow\ORM\BaseTracker
+class ORMObjectsArchiver extends BaseTracker
 {
     private static $oInstance = null;
 
@@ -18,7 +21,7 @@ class ORMObjectsArchiver extends \Arrow\ORM\BaseTracker
         return self::$oInstance;
     }
 
-    public function afterObjectDelete(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectDelete(PersistentObject $object)
     {
         $archive = new Archive(array(
            Archive::F_CLASS => $object::getClass(),

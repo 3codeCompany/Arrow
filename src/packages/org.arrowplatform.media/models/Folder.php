@@ -10,7 +10,7 @@ class Folder extends \Arrow\ORM\ORM_Arrow_Package_Media_Folder{
     public function beforeObjectCreate(\Arrow\ORM\PersistentObject $object)
     {
         $dirName  = \Arrow\Package\Utils\StringHelper::toValidFilesystemName($this->data[self::F_NAME], false);
-        $parent = \Arrow\ORM\Criteria::query(self::getClass())->findByKey($this->data[self::F_PARENT_ID]);
+        $parent = \Arrow\ORM\Persistent\Criteria::query(self::getClass())->findByKey($this->data[self::F_PARENT_ID]);
         $path = $parent[self::F_PATH]."/".str_replace("\\", "_",$dirName);
 
         $created = @mkdir($path,0777 , true);

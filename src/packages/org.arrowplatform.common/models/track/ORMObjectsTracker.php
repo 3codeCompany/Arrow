@@ -1,5 +1,9 @@
 <?php
 namespace Arrow\Package\Common;
+use Arrow\ORM\Extensions\BaseTracker;
+use Arrow\ORM\Persistent\PersistentObject;
+
+
 /**
  * Created by JetBrains PhpStorm.
  * User: artur
@@ -7,7 +11,7 @@ namespace Arrow\Package\Common;
  * Time: 21:13
  * To change this template use File | Settings | File Templates.
  */
-class ORMObjectsTracker extends \Arrow\ORM\BaseTracker
+class ORMObjectsTracker extends BaseTracker
 {
     private static $oInstance = null;
 
@@ -18,7 +22,7 @@ class ORMObjectsTracker extends \Arrow\ORM\BaseTracker
         return self::$oInstance;
     }
 
-    private function prepareTrack(\Arrow\ORM\PersistentObject $object, $action){
+    private function prepareTrack(PersistentObject $object, $action){
 
         //Whats changed
         $info = "";
@@ -39,17 +43,17 @@ class ORMObjectsTracker extends \Arrow\ORM\BaseTracker
         $track->save();
     }
 
-    public function afterObjectSave(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectSave(PersistentObject $object)
     {
         $this->prepareTrack($object, "modified");
     }
 
-    public function afterObjectCreate(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectCreate(PersistentObject $object)
     {
         $this->prepareTrack($object, "created");
     }
 
-    public function afterObjectDelete(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectDelete(PersistentObject $object)
     {
         $this->prepareTrack($object, "deleted");
     }

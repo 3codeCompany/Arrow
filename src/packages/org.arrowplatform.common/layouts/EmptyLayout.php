@@ -2,7 +2,7 @@
 namespace Arrow\Package\Common;
 
 use
-Arrow\ORM\Criteria,
+Arrow\ORM\Persistent\Criteria,
 Arrow\Package\Access\Auth,
 Arrow\Package\Access\AccessManager,
 \Arrow\RequestContext,

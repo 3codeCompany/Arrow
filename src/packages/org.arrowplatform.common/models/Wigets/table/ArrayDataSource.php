@@ -10,7 +10,7 @@ namespace Arrow\Package\Common;
 
 use Arrow\Controls\API\Table\ITableDataSource;
 use Arrow\Exception;
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\DB;
 use Arrow\RequestContext;
 

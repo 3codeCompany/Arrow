@@ -20,7 +20,7 @@ use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\API\Table\Columns\ViewMore;
 use Arrow\Controls\API\Table\Table;
 use Arrow\Controls\api\WidgetsSet;
-use Arrow\ORM\Criteria;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\PersistentObject;
 use Arrow\Package\Common\HistoryTable as H;
 

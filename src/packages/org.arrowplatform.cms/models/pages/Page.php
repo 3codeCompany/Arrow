@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Package\CMS;
 
-use \Arrow\ORM\Criteria, Arrow\Models\TemplateLinker;
+use \Arrow\ORM\Persistent\Criteria, Arrow\Models\TemplateLinker;
 use Arrow\ORM\Extensions\TreeNode;
 use Arrow\Package\Access\Auth;
 use Arrow\Package\Access\User;

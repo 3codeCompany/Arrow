@@ -17,7 +17,7 @@
 //   require_once 'PHPUnit/Framework/Assert/Functions.php';
 //
 
-    use Arrow\ORM\Criteria,
+    use Arrow\ORM\Persistent\Criteria,
     Arrow\Package\Access\User,
     Arrow\Package\Access\AccessGroup,
     \Arrow\Package\Access\Auth;

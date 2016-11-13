@@ -34,10 +34,10 @@ class AccessGroup extends \Arrow\ORM\ORM_Arrow_Package_Access_AccessGroup
 
     public function beforeObjectDelete(PersistentObject $object)
     {
-        $userCon = \Arrow\ORM\Criteria::query('\Arrow\Package\Access\AccessUserGroup')->c("group_id", $this->getPKey())->find();
+        $userCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Package\Access\AccessUserGroup')->c("group_id", $this->getPKey())->find();
         foreach($userCon as $c) $c->delete();
 
-        $pointCon = \Arrow\ORM\Criteria::query('\Arrow\Package\Access\AccessPointGroup')->c("group_id", $this->getPKey())->find();
+        $pointCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Package\Access\AccessPointGroup')->c("group_id", $this->getPKey())->find();
         foreach($pointCon as $c) $c->delete();
 
         //remove group from access control

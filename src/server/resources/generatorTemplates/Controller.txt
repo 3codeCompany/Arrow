@@ -1,6 +1,6 @@
 <?php
 namespace Arrow\Package\Application;
-use Arrow\ORM\Criteria, Arrow\View, Arrow\RequestContext, Arrow\Models\View, Arrow\Models\Operation, Arrow\Models\Project;
+use Arrow\ORM\Persistent\Criteria, Arrow\View, Arrow\RequestContext, Arrow\Models\View, Arrow\Models\Operation, Arrow\Models\Project;
 
 /**
  * Application controller

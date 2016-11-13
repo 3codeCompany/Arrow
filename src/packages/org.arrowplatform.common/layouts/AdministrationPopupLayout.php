@@ -3,7 +3,7 @@ namespace Arrow\Package\Common;
 use
     \Arrow\RequestContext,
     \Arrow\Package\Access\AccessAPI, \Arrow\Package\Access\Auth,
-    \Arrow\ORM\Criteria,
+    \Arrow\ORM\Persistent\Criteria,
     \Arrow\Controls\IFormContentProvider, \Arrow\Controls\IFormValuesSetter, Arrow\ViewManager;
 
 class AdministrationPopupLayout extends \Arrow\Models\AbstractLayout

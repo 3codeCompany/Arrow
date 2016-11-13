@@ -141,20 +141,6 @@ class Project implements \Arrow\ICacheable
             $this->configuration["settings"] = Settings::init($this->configuration["settings"]);
 
 
-
-            /*//@todo wywalić obsługę bazy danych podczas ładowaania silnik
-            $dbConf = Settings::getDefault()->getSetting("application.db");
-            try {
-                $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
-            } catch (\Exception $ex) {
-                //todo Rozwiązać inaczej :]
-                exit("DB connection problem ".$ex->getMessage());
-            }
-            $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            $this->defaultDbConnection->exec("SET NAMES utf8");
-            $this->defaultDbConnection->exec("SET CHARACTER SET utf8");*/
-
-
             require_once ARROW_APPLICATION_PATH . "/bootstrap.php";
 
             $this->getHandler(self::IErrorHandler);
@@ -491,6 +477,28 @@ class Project implements \Arrow\ICacheable
         return Resources::getDefault($this);
     }
 
+    /**
+     * @return Object
+     */
+    public function setUpDB($name = false)
+    {
+
+        if($name){
+            throw new \Arrow\Exception(new ExceptionContent("Not implementet [db with name]"));
+        }
+
+        $dbConf = Settings::getDefault()->getSetting("application.db");
+        try {
+            $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
+        } catch (\Exception $ex) {
+            //todo Rozwiązać inaczej :]
+            exit("DB connection problem " . $ex->getMessage());
+        }
+        $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->defaultDbConnection->exec("SET NAMES utf8");
+        $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
+
+    }
 
     /**
      * @param bool $name

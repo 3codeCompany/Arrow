@@ -1,6 +1,7 @@
 <?php
 namespace Arrow\Package\Access;
-use Arrow\ORM\PersistentObject;
+
+use Arrow\ORM\Persistent\PersistentObject;
 
 
 /**

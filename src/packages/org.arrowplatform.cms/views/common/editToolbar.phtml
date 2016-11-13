@@ -64,7 +64,7 @@
                             <button type="submit" class="btn add-gallery">Dodaj</button>
                         </form>
                     </div>
-                    <? $gals = \Arrow\ORM\Criteria::query(\Arrow\Package\CMS\Gallery::getClass())
+                    <? $gals = \Arrow\ORM\Persistent\Criteria::query(\Arrow\Package\CMS\Gallery::getClass())
                             ->c(\Arrow\Package\CMS\Gallery::F_PAGE_ID, $this["page"]["id"])
                             ->find();
                     ?>

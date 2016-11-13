@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Package\Media;
 use Arrow\Models\Project;
-use Arrow\ORM\Criteria, Arrow\ORM\SqlRouter;
+use Arrow\ORM\Persistent\Criteria, Arrow\ORM\SqlRouter;
 use Arrow\ORM\JoinCriteria;
 use Arrow\Package\Application\Product;
 

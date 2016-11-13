@@ -2,7 +2,7 @@
 namespace Arrow\Package\Access;
 use Arrow\Exception;
 use Arrow\Models\SessionHandler;
-use \Arrow\ORM\Criteria, \Arrow\Package\Common\Track;
+use \Arrow\ORM\Persistent\Criteria, \Arrow\Package\Common\Track;
 use Arrow\ORM\DB;
 use Arrow\RequestContext;
 use Arrow\Router;
