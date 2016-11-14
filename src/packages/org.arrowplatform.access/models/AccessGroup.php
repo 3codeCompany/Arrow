@@ -1,6 +1,6 @@
 <?php
 namespace Arrow\Package\Access;
-use Arrow\ORM\PersistentObject,
+use Arrow\ORM\Persistent\PersistentObject,
     Arrow\ORM\SqlRouter;
 use Arrow\Package\Utils\Developer;
 

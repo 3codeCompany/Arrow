@@ -1,7 +1,8 @@
 <?php
 namespace Arrow\Package\Access;
 use \Arrow\ORM\Persistent\Criteria;
-use Arrow\ORM\JoinCriteria;
+use Arrow\ORM\Persistent\JoinCriteria;
+use Arrow\ORM\Persistent\PersistentObject;
 
 class User extends \Arrow\ORM\ORM_Arrow_Package_Access_User implements \Arrow\Models\IUser
 {
@@ -23,7 +24,7 @@ class User extends \Arrow\ORM\ORM_Arrow_Package_Access_User implements \Arrow\Mo
      * Before create object generate it's safe id ( passport_id )
      * @param \Arrow\ORM\PersistentObject $object
      */
-    public function beforeObjectCreate(\Arrow\ORM\PersistentObject $object)
+    public function beforeObjectCreate(PersistentObject $object)
     {
         if($object["password"] == ""){
             $this->setValue("password", md5(microtime()+rand(1,100)));
@@ -42,7 +43,7 @@ class User extends \Arrow\ORM\ORM_Arrow_Package_Access_User implements \Arrow\Mo
      * @param $oldValue
      * @param $newValue
      */
-    public function fieldModified(\Arrow\ORM\PersistentObject $object, $field, $oldValue, $newValue)
+    public function fieldModified(PersistentObject $object, $field, $oldValue, $newValue)
     {
         if ($field == self::F_PASSWORD) {
             if (!empty($newValue)) {
@@ -57,7 +58,7 @@ class User extends \Arrow\ORM\ORM_Arrow_Package_Access_User implements \Arrow\Mo
      * If access groups parameter is given object append new groups
      * @param \Arrow\ORM\PersistentObject $object
      */
-    public function afterObjectSave(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectSave(PersistentObject $object)
     {
         if (isset($this->parameters["accessGroups"])) {
             if (is_array($this->parameters["accessGroups"])) {
@@ -77,7 +78,7 @@ class User extends \Arrow\ORM\ORM_Arrow_Package_Access_User implements \Arrow\Mo
      * Delete groups connection
      * @param \Arrow\ORM\PersistentObject $object
      */
-    public function beforeObjectDelete(\Arrow\ORM\PersistentObject $object)
+    public function beforeObjectDelete(PersistentObject $object)
     {
         $this->setGroups(array());
         parent::beforeObjectDelete($object);

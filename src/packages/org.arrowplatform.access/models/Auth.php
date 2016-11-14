@@ -3,7 +3,7 @@ namespace Arrow\Package\Access;
 use Arrow\Exception;
 use Arrow\Models\SessionHandler;
 use \Arrow\ORM\Persistent\Criteria, \Arrow\Package\Common\Track;
-use Arrow\ORM\DB;
+use Arrow\ORM\DB\DB;
 use Arrow\RequestContext;
 use Arrow\Router;
 
@@ -172,6 +172,8 @@ class Auth
             $result = $user;
         }
 
+
+
         $initVal[Track::F_ACTION] = "login";
         $initVal[Track::F_CLASS] = 'Arrow\Package\Access\User';
         $initVal[Track::F_OBJECT_ID] = $result["id"];
@@ -200,6 +202,7 @@ class Auth
 
 
         if (!empty($result["password"]) && (User::comparePassword($result["password"], $password) || $loginAs) && $result["active"] == "1") {
+
             $ext["result"] = true;
             $initVal["info"] = serialize($ext);
             AccessManager::turnOff();

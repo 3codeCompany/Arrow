@@ -3,6 +3,7 @@ namespace Arrow\Package\Media;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria, Arrow\ORM\SqlRouter;
 use Arrow\ORM\JoinCriteria;
+use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\Package\Application\Product;
 
 
@@ -381,29 +382,24 @@ class MediaAPI extends \Arrow\Object
     public static function prepareMedia($objSet, $namesToGet = null, $limit = null)
     {
 
+
+
         if (empty($objSet)) return false;
         $keys = array();
         $first = isset($objSet[0]) ? $objSet[0] : reset($objSet);
 
-        if (!($first instanceof \Arrow\ORM\PersistentObject)) {
+        if (!($first instanceof PersistentObject)) {
             return;
             debug_print_backtrace();
             exit();
         }
 
+
         $class = get_class($first);
+        $tmp = explode('\\', $class );
+        $class = end($tmp);
 
-        /*//todo wyalic to
-        if ($first instanceof Product) {
-            try {
-                $db = $oldDb = new \PDO('mysql:host=localhost;dbname=as_sklep', "as_admin", "Ola54780");
-                $class = "shop.ShopProduct";
-            } catch (\Exception $e) {
-                $db = \Arrow\Models\Project::getInstance()->getDB();
-            }
-        } else {
 
-        }*/
         $db = \Arrow\Models\Project::getInstance()->getDB();
 
 
@@ -442,11 +438,13 @@ class MediaAPI extends \Arrow\Object
 		FROM media_elements
 		left JOIN media_element_connections ON (media_elements.id=media_element_connections.element_id ) 
 		WHERE
-		media_element_connections.`model` = '" . addslashes($class) . "'
+		media_element_connections.`model` like '%" . addslashes($class) . "'
 		AND media_element_connections.`object_id` IN ('" . implode("','", array_keys($keys)) . "')
 		{$connName} 
 		{$limitQ}
 		ORDER BY  media_element_connections.`sort` ASC,media_elements.sort ASC";
+        //@todo usunąć like i przeyrócić = ( zmieniły się nazwy klas i problem jest )
+        //media_element_connections.`model` = '" . addslashes($class) . "'
 
 
         $result = $db->query($q);
@@ -793,10 +791,7 @@ class MediaAPI extends \Arrow\Object
                 $imTransform->crop($width,$height);
             }
         }
-
-        $path = Project::getInstance()->toRelative($file);
-
-        return $path;
+        return str_replace(ARROW_DOCUMENTS_ROOT, "",$file);
 
     }
 
