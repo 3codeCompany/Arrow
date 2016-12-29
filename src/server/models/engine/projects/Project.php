@@ -257,25 +257,7 @@ class Project implements \Arrow\ICacheable
         return $this->path;
     }
 
-    public function toRelative($path)
-    {
 
-        if (ARROW_DOCUMENTS_ROOT == "/" && ARROW_APPLICATION_PATH == "/") {
-            return "./" . $path;
-        }
-
-        if (strpos($path, $this->path) !== false) {
-
-            $path = str_replace($this->path, "", $path);
-            $relative = "./" . $path;
-        } else {
-            $path = str_replace(ARROW_ROOT_PATH, "", $path);
-            $relative = $this->projectToServerRelative . $path;
-        }
-
-        $relative = str_replace("\\", "/", $relative);
-        return $relative;
-    }
 
 
 

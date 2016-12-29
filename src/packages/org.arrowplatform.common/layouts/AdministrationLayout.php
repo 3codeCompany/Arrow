@@ -28,11 +28,11 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
         }*/
 
 
-        $path= RequestContext::getProtocol().$_SERVER["HTTP_HOST"]."/".str_replace([ARROW_DOCUMENTS_ROOT, "\\"],["","/"],ARROW_ROOT_PATH )  ."/src/packages/org.arrowplatform.common/layouts/admin/";
+        //$path= RequestContext::getProtocol().$_SERVER["HTTP_HOST"]."/".str_replace([ARROW_DOCUMENTS_ROOT, "\\"],["","/"],ARROW_ROOT_PATH )  ."/src/packages/org.arrowplatform.common/layouts/admin/";
 
         $this->view = $manager->get();
 
-        $this->view->assign("layoutPath", $path);
+        //$this->view->assign("layoutPath", $path);
 
 
         try{

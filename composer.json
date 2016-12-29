@@ -17,16 +17,8 @@
   },
   "extra": {
     "component": {
-      "scripts": [
-        "js/bootstrap.js"
-      ],
-      "styles": [
-        "css/bootstrap.css"
-      ],
       "files": [
-        "src/packages/org.arrowplatform.common/layouts/admin/styles/*.css",
-        "src/packages/org.arrowplatform.common/layouts/admin/scripts/*.js",
-        "src/packages/org.arrowplatform.common/layouts/admin/images/*.*"
+        "src/packages/org.arrowplatform.common/resources/panel/**/*.*"
       ]
     }
   }

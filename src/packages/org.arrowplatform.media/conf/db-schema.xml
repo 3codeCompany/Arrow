@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <schema class-namespace="Arrow\Package\Media">
-  <table name="media_folders" class="Folder" baseclass="\Arrow\Package\Database\ProjectPersistentTreeNode">
+  <table name="media_folders" class="Folder" >
     <extensions>
         <extension class="Arrow\ORM\Extensions\Tree" />
     </extensions>

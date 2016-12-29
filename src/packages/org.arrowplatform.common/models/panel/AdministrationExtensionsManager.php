@@ -24,7 +24,8 @@ class AdministrationExtensionsManager
     {
         $classes = array();
 
-        $class = '\Arrow\Package\Application\AdministrationExtensionPoint';
+
+        $class = '\App\Models\Common\AdministrationExtensionPoint';
         if (class_exists($class) && in_array('Arrow\Package\Common\AdministrationExtensionPoint', class_parents($class)))
             $classes[] = $class;
 
@@ -35,7 +36,7 @@ class AdministrationExtensionsManager
     private static function registerElementsFromPackages()
     {
 
-        $class = '\Arrow\Package\Application\AdministrationExtensionPoint';
+        $class = '\App\Models\Common\AdministrationExtensionPoint';
         if (class_exists($class)) {
             self::registerElements(call_user_func(array($class, "getElements")));
             $toSection = call_user_func(array($class, "addToSection"));

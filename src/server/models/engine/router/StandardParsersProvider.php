@@ -21,12 +21,6 @@ class StandardParsersProvider implements IParsersProvider
     {
         return [
             (new ViewParser('/(import|t|o|r|v):(\.|)\/([\w\/.-]+)/', function ($matches) {
-                if ($matches[2] == ".")
-                    $matches[3] = $matches[2] . "/" . $matches[3];
-                if ($matches[1] == "r")
-                    return \Arrow\Controller::$project->getResources()->getResource('/' . $matches[3])->getRelativePath();
-                if ($matches[1] == "o" || $matches[1] == "v")
-                    return Router::link($matches[3]);
                 if ($matches[1] == "import")
                     return Dispatcher::getDefault()->get($matches[3])->generate();
             })),

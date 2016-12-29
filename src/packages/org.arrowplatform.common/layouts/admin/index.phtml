@@ -1,74 +1,45 @@
 <!doctype html>
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
 <head>
 
+
     <meta charset="utf-8">
+    <base href="<? print \Arrow\RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . \Arrow\Router::getBasePath() ?>"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><?=\Arrow\Models\Settings::getDefault()->getSetting("application.panel.title")?></title>
+    <title><?= \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title") ?></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
     <!-- Needs images, font... therefore can not be part of main.css -->
-    <link rel="stylesheet" href="<?=$this["layoutPath"]?>bower_components/font-awesome/css/font-awesome.min.css">
-
-    <?
-    $normal = false;
-    ?>
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
 
     <!-- end Needs images -->
 
-    <link rel="stylesheet" href="<?=$this["layoutPath"]?>styles/main.css">
-    <link rel="stylesheet" href="<?=$this["layoutPath"]?>styles/theme-<?=$this["user"]->getSetting('admin-theme', 'blue')?>.css">
-
-    <style type="text/css">
-        body{
-            overflow: hidden;
-        }
-        .form-group{
-            margin-bottom: 8px !important;
-        }
-
-        .content-container{
-            overflow: hidden;
-            overflow-y: scroll;
-        }
-
-        .slimScrollDiv .fa-caret-right{
-            display: none !important;
-        }
-
-        .slimScrollDiv .fa-caret-right::before{
-            display: none !important;
-        }
-
-       
-
-
-    </style>
+    <link rel="stylesheet" href="assets/arrow/css/panel.css">
+    <link rel="stylesheet" href="assets/arrow/css/theme-<?= $this["user"]->getSetting('admin-theme', 'blue') ?>.css">
 
 </head>
-<body data-ng-app="app" id="app" class="app app <?=$this["user"]->getSetting('sidebar-collapse', 1)?'nav-collapsed-min':''?>" data-custom-page="" data-off-canvas-nav="" data-ng-controller="AppCtrl"
-      data-ng-class=" {'layout-boxed': admin.layout === 'boxed' } ">
+<body id="app" class="app app <?= $this["user"]->getSetting('sidebar-collapse', 1) ? 'nav-collapsed-min' : '' ?>" >
+
 <div id="admin-loading-indicator" style="display: none;">
-    <img src="<?=$this["layoutPath"]?>images/382.GIF" alt="">
+    <img src="assets/arrowimages/382.GIF" alt="">
 </div>
-    <div id="admin-loading-indicator-info" style="display: none;">asdasda</div>
+<div id="admin-loading-indicator-info" style="display: none;">asdasda</div>
 
 
 <!--[if lt IE 9]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<section id="header" class="header-container" data-ng-class="  {'header-fixed': admin.fixedHeader}  " data-ng-controller="HeaderCtrl" data-ng-intro-options="introOptions" data-ng-intro-method="startIntro" data-ng-intro-autostart="false">
+<section id="header" class="header-container" >
     <header class="top-header clearfix">
-
         <!-- Logo -->
         <div class="logo">
             <a href="#/">
-                <!-- <span class="logo-icon glyphicon glyphicon-fire"></span> -->
-                <span><?=\Arrow\Models\Settings::getDefault()->getSetting("application.panel.title")?></span>
+                <span><?= \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title") ?></span>
             </a>
         </div>
 
@@ -90,7 +61,7 @@
                 <li class="dropdown hidden-xs" style="display: none;">
                     <a href="javascript:;" class="dropdown-toggle" id="step1" data-toggle="dropdown"><i class="fa fa-cogs"></i></a>
                     <div class="dropdown-menu with-arrow panel panel-default admin-options" ui-not-close-on-click>
-                        <div class="panel-heading"> Opcje </div>
+                        <div class="panel-heading"> Opcje</div>
                         <ul class="list-group">
                             <li class="list-group-item">
                                 <p>Wygląd</p>
@@ -115,8 +86,8 @@
                     <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" style="padding-top: 15px;">
 
                         <i class="fa fa-user"></i>
-                    <span class="hidden-xs">
-                        <?if($this["user"]){?><?=$this["user"]->_login()?>  <?}?>
+                        <span class="hidden-xs">
+                        <? if ($this["user"]) { ?><?= $this["user"]->_login() ?><? } ?>
                     </span>
                     </a>
                     <ul class="dropdown-menu with-arrow">
@@ -150,80 +121,76 @@
 
             </ul>
 
-            <?if(isset($this["userTasksCount"])){?>
-            <ul class="nav-right pull-right list-unstyled">
-                <li>
-                    <a href="#<?=\Arrow\Router::getBasePath()?>crm/tasks/tlist" class="bg-danger" id="step3" title="Ilość zadań w których bierzesz udział">
-                        <i class="fa fa-tasks"></i>
-                        <span class="badge badge-info" style="top: 3px; right: 1px;"><?=$this["userTasksCount"]?></span>
-                    </a>
-                </li>
-            </ul>
-            <?}?>
+            <? if (isset($this["userTasksCount"])) { ?>
+                <ul class="nav-right pull-right list-unstyled">
+                    <li>
+                        <a href="#<?= \Arrow\Router::getBasePath() ?>crm/tasks/tlist" class="bg-danger" id="step3" title="Ilość zadań w których bierzesz udział">
+                            <i class="fa fa-tasks"></i>
+                            <span class="badge badge-info" style="top: 3px; right: 1px;"><?= $this["userTasksCount"] ?></span>
+                        </a>
+                    </li>
+                </ul>
+            <? } ?>
 
-        </div></header>
+        </div>
+    </header>
 </section>
 
 <div class="main-container">
-    <aside id="nav-container" class="nav-container <? if($normal){ print "nav-horizontal";} ?> " data-ng-class=" {'nav-fixed': admin.fixedSidebar, 'nav-horizontal': admin.menu === 'horizontal', 'nav-vertical': admin.menu === 'vertical'}">
+    <aside id="nav-container" class="nav-container nav-fixed" >
         import:/common/admin/navigation
 
     </aside>
 
-    <section data-ng-view=" {'nav-fixed': admin.fixedSidebar } " onload=" Page.onLoad() " id="content" class="content-container "  style="overflow-y: scroll;" autoscroll="1"></section>
+    <section  onload=" Page.onLoad() " id="content" class="content-container " style="overflow-y: scroll;" autoscroll="1"></section>
 
 </div>
 
-
-
-
-<script src="<?=$this["layoutPath"]?>scripts/vendor.js?x=1"></script>
-
-<script src="<?=$this["layoutPath"]?>scripts/ui.js?x=1"></script>
-
-
 <script>window.appBaseUrl = '<?=\Arrow\Router::getBasePath()?>'; </script>
-<script src="<?=$this["layoutPath"]?>scripts/app.js?x=1"></script>
 
-
-<script src="//code.highcharts.com/highcharts.js"></script>
+<!--<script src="//code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.css' />
 <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.0/moment.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/lang/pl.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/lang/pl.js'></script>-->
 
 
-<link rel="stylesheet" href="<?=\Arrow\RequestContext::getBaseUrl()?>r:common::/js/select2/select2.css"/>
-<script src="<?=\Arrow\RequestContext::getBaseUrl()?>r:common::/js/select2/select2.min.js" type="text/javascript"></script>
-<link rel="stylesheet" href="<?=\Arrow\RequestContext::getBaseUrl()?>r:common::/js/alertify/alertify.core.css" />
-<link rel="stylesheet" href="<?=\Arrow\RequestContext::getBaseUrl()?>r:common::/js/alertify/alertify.bootstrap.css" />
+<link rel="stylesheet" href="assets/select2/dist/css/select2.min.css"/>
+<link rel="stylesheet" href="assets/fine-uploader/jquery.fine-uploader/fine-uploader-new.css"/>
 
-<script src="<?=\Arrow\RequestContext::getBaseUrl()?>r:common::/js/alertify/alertify.min.js"></script>
-<?
-$relative = str_replace(ARROW_DOCUMENTS_ROOT,"",ARROW_LIBS_PATH);
-$pathCss = "controls/resources/controls-api.css";
-$pathScript = "controls/resources/controls-api.js";
-$pathCss = $relative."/".$pathCss."?".filemtime( ARROW_LIBS_PATH."/".$pathCss );
-$pathScript = $relative."/".$pathScript."?".filemtime( ARROW_LIBS_PATH."/".$pathScript );
-?>
-<link rel="stylesheet" type="text/css" href="<?=$pathCss?>"/>
-<script src="<?=$pathScript?>"></script>
+<script type="text/javascript"  src="assets/require.js"></script>
+<script type="text/javascript">
+    require([ "arrow/panel" ]);
+</script>
+<? $pathCss = "assets/controls/dist/serenity.css"; ?>
+<link rel="stylesheet" type="text/css" href="<?= $pathCss. "?" . filemtime($pathCss) ?>"/>
 
+<?if(false){?>
 <style>
-    body{
+
+
+
+
+
+
+
+
+    body {
         color: #333;
     }
+
     /* line 294, C:\dev\www\arrowplatform\src\packages\org.arrowplatform.common\resources\styles\less\mods\ui-mod.less */
-    .form-field-error-text{
+    .form-field-error-text {
         color: red;
         font-weight: bold;
     }
-    .navbar{
+
+    .navbar {
         margin-bottom: 5px;;
     }
 
-    .navbar-nav li{
+    .navbar-nav li {
         margin-right: 10px;;
     }
 
@@ -233,310 +200,35 @@ $pathScript = $relative."/".$pathScript."?".filemtime( ARROW_LIBS_PATH."/".$path
         border-radius: 4px;
         border-left: solid 2px;
     }
+
     /* line 299, C:\dev\www\arrowplatform\src\packages\org.arrowplatform.common\resources\styles\less\mods\ui-mod.less */
     .navbar-form .form-field-error-text:before,
     .navbar-form .form-field-error-text:after {
         display: none;
     }
-    .w-uploader{
+
+    .w-uploader {
         min-height: 35px;;
     }
-    .w-textfilter-body .serenity-widget{
+
+    .w-textfilter-body .serenity-widget {
         display: inline-block;
 
     }
+
     .select2-container .select2-choice {
         height: 33px;
         padding-top: 3px;
     }
-    .navbar-collapse{
+
+    .navbar-collapse {
         padding-left: 0px;
     }
-    .tab-content>.tab-pane {
+
+    .tab-content > .tab-pane {
         padding-left: 15px;
     }
 </style>
-<script type="text/javascript">
-
-
-
-    var select2 = function(el){
-        $("select",el).each(function (index, el) {
-            if($(el).is(".no-select2")) return;
-
-            $(el).addClass(".no-select2").select2({
-                minimumResultsForSearch: 10,
-                disable_search: ($(el).find("option").length < 15),
-                dropdownAutoWidth: true,
-                adaptContainerCssClass: function(clazz){
-                    if(clazz != "form-control")
-                        return clazz;
-                }
-            });
-        });
-    };
-
-
-    $(".sidebar-collapse").click(function(){
-        $.get("<?=\Arrow\Router::getBasePath() ?>admin/changeUserSetting", { setting: 'sidebar-collapse' }, function(){});
-    });
-
-    $(".theme-item").click(function(){
-        $.get("<?=\Arrow\Router::getBasePath() ?>admin/changeUserSetting", { setting: 'admin-theme', value: $(this).attr("data-theme") }, function(){
-            window.location.reload();
-        });
-    });
-
-
-
-
-    Page = {
-        onLoad: function(){
-            setTimeout(function(){
-                SerenityWidget.classOn('SerenityFilterPanel', 'opened', function(){$('.serenity-widget-table,.serenity-widget-filterspresenter').css('margin-right', '245px');});
-                SerenityWidget.classOn('SerenityFilterPanel', 'closed', function(){$('.serenity-widget-table,.serenity-widget-filterspresenter').css('margin-right', '0');});
-                //$("#content").height($(window).height()- $(".top-header").height());
-                window.Serenity.scanForWidgets();
-
-
-                select2($("body"))
-                $(".panel-collapse").each(function(index,el){
-                    var el = $(el);
-                    if(!el.is(".panel-collapse-opened"))
-                        $(">.panel-body",el).hide();
-                    $(">.panel-heading",el ).css('cursor','pointer')
-                        .click(function(){
-                            $(this).next().toggle();
-                        })
-                });
-
-                var fpanel = $(".serenity-widget-filterpanel #filter-panel");
-                if(typeof (fpanel.offset()) != 'undefined') {
-                    fpanel.css('min-height', ($(window).height() - fpanel.offset().top) + 'px');
-                }
-
-                var scroll = $(".scroll-to");
-                if(scroll.length > 0){
-                    $('html,body').animate({
-                            scrollTop: scroll.offset().top},
-                        'slow');
-                }
-
-
-
-            },500);
-            //$("body").animate({scrollTop:0}, '500');
-            $(".content-container").css('min-height', $(window).height() - $("#header").height() );
-            $(".content-container").css('height', $(window).height() - $("#header").height() );
-
-
-            $.ajaxSetup({
-                beforeSend:function(){
-                    $("#admin-loading-indicator").show();
-
-                },
-                complete:function(){
-                    $("#admin-loading-indicator").hide();
-                }
-            });
-        }
-    };
-
-    SerenityWidget.classOn("", "htmlLoaded", function () {
-        select2(this.host)
-    });
-
-
-    SerenityWidget.classOn( "SerenityModal", "opened", function(){
-        var modal = this;
-        modal.host.hide();
-        window.location.href += "_modal";
-        /*var heightContainer = $("#schema-height-container");
-         var height = heightContainer.outerHeight(false) - 5;
-         var width = heightContainer.find(">div").outerWidth(false);*/
-        //$(".modal").hide();
-
-        $("#content").html(" ").append($(".modal-body", this.host).children());
-
-        $(".modal-body", this.host).remove();
-        select2($("#content"));
-        $("body").animate({scrollTop:0}, '500');
-
-        return;
-
-        $(".modal").hide();
-
-        $(".modal", this.host).css({
-            top: heightContainer.offset().top + 5,
-            left: heightContainer.offset().left
-            //width: width,
-            //overflow: 'hidden'
-        });
-        $(".modal-dialog", this.host).css({
-            'margin': 0,
-            'min-height': height,
-            'width': width
-        });
-
-
-        $(".modal-content", this.host).css({
-            'box-shadow': 'none',
-            'border': 'none',
-            'border-bottom': 'solid 1px grey',
-            'border-radius': 0,
-            'width': width, //$(window).width() - 188,
-            'margin-top': 0,
-            //'padding-top': 15,
-            'min-height': height
-        });
-        $(".modal-body", this.host).css({
-            width: width
-        });
-
-        $(".modal-header", this.host).hide();
-
-        var title = $(".modal-title", this.host).text();
-        var nav = $('<nav />').addClass('navbar').append(
-            $('<div />').addClass('navbar-header').append(
-                $('<a />').addClass('navbar-brand').text(title)
-            )
-        ).append('<div class="collapse navbar-collapse"><ul class="nav navbar-nav"></ul></div>');
-
-        $(".modal-footer", this.host).children().each(function(index,el){
-            nav.find('.nav').append(
-                $("<li>").append($(el))
-            );
-
-        });
-        nav.find('.nav').find('.serenity-widget').each(function(){
-            var widget = window.Serenity.get( this);
-            widget.refreshTargets = [modal.id, widget.id ];
-        });
-
-        Page.setTopMenu(nav);
-        $(".modal-header,.modal-footer", this.host).hide();
-
-        //heightContainer.find(">div").height($(".modal-dialog", this.host).height());
-    });
-
-
-    var ctrlFormCallbacks = {
-
-        beforeSerialize: function (form) {
-            el = $("[type='submit']", form);
-
-            if (form.parent().is(".modal-body")) {
-                el = form.parent().next().find(".btn-primary");
-            }
-            var text = el.text();
-            el.html(text + '<i class="fa fa-spinner submit-indicator fa-spin"></i> ').attr('disabled', 'disabled');
-
-        },
-        clearCommunicates: function (form) {
-            form.find(".form-field-error-text", form).remove();
-            form.find(".form-error-text", form).parents(".control-group:eq(0)").remove();
-            form.find(".error").removeClass("error");
-            var indicator = form.find(".submit-indicator");
-            indicator.parent().removeAttr("disabled");
-            indicator.remove()
-
-            if (form.parent().is(".modal-body")) {
-                var indicator = form.parent().next().find(".submit-indicator");
-                indicator.parent().removeAttr("disabled");
-                indicator.remove()
-            }
-        },
-        fieldError: function (input, errors, form) {
-
-
-            if(input.length == 0 ){
-
-                ctrlFormCallbacks.formError(form,errors)
-                return;
-            }
-
-            var str = "";
-            for (var i = 0; i < errors.length; i++) {
-                str += (i == 0 ? "" : ", ") + errors[i];
-            }
-            var ctrls = input.parents(".controls")
-
-            ctrls.parent().addClass("error");
-            var error = $('<div class="form-field-error-text"><i class="fa fa-exclamation-triangle"></i> ' + str + '</div>');
-            //in no bootstrap form
-            if (ctrls.length == 0 || ctrls.is(".form-inline")) {
-                //error.addClass("alert-error").css({padding: '4px'});
-
-                if (input.parent().is(".input-append") || input.parent().is(".input-prepend")) {
-                    error.insertAfter(input.parent());
-
-                } else {
-                    error.insertAfter(input);
-                    error.css({'left': input.width() + 40, 'white-space': 'nowrap'})
-                    //error.mouseleave(function(){ error.fadeOut() })
-                    input.focus(function(){ error.fadeOut() });
-                }
-            } else {
-
-                //
-                if (input.parent().is(".input-append") || input.parent().is(".input-prepend")) {
-                    error.insertAfter(input.parent());
-                } else if (input.parent().is(".btn")) {
-                    error.insertAfter(input.parent());
-                } else {
-                    error.insertAfter(input);
-                }
-            }
-        },
-        formError: function (form, errors) {
-            form.find(">.alert").remove()
-            //alert form.length;
-            if ( errors && errors.length)
-                form.prepend($('<div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> ' + errors.join(",") + '</div>'));
-        },
-        success: function (successCommunicate, response, form) {
-            form.find(">.alert").remove()
-            if (successCommunicate.length) {
-                text = successCommunicate.html();
-                text = text.replace(/\{(.+?)\}/g, function (match, contents, offset, s) {
-                        return response[contents];
-                    }
-                );
-                successCommunicate.html(text);
-                successCommunicate.show().removeClass("hidden");
-                form.hide();
-                if (form.parent().is(".modal-body")) {
-                    form.parent().next().find(".btn-primary").hide();
-                }
-            }
-        }
-    }
-
-
-    function doSomething() {
-
-    }
-    $(document).keypress(function(e) {
-        //console.log(e.which );
-
-        if (e.which === 102 && !$(document.activeElement).is(":input,[contenteditable]")) {
-            var panel = Serenity.get('filters');
-
-            if( panel.get('opened') == "0"){
-                $(".filter-panel-trigger").click();
-            }
-
-            $("[name='search']").focus();
-            return false;
-        }
-        if (e.which === 122 && !$(document.activeElement).is(":input,[contenteditable]")) {
-            $('body').injector().get('$location').url('/admin/shop/orders/index?<?=rand(100000,1000000000)?>'); $('body').scope().$apply(); return false;
-        }
-        if (e.which === 112 && !$(document.activeElement).is(":input,[contenteditable]")) {
-            $('body').injector().get('$location').url('/admin/shop/products/index?<?=rand(100000,1000000000)?>'); $('body').scope().$apply(); return false;
-        }
-    });
-
-</script>
+<?}?>
 </body>
 </html>
