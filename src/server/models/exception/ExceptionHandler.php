@@ -47,7 +47,7 @@ class ExceptionHandler implements IExceptionHandler
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
-            $error["url"] = $_SERVER["HTTP_HOST"]. $_SERVER["REQUEST_URI"];
+            $error["url"] = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $error["request"] = $_REQUEST;
 
             $this->logError(print_r($error, 1));
@@ -153,14 +153,18 @@ class ExceptionHandler implements IExceptionHandler
         $content = ob_get_contents();
         ob_clean();
 
-        $this->logError($content);
+        $this->logError($exception, $content);
 
         //zmienić aby było pobierane przez handlery
         $user = null;
         if (class_exists("\\Arrow\\Package\\Access\\Auth", false))
             $user = \Arrow\Package\Access\Auth::getDefault()->getUser();
 
-        if (!Project::$forceDisplayErrors && !($exception instanceof \Arrow\Models\ApplicationException) && ($user == null || !$user->isInGroup("Developers"))) {
+
+        //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
+        //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
+        if (($user == null || !$user->isInGroup("Developers"))) {
+
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
             $this->printXHRException($exception);
@@ -180,14 +184,33 @@ class ExceptionHandler implements IExceptionHandler
     }
 
 
-    private function logError($contents){
-        $dir = ARROW_DOCUMENTS_ROOT."/data/logs/errors/" . date("Y-m-d");
+    private function logError(\Exception $exception, $contents)
+    {
+        $dir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors/" . date("Y-m-d");
         $file = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
         if (!file_exists($dir))
-            mkdir($dir);
+            @mkdir($dir);
 
-        file_put_contents($dir . "/" . $file, $contents);
-        @mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );
+        @file_put_contents($dir . "/" . $file, $contents);
+        $logger = new \Monolog\Logger('mySiteLog');
+        $hipChatHandler = new \Monolog\Handler\HipChatHandler(
+            "LgyH7guDV2ZJ6VDubma2wfpzXFbeYTrY69l2PnF5", "3443801", 'Monolog', false,
+            \Monolog\Logger::CRITICAL, true, true, 'text',
+            "esotiq.hipchat.com",
+            \Monolog\Handler\HipChatHandler::API_V2
+        );
+        $logger->pushHandler($hipChatHandler);
+        $logger->log(
+            \Monolog\Logger::CRITICAL,
+            $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . "/data/logs/errors/" . date("Y-m-d") . "/" . $file .
+            "\n\n" . $exception->getMessage().
+            "\n\n" . $exception->getFile() . ":" . $exception->getLine()
+
+
+        );
+
+
+        //@mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );
 
     }
 
@@ -236,7 +259,7 @@ class ExceptionHandler implements IExceptionHandler
 
         $str = "<h3><div style='float: left;'> Request</div> {$refresh}  {$refreshNewWindow}</h3><div style='clear: both;'></div><table>";
 
-        $str .= "<tr><td>[URL]</td><td><pre>" .$_SERVER["HTTP_HOST"]. $_SERVER["REQUEST_URI"] . "</pre></td></tr>";
+        $str .= "<tr><td>[URL]</td><td><pre>" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "</pre></td></tr>";
 
         foreach ($_REQUEST as $var => $value) {
             $str .= "<tr><td>{$var}</td><td><pre>" . print_r($value, 1) . "</pre></td></tr>";
