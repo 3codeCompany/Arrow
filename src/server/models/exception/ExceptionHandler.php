@@ -50,7 +50,7 @@ class ExceptionHandler implements IExceptionHandler
             $error["url"] = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $error["request"] = $_REQUEST;
 
-            $this->logError(print_r($error, 1));
+            $this->logError( $error );
         }
     }
 
@@ -184,7 +184,7 @@ class ExceptionHandler implements IExceptionHandler
     }
 
 
-    private function logError(\Exception $exception, $contents)
+    private function logError( $exception, $contents)
     {
         $dir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors/" . date("Y-m-d");
         $file = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
@@ -194,17 +194,28 @@ class ExceptionHandler implements IExceptionHandler
         @file_put_contents($dir . "/" . $file, $contents);
         $logger = new \Monolog\Logger('mySiteLog');
         $hipChatHandler = new \Monolog\Handler\HipChatHandler(
-            "LgyH7guDV2ZJ6VDubma2wfpzXFbeYTrY69l2PnF5", "3443801", 'Monolog', false,
+            "LgyH7guDV2ZJ6VDubma2wfpzXFbeYTrY69l2PnF5", "3443801", 'Monolog', true,
             \Monolog\Logger::CRITICAL, true, true, 'text',
             "esotiq.hipchat.com",
             \Monolog\Handler\HipChatHandler::API_V2
         );
+
+        if($exception instanceof \Exception) {
+            $message = $exception->getMessage();
+            $line = $exception->getLine();
+            $file = $exception->getFile();
+        }else{
+            $message = $exception["message"];
+            $line = $exception["line"];
+            $file = $exception["file"];
+        }
+
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
             $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . "/data/logs/errors/" . date("Y-m-d") . "/" . $file .
-            "\n\n" . $exception->getMessage().
-            "\n\n" . $exception->getFile() . ":" . $exception->getLine()
+            "\n\n" . $message.
+            "\n\n" . $file . ":" . $line
 
 
         );
