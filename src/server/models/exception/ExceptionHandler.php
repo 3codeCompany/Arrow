@@ -50,7 +50,7 @@ class ExceptionHandler implements IExceptionHandler
             $error["url"] = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
             $error["request"] = $_REQUEST;
 
-            $this->logError( $error );
+            $this->logError( $error, $error["message"] );
         }
     }
 
