@@ -1,6 +1,5 @@
 <?php namespace Arrow\Models;
 
-use Arrow\Exception;
 use Arrow\RequestContext;
 use Arrow\Router;
 
@@ -28,9 +27,25 @@ class Dispatcher implements \Arrow\ICacheable
         $equateConf = false;
 
         foreach ($this->configuration["packages"]["application"]["paths"] as $_path) {
+
             if ($_path["type"] == "prefix" && strpos($path, $_path["path"]) === 0) {
-                /*print $path ." ".$_path["path"]."<br />";*/
                 $equateConf = $_path;
+                break;
+            } elseif ($_path["type"] == "path" && strpos($path, $_path["path"]) === 0) {
+
+                $tmp = str_replace($_path["path"], "", $path);
+                $tmp = explode("/", $tmp);
+                $controllerName = $tmp[0];
+                $controller = str_replace("*", $controllerName, $_path["controller"]);
+                unset($tmp[0]);
+                $path = implode("/", $tmp);
+                $equateConf = [
+                    "controller" => $controller,
+                    "path" => $path,
+                    "layout" => "",
+                    "package" => "",
+                    "base" => $_path["base"] .  $controllerName
+                ];
                 break;
             } elseif ($_path["type"] == "regex" && preg_match($_path["path"], $path)) {
                 $equateConf = $_path;
@@ -53,21 +68,24 @@ class Dispatcher implements \Arrow\ICacheable
             }
         }
 
-
         return $data;
     }
 
     private static $actions = [];
-    public function get($path)
+    public function get($path, $skipRewriteTest = false)
     {
 
         if(isset(self::$actions[$path])){
             return self::$actions[$path];
         }
 
-        $rewriteTest = $this->findByRewrite($path);
-        if($rewriteTest)
-            return $rewriteTest;
+        if(!$skipRewriteTest) {
+            $rewriteTest = $this->findByRewrite($path);
+            if ($rewriteTest)
+                return $rewriteTest;
+        }
+
+
 
 
 
@@ -94,7 +112,7 @@ class Dispatcher implements \Arrow\ICacheable
                     $request->addParameter($rewrite["params"][$i], $rewrite["paramsValues"][$i]);
                 }
 
-                $action = $this->get($rewrite["path"]);
+                $action = $this->get($rewrite["path"], true);
 
                 break;
             }
@@ -195,7 +213,7 @@ class Dispatcher implements \Arrow\ICacheable
                 );
             }
 
-            $parsed["packages"][$idPackage]["paths"] = array_reverse($parsed["packages"][$idPackage]["paths"]);
+            $parsed["packages"][$idPackage]["paths"] = $parsed["packages"][$idPackage]["paths"];
         }
         if(!isset($parsed["rewrites"]))
             $parsed["rewrites"] = array();
