@@ -753,6 +753,7 @@ class MediaAPI extends \Arrow\Object
         $file = $dir . str_replace(".", "-{$width}x{$height}".($crop?"_crop":"").($points?implode("_",$points):"").".", $info['basename']);
         //$file = $dir . str_replace(".", "-{$width}x{$height}".($crop?"_crop":"").($points?implode("_",$points):"").".", $info['filename'].".png");
         $file = str_replace(array("(", ")"), array("_", "_"), $file);
+        exit($file);
 
         if (!file_exists($file)  ) {
 
@@ -791,7 +792,7 @@ class MediaAPI extends \Arrow\Object
                 $imTransform->crop($width,$height);
             }
         }
-        return str_replace(ARROW_DOCUMENTS_ROOT, "",$file);
+        return ltrim(str_replace(ARROW_DOCUMENTS_ROOT, "",$file),"/");
 
     }
 
