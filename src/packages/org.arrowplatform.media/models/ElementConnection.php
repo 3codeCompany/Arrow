@@ -1,6 +1,8 @@
 <?php
 namespace Arrow\Package\Media;
-use Arrow\ORM\PersistentObject;
+
+use Arrow\ORM\Persistent\PersistentObject;
+
 class ElementConnection extends \Arrow\ORM\ORM_Arrow_Package_Media_ElementConnection {
     public function afterObjectCreate(PersistentObject $object)
     {

@@ -1,21 +1,21 @@
 /*
 Error: Undefined variable: "$primary-color".
-        on line 12 of administration-mod.sass
+        on line 14 of administration-mod.sass
 
-7: .form-group
-8:     margin-bottom: 8px !important
-9: 
-10: //g├│rna bekka
-11: .top-header
-12:     background-color: $primary-color
-13:     font-family: 'Open Sans', sans-serif, Arial !important
-14: 
-15: // menu => 190px
-16: #content
-17: //margin-left: 190px
+9: .form-group
+10:     margin-bottom: 8px !important
+11: 
+12: //g├│rna bekka
+13: .top-header
+14:     background-color: $primary-color
+15:     font-family: 'Open Sans', sans-serif, Arial !important
+16: 
+17: // menu => 190px
+18: #content
+19: //margin-left: 190px
 
 Backtrace:
-administration-mod.sass:12
+administration-mod.sass:14
 C:/dev/Ruby23/lib/ruby/gems/2.3.0/gems/sass-3.4.22/lib/sass/script/tree/variable.rb:49:in `_perform'
 C:/dev/Ruby23/lib/ruby/gems/2.3.0/gems/sass-3.4.22/lib/sass/script/tree/node.rb:58:in `perform'
 C:/dev/Ruby23/lib/ruby/gems/2.3.0/gems/sass-3.4.22/lib/sass/tree/visitors/perform.rb:397:in `visit_prop'
@@ -67,4 +67,4 @@ C:/dev/Ruby23/bin/sass:22:in `<main>'
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Error: Undefined variable: \"$primary-color\".\A         on line 12 of administration-mod.sass\A \A 7: .form-group\A 8:     margin-bottom: 8px !important\A 9: \A 10: //g├│rna bekka\A 11: .top-header\A 12:     background-color: $primary-color\A 13:     font-family: 'Open Sans', sans-serif, Arial !important\A 14: \A 15: // menu => 190px\A 16: #content\A 17: //margin-left: 190px"; }
+  content: "Error: Undefined variable: \"$primary-color\".\A         on line 14 of administration-mod.sass\A \A 9: .form-group\A 10:     margin-bottom: 8px !important\A 11: \A 12: //g├│rna bekka\A 13: .top-header\A 14:     background-color: $primary-color\A 15:     font-family: 'Open Sans', sans-serif, Arial !important\A 16: \A 17: // menu => 190px\A 18: #content\A 19: //margin-left: 190px"; }

@@ -3,7 +3,8 @@ namespace Arrow\Package\Media;
 
 
 use Arrow\Models\Project;
-use Arrow\ORM\PersistentObject;
+use Arrow\ORM\Persistent\Criteria;
+use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\RequestContext;
 
 class Element extends \Arrow\ORM\ORM_Arrow_Package_Media_Element
@@ -124,7 +125,7 @@ class Element extends \Arrow\ORM\ORM_Arrow_Package_Media_Element
     }
 
 
-    public function afterObjectCreate(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectCreate(PersistentObject $object)
     {
 
         $db = Project::getInstance()->getDB();
@@ -134,7 +135,7 @@ class Element extends \Arrow\ORM\ORM_Arrow_Package_Media_Element
         if (isset($this->parameters["upload_name"]) || isset($_FILES["file"]["name"])) {
 
 
-            $folder = \Arrow\ORM\Persistent\Criteria::query(Folder::getClass())->findByKey($this[self::F_FOLDER_ID]);
+            $folder = Criteria::query(Folder::getClass())->findByKey($this[self::F_FOLDER_ID]);
 
 
 

@@ -20,11 +20,12 @@ use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\API\Table\Columns\ViewMore;
 use Arrow\Controls\API\Table\Table;
 use Arrow\Controls\api\WidgetsSet;
+use Arrow\ORM\ORM_App_Models_Common_History;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\PersistentObject;
 use Arrow\Package\Common\HistoryTable as H;
 
-class History{
+class History {
 
     const SAVE_DATA_DIR = "../data/history/";
 
