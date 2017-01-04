@@ -1,4 +1,7 @@
 @charset "UTF-8";
+.app > .main-container > .content-container {
+  margin-left: 190px; }
+
 .top-header {
   background-color: #8900d1;
   font-family: "Open Sans", sans-serif, Arial !important; }
