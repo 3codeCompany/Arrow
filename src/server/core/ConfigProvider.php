@@ -23,7 +23,7 @@ class ConfigProvider extends Object
 
     public static function get($index = null)
     {
-        if($index == null)
+        if ($index == null)
             return self::$conf["project"];
         return self::$conf["project"][$index];
     }
@@ -53,9 +53,9 @@ class ConfigProvider extends Object
 
             $runConfig = Controller::getRunConfiguration();
 
-            if (isset(self::$conf["run-config"][$runConfig])) {
-                foreach (self::$conf["run-config"][$runConfig] as $index => $value) {
-                    self::$conf[$index] = array_merge_recursive(self::$conf[$index], $value);
+            if (isset(self::$conf["project"]["run-config"][$runConfig])) {
+                foreach (self::$conf["project"]["run-config"][$runConfig] as $index => $value) {
+                    self::$conf["project"][$index] = array_replace_recursive(self::$conf["project"][$index], $value);
                 }
             }
 
