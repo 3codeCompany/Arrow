@@ -136,9 +136,10 @@ abstract class Controller implements IController
     {
 
         $user = Auth::getDefault()->getUser();
+
         if($user && $user->isInGroup(AccessAPI::GROUP_DEVELOPERS)){
 
-            $name = str_replace("/", "_",trim( $action->getShortPath(), "/"));
+            $name = str_replace(DIRECTORY_SEPARATOR, "_",trim( $action->getPath(), "/"));
             throw new \Arrow\Exception(
                 array(
                     "msg"        => "Undefined controller action '$name' in controller " . get_class($this),
@@ -147,6 +148,7 @@ abstract class Controller implements IController
                     "controler"    => get_class($this),
                     "actionCode" => "public function $name(){}"
                 ));
+
 
             exit();
         }
@@ -159,7 +161,7 @@ abstract class Controller implements IController
         if($action){
             print "[ {$action->getPath()} ]";
         }
-        exit();
+        exit("zzz");
 
     }
 

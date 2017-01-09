@@ -17,6 +17,8 @@ class Exception extends \Exception {
     private $content;
 
 	public function __construct($errorData, $errorCode = 0, Exception $previous = null) {
+
+	    print_r($errorData);
         $message = $errorData;
 		if( is_array($errorData) ){
             if(isset($errorData["msg"]))
@@ -27,7 +29,6 @@ class Exception extends \Exception {
             $this->content  = $errorData;
             $message = $this->content->getMessage();
         }
-
         parent::__construct($message, $errorCode, $previous);
 	}
 

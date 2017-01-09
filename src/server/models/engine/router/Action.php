@@ -46,9 +46,10 @@ class Action implements \ArrayAccess, IAction
      * @param $controller
      * @param $package
      */
-    public function __construct($path, $layout, $controller, $package)
+    public function __construct($path, $shortPath, $layout, $controller, $package)
     {
-        $this->path = $path;
+        $this->path = str_replace("/", DIRECTORY_SEPARATOR, $path);
+        $this->shortPath = str_replace("/", DIRECTORY_SEPARATOR, $shortPath);
         $this->controller = $controller;
         $this->package = $package;
         $this->layout = $layout;
@@ -57,7 +58,7 @@ class Action implements \ArrayAccess, IAction
 
     public function exists()
     {
-        $action = trim( str_replace("/", "_", $this->getShortPath()), "_");
+        $action = trim( str_replace(DIRECTORY_SEPARATOR, "_", $this->getShortPath()), "_");
 
 
         return method_exists($this->getController(), $action);
@@ -82,9 +83,6 @@ class Action implements \ArrayAccess, IAction
     }
 
 
-    /*public function getTemplateDescriptor(){
-        return new TemplateDescriptor($this->layout, $this->path, $this->controller, "", "", $this->package);
-    }*/
 
 
     public function fetch(RequestContext $request = null)
@@ -168,6 +166,7 @@ class Action implements \ArrayAccess, IAction
     //todo eliminate request from templates
     public function _require($path, $request = null)
     {
+
         ob_start();
         require($path);
         $content = ob_get_contents();
@@ -176,13 +175,6 @@ class Action implements \ArrayAccess, IAction
         return $content;
     }
 
-    /**
-     * @param mixed $shortPath
-     */
-    public function setShortPath($shortPath)
-    {
-        $this->shortPath = $shortPath;
-    }
 
     /**
      * @return mixed
@@ -230,6 +222,7 @@ class Action implements \ArrayAccess, IAction
                 }
             }
             $phpCode = "<?\n /* @var \$this \\Arrow\\Models\\View */\n/* @var \$request \\Arrow\\RequestContext */\n ?>\n\n";
+
             if( !@file_put_contents($file, $phpCode . "View: " . $this->getPath() . "\n package: " . $this->getPackage() . "\n file: " . $file)){
                 throw new Exception("Can't create action  file: ".$file);
             }
@@ -299,11 +292,7 @@ class Action implements \ArrayAccess, IAction
 
     public function getFile()
     {
-        $packages = \Arrow\Controller::$project->getPackages();
-        if($this->package != "application")
-            return $packages[$this->package]["dir"] . DIRECTORY_SEPARATOR . "views". DIRECTORY_SEPARATOR . $this->shortPath . ".phtml";
-        else
-            return $packages[$this->package]["dir"] . DIRECTORY_SEPARATOR . "views" . $this->path . ".phtml";
+        return ".".DIRECTORY_SEPARATOR."app".DIRECTORY_SEPARATOR."views" . $this->path.".phtml";
 
     }
 

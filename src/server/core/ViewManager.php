@@ -1,5 +1,7 @@
 <?php
+
 namespace Arrow;
+
 use Arrow\Models\Action;
 use Arrow\Models\Dispatcher;
 use \Arrow\Models\Project, Arrow\Package\Access\AccessAPI, Arrow\Models\View;
@@ -68,7 +70,7 @@ class ViewManager
         /**
          * Access check
          */
-        $action = trim( str_replace("/", "_", $view->getShortPath()), "_");
+        $action = trim(str_replace(DIRECTORY_SEPARATOR, "_", $view->getShortPath()), "_");
         $instance = $view->getController();
 
         if (!$view->isAccessible())
@@ -81,12 +83,11 @@ class ViewManager
 
         $layout = $view->getLayout();
 
-        if($view->getGenerator()){
-            if(is_string($view->getGenerator()))
+        if ($view->getGenerator()) {
+            if (is_string($view->getGenerator()))
                 return $view->getGenerator();
             return $view->getGenerator()->generate();
         }
-
 
 
         if (!($layout instanceof \Arrow\Models\AbstractLayout)) {
@@ -100,17 +101,16 @@ class ViewManager
     }
 
 
-
     public function checkCompile(Action $view)
     {
         $rq = RequestContext::getDefault();
 
-        $nameAddon = str_replace("/", "_", $this->action->getPath() . "_" . $this->action->getPackage() . "_" . ($rq->isXHR() ? "xhr" : "synchronus"));
+        $nameAddon = str_replace(DIRECTORY_SEPARATOR, "_", $this->action->getPath() . "_" . $this->action->getPackage() . "_" . ($rq->isXHR() ? "xhr" : "synchronus"));
         $nameAddon = substr($nameAddon, 1);
-        if($this->action->getCompilationId())
-            $nameAddon.="_".$this->action->getCompilationId();
+        if ($this->action->getCompilationId())
+            $nameAddon .= "_" . $this->action->getCompilationId();
 
-        $pathToCachedFile = ARROW_CACHE_PATH . "/templates/" . $nameAddon . ".php";
+        $pathToCachedFile = ARROW_CACHE_PATH . DIRECTORY_SEPARATOR . "templates/" . $nameAddon . ".php";
 
 
         if (Project::$cacheFlag & Project::CACHE_REFRESH_TEMPLATES || Project::$cacheFlag & Project::CACHE_REFRESH_TEMPLATES_FORCE || !file_exists($pathToCachedFile)) {
@@ -166,7 +166,7 @@ class ViewManager
 
     public static function clearCache($id, $conditions = false)
     {
-        $file = self::$staticCacheFile = ARROW_CACHE_PATH . '/static/' . $id. ( ($conditions)?"_" . md5(json_encode($conditions)):'' ). '.txt';
+        $file = self::$staticCacheFile = ARROW_CACHE_PATH . '/static/' . $id . (($conditions) ? "_" . md5(json_encode($conditions)) : '') . '.txt';
         unlink($file);
     }
 

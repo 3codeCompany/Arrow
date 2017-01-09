@@ -25,7 +25,7 @@ class Controller extends \Arrow\Object
     public static function init()
     {
         Router::setupAction();
-        CacheProvider::init();
+        ConfigProvider::init();
 
         self::$project = new \Arrow\Models\Project(ARROW_APPLICATION_PATH);
 
@@ -202,7 +202,7 @@ class Controller extends \Arrow\Object
      */
     public static function end($response = "")
     {
-        \Arrow\CacheProvider::end();
+        \Arrow\ConfigProvider::end();
         @exit($response);
     }
 }
