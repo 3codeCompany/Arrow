@@ -9,7 +9,6 @@
   ],
   "require": {
     "robloach/component-installer": "*",
-    "compos": "^3.2",
     "symfony/yaml": "^3.2"
   },
   "autoload": {
