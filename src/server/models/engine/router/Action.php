@@ -8,7 +8,7 @@ namespace Arrow\Models;
  * To change this template use File | Settings | File Templates.
  */
 use Arrow\Exception;
-use Arrow\Package\Access\AccessAPI;
+use Arrow\Access\AccessAPI;
 use Arrow\RequestContext;
 
 class Action implements \ArrayAccess, IAction
@@ -58,6 +58,7 @@ class Action implements \ArrayAccess, IAction
 
     public function exists()
     {
+
         $action = trim( str_replace(DIRECTORY_SEPARATOR, "_", $this->getShortPath()), "_");
 
 
@@ -290,9 +291,18 @@ class Action implements \ArrayAccess, IAction
     }
 
 
+
     public function getFile()
     {
-        return ".".DIRECTORY_SEPARATOR."app".DIRECTORY_SEPARATOR."views" . $this->path.".phtml";
+        $appFile = ".".DIRECTORY_SEPARATOR."app".DIRECTORY_SEPARATOR."views" . $this->path.".phtml";
+        if ($this->package != "app"){
+
+            $file = Project::getInstance()->getPackages()[$this->package].DIRECTORY_SEPARATOR."views". DIRECTORY_SEPARATOR . $this->shortPath.".phtml";
+
+            if(file_exists($file) && !file_exists($appFile))
+                return $file;
+        }
+        return $appFile;
 
     }
 

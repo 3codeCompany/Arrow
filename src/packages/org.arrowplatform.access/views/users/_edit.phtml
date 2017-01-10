@@ -13,12 +13,12 @@
 
 
     <form:form action="o:common::/data/operation" ctrlId="data"
-               validator="\Arrow\Package\Access\UserFormValidator">
-        <form:hidden namespace="0" name="model" value="Arrow\Package\Access\User"/>
+               validator="\Arrow\Access\UserFormValidator">
+        <form:hidden namespace="0" name="model" value="Arrow\Access\User"/>
         <form:hidden namespace="0" name="key" value="$request['key']"/>
         <form:hidden namespace="0" name="action" value="save"/>
         <data:source key="$request['key']">
-            <data:model model="Arrow\Package\Access\User"/>
+            <data:model model="Arrow\Access\User"/>
         </data:source>
         <div class="group">
             <h4><i class="icon-edit"></i>Dane użytkownika</h4>

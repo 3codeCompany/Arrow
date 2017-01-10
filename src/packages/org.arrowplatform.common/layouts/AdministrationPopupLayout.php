@@ -2,7 +2,7 @@
 namespace Arrow\Package\Common;
 use
     \Arrow\RequestContext,
-    \Arrow\Package\Access\AccessAPI, \Arrow\Package\Access\Auth,
+    \Arrow\Access\AccessAPI, \Arrow\Access\Auth,
     \Arrow\ORM\Persistent\Criteria,
     \Arrow\Controls\IFormContentProvider, \Arrow\Controls\IFormValuesSetter, Arrow\ViewManager;
 

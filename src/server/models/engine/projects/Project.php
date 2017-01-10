@@ -45,7 +45,6 @@ class Project
     private $configuration;
 
 
-    private $projectToServerRelative;
 
     /**
      * Project id
@@ -88,14 +87,7 @@ class Project
         return self::$instance;
     }
 
-    /**
-     * ActionDescriptor constructor
-     *
-     * @param integer $id
-     * @param string  $name
-     * @param string  $path
-     * @param boolean $isDefault
-     */
+
     public function __construct()
     {
         self::$instance = $this;
@@ -126,24 +118,7 @@ class Project
         return $this->configuration["packages"];
     }
 
-    public function packageExists($packageNamespace)
-    {
-        foreach ($this->getPackages() as $package) {
-            if ($package["namespace"] == $packageNamespace) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    /**
-     * Returns project Id
-     *
-     * @return integer
-     */
-    /*	public function getId() {
-            return $this->id;
-        }*/
 
     /**
      * Returns project name
@@ -155,20 +130,6 @@ class Project
         return $this->name;
     }
 
-
-
-    /**
-     * Returns proect default flag
-     *
-     * @return string
-     */
-    public function isDefault()
-    {
-        return $this->isDefault;
-    }
-
-
-
     /**
      * Returns project specyfy job handler
      *
@@ -179,22 +140,6 @@ class Project
         return call_user_func(array($this->configuration["handlers"][$handler], "getDefault"));
     }
 
-    /**
-     * IObjectSerialize implementaction
-     *
-     * @return array Object in array
-     */
-    public function serialize()
-    {
-        $val = array();
-        $val["id"] = $this->getId();
-        $val["name"] = $this->getName();
-        $val["isDefault"] = $this->isDefault();
-        $val["errorOnError"] = $this->getOnError();
-        $val["errorDisplayLevel"] = $this->getErrorDisplayLevel();
-        $val["errorLogLevel"] = $this->getErrorLogLevel();
-        return $val;
-    }
 
     /**
      * Returns packages conf aray
@@ -229,15 +174,6 @@ class Project
         return $this->accesManager;
     }
 
-    /**
-     * Returns handle for resources
-     *
-     * @return Resources
-     */
-    public function getResources()
-    {
-        return Resources::getDefault($this);
-    }
 
     /**
      * @return Object
@@ -288,25 +224,6 @@ class Project
 
     }
 
-    public function addOperation($path, $controller = false, $package = false)
-    {
-
-
-    }
-
-    public function addView($layout, $path, $controller = false, $package = false)
-    {
-        $packages = $this->getPackages();
-        $package = $packages[$package ? $package : 'application'];
-        $dir = $package["dir"];
-        $conf = $dir . "/conf/route.xml";
-        $xml = simplexml_load_file($conf);
-        $section = $xml->xpath("/route/views/section[@layout='{$layout}']");
-        print $section;
-
-
-        exit("");
-    }
 
 
 }

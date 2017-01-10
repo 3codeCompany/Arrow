@@ -128,8 +128,8 @@ class History {
 
         $dbData[H::F_DATE] = date( "Y-m-d H:i:s" );
         if(!isset($dbData[H::F_ID_USER])){
-            if( \Arrow\Package\Access\Auth::getDefault()->isLogged())
-                $dbData[H::F_ID_USER] = \Arrow\Package\Access\Auth::getDefault()->getUser()->getPKey();
+            if( \Arrow\Access\Auth::getDefault()->isLogged())
+                $dbData[H::F_ID_USER] = \Arrow\Access\Auth::getDefault()->getUser()->getPKey();
             else
                 $dbData[H::F_ID_USER] = -1;
         }

@@ -20,6 +20,7 @@ class ExceptionHandler implements IExceptionHandler
      */
     public static function getDefault()
     {
+
         if (self::$oInstance == null) {
             self::$oInstance = new ExceptionHandler();
         }
@@ -157,14 +158,13 @@ class ExceptionHandler implements IExceptionHandler
 
         //zmienić aby było pobierane przez handlery
         $user = null;
-        if (class_exists("\\Arrow\\Package\\Access\\Auth", false))
-            $user = \Arrow\Package\Access\Auth::getDefault()->getUser();
+        if (class_exists("\\Arrow\\Access\\Auth", false))
+            $user = \Arrow\Access\Auth::getDefault()->getUser();
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
         if (($user == null || !$user->isInGroup("Developers"))) {
-
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
             $this->printXHRException($exception);

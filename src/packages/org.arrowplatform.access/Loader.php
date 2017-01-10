@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Package\Access;
+namespace Arrow\Access;
 
 class Loader
 {

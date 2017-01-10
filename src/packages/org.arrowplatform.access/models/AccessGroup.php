@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Package\Access;
+namespace Arrow\Access;
 use Arrow\ORM\Persistent\PersistentObject,
     Arrow\ORM\SqlRouter;
 use Arrow\Package\Utils\Developer;
@@ -11,7 +11,7 @@ use Arrow\Package\Utils\Developer;
  * @license  GNU GPL
  * @author 3code Team
  */
-class AccessGroup extends \Arrow\ORM\ORM_Arrow_Package_Access_AccessGroup
+class AccessGroup extends \Arrow\ORM\ORM_Arrow_Access_AccessGroup
 {
 
     const DEVELOPERS = "Developers";
@@ -34,10 +34,10 @@ class AccessGroup extends \Arrow\ORM\ORM_Arrow_Package_Access_AccessGroup
 
     public function beforeObjectDelete(PersistentObject $object)
     {
-        $userCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Package\Access\AccessUserGroup')->c("group_id", $this->getPKey())->find();
+        $userCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Access\AccessUserGroup')->c("group_id", $this->getPKey())->find();
         foreach($userCon as $c) $c->delete();
 
-        $pointCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Package\Access\AccessPointGroup')->c("group_id", $this->getPKey())->find();
+        $pointCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Access\AccessPointGroup')->c("group_id", $this->getPKey())->find();
         foreach($pointCon as $c) $c->delete();
 
         //remove group from access control

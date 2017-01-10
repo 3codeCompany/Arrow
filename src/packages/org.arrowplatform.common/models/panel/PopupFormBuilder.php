@@ -29,7 +29,7 @@ use Arrow\Models\Logger\ConsoleStream;
 use Arrow\Models\Logger\Logger;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\PersistentObject;
-use Arrow\Package\Access\AccessAPI;
+use Arrow\Access\AccessAPI;
 use Arrow\Package\Application\Language;
 use Arrow\Package\Common\IMultilangObject;
 use Arrow\Package\Langs\Lang;

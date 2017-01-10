@@ -23,7 +23,7 @@
         </div>
     <? } ?>
 
-    <? $shadow = \Arrow\Package\Access\Auth::getDefault()->getShadowUser(); ?>
+    <? $shadow = \Arrow\Access\Auth::getDefault()->getShadowUser(); ?>
     <? if ($shadow) { ?>
         <div class="group">
             <h4><i class="icon-table"></i>Jesteś zalogowany jako inny użytkownik</h4>
@@ -42,7 +42,7 @@
 
 
 
-    <? if (!$this["user"][\Arrow\Package\Access\User::F_NEED_CHANGE_PASSWORD]) { ?>
+    <? if (!$this["user"][\Arrow\Access\User::F_NEED_CHANGE_PASSWORD]) { ?>
         <div class="group">
             <h4><i class="icon-table"></i>Ostatnie logowania</h4>
 
@@ -68,7 +68,7 @@
         <h4><i class="icon-edit"></i>Zmień hasło</h4>
 
         <div id="change-password">
-            <? if ($this["user"][\Arrow\Package\Access\User::F_NEED_CHANGE_PASSWORD]) { ?>
+            <? if ($this["user"][\Arrow\Access\User::F_NEED_CHANGE_PASSWORD]) { ?>
                 <div style="padding: 15px; font-size: 20px; color: red;">Aby skorzystać z systemu wymagana jest zmiana hasła</div>
             <? }?>
             <ui:ajax></ui:ajax>

@@ -3,7 +3,7 @@
 namespace Arrow\Package\Communication;
 
 use Arrow\ORM\Persistent\Criteria,
-\Arrow\Package\Access\Auth,
+\Arrow\Access\Auth,
 \Arrow\ViewManager, \Arrow\RequestContext,Arrow\Models\View;
 
 /**

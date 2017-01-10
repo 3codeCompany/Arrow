@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<route controller="Arrow\Package\Access\AccessController">
+<route controller="Arrow\Access\AccessController">
     <views>
         <section layout="Arrow\Package\Common\AdministrationLayout">
             <view path="/auth/permissionDeny"/>

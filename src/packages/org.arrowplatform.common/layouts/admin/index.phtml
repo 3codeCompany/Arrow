@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <base href="<? print \Arrow\RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . \Arrow\Router::getBasePath() ?>"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><?= \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title") ?></title>
+    <title><?=$this["applicationTitle"]?></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
@@ -39,7 +39,7 @@
         <!-- Logo -->
         <div class="logo">
             <a href="#/">
-                <span><?= \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title") ?></span>
+                <span><?= $this["applicationTitle"] ?></span>
             </a>
         </div>
 
@@ -139,7 +139,6 @@
 <div class="main-container">
     <aside id="nav-container" class="nav-container nav-fixed" >
         import:/common/admin/navigation
-
     </aside>
 
     <section  onload=" Page.onLoad() " id="content" class="content-container " style="overflow-y: scroll;" autoscroll="1"></section>

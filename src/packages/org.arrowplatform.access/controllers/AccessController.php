@@ -1,6 +1,6 @@
 <?php
 
-namespace Arrow\Package\Access;
+namespace Arrow\Access;
 
 use Arrow\Controls\api\common\AjaxLink;
 use Arrow\Controls\api\common\BreadcrumbElement;use Arrow\Controls\api\common\ContextMenu;

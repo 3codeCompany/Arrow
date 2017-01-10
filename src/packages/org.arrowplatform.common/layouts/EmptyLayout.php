@@ -3,10 +3,10 @@ namespace Arrow\Package\Common;
 
 use
 Arrow\ORM\Persistent\Criteria,
-Arrow\Package\Access\Auth,
-Arrow\Package\Access\AccessManager,
+Arrow\Access\Auth,
+Arrow\Access\AccessManager,
 \Arrow\RequestContext,
-\Arrow\Package\Access\AccessAPI,
+\Arrow\Access\AccessAPI,
 Arrow\ViewManager;
 use Arrow\Router;
 
@@ -16,7 +16,7 @@ class EmptyLayout extends \Arrow\Models\AbstractLayout{
     public function createLayout(ViewManager $manager)
     {
         if(!isset($this->view["user"]))
-            $manager->get()->assign("user", \Arrow\Package\Access\Auth::getDefault()->getUser());
+            $manager->get()->assign("user", \Arrow\Access\Auth::getDefault()->getUser());
 
         $this->view = $manager->get();
 
@@ -25,7 +25,7 @@ class EmptyLayout extends \Arrow\Models\AbstractLayout{
      public function getLayoutFile()
     {
         $packages = \Arrow\Controller::$project->getPackages();
-        return $packages["common"]["dir"]."/layouts/EmptyLayout.phtml";
+        return __DIR__."/EmptyLayout.phtml";
     }
 
 

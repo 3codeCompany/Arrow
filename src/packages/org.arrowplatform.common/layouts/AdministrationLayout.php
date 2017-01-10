@@ -1,14 +1,15 @@
 <?php
 namespace Arrow\Package\Common;
+use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\HTMLNode;
 use Arrow\Controls\api\common\Icons;
 use Arrow\Controls\api\WidgetsSet;
 use Arrow\Models\Project;
 use
 Arrow\ORM\Persistent\Criteria,
-Arrow\Package\Access\Auth,
+Arrow\Access\Auth,
 \Arrow\RequestContext,
-\Arrow\Package\Access\AccessAPI, \Arrow\Package\Access\User,
+\Arrow\Access\AccessAPI, \Arrow\Access\User,
 Arrow\ViewManager;
 use Arrow\ORM\Table;
 use Arrow\Router;
@@ -22,25 +23,12 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
     public function createLayout(ViewManager $manager)
     {
 
-        /*if(RequestContext::getProtocol() == "https://"){
-            header("Location: ".str_replace("https", "http", RequestContext::getCurrentUrl()));
-            exit();
-        }*/
-
-
-        //$path= RequestContext::getProtocol().$_SERVER["HTTP_HOST"]."/".str_replace([ARROW_DOCUMENTS_ROOT, "\\"],["","/"],ARROW_ROOT_PATH )  ."/src/packages/org.arrowplatform.common/layouts/admin/";
-
         $this->view = $manager->get();
 
-        //$this->view->assign("layoutPath", $path);
 
 
-        try{
-            $title = \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title");
-            $this->view ->assign("applicationTitle", $title);
-        }catch (\Arrow\Exception $ex){
-            $this->view ->assign("applicationTitle", "CMS");
-        }
+        $title =  ConfigProvider::get("panel")["title"];// \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title");
+        $this->view ->assign("applicationTitle", $title);
 
         $user = Auth::getDefault()->getUser();
 
@@ -84,8 +72,8 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
 
     public function getLayoutFile()
     {
-        $packages = \Arrow\Controller::$project->getPackages();
-        return $packages["common"]["dir"]."/layouts/admin/index.phtml";
+
+        return __DIR__."/admin/index.phtml";
     }
 
 

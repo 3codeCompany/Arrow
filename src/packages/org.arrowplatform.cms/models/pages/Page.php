@@ -3,8 +3,8 @@ namespace Arrow\Package\CMS;
 
 use \Arrow\ORM\Persistent\Criteria, Arrow\Models\TemplateLinker;
 use Arrow\ORM\Extensions\TreeNode;
-use Arrow\Package\Access\Auth;
-use Arrow\Package\Access\User;
+use Arrow\Access\Auth;
+use Arrow\Access\User;
 use Arrow\Package\Common\IMultilangObject;
 use Arrow\Router;
 

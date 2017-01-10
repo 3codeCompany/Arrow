@@ -4,12 +4,12 @@ namespace Arrow\Package\Utils;
 
 use Arrow\Models\IAction;
 use Arrow\ORM\Persistent\Criteria,
-    Arrow\Package\Access\Auth,
+    Arrow\Access\Auth,
     Arrow\ViewManager, Arrow\RequestContext,
     Arrow\Models\Operation,
     Arrow\Models\ApplicationException,
     Arrow\Models\ExceptionContent,
-    Arrow\Package\Access\AccessAPI,
+    Arrow\Access\AccessAPI,
     Arrow\Models\Project, Arrow\Models\View;
 use Arrow\ORM\DB;
 use Arrow\Package\Common\AdministrationLayout;

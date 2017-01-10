@@ -14,6 +14,12 @@ use Arrow\Router;
 class Dispatcher
 {
 
+    private static $classPathResolver;
+
+    public static function setClassPathResolver($resolver){
+        self::$classPathResolver = $resolver;
+    }
+
     public function resolvePath($path)
     {
         if ($path[0] == ".") {
@@ -23,9 +29,12 @@ class Dispatcher
 
         }
         $path = $path[0] == "/" ? $path :  "/".$path;
-        $data = ["package" => 'application', "path" => $path, "shortPath" => $path, "controller" => 'App\\Controllers\\Controller'];
+        $data = ["package" => 'app', "path" => $path, "shortPath" => $path, "controller" => 'App\\Controllers\\Controller'];
+        $packages = Project::getInstance()->getPackages();
 
         $equateConf = false;
+
+
 
         foreach ($this->configuration["path"] as  $_path => $_data) {
 
@@ -67,12 +76,21 @@ class Dispatcher
 
         if ($equateConf !== false) {
 
-
             if(is_string($equateConf)) {
-
                 $data["controller"] = $equateConf;
-                $tmp = explode("/", $path);
-                $data["shortPath"] = end($tmp);
+
+                $file = self::$classPathResolver->findFile($equateConf);
+                $xpath = str_replace( [ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["","",DIRECTORY_SEPARATOR], dirname($file));
+
+                 foreach($packages as $name => $dir){
+                    $dir = str_replace("/",DIRECTORY_SEPARATOR, $dir);
+
+                    $pos = strpos($xpath, $dir);
+                    if($pos === 0 || $pos === 1){
+                        $data["package"] = $name;
+                    }
+                }
+                $data["shortPath"] = trim(str_replace($_path,"", $path), "/");
             }else{
 
                 $data["controller"] = $equateConf["controller"];
@@ -113,11 +131,18 @@ class Dispatcher
     public function findByRewrite( $path ){
         $action = null;
 
+
         foreach( $this->configuration["rewrite"] as $_rewrite => $rewrite ){
+
 
             if(preg_match_all("/".$_rewrite."/", $path, $regs, PREG_SET_ORDER)){
                 $request = RequestContext::getDefault();;
                 $c = count($regs[0]);
+
+                if(!is_array($rewrite)) {
+                    $action = $this->get($rewrite, true);
+                    break;
+                }
 
                 for($i=1;$i<$c;$i++ ){
                     $request->addParameter($rewrite["params"][$i-1], $regs[0][$i]);

@@ -24,9 +24,9 @@ use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
-    \Arrow\Package\Access\Auth,
+    \Arrow\Access\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext;
-use Arrow\Package\Access\AccessGroup;
+use Arrow\Access\AccessGroup;
 use Arrow\Package\Application\PresentationLayout;
 use Arrow\Controls\API\Forms\BuilderSchemas\Bootstrap;
 use Arrow\Package\Common\AdministrationLayout;

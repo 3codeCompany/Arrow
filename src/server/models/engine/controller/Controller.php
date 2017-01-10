@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Models;
-use Arrow\Package\Access\AccessAPI;
-use Arrow\Package\Access\Auth;
+use Arrow\Access\AccessAPI;
+use Arrow\Access\Auth;
 use Arrow\RequestContext;
 use Arrow\Router;
 
@@ -41,6 +41,21 @@ abstract class Controller implements IController
     {
     }
 
+
+    /**
+     * @return Action
+     */
+    public function getPackage()
+    {
+        $path = str_replace( ARROW_DOCUMENTS_ROOT, "", dirname((new \ReflectionObject($this))->getFileName()));
+        foreach(Project::getInstance()->getPackages() as $name => $dir){
+            $dir = str_replace("/",DIRECTORY_SEPARATOR, $dir);
+            $pos = strpos($path, $dir);
+            if($pos === 0 || $pos === 1){
+                return $name;
+            }
+        }
+    }
 
 
     public function setAppParam($name, $default){
@@ -139,10 +154,10 @@ abstract class Controller implements IController
 
         if($user && $user->isInGroup(AccessAPI::GROUP_DEVELOPERS)){
 
-            $name = str_replace(DIRECTORY_SEPARATOR, "_",trim( $action->getPath(), "/"));
+            $name = str_replace(DIRECTORY_SEPARATOR, "_",trim( $action->getShortPath(), "/"));
             throw new \Arrow\Exception(
                 array(
-                    "msg"        => "Undefined controller action '$name' in controller " . get_class($this),
+                    "msg"        => "Undefined controller action  '$name' in controller " . get_class($this),
                     "view"       => $action->getPath(),
                     "package"    => $action->getPackage(),
                     "controler"    => get_class($this),
@@ -179,7 +194,7 @@ abstract class Controller implements IController
             if (true || $result !== self::CAUGHT_NOT_FOUND ) {
                 throw new \Arrow\Exception(
                     array(
-                         "msg"        => "Undefined controller action '$name' in controller " . get_class($this),
+                         "msg"        => "Undefined controller action  '$name' in controller " . get_class($this),
                          "view"       => $viewD->getPath(),
                          "package"    => $viewD->getPackage(),
                          "actionCode" => "public function $name( View \$view, RequestContext \$request ){}"

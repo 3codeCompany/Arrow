@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Package\Access;
+namespace Arrow\Access;
 
 
 
@@ -10,7 +10,7 @@ namespace Arrow\Package\Access;
  * @license  GNU GPL
  * @author 3code Team 
  */
-class AccessUserGroup extends \Arrow\ORM\ORM_Arrow_Package_Access_AccessUserGroup  {
+class AccessUserGroup extends \Arrow\ORM\ORM_Arrow_Access_AccessUserGroup  {
 
     const TCLASS = __CLASS__;
 

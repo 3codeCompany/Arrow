@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Package\Access;
+namespace Arrow\Access;
 
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\RequestContext;
@@ -49,7 +49,7 @@ class AccessAPI
             return true;
 
 
-        $point = Criteria::query('Arrow\Package\Access\AccessPoint')
+        $point = Criteria::query('Arrow\Access\AccessPoint')
             ->c("point_type", $pointType)
             ->c("point_action", $pointAction)
             ->c("point_object_friendly_id", $pointObjectFriendlyId)

@@ -18,7 +18,7 @@ class Exception extends \Exception {
 
 	public function __construct($errorData, $errorCode = 0, Exception $previous = null) {
 
-	    print_r($errorData);
+
         $message = $errorData;
 		if( is_array($errorData) ){
             if(isset($errorData["msg"]))
