@@ -1,6 +1,7 @@
 <?php
 namespace Arrow\Access;
 
+use Arrow\ConfigProvider;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\RequestContext;
 use Arrow\Router;
@@ -113,7 +114,7 @@ class AccessAPI
 
             $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
 
-            $login = Project::getInstance()->getSetting("application.view.login");
+            $login = ConfigProvider::get("templates")["login"];
 
             if( RequestContext::getDefault()->isXHR() )
                 exit("Access deny - please login: ".$denyInfo);

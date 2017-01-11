@@ -84,7 +84,8 @@ class Router extends \Arrow\Object
         if( $path[0] == "?"){
             $path = ViewManager::getCurrentView()->get()->getPath().$path;
         }elseif($path[0] == "."){
-            $tmp = explode("/", ViewManager::getCurrentView()->get()->getPath());
+
+            $tmp = explode(DIRECTORY_SEPARATOR, ViewManager::getCurrentView()->get()->getPath());
             $tmp[count($tmp)-1] = substr( $path, 2 );
             unset($tmp[0]);
             $path = implode("/",$tmp);
