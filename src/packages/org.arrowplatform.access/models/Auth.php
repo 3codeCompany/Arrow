@@ -184,7 +184,7 @@ class Auth
             $ext["IP"] = "not given";
 
         // Sprawdzenie ilości błędnych logowań
-        $limit_bad_log = (int)\Arrow\Models\Settings::getDefault()->getSetting("access.MAX_BAD_LOGIN");
+        $limit_bad_log = 10;
 
         if ( false && $limit_bad_log <= (int)$result["bad_log"]) {
             $ext["result"] = false;
