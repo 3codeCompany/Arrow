@@ -136,6 +136,7 @@ class Dispatcher
 
 
             if(preg_match_all("/".$_rewrite."/", $path, $regs, PREG_SET_ORDER)){
+
                 $request = RequestContext::getDefault();;
                 $c = count($regs[0]);
 
@@ -149,7 +150,7 @@ class Dispatcher
                 }
                 for($i=$c-1;$i<count($rewrite["params"]);$i++ ){
                     if( is_array($rewrite["params"][$i])) {
-                        $request->addParameter(key($rewrite["params"][$i]), reset($rewrite["paramsValues"][$i]));
+                        $request->addParameter(key($rewrite["params"][$i]), reset($rewrite["params"][$i]));
                     }else
                         $request->addParameter($rewrite["params"][$i], null);
                 }

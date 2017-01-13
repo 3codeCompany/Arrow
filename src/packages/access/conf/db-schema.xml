@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<schema class-namespace="Arrow\Access">
+    <table name="access_user" class="User" >
+
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="created" type="DATETIME" />
+        <field name="login" type="VARCHAR" required="true" size="100"/>
+        <field name="email" type="VARCHAR"  size="255"/>
+        <field name="password" type="VARCHAR" required="true" size="32"/>
+        <field name="password_changed" type="date" />
+        <field name="passport_id" type="VARCHAR" required="true" size="32"/>
+        <field name="remember_key" type="VARCHAR" required="false" size="35"/>
+        <field name="bad_log" type="TINYINT"/>
+        <field name="active" type="TINYINT" size="1"/>
+        <field name="need_change_password" type="TINYINT" size="1" />
+        <field name="name" type="VARCHAR" size="255"/>
+        <field name="settings" type="text" />
+    </table>
+    <table name="access_groups" class="AccessGroup" >
+        <trackers>
+            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="name" type="VARCHAR"/>
+        <field name="description" type="VARCHAR"/>
+    </table>
+    <table name="access_user_group" class="AccessUserGroup" >
+        <trackers>
+            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="user_id" type="INTEGER" size="30"/>
+        <field name="group_id" type="INTEGER"/>
+        <index name="f_key_user_id" type="">
+            <index-field name="user_id"/>
+        </index>
+        <index name="f_key_group_id" type="">
+            <index-field name="group_id"/>
+        </index>
+        <foreign-key foreignTable="access_groups" onUpdate="" onDelete="">
+            <reference local="group_id" foreign="id"/>
+        </foreign-key>
+
+        <foreign-key foreignTable="access_user" onUpdate="" onDelete="">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="access_points" class="AccessPoint" >
+        <trackers>
+            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="point_type" type="VARCHAR" size="20"/>
+        <field name="point_action" type="VARCHAR" size="255"/>
+        <field name="point_object_friendly_id" type="VARCHAR"/>
+        <field name="additional_info" type="VARCHAR"/>
+        <field name="control_enabled" type="INTEGER" size="1" default="0"/>
+        <field name="groups" type="INTEGER" size="11" default="0"/>
+    </table>
+
+    <table name="access_points_groups" class="AccessPointGroup">
+        <trackers>
+            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="access_points_id" type="INTEGER"/>
+        <field name="group_id" type="INTEGER" size="255"/>
+        <field name="policy" type="INTEGER"/>
+    </table>
+
+    <table name="access_sessions" class="AccessSession">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="hash" type="VARCHAR" size="100"/>
+        <field name="ip" type="VARBINARY" size="16"/>
+        <field name="last" type="DATETIME" />
+        <field name="user_id" type="INTEGER" size="11"/>
+        <field name="value" type="TEXT" />
+    </table>
+</schema>

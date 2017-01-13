@@ -3,8 +3,8 @@
     <!--
     <table name="application_sample_classes" class="SampleClass" >
         <trackers>
-            <tracker  class="Arrow\Package\Common\ORMObjectsTracker" />
-            <tracker  class="Arrow\Package\Common\ORMObjectsArchiver" />
+            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="active" type="INT" size="1"/>

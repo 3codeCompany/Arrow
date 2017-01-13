@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<schema class-namespace="Arrow\Common">
+    <table name="common_objects_track" class="Track">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="user_id" type="INTEGER" required="true"/>
+        <field name="date" type="TIMESTAMP" required="true"/>
+        <field name="action" type="VARCHAR" required="true" size="50"/>
+        <field name="info" type="VARCHAR" size="255"/>
+        <field name="class" type="VARCHAR" required="true" size="40"/>
+        <field name="object_id" type="INTEGER" required="true"/>
+        <index name="f_key_index_utils_track_user_id" type="">
+            <index-field name="user_id"/>
+        </index>
+        <index name="f_key_index_utils_track_object_id" type="">
+            <index-field name="object_id"/>
+        </index>
+        <foreign-key foreignTable="access_user" onUpdate="" onDelete="">
+            <reference local="user_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="common_objects_archive" class="Archive" >
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="date" type="TIMESTAMP" required="true"/>
+        <field name="class" type="VARCHAR" required="true" size="40"/>
+        <field name="object_id" type="INTEGER" required="true"/>
+        <field name="data" type="TEXT" required="true"/>
+        <index name="f_key_index_utils_archive_class" type="">
+            <index-field name="class"/>
+        </index>
+    </table>
+    <table name="common_user_settings" class="UserSetting" >
+        <trackers>
+            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+        </trackers>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id_user" type="INTEGER"/>
+        <field name="name" type="VARCHAR" size="50"/>
+        <field name="value" type="VARCHAR" size="4000"/>
+    </table>
+</schema>

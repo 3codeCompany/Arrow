@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<accessmatrix>
-  <point point_namespace="cms" point_type="view" point_action="Show Template" point_object_friendly_id="/pages/structure" additional_info="" control_enabled="1"/>
-  <point point_namespace="cms" point_type="view" point_action="Show Template" point_object_friendly_id="/banners/list" additional_info="" control_enabled="1"/>
-</accessmatrix>

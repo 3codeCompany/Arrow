@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<schema class-namespace="Arrow\Communication">
+    <table name="comm_contact_form" class="ContactForm">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="date" type="TIMESTAMP" />
+        <field name="firstname" type="VARCHAR" size="255"/>
+        <field name="lastname" type="VARCHAR" size="255"/>
+        <field name="email" type="VARCHAR" size="255"/>
+        <field name="telephone" type="VARCHAR" size="255"/>
+        <field name="topic" type="VARCHAR" size="255"/>
+        <field name="content" type="LONGVARCHAR" size="65000"/>
+        <field name="response" type="INTEGER" size="1"/>
+    </table>
+</schema>

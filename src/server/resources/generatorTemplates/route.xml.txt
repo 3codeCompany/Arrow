@@ -5,13 +5,13 @@
         <section layout="Arrow\Package\Application\PresentationLayout">
             <view path="/index" front-name="index"/>
         </section>
-        <section layout="Arrow\Package\Common\AdministrationLayout">
+        <section layout="Arrow\Common\AdministrationLayout">
 
         </section>
-        <section layout="Arrow\Package\Common\AdministrationPopupLayout">
+        <section layout="Arrow\Common\AdministrationPopupLayout">
 
         </section>
-        <section layout="Arrow\Package\Common\EmptyLayout">
+        <section layout="Arrow\Common\EmptyLayout">
 
         </section>
     </views>

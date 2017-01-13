@@ -66,7 +66,7 @@
 	<parser model="\Arrow\Controls\CtrlTooltip" tag="common:tooltip" />
 	
 	
-	<parser model="\Arrow\Package\Utils\DictionaryCtrl" tag="dictionary:ctrl" />
+	<parser model="\Arrow\Utils\DictionaryCtrl" tag="dictionary:ctrl" />
 	
 
 

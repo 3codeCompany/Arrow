@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<accessmatrix>
-  <point point_namespace="communication" point_type="view" point_action="Show Template" point_object_friendly_id="/contact_form/list" additional_info="" control_enabled="1"/>
-  <point point_namespace="communication" point_type="view" point_action="Show Template" point_object_friendly_id="/mail/templates/list" additional_info="" control_enabled="1"/>
-  <point point_namespace="communication" point_type="view" point_action="Show Template" point_object_friendly_id="/dashboard/main" additional_info="" control_enabled="1"/>
-</accessmatrix>
