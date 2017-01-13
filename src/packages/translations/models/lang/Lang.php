@@ -3,7 +3,7 @@ namespace Arrow\Translationss;
 
 use Arrow\ORM\Persistent\Criteria;
 
-class Lang extends \Arrow\ORM\ORM_Arrow_Package_Langs_Lang
+class Lang extends \Arrow\ORM\ORM_Arrow_Langs_Lang
 {
 
     const TCLASS = __CLASS__;

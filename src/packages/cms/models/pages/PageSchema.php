@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\CMS;
 use Arrow\ORM\Persistent\Criteria;
-class PageSchema extends \Arrow\ORM\ORM_Arrow_Package_CMS_PageSchema
+class PageSchema extends \Arrow\ORM\ORM_Arrow_CMS_PageSchema
 {
     static $avail_places = NULL;
     protected $schema_places = NULL;

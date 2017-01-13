@@ -4,7 +4,7 @@ namespace Arrow\CMS;
 use Arrow\ORM\PersistentFactory;
 use Arrow\ORM\PersistentObject;
 
-class Gallery extends \Arrow\ORM\ORM_Arrow_Package_CMS_Gallery
+class Gallery extends \Arrow\ORM\ORM_Arrow_CMS_Gallery
 {
     public function afterObjectCreate(PersistentObject $object)
     {

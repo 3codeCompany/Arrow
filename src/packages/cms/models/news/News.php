@@ -3,7 +3,7 @@ namespace Arrow\CMS;
 
 use Arrow\Common\IMultilangObject;
 
-class News extends \Arrow\ORM\ORM_Arrow_Package_CMS_News implements IMultilangObject
+class News extends \Arrow\ORM\ORM_Arrow_CMS_News implements IMultilangObject
 {
     function __construct($data = null, $paramerers = array())
     {

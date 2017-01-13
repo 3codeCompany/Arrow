@@ -2,7 +2,7 @@
 namespace Arrow\CMS;
 
 
-class PagePlace extends \Arrow\ORM\ORM_Arrow_Package_CMS_PagePlace{
+class PagePlace extends \Arrow\ORM\ORM_Arrow_CMS_PagePlace{
 
     public function afterObjectCreate(\Arrow\ORM\PersistentObject $object)
     {

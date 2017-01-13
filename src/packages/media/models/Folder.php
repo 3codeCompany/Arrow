@@ -3,7 +3,7 @@ namespace Arrow\Media;
 
 use Arrow\ORM\Extensions\TreeNode;
 
-class Folder extends \Arrow\ORM\ORM_Arrow_Package_Media_Folder{
+class Folder extends \Arrow\ORM\ORM_Arrow_Media_Folder{
 
     use TreeNode;
 

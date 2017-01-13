@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Communication;
 
-class MailTemplate extends \Arrow\ORM\ORM_Arrow_Package_Communication_MailTemplate{
+class MailTemplate extends \Arrow\ORM\ORM_Arrow_Communication_MailTemplate{
 
 	//*USER AREA*//
 	const PATH = "/mail_templates/";

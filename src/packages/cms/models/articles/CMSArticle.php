@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\CMS;
 
-class CMSArticle extends \Arrow\ORM\ORM_Arrow_Package_CMS_CMSNews{
+class CMSArticle extends \Arrow\ORM\ORM_Arrow_CMS_CMSNews{
 
 	const TCLASS = __CLASS__;
 	const F_ID = "id";

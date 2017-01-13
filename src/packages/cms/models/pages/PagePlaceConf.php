@@ -4,7 +4,7 @@ namespace Arrow\CMS;
 
 use \Arrow\ORM\Persistent\Criteria;
 
-class PagePlaceConf extends \Arrow\ORM\ORM_Arrow_Package_CMS_PagePlaceConf{
+class PagePlaceConf extends \Arrow\ORM\ORM_Arrow_CMS_PagePlaceConf{
 
 	/**
 	 * List of all places defined in system

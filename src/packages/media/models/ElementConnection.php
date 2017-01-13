@@ -3,7 +3,7 @@ namespace Arrow\Media;
 
 use Arrow\ORM\Persistent\PersistentObject;
 
-class ElementConnection extends \Arrow\ORM\ORM_Arrow_Package_Media_ElementConnection {
+class ElementConnection extends \Arrow\ORM\ORM_Arrow_Media_ElementConnection {
     public function afterObjectCreate(PersistentObject $object)
     {
 

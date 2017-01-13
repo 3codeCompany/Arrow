@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\CMS;
 
-class PagePlaceSchema extends \Arrow\ORM\ORM_Arrow_Package_CMS_PagePlaceSchema{
+class PagePlaceSchema extends \Arrow\ORM\ORM_Arrow_CMS_PagePlaceSchema{
 
 	const M_OVERRIDE = 0; //modules from PagePlace will override modules from SchemaPlace
 	const M_ADD = 1; //modules from PagePlace will be added after modules form SchemaPlace

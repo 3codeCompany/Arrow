@@ -10,7 +10,7 @@ use Arrow\Router;
 
 ;
 
-class Page extends \Arrow\ORM\ORM_Arrow_Package_CMS_Page implements IMultilangObject
+class Page extends \Arrow\ORM\ORM_Arrow_CMS_Page implements IMultilangObject
 {
     use TreeNode{
         getChildren as _getChildren;

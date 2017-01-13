@@ -7,7 +7,7 @@ use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\RequestContext;
 
-class Element extends \Arrow\ORM\ORM_Arrow_Package_Media_Element
+class Element extends \Arrow\ORM\ORM_Arrow_Media_Element
 {
 
     public static $forceNoDeleteSource = false;

@@ -2,7 +2,7 @@
 namespace Arrow\Communication;
 
 
-class ContactForm extends \Arrow\ORM\ORM_Arrow_Package_Communication_ContactForm{
+class ContactForm extends \Arrow\ORM\ORM_Arrow_Communication_ContactForm{
 
     public function beforeObjectCreate(\Arrow\ORM\PersistentObject $object)
     {

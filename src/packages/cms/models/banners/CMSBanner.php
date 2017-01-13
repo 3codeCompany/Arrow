@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\CMS;
 
-class CMSBanner extends \Arrow\ORM\ORM_Arrow_Package_CMS_CMSBanner{
+class CMSBanner extends \Arrow\ORM\ORM_Arrow_CMS_CMSBanner{
 
 	//*USER AREA*//
 
