@@ -5,7 +5,7 @@ use \Arrow\ORM\Persistent\Criteria, Arrow\Models\TemplateLinker;
 use Arrow\ORM\Extensions\TreeNode;
 use Arrow\Access\Auth;
 use Arrow\Access\User;
-use Arrow\Common\IMultilangObject;
+use Arrow\Translations\IMultilangObject;
 use Arrow\Router;
 
 ;

@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\CMS;
 
-use Arrow\Common\IMultilangObject;
+use Arrow\Translations\IMultilangObject;
 
 class News extends \Arrow\ORM\ORM_Arrow_CMS_News implements IMultilangObject
 {

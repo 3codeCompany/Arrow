@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Translationss;
+namespace Arrow\Translations;
 
 
 

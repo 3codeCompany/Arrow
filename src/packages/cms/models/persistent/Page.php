@@ -10,7 +10,7 @@ namespace Arrow\CMS\Persistent;
 
 
 use Arrow\ORM\Extensions\TreeNode;
-use Arrow\Common\IMultilangObject;
+use Arrow\Translations\IMultilangObject;
 use Arrow\ORM\ORM_Arrow_CMS_Persistent_Page;
 
 class Page extends ORM_Arrow_CMS_Persistent_Page implements IMultilangObject{

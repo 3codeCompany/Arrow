@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Translationss;
 
-use Arrow\ORM\Persistent\Criteria;
+namespace Arrow\Translations;
 
 class Lang extends \Arrow\ORM\ORM_Arrow_Langs_Lang
 {

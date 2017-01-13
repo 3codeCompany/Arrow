@@ -36,7 +36,7 @@ use Arrow\Common\EmptyLayout;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
-use Arrow\Common\Translations;
+use Arrow\Translations\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
 use Arrow\Media\MediaAPI;

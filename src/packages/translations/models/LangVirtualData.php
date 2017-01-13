@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Arrow\Translationss;
+namespace Arrow\Translations;
 
 
 class LangVirtualData extends Model implements IStandardController, IControlable  {
