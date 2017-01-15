@@ -3,6 +3,7 @@ namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Exception;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * Arrow project class
@@ -221,6 +222,29 @@ class Project
             }
         }
         return 0;
+
+    }
+
+
+    public function injectLoggers(LoggerAwareInterface $obj)
+    {
+        $loggers = ConfigProvider::get('loggers');
+        foreach ($loggers as $class => $data) {
+            $objClass = get_class($obj);
+            if ($class[0] == "\\")
+                $class = substr($class, 1);
+            if ($objClass == $class) {
+                foreach ($data as $loggerName => $loggerData) {
+                    if ($loggerData["active"]) {
+                        $logger = new \Monolog\Logger($loggerName);
+                        $logger->pushHandler(new $loggerData["handler"]());
+                        $obj->setLogger($logger);
+                        $obj->setLogLevel($loggerData["level"]);
+                    }
+                }
+            }
+
+        }
 
     }
 
