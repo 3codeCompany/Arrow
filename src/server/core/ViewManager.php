@@ -144,7 +144,7 @@ class ViewManager
     {
         self::$staticCacheFile = ARROW_CACHE_PATH . '/static/' . $id . (($conditions) ? "_" . md5(json_encode($conditions)) : '') . '.txt';
 
-        if (!(Project::$cacheFlag & Project::CACHE_REFRESH_STATIC) && file_exists(self::$staticCacheFile) && ($time == -1 || filemtime(self::$staticCacheFile) - time() < $time)) {
+        if ( ConfigProvider::get("cache")["static"] && file_exists(self::$staticCacheFile) && ($time == -1 || filemtime(self::$staticCacheFile) - time() < $time)) {
             self::$staticCacheExists = true;
             readfile(self::$staticCacheFile);
         } else {
