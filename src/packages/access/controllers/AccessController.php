@@ -2,6 +2,7 @@
 
 namespace Arrow\Access;
 
+use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\AjaxLink;
 use Arrow\Controls\api\common\BreadcrumbElement;use Arrow\Controls\api\common\ContextMenu;
 use Arrow\Controls\api\common\Events;

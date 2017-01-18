@@ -41,7 +41,7 @@
     </table>
 
 
-    <table name="commin_settings" class="Arrow\Common\Models\Settings">
+    <table name="common_settings" class="Arrow\Common\Models\Settings">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="visible" type="integer" size="1"/>
         <field name="name" type="VARCHAR" size="255"/>
