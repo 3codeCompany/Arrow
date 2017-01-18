@@ -90,13 +90,7 @@ class AccessController extends \Arrow\Models\Controller
         $form->on(Form::EVENT_SUCCESS, SerenityJS::js("window.location.href = '/#{context.redirectTo}'; return false;"));
 
         $view->assign("form", $form);
-
-        try {
-            $title = \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title");
-            $view->assign("applicationTitle", $title);
-        } catch (\Arrow\Exception $ex) {
-            $view->assign("applicationTitle", "Application");
-        }
+        $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
 
         try {
             AccessAPI::checkInstallation();
