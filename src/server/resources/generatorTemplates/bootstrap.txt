@@ -1,7 +1,0 @@
-<?php
-use \Arrow\Models\Project;
-$runConf = \Arrow\Controller::getRunConfiguration();
-if( $runConf == "127.0.0.1" || $runConf == "localhost" ){
-    Project::$cacheFlag = Project::CACHE_REFRESH_TEMPLATES_FORCE|Project::CACHE_REFRESH_CONF | Project::CACHE_REFRESH_STATIC | Project::CACHE_REFRESH_TEMPLATES;
-    \Arrow\Models\Project::$forceDisplayErrors = true;
-}
