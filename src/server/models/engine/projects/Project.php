@@ -225,33 +225,34 @@ class Project
     public function injectLoggers(LoggerAwareInterface $obj)
     {
         $loggers = ConfigProvider::get('loggers');
-        foreach ($loggers as $class => $data) {
-            $objClass = get_class($obj);
-            if ($class[0] == "\\")
-                $class = substr($class, 1);
-            if ($objClass == $class) {
-                foreach ($data as $loggerName => $loggerData) {
-                    if ($loggerData["active"]) {
-                        $logger = new \Monolog\Logger($loggerName);
-                        if ($loggerData["handler"] == '\Monolog\Handler\HipChatHandler') {
+        if (is_array($loggers)) {
+            foreach ($loggers as $class => $data) {
+                $objClass = get_class($obj);
+                if ($class[0] == "\\")
+                    $class = substr($class, 1);
+                if ($objClass == $class) {
+                    foreach ($data as $loggerName => $loggerData) {
+                        if ($loggerData["active"]) {
+                            $logger = new \Monolog\Logger($loggerName);
+                            if ($loggerData["handler"] == '\Monolog\Handler\HipChatHandler') {
 
-                            $handler = new \Monolog\Handler\HipChatHandler(
-                                $loggerData["token"], $loggerData["room"], $loggerData["name"], true,
-                                $loggerData["level"], true, true, 'text',
-                                $loggerData["host"],
-                                \Monolog\Handler\HipChatHandler::API_V2
-                            );
-                        } else {
-                            $handler = new $loggerData["handler"]();
+                                $handler = new \Monolog\Handler\HipChatHandler(
+                                    $loggerData["token"], $loggerData["room"], $loggerData["name"], true,
+                                    $loggerData["level"], true, true, 'text',
+                                    $loggerData["host"],
+                                    \Monolog\Handler\HipChatHandler::API_V2
+                                );
+                            } else {
+                                $handler = new $loggerData["handler"]();
+                            }
+                            $logger->pushHandler($handler);
+                            $obj->setLogger($logger);
+                            if (method_exists($obj, "setLogLevel"))
+                                $obj->setLogLevel($loggerData["level"]);
                         }
-                        $logger->pushHandler($handler);
-                        $obj->setLogger($logger);
-                        if(method_exists($obj, "setLogLevel"))
-                            $obj->setLogLevel($loggerData["level"]);
                     }
                 }
             }
-
         }
 
     }

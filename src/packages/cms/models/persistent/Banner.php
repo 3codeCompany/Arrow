@@ -6,14 +6,15 @@
  * Time: 19:11
  */
 
-namespace Arrow\CMS\Persistent;
+namespace Arrow\CMS\Models\Persistent;
 
 
+use Arrow\ORM\ORM_Arrow_CMS_Models_Persistent_Banner;
 use Arrow\ORM\ORM_Arrow_CMS_Persistent_Banner;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Extensions\Sortable;
 
-class Banner extends ORM_Arrow_CMS_Persistent_Banner {
+class Banner extends ORM_Arrow_CMS_Models_Persistent_Banner {
     use Sortable;
 
     public function moveUp()

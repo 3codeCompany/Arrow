@@ -13,7 +13,7 @@ use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\Operation,
     Arrow\Router;
-use Arrow\Translations\Translations;
+use Arrow\Translations\Models\Translations;
 
 
 /**

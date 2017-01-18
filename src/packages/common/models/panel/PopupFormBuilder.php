@@ -31,7 +31,7 @@ use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\PersistentObject;
 use Arrow\Access\AccessAPI;
 use Arrow\Package\Application\Language;
-use Arrow\Translations\IMultilangObject;
+use Arrow\Translations\Models\IMultilangObject;
 use Arrow\Translationss\Lang;
 use Arrow\Media\MediaAPI;
 use Arrow\RequestContext;

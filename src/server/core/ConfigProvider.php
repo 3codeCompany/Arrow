@@ -55,7 +55,11 @@ class ConfigProvider extends Object
 
             if (isset(self::$conf["project"]["run-config"][$runConfig])) {
                 foreach (self::$conf["project"]["run-config"][$runConfig] as $index => $value) {
-                    self::$conf["project"][$index] = array_replace_recursive(self::$conf["project"][$index], $value);
+                    if(is_array($value))
+                        self::$conf["project"][$index] = array_replace_recursive(self::$conf["project"][$index], $value);
+                    else
+                        self::$conf["project"][$index] = $value;
+
                 }
             }
 
