@@ -20,83 +20,64 @@ class Translations
     private static $currLanguage = "pl";
     public static $module = null;
 
-    public static function getLangs(){
+    public static function getLangs()
+    {
         return ["pl" => "Polski", "en" => "Angielski", "ua" => "Ukraiński", "ru" => "Rosyjski", "de" => "Niemiecki"];
     }
 
-
-    /*public static  function prt(){
-        $db = Project::getInstance()->getDB();
-        foreach (Language::get()->find() as $_lang) {
-            $t = LanguageText::getTable();
-            $q = "update {$t} set lang='{$_lang["code"]}' where lang_id={$_lang["id"]}";
-            $db->exec($q);
-        }
-    }*/
-
     public static function setupLang($lang)
-
     {
 
         self::$currLanguage = $lang;
     }
 
-    public static function getCurrentLang(){
+    public static function getCurrentLang()
+    {
         return self::$currLanguage;
     }
 
-    public static function findObjectsByField( $class, $field, $value, $lang = false, $condition = Criteria::C_EQUAL ){
-
-
-
+    public static function findObjectsByField($class, $field, $value, $lang = false, $condition = Criteria::C_EQUAL)
+    {
         $result = ObjectTranslation::get()
             ->c(ObjectTranslation::F_CLASS, $class)
             ->c(ObjectTranslation::F_FIELD, $field)
             ->c(ObjectTranslation::F_VALUE, $value, $condition)
-            ->c(ObjectTranslation::F_LANG, $lang?$lang:self::$currLanguage)
-            ->findAsFieldArray(ObjectTranslation::F_ID_OBJECT)
-        ;
+            ->c(ObjectTranslation::F_LANG, $lang ? $lang : self::$currLanguage)
+            ->findAsFieldArray(ObjectTranslation::F_ID_OBJECT);
 
-
-
-        if($result){
+        if ($result) {
             return $class::get()
-                ->c("id", $result, Criteria::C_IN )
-                ->find()
-                ;
+                ->c("id", $result, Criteria::C_IN)
+                ->find();
         }
-
         return [];
-
     }
 
-    public static function findObjectByField( $class, $field, $value, $lang = false, $condition = Criteria::C_EQUAL ){
-
+    public static function findObjectByField($class, $field, $value, $lang = false, $condition = Criteria::C_EQUAL)
+    {
         $result = ObjectTranslation::get()
             ->c(ObjectTranslation::F_CLASS, $class)
             ->c(ObjectTranslation::F_FIELD, $field)
             ->c(ObjectTranslation::F_VALUE, $value, $condition)
-            ->c(ObjectTranslation::F_LANG, $lang?$lang:self::$currLanguage)
-            ->findFirst()
-        ;
+            ->c(ObjectTranslation::F_LANG, $lang ? $lang : self::$currLanguage)
+            ->findFirst();
 
-        if($result){
+        if ($result) {
             return $class::get()
-                ->findByKey( $result[ObjectTranslation::F_ID_OBJECT] );
+                ->findByKey($result[ObjectTranslation::F_ID_OBJECT]);
         }
-
         return null;
 
     }
 
     public static function translateText($text, $lang = false, $addidtionalData = [])
     {
-
-        if(!$lang)
+        if (!$lang)
             $lang = self::$currLanguage;
 
         if ($lang == self::$defaultLang)
             return $text;
+
 
         //Logger::get('console',new ConsoleStream())->log($text." ".$lang);
 
@@ -105,21 +86,21 @@ class Translations
             ->c(LanguageText::F_LANG, $lang)
             //->c(LanguageText::F_MODULE, self::$module)
             ->findFirst();
-        if($result and !empty($addidtionalData)){
+        if ($result and !empty($addidtionalData)) {
             $result[LanguageText::F_MODULE] = implode(",", $addidtionalData);
             $result->save();
         }
 
-        if ($result /*&& $result["value"]*/){
+        if ($result /*&& $result["value"]*/) {
             //$result[LanguageText::F_LAST_USE] = date("Y-m-d");
             //$result->save();
             //Logger::get('console',new ConsoleStream())->log( $text." ".$result["value"]);
 
 
             return $result["value"];
-        }else {
+        } else {
             foreach (self::getLangs() as $_lang => $name) {
-                if($_lang == "pl")
+                if ($_lang == "pl")
                     continue;
                 LanguageText::create(array(
                     LanguageText::F_HASH => md5($text),
@@ -129,41 +110,33 @@ class Translations
                 ));
             }
             //if not english and can't find in current
-            if($lang != "en"){
-                return self::translateText($text,"en");
+            if ($lang != "en") {
+                return self::translateText($text, "en");
             }
         }
         return $text;
     }
 
-    public static function translateObject($object , $lang = false)
+    public static function translateObject($object, $lang = false)
     {
         self::translateObjectsList([$object], false, $lang);
         return $object;
     }
 
 
-
-    public static function  translateObjectsList($list, $class = false, $lang = false)
+    public static function translateObjectsList($list, $class = false, $lang = false)
     {
 
-
-
-        if(!$lang)
+        if (!$lang)
             $lang = self::$currLanguage;
-
-        
 
         if ($lang == self::$defaultObjectsLang)
             return $list;
 
 
-
-
-        if (empty($list)) {
+        if (empty($list))
             return $list;
-        }
-        
+
 
         //geting first element
         $first = null;
@@ -181,45 +154,45 @@ class Translations
 
         $fields = [];
         //geting fields
-        if(is_array($first)){
+        if (is_array($first)) {
             $fields = array_keys($first);
-        }elseif( $first instanceof IMultilangObject ){
-            $fields = array_intersect( $class::getMultiLangFields(), $first->getLoadedFields());
+        } elseif ($first instanceof IMultilangObject) {
+            $fields = array_intersect($class::getMultiLangFields(), $first->getLoadedFields());
         }
 
         $keys = [-1];
 
         foreach ($list as $el) {
-            if($el["id"])
+            if ($el["id"])
                 $keys[] = $el["id"];
         }
         $db = Project::getInstance()->getDB();
 
         //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
-        $stm = $db->prepare("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."') order by value desc");
+        $stm = $db->prepare("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc");
 
 
-        try{
+        try {
             $stm->execute();
-        }catch (\PDOException $ex){
-            exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')  order by value desc");
+        } catch (\PDOException $ex) {
+            exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "')  order by value desc");
         }
         $data = array();
         while ($row = $stm->fetch(\PDO::FETCH_ASSOC)) {
             $data[$row["id_object"]][$row["field"]] = $row["value"];
         }
         //in case of empty value we taking en language
-        $secondLoad = [ "objects" => [] , "fields" => []];
+        $secondLoad = ["objects" => [], "fields" => []];
 
-        foreach($list as $el){
-            if(!isset( $data[$el["id"]])) {
+        foreach ($list as $el) {
+            if (!isset($data[$el["id"]])) {
                 self::putEmptyObjectTranslation($el);
             }
 
-            foreach($fields as $field){
-                if(!isset( $data[$el["id"]][$field]) || empty($data[$el["id"]][$field]) ){
-                    if($el["id"]) {
+            foreach ($fields as $field) {
+                if (!isset($data[$el["id"]][$field]) || empty($data[$el["id"]][$field])) {
+                    if ($el["id"]) {
                         $secondLoad["objects"][] = $el["id"];
                         $secondLoad["fields"][] = $field;
                     }
@@ -228,39 +201,38 @@ class Translations
 
             }
         }
-        if(!empty($secondLoad["objects"])){
-            $query = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $secondLoad["objects"]) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . "en" . "' and field in('".implode("','",$secondLoad["fields"])."') ";
+        if (!empty($secondLoad["objects"])) {
+            $query = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $secondLoad["objects"]) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . "en" . "' and field in('" . implode("','", $secondLoad["fields"]) . "') ";
             $stm = $db->prepare($query);
 
-            try{
+            try {
                 $stm->execute();
-            }catch (\PDOException $ex){
+            } catch (\PDOException $ex) {
                 exit($query);
             }
             while ($row = $stm->fetch(\PDO::FETCH_ASSOC)) {
-                if(!isset($data[$row["id_object"]][$row["field"]]) || empty($data[$row["id_object"]][$row["field"]])){
+                if (!isset($data[$row["id_object"]][$row["field"]]) || empty($data[$row["id_object"]][$row["field"]])) {
                     $data[$row["id_object"]][$row["field"]] = $row["value"];
                 }
             }
         }
 
 
-
         foreach ($list as $key => $el) {
 
             if (isset($data[$el["id"]])) {
                 foreach ($data[$el["id"]] as $field => $val) {
-                    if (isset($el[$field]) && $val ){
-                        if(is_array($list)){
+                    if (isset($el[$field]) && $val) {
+                        if (is_array($list)) {
                             $list[$key][$field] = $val;
-                        }else{
+                        } else {
                             $el[$field] = $val;
                         }
-                    }else{
+                    } else {
                         //$el[$field] = "";
                     }
                 }
-            }else{
+            } else {
                 /*foreach($fields as $field)
                     $el[$field] = "";*/
             }
@@ -270,19 +242,21 @@ class Translations
         return $list;
 
     }
-    public static function putEmptyObjectTranslation($obiect){
 
-        if(!$obiect)
+    public static function putEmptyObjectTranslation($obiect)
+    {
+
+        if (!$obiect)
             return;
         $langFields = $obiect::getMultiLangFields();
-        foreach ($langFields as $field ) {
+        foreach ($langFields as $field) {
             ObjectTranslation::createIfNotExists([
                 ObjectTranslation::F_CLASS => $obiect::getClass(),
                 ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
                 ObjectTranslation::F_LANG => self::$currLanguage,
                 ObjectTranslation::F_FIELD => $field,
                 ObjectTranslation::F_VALUE => "",
-                ObjectTranslation::F_SOURCE => $obiect[$field]!=null?$obiect[$field]:"" 
+                ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
             ]);
         }
     }
@@ -300,7 +274,7 @@ class Translations
         $langFields = $class::getMultiLangFields();
 
         foreach ($data as $field => $value) {
-            if(!in_array($field,$langFields))
+            if (!in_array($field, $langFields))
                 continue;
             $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $obiect->getPKey() . "','" . self::$currLanguage . "','" . mysql_escape_string($value) . "', '" . addslashes(get_class($obiect)) . "')";
             $db->exec($query);

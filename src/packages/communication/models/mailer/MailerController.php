@@ -38,7 +38,11 @@ class MailerController extends Controller
 
 
 
+
     public function prepareContent($conf, $data){
+        if(!is_array($conf))
+            $conf = $this->configuration[$conf];
+
         $view = Dispatcher::getDefault()->get($conf[0]);
         $this->request = new RequestContext($data);
         return $view->fetch(new RequestContext($data));
@@ -46,6 +50,7 @@ class MailerController extends Controller
 
     public function send($conf, $email, $data = [], $historyObject = null)
     {
+
 
         $mailerConf = ConfigProvider::get('communication')['emails']['default'];
 
@@ -163,6 +168,13 @@ class MailerController extends Controller
 
         $view->assign("style_th", 'text-align: center; font-size: 13px; padding: 4px; background-color: rgb(240,240,240); font-weight: bold;');
         $view->assign("style_td", 'text-align: right; font-size: 11px;padding: 6px;');
+
+
+
+        $view->addParser(new ViewParser("/\-\|(.+?)\|\-/", function ($matches) {
+            return Translations::translateText($matches[1]);
+        }));
+
     }
 
 

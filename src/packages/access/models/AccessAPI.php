@@ -53,6 +53,7 @@ class AccessAPI
         if(!class_exists('Arrow\ORM\Persistent\Criteria' ))
             return true;
 
+        $pointObjectFriendlyId = str_replace("\\","/", $pointObjectFriendlyId);
 
         $point = Criteria::query('Arrow\Access\AccessPoint')
             ->c("point_type", $pointType)
@@ -60,13 +61,13 @@ class AccessAPI
             ->c("point_object_friendly_id", $pointObjectFriendlyId)
             ->findFirst();
         if (!$point) {
-            $point = new AccessPoint(array(
-                                          AccessPoint::F_POINT_TYPE               => $pointType,
-                                          AccessPoint::F_POINT_ACTION             => $pointAction,
-                                          AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => $pointObjectFriendlyId,
-                                          AccessPoint::F_ADDITIONAL_INFO          => $additionalInfo,
-                                          AccessPoint::F_CONTROL_ENABLED          => 1
-                                     ));
+            $point = new AccessPoint([
+                AccessPoint::F_POINT_TYPE => $pointType,
+                AccessPoint::F_POINT_ACTION => $pointAction,
+                AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => $pointObjectFriendlyId,
+                AccessPoint::F_ADDITIONAL_INFO => $additionalInfo,
+                AccessPoint::F_CONTROL_ENABLED => 1
+            ]);
             $point->save();
         }
 
@@ -108,7 +109,6 @@ class AccessAPI
     public static function accessPoint($pointType, $pointAction, $pointObjectFriendlyId, $pointObject = null, $additionalInfo = "")
     {
         $access = self::checkAccess($pointType, $pointAction, $pointObjectFriendlyId, $pointObject, $additionalInfo);
-        //FB::log($pointType.' '.$pointAction.' '.$pointObjectFriendlyId.' '.$pointObject.' '.$additionalInfo);
     }
 
     public static function accessDenyProcedure($denyInfo = "")
@@ -237,140 +237,6 @@ class AccessAPI
 
     }
 
-    /**
-     * Imports access matrix from configuration files to database
-     *
-     * @param mixed $filter String with package namespace or array with namespaces
-     */
-    public static function importAccessMatrixFromPackages($filter = false)
-    {
-        if (is_string($filter)) {
-            $filter = array($filter);
-        }
-
-        $project = Project::getInstance();
-
-        $groups = Criteria::query(AccessGroup::getClass())
-            ->findAsFieldArray(AccessGroup::F_NAME, true);
-
-        $matrixFile = "/conf/access-martrix.xml";
-
-        foreach ($project->getPackages() as $package) {
-            if ($filter != false && !in_array($package["namespace"], $filter)) {
-                continue;
-            }
-
-            if (file_exists($package["dir"] . $matrixFile)) {
-                $xml = simplexml_load_file($package["dir"] . $matrixFile);
-                foreach ($xml->point as $pointXML) {
-                    $criteria = Criteria::query(AccessPoint::getClass());
-                    foreach (self::$accessPointStandardProperties as $property) {
-                        if ($project != AccessPoint::F_CONTROL_ENABLED) {
-                            $criteria->c($property, (string)$pointXML[$property]);
-                        }
-                    }
-
-                    $point = $criteria->findFirst();
-                    if (empty($point)) {
-                        $data = array();
-                        foreach (self::$accessPointStandardProperties as $property) {
-                            $data[$property] = (string)$pointXML[$property];
-                        }
-                        $point = new AccessPoint($data);
-                    }
-
-                    $point[AccessPoint::F_CONTROL_ENABLED] = (string)$pointXML[AccessPoint::F_CONTROL_ENABLED];
-                    $accessSum = 0;
-                    foreach ($pointXML->group as $groupXML) {
-                        $key = (string)$groupXML["id"];
-                        $name = (string)$groupXML["name"];
-                        if (isset($groups[$key]) && $groups[$key] == $name) {
-                            $accessSum += $key;
-                        } else {
-                            throw new \Arrow\Exception(new \Arrow\Models\ExceptionContent(
-                                "The group list is not compatible with importing matrix",
-                                "[Importing] Package: {$package["name"]}, key: $key, name: $name"
-                            ));
-                        }
-                    }
-                    $point[AccessPoint::F_GROUPS] = $accessSum;
-                    $point->save();
-                }
-            }
-        }
-    }
-
-    /**
-     * Saves access matrix from database to configurations files
-     * location of file is [package dir]/conf/access-matrix.xml
-     *
-     * @param mixed $filter String with package namespace or array with namespaces
-     *
-     * @throws \Arrow\Exception
-     */
-    public static function saveAccessMatrixToPackages($filter = false)
-    {
-        return true;
-        if (is_string($filter)) {
-            $filter = array($filter);
-        }
-
-        $project = Project::getInstance();
-
-        $groups = Criteria::query(AccessGroup::getClass())
-            ->findAsFieldArray(AccessGroup::F_NAME, true);
-
-        foreach ($project->getPackages() as $package) {
-            if ($filter != false && !in_array($package["namespace"], $filter)) {
-                continue;
-            }
-
-            $points = Criteria::query(AccessPoint::getClass())
-                ->c(AccessPoint::F_POINT_NAMESPACE, $package["namespace"])
-                ->find();
-
-
-            $accessXML = new \SimpleXMLElement("<accessmatrix></accessmatrix>");
-
-            foreach ($points as $point) {
-                $pointXML = $accessXML->addChild('point');
-                foreach (self::$accessPointStandardProperties as $property) {
-                    $pointXML->addAttribute($property, $point->getValue($property));
-                }
-
-                foreach ($groups as $id => $name) {
-                    if ($id & $point["groups"]) {
-                        /**
-                         * todo zbadać czy nie da się jakoś tego ominąć ( zapis grup innych niż podstawowowe dla systemu )
-                         * może zapis innych grup podstawowowych ( pliki setup.xml )
-                         */
-                        if ($id > 4 && $package["namespace"] != "application") {
-                            throw new \Arrow\Exception(new \Arrow\Models\ExceptionContent(
-                                "Can't save non basic group into access",
-                                "Point: " . $point[AccessPoint::F_POINT_OBJECT_FRIENDLY_ID],
-                                "Group name: " . $name
-                            ));
-                        }
-
-                        $group = $pointXML->addChild('group');
-                        $group->addAttribute(AccessGroup::F_ID, $id);
-                        $group->addAttribute(AccessGroup::F_NAME, $name);
-                    }
-                }
-            }
-
-            /**
-             * Saving doucment
-             */
-            $dom = new \DOMDocument('1.0');
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = true;
-            $dom->loadXML($accessXML->asXml());
-            file_put_contents($package["dir"] . "/conf/access-martrix.xml", $dom->saveXML());
-
-
-        }
-    }
 
 
 }
