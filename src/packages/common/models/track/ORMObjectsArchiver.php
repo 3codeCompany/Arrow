@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Common;
+namespace Arrow\Common\Models\Track;
 use Arrow\ORM\Extensions\BaseTracker;
 use Arrow\ORM\Persistent\PersistentObject;
 

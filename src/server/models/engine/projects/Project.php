@@ -1,4 +1,5 @@
 <?php
+
 namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
@@ -46,7 +47,6 @@ class Project
     private $configuration;
 
 
-
     /**
      * Project id
      *
@@ -61,8 +61,6 @@ class Project
      * @var string
      */
     private $name;
-
-
 
 
     /**
@@ -93,9 +91,9 @@ class Project
     {
         self::$instance = $this;
 
-        $this->configuration =  ConfigProvider::get();
+        $this->configuration = ConfigProvider::get();
 
-        if($this->configuration) {
+        if ($this->configuration) {
             $this->id = $this->configuration["name"];
 
             date_default_timezone_set($this->configuration["timezone"]);
@@ -113,12 +111,10 @@ class Project
     }
 
 
-
     public function getPackages()
     {
         return $this->configuration["packages"];
     }
-
 
 
     /**
@@ -182,7 +178,7 @@ class Project
     public function setUpDB($name = false)
     {
 
-        if($name){
+        if ($name) {
             throw new \Arrow\Exception(new ExceptionContent("Not implementet [db with name]"));
         }
 
@@ -237,9 +233,21 @@ class Project
                 foreach ($data as $loggerName => $loggerData) {
                     if ($loggerData["active"]) {
                         $logger = new \Monolog\Logger($loggerName);
-                        $logger->pushHandler(new $loggerData["handler"]());
+                        if ($loggerData["handler"] == '\Monolog\Handler\HipChatHandler') {
+
+                            $handler = new \Monolog\Handler\HipChatHandler(
+                                $loggerData["token"], $loggerData["room"], $loggerData["name"], true,
+                                $loggerData["level"], true, true, 'text',
+                                $loggerData["host"],
+                                \Monolog\Handler\HipChatHandler::API_V2
+                            );
+                        } else {
+                            $handler = new $loggerData["handler"]();
+                        }
+                        $logger->pushHandler($handler);
                         $obj->setLogger($logger);
-                        $obj->setLogLevel($loggerData["level"]);
+                        if(method_exists($obj, "setLogLevel"))
+                            $obj->setLogLevel($loggerData["level"]);
                     }
                 }
             }
@@ -247,7 +255,6 @@ class Project
         }
 
     }
-
 
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Arrow\Common;
+namespace Arrow\Common\Controllers;
 
 use Arrow\Controls\api\common\HTMLNode;
 use Arrow\Controls\api\common\Icons;
@@ -167,7 +167,7 @@ class Controller extends \Arrow\Models\Controller
         $view->assign("text", file_get_contents($request["file"]));
     }
 
-    public function admin_navigation( Action $view ){
+    public function navigation( Action $view ){
         $view->setLayout(new EmptyLayout());
     }
 

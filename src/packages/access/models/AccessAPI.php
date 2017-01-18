@@ -45,6 +45,10 @@ class AccessAPI
     public static function checkAccess($pointType, $pointAction, $pointObjectFriendlyId, $pointObject = null, $additionalInfo = "")
     {
 
+
+        if(Controller::isInCLIMode())
+            return true;
+
         //@todo wywalic obsluge bazy danych do handlera póki co ten if musi wystarczyc
         if(!class_exists('Arrow\ORM\Persistent\Criteria' ))
             return true;
@@ -109,17 +113,19 @@ class AccessAPI
 
     public static function accessDenyProcedure($denyInfo = "")
     {
+
         if (!Auth::getDefault()->isLogged()) {
             
 
-            $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
+            if(isset($_SERVER["REQUEST_URI"]))
+                $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
 
             $login = ConfigProvider::get("templates")["login"];
 
             if( RequestContext::getDefault()->isXHR() )
                 exit("Access deny - please login: ".$denyInfo);
             else{
-                Controller::redirectToTemplate($login, [ "from" => $_SESSION["arrow"]["access"]["requestedUrl"] ] );
+                Controller::redirectToTemplate($login, [ "from" => isset($_SESSION)?$_SESSION["arrow"]["access"]["requestedUrl"]:"" ] );
             }
 
             exit();

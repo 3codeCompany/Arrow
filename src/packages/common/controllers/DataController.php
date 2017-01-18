@@ -1,8 +1,11 @@
 <?php
 
-namespace Arrow\Package\Common;
+namespace Arrow\Common\Controllers;
 
 use Arrow\Exception;
+use Arrow\Media\Element;
+use Arrow\Media\ElementConnection;
+use Arrow\Media\MediaAPI;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
@@ -10,12 +13,8 @@ use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\Operation,
     Arrow\Router;
-use Arrow\ORM\Mysql;
-use Arrow\ORM\PersistentObject;
-use Arrow\Package\Langs\Translation;
-use Arrow\Package\Media\Element;
-use Arrow\Package\Media\ElementConnection;
-use Arrow\Package\Media\MediaAPI;
+use Arrow\Translations\Translations;
+
 
 /**
  * Created by JetBrains PhpStorm.
@@ -25,16 +24,6 @@ use Arrow\Package\Media\MediaAPI;
  * To change this template use File | Settings | File Templates.
  */
 
-class StdClass
-{
-    public function __call($method, $args)
-    {
-        if (is_callable(array($this, $method))) {
-            return call_user_func_array($this->$method, $args);
-        }
-        // else throw exception
-    }
-}
 
 class DataController extends \Arrow\Models\Controller
 {

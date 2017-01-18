@@ -1,9 +1,10 @@
 <?php
-namespace Arrow\Translationss;
+namespace Arrow\Translations\Models;
 
-namespace Arrow\Translations;
 
-class Lang extends \Arrow\ORM\ORM_Arrow_Langs_Lang
+use Arrow\ORM\ORM_Arrow_Translations_Language;
+
+class Language extends ORM_Arrow_Translations_Language
 {
 
     const TCLASS = __CLASS__;

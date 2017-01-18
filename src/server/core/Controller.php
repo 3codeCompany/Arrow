@@ -87,6 +87,7 @@ class Controller extends \Arrow\Object
             $link.="?".\http_build_query ($get);
         }
 
+
         header("Location: http://".$_SERVER["HTTP_HOST"]. $link );
         self::end();
     }

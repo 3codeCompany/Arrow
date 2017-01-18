@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <schema class-namespace="Arrow\Communication">
-    <table name="comm_contact_form" class="ContactForm">
+    <table name="comm_contact_form" class="Arrow\Communication\Models\ContactForm">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="date" type="TIMESTAMP" />
         <field name="firstname" type="VARCHAR" size="255"/>

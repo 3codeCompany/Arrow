@@ -2,12 +2,13 @@
 namespace Arrow\Media;
 
 use Arrow\ORM\Extensions\TreeNode;
+use Arrow\ORM\Persistent\PersistentObject;
 
 class Folder extends \Arrow\ORM\ORM_Arrow_Media_Folder{
 
     use TreeNode;
 
-    public function beforeObjectCreate(\Arrow\ORM\PersistentObject $object)
+    public function beforeObjectCreate(PersistentObject $object)
     {
         $dirName  = \Arrow\Utils\StringHelper::toValidFilesystemName($this->data[self::F_NAME], false);
         $parent = \Arrow\ORM\Persistent\Criteria::query(self::getClass())->findByKey($this->data[self::F_PARENT_ID]);
@@ -25,13 +26,13 @@ class Folder extends \Arrow\ORM\ORM_Arrow_Media_Folder{
         parent::beforeObjectCreate($object);
     }
 
-    public function fieldModified(\Arrow\ORM\PersistentObject $object, $field, $oldValue, $newValue)
+    public function fieldModified(PersistentObject $object, $field, $oldValue, $newValue)
     {
         if( ($field == self::F_PARENT_ID || $field == self::F_NAME) && $object->getPKey())
             $this->updatePath();
     }
 
-    public function afterObjectCreate(\Arrow\ORM\PersistentObject $object)
+    public function afterObjectCreate(PersistentObject $object)
     {
         parent::afterObjectCreate($object);
         $this->updatePath();

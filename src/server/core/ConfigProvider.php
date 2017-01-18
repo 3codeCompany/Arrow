@@ -30,7 +30,7 @@ class ConfigProvider extends Object
 
     public static function init()
     {
-        $configFile = "./app/conf/project.yaml";
+        $configFile = ARROW_APPLICATION_PATH."/conf/project.yaml";
         self::$cacheFile = ARROW_CACHE_PATH . "/cached-conf.php";
 
 
@@ -41,7 +41,7 @@ class ConfigProvider extends Object
             self::$conf = unserialize(file_get_contents(self::$cacheFile));
             self::$cacheMkTime = filemtime(self::$cacheFile);
         } else {
-            self::$conf = Yaml::parse(file_get_contents("./app/conf/project.yaml"));
+            self::$conf = Yaml::parse(file_get_contents($configFile));
 
             /*foreach (Project::getInstance()->getPackages() as $package) {
                 if (!file_exists($package["dir"] . "/conf/project.yaml")) {
@@ -96,14 +96,14 @@ class ConfigProvider extends Object
 
     }
 
-    public static function arrayFlat($array, $prefix = '')
+    public static function arrayFlat($array, $prefix = '', $arrayPrefix = "__")
     {
         $result = array();
 
         foreach ($array as $key => $value) {
             $new_key = $prefix . (empty($prefix) ? '' : '/') . $key;
 
-            if (is_array($value)) {
+            if (is_array($value) && strpos( key(($value)), $arrayPrefix ) === false ) {
                 $result = array_merge($result, self::arrayFlat($value, $new_key));
             } else {
                 $result[$new_key] = $value;

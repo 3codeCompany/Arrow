@@ -6,7 +6,7 @@
  * Time: 05:37
  */
 
-namespace Arrow\Translations;
+namespace Arrow\Translations\Models;
 
 
 

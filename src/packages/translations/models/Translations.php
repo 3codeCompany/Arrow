@@ -7,18 +7,11 @@
  * To change this template use File | Settings | File Templates.
  */
 
-namespace Arrow\Translations;
+namespace Arrow\Translations\Models;
 
 
-use Arrow\Models\Logger\ConsoleStream;
-use Arrow\Models\Logger\Logger;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\ORM\DataSet;
-use Arrow\Package\Application\Language;
-use Arrow\Package\Application\LanguageText;
-use Arrow\Translations\ObjectTranslation;
-use Arrow\Package\Application\Property;
 
 class Translations
 {

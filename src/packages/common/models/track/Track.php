@@ -1,5 +1,7 @@
 <?php
-namespace Arrow\Common;
+namespace Arrow\Common\Models\Track;
+use Arrow\ORM\ORM_Arrow_Common_Models_Track_Track;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: artur
@@ -7,7 +9,7 @@ namespace Arrow\Common;
  * Time: 21:59
  * To change this template use File | Settings | File Templates.
  */
-class Track extends \Arrow\ORM\ORM_Arrow_Common_Track
+class Track extends ORM_Arrow_Common_Models_Track_Track
 {
     public function __construct($initialData = null){
         $initialData[self::F_DATE] = date( "Y-m-d H:i:s" );

@@ -19,8 +19,8 @@
 
     <table name="cms_gallery" class="Gallery" >
         <trackers>
-            <tracker  class="Arrow\Common\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="sort" type="INTEGER" size="10" default="0" />
@@ -30,8 +30,8 @@
     </table>
     <table name="cms_news" class="News" >
         <trackers>
-            <tracker  class="Arrow\Common\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="partner_id" type="INTEGER" size="10"/>

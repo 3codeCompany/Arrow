@@ -1,5 +1,7 @@
 <?php namespace Arrow\Models;
 
+use Arrow\Controller;
+
 class SessionHandler implements ISessionHandler
 {
     /**
@@ -38,6 +40,9 @@ class SessionHandler implements ISessionHandler
     private function __construct()
     {
 
+
+        if(Controller::isInCLIMode())
+            return;
         $this->db = Project::getInstance()->getDB();
 
         session_set_save_handler(

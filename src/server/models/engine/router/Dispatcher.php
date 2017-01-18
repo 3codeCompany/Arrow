@@ -93,16 +93,25 @@ class Dispatcher
                 $data["shortPath"] = trim(str_replace($_path,"", $path), "/");
             }else{
 
-                $data["controller"] = $equateConf["controller"];
-                $data["layout"] = $equateConf["layout"];
-                if (isset($equateConf["base"]) && $equateConf["base"]) {
-                    $data["shortPath"] = str_replace($equateConf["base"], "", $data["path"]);
+                $data["controller"] = $equateConf["__controller"];
+
+                $file = self::$classPathResolver->findFile($data["controller"]);
+                $xpath = str_replace( [ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["","",DIRECTORY_SEPARATOR], dirname($file));
+
+                 foreach($packages as $name => $dir){
+                    $dir = str_replace("/",DIRECTORY_SEPARATOR, $dir);
+
+                    $pos = strpos($xpath, $dir);
+                    if($pos === 0 || $pos === 1){
+                        $data["package"] = $name;
+                    }
                 }
-                if (isset($equateConf["package"]) && $equateConf["package"]) {
-                    $data["package"] = $equateConf["package"];
-                }
+                $data["shortPath"] = trim(str_replace($_path,"", $path), "/");
+                if(isset($equateConf["__actionPrefix"]))
+                    $data["shortPath"]  = $equateConf["__actionPrefix"]."/".$data["shortPath"];
             }
         }
+
 
         return $data;
     }

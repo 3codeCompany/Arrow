@@ -104,6 +104,7 @@ class ViewManager
     public function checkCompile(Action $view)
     {
         $rq = RequestContext::getDefault();
+        $cacheEnabled = ConfigProvider::get("cache")["templates"];
 
         $nameAddon = str_replace(DIRECTORY_SEPARATOR, "_", $this->action->getPath() . "_" . $this->action->getPackage() . "_" . ($rq->isXHR() ? "xhr" : "synchronus"));
         $nameAddon = substr($nameAddon, 1);
@@ -113,12 +114,12 @@ class ViewManager
         $pathToCachedFile = ARROW_CACHE_PATH . DIRECTORY_SEPARATOR . "templates/" . $nameAddon . ".php";
 
 
-        if (Project::$cacheFlag & Project::CACHE_REFRESH_TEMPLATES || Project::$cacheFlag & Project::CACHE_REFRESH_TEMPLATES_FORCE || !file_exists($pathToCachedFile)) {
+        if (!$cacheEnabled || !file_exists($pathToCachedFile)) {
             $generate = false;
             $layoutFile = $view->getLayout()->getLayoutFile();
             $actionFile = $this->action->getFile();
 
-            if (Project::$cacheFlag & Project::CACHE_REFRESH_TEMPLATES_FORCE)
+            if (!$cacheEnabled )
                 $generate = true;
             elseif (!file_exists($pathToCachedFile))
                 $generate = true;

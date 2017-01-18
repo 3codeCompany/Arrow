@@ -297,8 +297,9 @@ class Action implements \ArrayAccess, IAction
         $appFile = ".".DIRECTORY_SEPARATOR."app".DIRECTORY_SEPARATOR."views" . $this->path.".phtml";
         if ($this->package != "app"){
 
-            $file = Project::getInstance()->getPackages()[$this->package].DIRECTORY_SEPARATOR."views". DIRECTORY_SEPARATOR . $this->shortPath.".phtml";
 
+            $file = ARROW_DOCUMENTS_ROOT."/".Project::getInstance()->getPackages()[$this->package].DIRECTORY_SEPARATOR."views". DIRECTORY_SEPARATOR . $this->shortPath.".phtml";
+            //fwrite(STDOUT, $file . "\n");
             if(file_exists($file) && !file_exists($appFile))
                 return $file;
         }

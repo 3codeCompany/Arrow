@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Common;
+namespace Arrow\Common\Models\Track;
 /**
  * Created by JetBrains PhpStorm.
  * User: artur

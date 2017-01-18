@@ -1,6 +1,6 @@
 <?php
 
-namespace Arrow\Translations;
+namespace Arrow\Translations\Models;
 
 
 interface IMultilangObject {

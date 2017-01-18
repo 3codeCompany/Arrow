@@ -48,7 +48,7 @@ class ExceptionHandler implements IExceptionHandler
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
-            $error["url"] = $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+            $error["url"] = isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]:'cli';
             $error["request"] = $_REQUEST;
 
             $this->logError( $error, $error["message"] );
@@ -213,7 +213,7 @@ class ExceptionHandler implements IExceptionHandler
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
-            $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . "/data/logs/errors/" . date("Y-m-d") . "/" . $file .
+            (isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . "/data/logs/errors/" . date("Y-m-d") . "/" . $file:"") .
             "\n\n" . $message.
             "\n\n" . $file . ":" . $line
 

@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <schema>
-    <table name="common_lang_languages" class="Arrow\Translations\Language">
+    <table name="common_lang_languages" class="Arrow\Translations\Models\Language">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="active" type="integer" size="1"/>
         <field name="code" type="VARCHAR" size="50"/>
         <field name="name" type="VARCHAR" size="50"/>
     </table>
-    <table name="common_lang_texts" class="Arrow\Translations\LanguageText">
+    <table name="common_lang_texts" class="Arrow\Translations\Models\LanguageText">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="hash" type="VARCHAR" size="32"/>
         <field name="last_use" type="DATE"/>
@@ -15,7 +15,7 @@
         <field name="original" type="TEXT"/>
         <field name="module" type="varchar" size="75"/>
     </table>
-    <table name="common_lang_objects_translaction" class="Arrow\Translations\ObjectTranslation">
+    <table name="common_lang_objects_translaction" class="Arrow\Translations\Models\ObjectTranslation">
         <field name="id" type="integer" primaryKey="true" autoIncrement="true" size="11"/>
         <field name="id_object" type="integer" required="true" size="11"/>
         <field name="class" type="varchar" required="true" size="225"/>

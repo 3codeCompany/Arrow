@@ -18,8 +18,8 @@
     </table>
     <table name="access_groups" class="AccessGroup" >
         <trackers>
-            <tracker  class="Arrow\Common\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="name" type="VARCHAR"/>
@@ -27,8 +27,8 @@
     </table>
     <table name="access_user_group" class="AccessUserGroup" >
         <trackers>
-            <tracker  class="Arrow\Common\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="user_id" type="INTEGER" size="30"/>
@@ -50,7 +50,7 @@
 
     <table name="access_points" class="AccessPoint" >
         <trackers>
-            <tracker  class="Arrow\Common\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="point_type" type="VARCHAR" size="20"/>
@@ -63,8 +63,8 @@
 
     <table name="access_points_groups" class="AccessPointGroup">
         <trackers>
-            <tracker  class="Arrow\Common\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\ORMObjectsArchiver" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="access_points_id" type="INTEGER"/>
