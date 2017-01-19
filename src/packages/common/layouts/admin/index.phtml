@@ -18,14 +18,14 @@
 
     <!-- end Needs images -->
 
-    <link rel="stylesheet" href="assets/engine/src/packages/org.arrowplatform.common/resources/panel/css/panel.css">
-    <link rel="stylesheet" href="assets/engine/src/packages/org.arrowplatform.common/resources/panel/css/theme-<?= $this["user"]->getSetting('admin-theme', 'blue') ?>.css">
+    <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/panel.css">
+    <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/theme-<?= $this["user"]->getSetting('admin-theme', 'blue') ?>.css">
 
 </head>
 <body id="app" class="app app <?= $this["user"]->getSetting('sidebar-collapse', 1) ? 'nav-collapsed-min' : '' ?>" >
 
 <div id="admin-loading-indicator" style="display: none;">
-    <img src="assets/engine/src/packages/org.arrowplatform.common/resources/panel/images/382.GIF" alt="">
+    <img src="assets/engine/src/packages/common/resources/panel/images/382.GIF" alt="">
 </div>
 <div id="admin-loading-indicator-info" style="display: none;">asdasda</div>
 
@@ -160,7 +160,7 @@
 
 <script type="text/javascript"  src="assets/require.js"></script>
 <script type="text/javascript">
-    require([ "engine/src/packages/org.arrowplatform.common/resources/panel/panel" ]);
+    require([ "engine/src/packages/common/resources/panel/panel" ]);
 </script>
 <? $pathCss = "assets/controls/dist/serenity.css"; ?>
 <link rel="stylesheet" type="text/css" href="<?= $pathCss. "?" . filemtime($pathCss) ?>"/>
