@@ -19,8 +19,8 @@
   "extra": {
     "component": {
       "files": [
-        "src/packages/org.arrowplatform.common/resources/panel/*.*",
-        "src/packages/org.arrowplatform.common/resources/panel/**/*.*"
+        "src/packages/common/resources/panel/*.*",
+        "src/packages/common/resources/panel/**/*.*"
       ]
     }
   }

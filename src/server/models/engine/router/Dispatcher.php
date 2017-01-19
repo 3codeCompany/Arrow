@@ -80,7 +80,16 @@ class Dispatcher
                 $data["controller"] = $equateConf;
 
                 $file = self::$classPathResolver->findFile($equateConf);
+
+                //problem z symlinkami - zwracają mylącą ścieżkę dla sysstemu
+                if (strpos($file, "vendor") !== false) {
+                    $tmp = explode("vendor", $file);
+                    $file = "vendor" . $tmp[1];
+                }
+
                 $xpath = str_replace( [ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["","",DIRECTORY_SEPARATOR], dirname($file));
+
+
 
                  foreach($packages as $name => $dir){
                     $dir = str_replace("/",DIRECTORY_SEPARATOR, $dir);

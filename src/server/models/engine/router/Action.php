@@ -213,9 +213,7 @@ class Action implements \ArrayAccess, IAction
 
         if (file_exists($file)) {
             return file_get_contents($file);
-        }
-
-        if (!file_exists($file)) {
+        }else{
             $parent = dirname($file);
             if (!file_exists($parent)) {
                 if(!@mkdir($parent, 0777, true)){
@@ -303,6 +301,7 @@ class Action implements \ArrayAccess, IAction
             if(file_exists($file) && !file_exists($appFile))
                 return $file;
         }
+
         return $appFile;
 
     }
