@@ -1,4 +1,5 @@
 <?php
+
 namespace Arrow\Communications\Controllers\Mailer;
 
 use App\Layouts\Mailer\MailerLayout;
@@ -37,10 +38,9 @@ class MailerController extends Controller
     private $c = true;
 
 
-
-
-    public function prepareContent($conf, $data){
-        if(!is_array($conf))
+    public function prepareContent($conf, $data)
+    {
+        if (!is_array($conf))
             $conf = $this->configuration[$conf];
 
         $view = Dispatcher::getDefault()->get($conf[0]);
@@ -93,38 +93,6 @@ class MailerController extends Controller
     }
 
 
-    public function mailer_account_register(Action $view, $request)
-    {
-        $view->setLayout(new MailerLayout());
-
-        $user = User::get()
-            ->findByKey($request["key"]);
-
-        $view->assign("user", $user);
-
-    }
-
-    public function mailer_contact(Action $view, $request)
-    {
-        $view->setLayout(new MailerLayout());
-
-
-        $view->assign("mail", $request["email"]);
-        $view->assign("content", $request["content"]);
-
-
-    }
-
-    public function mailer_account_forgotPassword(Action $view, $request)
-    {
-        $view->setLayout(new MailerLayout());
-
-        $user = User::get()
-            ->findByKey($request["key"]);
-
-        $view->assign("user", $user);
-        $view->assign("newPassword", $request["newPassword"]);
-    }
 
     public function eventRunBeforeAction(Action $action)
     {
@@ -168,7 +136,6 @@ class MailerController extends Controller
 
         $view->assign("style_th", 'text-align: center; font-size: 13px; padding: 4px; background-color: rgb(240,240,240); font-weight: bold;');
         $view->assign("style_td", 'text-align: right; font-size: 11px;padding: 6px;');
-
 
 
         $view->addParser(new ViewParser("/\-\|(.+?)\|\-/", function ($matches) {
