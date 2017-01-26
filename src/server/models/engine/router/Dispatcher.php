@@ -22,6 +22,7 @@ class Dispatcher
 
     public function resolvePath($path)
     {
+
         if ($path[0] == ".") {
             $tmp = explode("/",Router::getActionParameter());
             $tmp[count($tmp)-1] = substr( $path, 2 );
@@ -90,7 +91,6 @@ class Dispatcher
                 $xpath = str_replace( [ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["","",DIRECTORY_SEPARATOR], dirname($file));
 
 
-
                  foreach($packages as $name => $dir){
                     $dir = str_replace("/",DIRECTORY_SEPARATOR, $dir);
 
@@ -105,7 +105,11 @@ class Dispatcher
                 $data["controller"] = $equateConf["__controller"];
 
                 $file = self::$classPathResolver->findFile($data["controller"]);
-                $xpath = str_replace( [ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["","",DIRECTORY_SEPARATOR], dirname($file));
+
+                //@todo zmienić ten sposob na niezalezny od composera
+                $file = "/vendor".explode("vendor", dirname($file))[1];
+
+                $xpath = str_replace( [ "composer/../", "/"], ["",DIRECTORY_SEPARATOR], dirname($file));
 
                  foreach($packages as $name => $dir){
                     $dir = str_replace("/",DIRECTORY_SEPARATOR, $dir);
@@ -120,6 +124,7 @@ class Dispatcher
                     $data["shortPath"]  = $equateConf["__actionPrefix"]."/".$data["shortPath"];
             }
         }
+
 
 
         return $data;

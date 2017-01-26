@@ -293,6 +293,7 @@ class Action implements \ArrayAccess, IAction
     public function getFile()
     {
         $appFile = ".".DIRECTORY_SEPARATOR."app".DIRECTORY_SEPARATOR."views" . $this->path.".phtml";
+
         if ($this->package != "app"){
 
 
