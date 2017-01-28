@@ -3,10 +3,10 @@ namespace Arrow\Common;
 
 use
 Arrow\ORM\Persistent\Criteria,
-Arrow\Access\Auth,
-Arrow\Access\AccessManager,
+Arrow\Access\Models\Auth,
+AccessManager,
 \Arrow\RequestContext,
-\Arrow\Access\AccessAPI,
+\Arrow\Access\Models\AccessAPI,
 Arrow\ViewManager;
 use Arrow\Router;
 
@@ -16,7 +16,7 @@ class EmptyLayout extends \Arrow\Models\AbstractLayout{
     public function createLayout(ViewManager $manager)
     {
         if(!isset($this->view["user"]))
-            $manager->get()->assign("user", \Arrow\Access\Auth::getDefault()->getUser());
+            $manager->get()->assign("user", \Arrow\Access\Models\Auth::getDefault()->getUser());
 
         $this->view = $manager->get();
 

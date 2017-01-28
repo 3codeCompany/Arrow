@@ -8,7 +8,7 @@ namespace Arrow\Models;
  * To change this template use File | Settings | File Templates.
  */
 use Arrow\Exception;
-use Arrow\Access\AccessAPI;
+use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
 
 class Action implements \ArrayAccess, IAction

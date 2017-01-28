@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Access;
+namespace Arrow\Access\Models;
 use Arrow\Exception;
 use Arrow\Models\SessionHandler;
 use \Arrow\ORM\Persistent\Criteria;
@@ -77,7 +77,7 @@ class Auth
     }
 
     /**
-     * @return \Arrow\Access\User
+     * @return \Arrow\Access\Models\User
      */
     public function getShadowUser()
     {
@@ -152,7 +152,7 @@ class Auth
     {
 
         if(!$user){
-            $result = Criteria::query('\Arrow\Access\User')
+            $result = Criteria::query('\Arrow\Access\Models\User')
                 ->c("login", $login)
                 ->find();
 
@@ -176,7 +176,7 @@ class Auth
 
 
         $initVal[Track::F_ACTION] = "login";
-        $initVal[Track::F_CLASS] = 'Arrow\Access\User';
+        $initVal[Track::F_CLASS] = 'Arrow\Access\Models\User';
         $initVal[Track::F_OBJECT_ID] = $result["id"];
         $initVal[Track::F_USER_ID] = $result["id"];
         if (isset($_SERVER["REMOTE_ADDR"]))
@@ -247,7 +247,7 @@ class Auth
     }
 
     public function refreshUserData(){
-        $this->user = $result = Criteria::query('\Arrow\Access\User')
+        $this->user = $result = Criteria::query('\Arrow\Access\Models\User')
             ->c("id", $this->user->getPKey())
             ->findFirst();
         $_SESSION["auth"]["user"] = serialize($this->user);

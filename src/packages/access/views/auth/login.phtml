@@ -16,7 +16,7 @@
 
     <!-- end Needs images -->
 
-    <link rel="stylesheet" href="assets/arrow/css/panel.css">
+    <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/panel.css">
 
 </head>
 <body data-ng-app="app" style="height: 100%;" id="app" class="app" data-custom-page="" data-off-canvas-nav="" data-ng-controller="AppCtrl" data-ng-class=" {'layout-boxed': admin.layout === 'boxed' } ">
@@ -29,6 +29,7 @@ $form = $this["form"];
 $tmp = file_get_contents("http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US");
 $tmp = json_decode($tmp, true);
 
+
 ?>
 <div class="main-container" style="height: 100%;">
     <section id="content" class="content-container animate-fade-up" autoscroll="1" style="margin-left: 0; height: 100%; transition: 0.1; background-image: url(//www.bing.com/<?= $tmp["images"][0]["url"] ?>); background-position: center center;">
@@ -40,7 +41,7 @@ $tmp = json_decode($tmp, true);
 
             <div class="signin-header" style="margin: 0;">
                 <section class="logo text-center">
-                    <a href="#/"><?= \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title") ?></a>
+                    <a href="#/"><?=$this["applicationTitle"] ?></a>
                 </section>
             </div>
 

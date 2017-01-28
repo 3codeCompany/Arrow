@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Models;
-use Arrow\Access\AccessAPI;
-use Arrow\Access\Auth;
+use Arrow\Access\Models\AccessAPI;
+use Arrow\Access\Models\Auth;
 use Arrow\RequestContext;
 use Arrow\Router;
 
@@ -176,7 +176,7 @@ abstract class Controller implements IController
         if($action){
             print "[ {$action->getPath()} ]";
         }
-        exit("zzz");
+        exit("");
 
     }
 

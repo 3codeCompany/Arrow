@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Access;
+namespace Arrow\Access\Models;
 use Arrow\ORM\Persistent\PersistentObject,
     Arrow\ORM\SqlRouter;
 use Arrow\Utils\Developer;
@@ -34,10 +34,10 @@ class AccessGroup extends \Arrow\ORM\ORM_Arrow_Access_AccessGroup
 
     public function beforeObjectDelete(PersistentObject $object)
     {
-        $userCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Access\AccessUserGroup')->c("group_id", $this->getPKey())->find();
+        $userCon = AccessUserGroup::get()->c("group_id", $this->getPKey())->find();
         foreach($userCon as $c) $c->delete();
 
-        $pointCon = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Access\AccessPointGroup')->c("group_id", $this->getPKey())->find();
+        $pointCon = AccessPointGroup::get()->c("group_id", $this->getPKey())->find();
         foreach($pointCon as $c) $c->delete();
 
         //remove group from access control

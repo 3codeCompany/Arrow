@@ -1,5 +1,6 @@
 <?php
-namespace Arrow\Access;
+namespace Arrow\Access\Models;
+use Arrow\Access\Models\AccessUserGroup;
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
 use Arrow\ORM\Persistent\PersistentObject;
@@ -91,7 +92,7 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
      */
     public function setGroups($groups)
     {
-        $res = Criteria::query('Arrow\Access\AccessUserGroup')
+        $res = AccessUserGroup::get()
             ->c("user_id", $this->getPKey())
             ->find();
 

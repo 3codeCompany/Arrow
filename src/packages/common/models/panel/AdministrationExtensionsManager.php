@@ -1,7 +1,7 @@
 <?php
 namespace Arrow\Common;
 use Arrow\Controls\api\common\Icons;
-use Arrow\Access\AccessAPI;
+use Arrow\Access\Models\AccessAPI;
 /**
  * Created by JetBrains PhpStorm.
  * User: artur

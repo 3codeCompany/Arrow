@@ -4,7 +4,7 @@ namespace Arrow\Media;
 
 use Arrow\Models\Operation;
 use Arrow\ORM\Persistent\Criteria,
-    \Arrow\Access\Auth,
+    \Arrow\Access\Models\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\View;
 use Arrow\Common\EmptyLayout;
 

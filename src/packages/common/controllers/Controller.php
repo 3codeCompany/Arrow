@@ -13,7 +13,7 @@ use Arrow\Controls\api\SerenityJS;
 use Arrow\Models\Action;
 use Arrow\Models\Operation;
 use Arrow\ORM\Persistent\Criteria,
-\Arrow\Access\Auth,
+\Arrow\Access\Models\Auth,
 \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\View;
 use Arrow\Router;
 
@@ -48,7 +48,7 @@ class Controller extends \Arrow\Models\Controller
             ->c(Track::F_CLASS, $request["model"])
             ->c(Track::F_OBJECT_ID, $request["object_id"])
             ->order(Track::F_DATE, Criteria::O_DESC)
-            ->join(\Arrow\Access\User::getClass())
+            ->join(\Arrow\Access\Models\User::getClass())
             ->find();
 
         $view->assign("track", $track);

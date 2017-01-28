@@ -14,8 +14,8 @@ class Track extends ORM_Arrow_Common_Models_Track_Track
     public function __construct($initialData = null){
         $initialData[self::F_DATE] = date( "Y-m-d H:i:s" );
         if(!isset($initialData[self::F_USER_ID])){
-            if( \Arrow\Access\Auth::getDefault()->isLogged())
-                $initialData[self::F_USER_ID] = \Arrow\Access\Auth::getDefault()->getUser()->getPKey();
+            if( \Arrow\Access\Models\Auth::getDefault()->isLogged())
+                $initialData[self::F_USER_ID] = \Arrow\Access\Models\Auth::getDefault()->getUser()->getPKey();
             else
                 $initialData[self::F_USER_ID] = -1;
         }

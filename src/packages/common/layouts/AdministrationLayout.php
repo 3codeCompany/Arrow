@@ -7,9 +7,9 @@ use Arrow\Controls\api\WidgetsSet;
 use Arrow\Models\Project;
 use
 Arrow\ORM\Persistent\Criteria,
-Arrow\Access\Auth,
+Arrow\Access\Models\Auth,
 \Arrow\RequestContext,
-\Arrow\Access\AccessAPI, \Arrow\Access\User,
+\Arrow\Access\Models\AccessAPI, \Arrow\Access\Models\User,
 Arrow\ViewManager;
 use Arrow\ORM\Table;
 use Arrow\Router;

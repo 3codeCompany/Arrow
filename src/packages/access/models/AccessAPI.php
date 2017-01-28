@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Access;
+namespace Arrow\Access\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\ORM\Persistent\Criteria;
@@ -8,10 +8,6 @@ use Arrow\Router;
 use Arrow\ViewManager, Arrow\Controller, Arrow\Models\Action;
 use Arrow\Models\Project;
 
-interface AccessControledObject
-{
-    public function getLoginTemplate();
-}
 
 class AccessAPI
 {
@@ -55,7 +51,7 @@ class AccessAPI
 
         $pointObjectFriendlyId = str_replace("\\","/", $pointObjectFriendlyId);
 
-        $point = Criteria::query('Arrow\Access\AccessPoint')
+        $point = Criteria::query('Arrow\Access\Models\AccessPoint')
             ->c("point_type", $pointType)
             ->c("point_action", $pointAction)
             ->c("point_object_friendly_id", $pointObjectFriendlyId)

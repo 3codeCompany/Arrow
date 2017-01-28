@@ -10,7 +10,7 @@ namespace Arrow\Access\Tests;
 
 
 use Arrow\Access\Controllers\MailerController;
-use Arrow\Access\User;
+use Arrow\Access\Models\User;
 use Arrow\Shop\Models\Persistent\Order;
 use Arrow\Translations\Models\Translations;
 

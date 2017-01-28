@@ -3,7 +3,7 @@ namespace Arrow\Common;
 use Arrow\Controls\api\common\Icons;
 use Arrow\Controls\api\common\Link;
 use Arrow\Controls\api\SerenityJS;
-use Arrow\Access\User;
+use Arrow\Access\Models\User;
 use Arrow\RequestContext;
 use Arrow\Router;
 

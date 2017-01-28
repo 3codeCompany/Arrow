@@ -11,7 +11,7 @@ use Arrow\Models\ViewParser;
 use Arrow\ORM\Persistent\Criteria, Arrow\Models\View, Arrow\RequestContext, Arrow\Models\Operation;
 
 
-use Arrow\Access\User;
+use Arrow\Access\Models\User;
 use Arrow\Translations\Models\Translations;
 use Arrow\Communication\MailerAPI;
 use Arrow\Package\CRM\Task;

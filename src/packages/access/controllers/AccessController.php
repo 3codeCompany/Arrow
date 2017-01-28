@@ -1,23 +1,27 @@
 <?php
 
-namespace Arrow\Access;
+namespace Arrow\Access\Controllers;
 
+use Arrow\Access\Models\AccessAPI;
+use Arrow\Access\Models\Auth;
+use Arrow\Access\Models\User;
 use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\AjaxLink;
-use Arrow\Controls\api\common\BreadcrumbElement;use Arrow\Controls\api\common\ContextMenu;
-use Arrow\Controls\api\common\Events;
-use Arrow\Controls\api\common\HTML;
-use Arrow\Controls\api\common\HTMLNode;
+use Arrow\Controls\api\common\BreadcrumbElement;
+use Arrow\Controls\api\common\ContextMenu;
 use Arrow\Controls\api\common\Icons;
 use Arrow\Controls\api\common\Link;
-use Arrow\Controls\API\Components\Breadcrumb;use Arrow\Controls\API\Components\MultiFile;
+use Arrow\Controls\API\Components\Breadcrumb;
+use Arrow\Controls\API\Components\MultiFile;
 use Arrow\Controls\API\Components\Toolbar;
-use Arrow\Controls\API\FilterPanel;use Arrow\Controls\api\Filters\SelectFilter;use Arrow\Controls\API\FiltersPresenter;use Arrow\Controls\API\Forms\Fields\Hidden;
+use Arrow\Controls\API\FilterPanel;
+use Arrow\Controls\api\Filters\SelectFilter;
+use Arrow\Controls\API\FiltersPresenter;
+use Arrow\Controls\API\Forms\Fields\Hidden;
 use Arrow\Controls\API\Forms\Fields\Select;
 use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
-use Arrow\Controls\API\Forms\FieldsList;
 use Arrow\Controls\API\Forms\Form;
 use Arrow\Controls\API\Forms\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
@@ -27,20 +31,12 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
-
-use Arrow\Models\Dispatcher;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
-
 use Arrow\Package\Application\Language;
 use Arrow\Common\AdministrationLayout;
-use Arrow\Common\AdministrationPopupLayout;
 use Arrow\Common\EmptyLayout;
-use Arrow\Common\FormHelper;
-use Arrow\Common\Links;
-use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDataSource;
-use Arrow\Common\TableHelper;
 use Arrow\Router;
 use Arrow\Controls\API\Table\Table;
 use
@@ -56,7 +52,6 @@ use
  * Time: 14:20
  * To change this template use File | Settings | File Templates.
  */
-
 class AccessController extends \Arrow\Models\Controller
 {
 
@@ -65,15 +60,14 @@ class AccessController extends \Arrow\Models\Controller
         //AccessAPI::checkInstallation();
     }
 
-
     public function auth_login(Action $view, RequestContext $request)
     {
-        $path = RequestContext::getProtocol().$_SERVER["HTTP_HOST"].str_replace([ARROW_DOCUMENTS_ROOT, DIRECTORY_SEPARATOR], ["","/"],__DIR__);
-        $path.= "/../../org.arrowplatform.common/layouts/admin/";
+        $path = RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . str_replace([ARROW_DOCUMENTS_ROOT, DIRECTORY_SEPARATOR], ["", "/"], __DIR__);
+        $path .= "/../../org.arrowplatform.common/layouts/admin/";
 
 
-        if(Auth::getDefault()->isLogged()){
-            header("Location: ".(RequestContext::getBaseUrl())."admin");
+        if (Auth::getDefault()->isLogged()) {
+            header("Location: " . (RequestContext::getBaseUrl()) . "admin");
             exit();
         }
 
@@ -83,7 +77,7 @@ class AccessController extends \Arrow\Models\Controller
 
         User::F_ID;
         $form = Form::_new("login")
-            ->setAction( Router::link("access/auth/loginAction") )
+            ->setAction(Router::link("access/auth/loginAction"))
             ->setNamespace("data");
 
 
@@ -106,8 +100,8 @@ class AccessController extends \Arrow\Models\Controller
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
 
-        if( !$validator->check() )
-            $this->json( $validator->response() );
+        if (!$validator->check())
+            $this->json($validator->response());
 
 
         $authHandler = Auth::getDefault();
@@ -115,19 +109,16 @@ class AccessController extends \Arrow\Models\Controller
         $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
 
 
-        if(!$authHandler->isLogged()){
+        if (!$authHandler->isLogged()) {
             $validator->addError("Nieprawidłowy login lub hasło");
-            $this->json( $validator->response() );
+            $this->json($validator->response());
         }
 
 
-
-
-        $this->json( ["redirectTo" => trim($request["from"]?$request["from"]:Router::getBasePath()."/admin", "/" )]);
+        $this->json(["redirectTo" => trim($request["from"] ? $request["from"] : Router::getBasePath() . "/admin", "/")]);
 
 
     }
-
 
     public function auth_logout(IAction $action, RequestContext $request)
     {
@@ -135,7 +126,6 @@ class AccessController extends \Arrow\Models\Controller
         $authHandler->doLogout();
         $this->back();
     }
-
 
     public function dashboard_main(Action $view, RequestContext $request)
     {
@@ -152,7 +142,7 @@ class AccessController extends \Arrow\Models\Controller
             ->c(Track::F_OBJECT_ID, $user["id"])
             ->c(Track::F_ACTION, "login")
             ->limit(0, 10);
-            //->order("id", Criteria::O_DESC);
+        //->order("id", Criteria::O_DESC);
 
         $cols = ColumnList::create()
             ->addColumn(Simple::_new(Track::F_DATE));
@@ -160,44 +150,38 @@ class AccessController extends \Arrow\Models\Controller
 
 
         $l = LayoutBuilder::create()
-            ->panel("Twoje konto",Icons::USER);
+            ->panel("Twoje konto", Icons::USER);
 
 
-        $form = Form::_new("editAccount",$user)
+        $form = Form::_new("editAccount", $user)
             ->setAction(Router::link("./accountSave"))
             ->on(Form::EVENT_SUCCESS, "alert('Zapisano');")
             ->setNamespace("data");
 
         $l
-
             ->tabSet()
             ->tab("Dane konta")
             ->form($form)
             ->formText("Login", $user->_login())
-
-
             /*->row()
             ->formField("Dział", Text::_new(User::F_EMAIL, "Dział"),[LayoutBuilder::CONF_COLUMNS => 4])
             ->formField("Stanowisko", Text::_new(User::F_EMAIL, "Email"),[LayoutBuilder::CONF_COLUMNS => 4])
             ->rowEnd()*/
-            ->formField("Email", Text::_new(User::F_EMAIL, "Email"),[LayoutBuilder::CONF_COLUMNS => 4])
+            ->formField("Email", Text::_new(User::F_EMAIL, "Email"), [LayoutBuilder::CONF_COLUMNS => 4])
             //->formField("Tel. stacjonarny", Text::_new(User::F_EMAIL, "Tel. stacjonarny"),[LayoutBuilder::CONF_COLUMNS => 3])
             //->formField("Tel. komórkowy", Text::_new(User::F_EMAIL, "Tel. komórkowy"),[LayoutBuilder::CONF_COLUMNS => 3])
 
-            ->formField("Zmień hasło", Text::_new(User::F_PASSWORD, "Zostaw puste jeśli nie zmieniasz")->setValue(""),[LayoutBuilder::CONF_COLUMNS => 4])
+            ->formField("Zmień hasło", Text::_new(User::F_PASSWORD, "Zostaw puste jeśli nie zmieniasz")->setValue(""), [LayoutBuilder::CONF_COLUMNS => 4])
             ->row()
-                ->label("Avatar")
-                ->col2(MultiFile::_new("photo", $user))
+            ->label("Avatar")
+            ->col2(MultiFile::_new("photo", $user))
             ->rowEnd()
-            ->add($form->getSubmit(),["offset" => 2])
+            ->add($form->getSubmit(), ["offset" => 2])
             ->separator()
-
             ->formEnd()
             ->tabEnd()
             //->tab("Ostatnie logowania")
-            ->tabSetEnd()
-        ;
-
+            ->tabSetEnd();
 
 
         $view->setGenerator(AdministrationLayout::page($l));
@@ -253,79 +237,78 @@ class AccessController extends \Arrow\Models\Controller
     {
         $ds = TableDataSource::fromClass(User::getClass());
 
-        $filterPanel = FilterPanel::create() 
-            ->addSection("Użytkownik",[
-                SelectFilter::create("access_group","Grupa dostępu")
-                    ->setContent([ 0 => "---"  ] + AccessGroup::get()->_id(1, Criteria::C_NOT_EQUAL)->findAsFieldArray(AccessGroup::F_NAME,true)),
-        ]);
+        $filterPanel = FilterPanel::create()
+            ->addSection("Użytkownik", [
+                SelectFilter::create("access_group", "Grupa dostępu")
+                    ->setContent([0 => "---"] + AccessGroup::get()->_id(1, Criteria::C_NOT_EQUAL)->findAsFieldArray(AccessGroup::F_NAME, true)),
+            ]);
 
         $filters = $filterPanel->getFilterValues();
         $options = $filterPanel->getFilterOptions();
-        foreach( $filters as $field => $value){
-            if($value){
-                if($field == "access_group"){
-                    $ds->_join(AccessUserGroup::getClass(),["id" => AccessUserGroup::F_USER_ID],"AG",["id"]);
-                    $ds->c("AG:".AccessUserGroup::F_GROUP_ID, $value);
+        foreach ($filters as $field => $value) {
+            if ($value) {
+                if ($field == "access_group") {
+                    $ds->_join(AccessUserGroup::getClass(), ["id" => AccessUserGroup::F_USER_ID], "AG", ["id"]);
+                    $ds->c("AG:" . AccessUserGroup::F_GROUP_ID, $value);
                 }
             }
         }
 
         $l = LayoutBuilder::create();
         $l->col12(Toolbar::_new([
-                Breadcrumb::create([
+            Breadcrumb::create([
                 "System",
                 BreadcrumbElement::create("Użytkownicy")->setActive(1)
-                ]),
-                Link::_new("Dodaj")
-                    ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")).SerenityJS::returnFalse())
-                    ->addLinkCSSClass("btn btn-primary")
-            ]));
+            ]),
+            Link::_new("Dodaj")
+                ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")) . SerenityJS::returnFalse())
+                ->addLinkCSSClass("btn btn-primary")
+        ]));
 
-        $table = Table::create("users" ,$ds)
+        $table = Table::create("users", $ds)
             ->setContextData(["id"])
-            ->on(Table::EVENT_ROW_CLICKED, SerenityJS::hash(Router::link("./edit?key=#{context.id}" )));
+            ->on(Table::EVENT_ROW_CLICKED, SerenityJS::hash(Router::link("./edit?key=#{context.id}")));
         $table->getColumnsList()
-            ->addColumn(Simple::_new("id","id")->setWidth(70))
-            ->addColumn(Editable::_boolswitch("active","Aktywny", Router::link("./save?activity=1") ,["id"])->setWidth(60))
-            ->addColumn(Simple::_new("login","login"))
-            ->addColumn(Simple::_new(User::F_EMAIL,"Email"))
-            ->addColumn(Template::_new(function( User $context){
-                return implode(",",$context->getAccessGroups());
-            },"Grupy dostępu"))
-            ->addColumn( Template::_new(function( User $context) use ($table){
-                return ContextMenu::_new( [
-                    Link::_new(Icons::icon(Icons::PENCIL)." Edytuj")->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit?key=".$context->_id() ))),
+            ->addColumn(Simple::_new("id", "id")->setWidth(70))
+            ->addColumn(Editable::_boolswitch("active", "Aktywny", Router::link("./save?activity=1"), ["id"])->setWidth(60))
+            ->addColumn(Simple::_new("login", "login"))
+            ->addColumn(Simple::_new(User::F_EMAIL, "Email"))
+            ->addColumn(Template::_new(function (User $context) {
+                return implode(",", $context->getAccessGroups());
+            }, "Grupy dostępu"))
+            ->addColumn(Template::_new(function (User $context) use ($table) {
+                return ContextMenu::_new([
+                    Link::_new(Icons::icon(Icons::PENCIL) . " Edytuj")->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit?key=" . $context->_id()))),
                     ContextMenu::separator(),
-                    AjaxLink::_new(Icons::icon(Icons::TRASH_O)." Usuń", Router::link("./delete?key=".$context->_id()))
+                    AjaxLink::_new(Icons::icon(Icons::TRASH_O) . " Usuń", Router::link("./delete?key=" . $context->_id()))
                         ->setSuccessInformation("Usunięto")
                         ->setConfirmQuestion("Czy napewno usunąć `{$context->_login()}`?")
                         ->setSuccessRefresh($table->getId())
-                    ] )->generate();
-            }, "Opcje"))
+                ])->generate();
+            }, "Opcje"));
 
-        ;
-
-        $table->prependWidged(FiltersPresenter::create([$table,$filterPanel]));
+        $table->prependWidged(FiltersPresenter::create([$table, $filterPanel]));
         $filterPanel->addConnectedWidget($table);
 
         $l->add($table);
         $l->insert($filterPanel);
         $l->insert($filterPanel->getOpenButton());
-        $view->setGenerator(AdministrationLayout::page( new WidgetsSet([ $l])));
+        $view->setGenerator(AdministrationLayout::page(new WidgetsSet([$l])));
 
     }
 
-    public function users_delete( $view, RequestContext $request){
+    public function users_delete($view, RequestContext $request){
         $user = User::get()->findByKey($request["key"]);
         $user->delete();
         $this->json([1]);
     }
+
     public function users_edit(Action $view, RequestContext $request)
     {
-        $view->setLayout( new EmptyLayout());
+        $view->setLayout(new EmptyLayout());
 
         $user = User::get()->findByKey($request["key"]);
-        $form = Form::_new("edit",$user)
+        $form = Form::_new("edit", $user)
             ->setNamespace("data")
             ->addHiddenField("key", $request["key"])
             ->setAction(Router::link("./save"))
@@ -333,23 +316,23 @@ class AccessController extends \Arrow\Models\Controller
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
         $selectedGroups = [];
-        if($user){
+        if ($user) {
             $selectedGroups = AccessUserGroup::get()
                 ->c("user_id", $user->getPKey())
                 ->findAsFieldArray('group_id');
         }
 
         $list = LayoutBuilder::create()
-           ->insert(Toolbar::_new([
+            ->insert(Toolbar::_new([
                 Breadcrumb::create([
                     "System",
-                    BreadcrumbElement::create("Użytkownicy",SerenityJS::hash(Router::link("./list"))),
-                    BreadcrumbElement::create($user?$user->_login():"Nowy")->setActive(1)
+                    BreadcrumbElement::create("Użytkownicy", SerenityJS::hash(Router::link("./list"))),
+                    BreadcrumbElement::create($user ? $user->_login() : "Nowy")->setActive(1)
                 ]),
                 $form->getSubmit(),
                 Link::_new("Anuluj")
-                ->on(Link::EVENT_CLICK, SerenityJS::back())
-                ->addCSSClass("btn btn-default")
+                    ->on(Link::EVENT_CLICK, SerenityJS::back())
+                    ->addCSSClass("btn btn-default")
 
             ]))
             ->form($form)
@@ -357,27 +340,26 @@ class AccessController extends \Arrow\Models\Controller
             ->formField("Login", Text::_new(User::F_LOGIN));
 
 
-        if(class_exists("Language")){
+        if (class_exists("Language")) {
             $langs = Language::get()->find();
 
-            if($langs->count() > 1){
+            if ($langs->count() > 1) {
                 $tmp = [];
 
-                foreach($langs as $l){
+                foreach ($langs as $l) {
                     $tmp[$l->_code()] = $l->_name();
                 }
                 $keys = array_keys($tmp);
-                if(defined("User::F_LANG"))
+                if (defined("User::F_LANG"))
                     $list->formField("Język", SwitchF::_new(User::F_LANG, $tmp, reset($keys)));
             }
         }
 
         $list
-
             ->formField("Email", Text::_new(User::F_EMAIL))
             //->formField("External id", Text::_new(User::F_EXTERNAL_ID))
-            ->formField("Aktywny", SwitchF::_bool(User::F_ACTIVE,1))
-            ->formField(null,Hidden::_new("accessGroups][","")->setNamespace("parameters"))
+            ->formField("Aktywny", SwitchF::_bool(User::F_ACTIVE, 1))
+            ->formField(null, Hidden::_new("accessGroups][", "")->setNamespace("parameters"))
             ->formField("Grupy dostępu",
                 Select::_multi("accessGroups", $groups)
                     ->setValue($selectedGroups)
@@ -388,7 +370,6 @@ class AccessController extends \Arrow\Models\Controller
             ->sectionEnd()
             ->panelEnd()
             ->panel("Zmiana hasła", Icons::KEY)
-
             ->formField("Hasło", Text::_new(User::F_PASSWORD)->setValue(""))
             ->formField("Powtórz", Text::_new("repassword")->setNamespace(""))
             ->sectionEnd()
@@ -396,29 +377,28 @@ class AccessController extends \Arrow\Models\Controller
             ->formEnd();
 
 
-
-
         $view->assign("generator", AdministrationLayout::page($list));
 
     }
 
-    public function users_save( $view, RequestContext $request){
-        if($request["activity"]){
+    public function users_save($view, RequestContext $request)
+    {
+        if ($request["activity"]) {
             $user = User::get()
                 ->findByKey($request["id"]);
 
-            $user[User::F_ACTIVE] = $user->_active()?0:1;
+            $user[User::F_ACTIVE] = $user->_active() ? 0 : 1;
             $user->save();
             $this->json([1]);
         }
 
-        if($request["key"]) {
+        if ($request["key"]) {
             User::get()
                 ->findByKey($request["key"])
                 ->setValues($request["data"])
                 ->setParameters($request["parameters"])
                 ->save();
-        }else{
+        } else {
             $u = User::create($request["data"]);
             $u->setParameters($request["parameters"])
                 ->save();
@@ -428,62 +408,58 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-
-
     public function groups_list(Action $view, RequestContext $request)
     {
-        $view->setLayout( new EmptyLayout());
+        $view->setLayout(new EmptyLayout());
 
         $ds = TableDataSource::fromClass(AccessGroup::getClass())
-            ->c("id",4,Criteria::C_GREATER_THAN);
+            ->c("id", 4, Criteria::C_GREATER_THAN);
 
         $list = ColumnList::create()
             ->addColumn(Simple::_new("id", "id"))
             ->addColumn(Simple::_new("name", "Nazwa"))
-            ->addColumn( Template::_new(function( AccessGroup $context) {
-                return ContextMenu::_new( [
-                    Link::_new(Icons::icon(Icons::PENCIL)." Edytuj")->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit?key=".$context->_id() ))),
+            ->addColumn(Template::_new(function (AccessGroup $context) {
+                return ContextMenu::_new([
+                    Link::_new(Icons::icon(Icons::PENCIL) . " Edytuj")->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit?key=" . $context->_id()))),
                     ContextMenu::separator(),
-                    AjaxLink::_new(Icons::icon(Icons::TRASH_O)." Usuń", Router::link("./delete?key=".$context->_id()))
+                    AjaxLink::_new(Icons::icon(Icons::TRASH_O) . " Usuń", Router::link("./delete?key=" . $context->_id()))
                         ->setSuccessInformation("Usunięto")
                         ->setConfirmQuestion("Czy napewno usunąć `{$context->_name()}`?")
                         ->setSuccessRefresh("groups")
-                ] )->generate();
+                ])->generate();
             }, "Opcje"));
 
 
-        $table =  Table::create("groups",$ds,$list)
-
-        ->setContextData(["id"])
-        ->on(Table::EVENT_ROW_CLICKED, SerenityJS::hash(Router::link("./edit?key=#{context.id}" )));;
+        $table = Table::create("groups", $ds, $list)
+            ->setContextData(["id"])
+            ->on(Table::EVENT_ROW_CLICKED, SerenityJS::hash(Router::link("./edit?key=#{context.id}")));;
 
         $l = LayoutBuilder::create();
-        $l->insert(Toolbar::_new( [
+        $l->insert(Toolbar::_new([
             Breadcrumb::create([
-                    "System",
-                    BreadcrumbElement::create("Grupy dostępu")->setActive(1)
-                ]),
+                "System",
+                BreadcrumbElement::create("Grupy dostępu")->setActive(1)
+            ]),
             Link::_new("Dodaj")
-                ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")).SerenityJS::returnFalse())
+                ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")) . SerenityJS::returnFalse())
                 ->addLinkCSSClass("btn btn-primary")]));
         $l->add($table);
 
 
-        $view->assign("generator", AdministrationLayout::page( $l ));
+        $view->assign("generator", AdministrationLayout::page($l));
     }
 
-    public function groups_delete( $view, RequestContext $request){
+    public function groups_delete($view, RequestContext $request){
         AccessGroup::get()->findByKey($request["key"])->delete();
 
         $this->json([1]);
     }
 
-
     public function groups_edit(Action $view, RequestContext $request)
     {
-        $view->setLayout( new EmptyLayout());
+        $view->setLayout(new EmptyLayout());
         $group = AccessGroup::get()->findByKey($request['key']);
-        $form = Form::_new("edit",$group)
+        $form = Form::_new("edit", $group)
             ->setNamespace("data")
             ->addHiddenField("key", $request["key"])
             ->setAction(Router::link("./save"))
@@ -497,28 +473,27 @@ class AccessController extends \Arrow\Models\Controller
             ->panelEnd()
             ->formEnd();
 
-        $list->add(Toolbar::_new(null,[
+        $list->add(Toolbar::_new(null, [
             $form->getSubmit(),
             Link::_new("Anuluj")
                 ->on(Link::EVENT_CLICK, SerenityJS::back())
                 ->addCSSClass("btn btn-default")
         ]));
 
-        $view->assign("generator", AdministrationLayout::page( $list));
+        $view->assign("generator", AdministrationLayout::page($list));
 
     }
-    public function groups_save( $view, RequestContext $request)
+
+    public function groups_save($view, RequestContext $request)
     {
         if ($request["key"])
             AccessGroup::get()->findByKey($request["key"])->setValues($request["data"])->save();
-        else{
+        else {
             AccessGroup::create($request["data"]);
         }
 
         $this->json([1]);
     }
-
-
 
     public function access_list(Action $view, RequestContext $request)
     {
@@ -527,9 +502,6 @@ class AccessController extends \Arrow\Models\Controller
         $view->assign("agroups", $groups);
 
         $view->setLayout(new AdministrationLayout(), new EmptyLayout());
-
-
-
 
 
         $ds = TableDataSource::fromClass(AccessPoint::getClass());
@@ -541,29 +513,27 @@ class AccessController extends \Arrow\Models\Controller
             ->addColumn(Simple::_new("point_type", "Typ"))
             ->addColumn(Simple::_new("point_action", "Action"))
             ->addColumn(Simple::_new("point_object_friendly_id", "Friendly id"))
-            ->addColumn(Editable::_boolswitch("control_enabled","Control",Router::link("./changePointControl"),["id"]))
-            ->addColumn(Template::_new(function($context) use ($groups){
-                ?>
-                <select multiple="multiple" class="span5 group-select" context="<?=$context["id"]?>"">
-                <? foreach($groups as $id=>$name){ ?>
-                    <?if( !in_array($id, array(2,4))){ ?>
-                        <option <?=$id&$context["groups"]?'selected="selected"':''?> value="<?=$id?>" ><?=$name?></option>
-                    <? } ?>
-                <? } ?>
-                </select>
-                <?
-            }))
-        ;
-        $table = new Table("access",$ds,$list);
+            ->addColumn(Editable::_boolswitch("control_enabled", "Control", Router::link("./changePointControl"), ["id"]))
+            ->addColumn(Template::_new(function ($context) use ($groups) {
+                print '<select multiple="multiple" class="span5 group-select" context="'. $context["id"].' >';
+                foreach ($groups as $id => $name) {
+                    if (!in_array($id, array(2, 4))) {
+                        print  '<option'.( $id & $context["groups"] ? 'selected="selected"' : '' ).' value="'.$id .'">'.$name.'</option>';
+                    }
+                }
+                print  "</select>";
+
+            }));
+        $table = new Table("access", $ds, $list);
         $table->prependWidged(FiltersPresenter::create([$table]));
         $l = LayoutBuilder::create();
 
         $l->insert(Toolbar::_new([
-                Breadcrumb::create([
+            Breadcrumb::create([
                 "System",
                 BreadcrumbElement::create("Udzielone dostępy")->setActive(1)
-                ])
-            ]));
+            ])
+        ]));
 
         $table->addDataColumn(["groups"]);
         $l->add($table);
@@ -574,9 +544,10 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function access_changePointControl(){
+    public function access_changePointControl()
+    {
         $obj = AccessPoint::get()->findByKey($this->request["id"]);
-        $obj[AccessPoint::F_CONTROL_ENABLED] = $obj[AccessPoint::F_CONTROL_ENABLED]?0:1;
+        $obj[AccessPoint::F_CONTROL_ENABLED] = $obj[AccessPoint::F_CONTROL_ENABLED] ? 0 : 1;
         $obj->save();
         $this->json([1]);
     }
@@ -603,13 +574,13 @@ class AccessController extends \Arrow\Models\Controller
         $auth = Auth::getDefault();
         if (empty($request["loginToLoginAs"]) && empty($request["id"])) {
             $auth->restoreShadowUser();
-        }elseif($request["id"]){
+        } elseif ($request["id"]) {
             $user = User::get()->findByKey($request["id"]);
             $auth->doLogin($user["login"], false, true);
         } else
             $auth->doLogin($request["loginToLoginAs"], false, true);
 
-        if(RequestContext::getDefault()->isXHR())
+        if (RequestContext::getDefault()->isXHR())
             $this->json([true]);
         else
             $this->back();
@@ -641,27 +612,28 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function getUsers(){
+    public function getUsers()
+    {
         $q = RequestContext::getDefault()["q"];
 
         $result = User::get()
             ->setColumns([User::F_LOGIN, User::F_EMAIL])
             ->c(User::F_ACTIVE, 1)
             ->c(User::F_LOGIN, "", Criteria::C_NOT_EQUAL)
-            ->limit(0,10)
+            ->limit(0, 10)
             ->order(User::F_LOGIN);
 
 
-        $result->addSearchCondition([User::F_LOGIN, User::F_NAME], "%".$q."%");
+        $result->addSearchCondition([User::F_LOGIN, User::F_NAME], "%" . $q . "%");
 
         $result = $result->find();
 
         $data = [];
-        foreach($result as $el){
-            $data[] =[ "id" => $el["id"], "text" => $el["login"] ];
+        foreach ($result as $el) {
+            $data[] = ["id" => $el["id"], "text" => $el["login"]];
         }
 
-        $this->json([ "results" => $data, "more"=>false] );
+        $this->json(["results" => $data, "more" => false]);
     }
 
 

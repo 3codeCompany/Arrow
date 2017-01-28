@@ -4,7 +4,7 @@ namespace Arrow;
 
 use Arrow\Models\Action;
 use Arrow\Models\Dispatcher;
-use \Arrow\Models\Project, Arrow\Access\AccessAPI, Arrow\Models\View;
+use \Arrow\Models\Project, Arrow\Access\Models\AccessAPI, Arrow\Models\View;
 use Arrow\Models\TemplateLinker;
 
 /**

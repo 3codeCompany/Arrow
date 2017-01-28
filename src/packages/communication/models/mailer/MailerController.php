@@ -14,7 +14,7 @@ use Arrow\Models\ViewParser;
 use Arrow\ORM\Persistent\Criteria, Arrow\Models\View, Arrow\RequestContext, Arrow\Models\Operation;
 
 
-use Arrow\Access\User;
+use Arrow\Access\Models\User;
 use Arrow\Package\CRM\Task;
 use Arrow\Package\CRM\TaskCategory;
 use Arrow\Package\CRM\TaskStatus;

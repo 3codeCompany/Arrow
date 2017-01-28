@@ -2,7 +2,7 @@
 namespace Arrow\Common;
 use
     \Arrow\RequestContext,
-    \Arrow\Access\AccessAPI, \Arrow\Access\Auth,
+    \Arrow\Access\Models\AccessAPI, \Arrow\Access\Models\Auth,
     \Arrow\ORM\Persistent\Criteria,
     \Arrow\Controls\IFormContentProvider, \Arrow\Controls\IFormValuesSetter, Arrow\ViewManager;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Access;
+namespace Arrow\Access\Models;
 /**
  * Created by JetBrains PhpStorm.
  * User: artur

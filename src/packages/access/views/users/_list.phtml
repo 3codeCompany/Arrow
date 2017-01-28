@@ -8,7 +8,7 @@
     <ui:table title="Użytkownicy" ctrlId="users-list">
         <ui:tablesearch fields="id;login" />
         <data:source>
-            <data:model model="\Arrow\Access\User"/>
+            <data:model model="\Arrow\Access\Models\User"/>
         </data:source>
         <table:column name="Id" field="id"/>
         <table:column name="Login" field="login" width="400" class="ctrl-cell-live-menu"/>
@@ -52,7 +52,7 @@
 
         <ui:actionsGroup name="row">
             <ui:action id="history" name="Historia" type="dialog" width="500" height="350" template="common::/history">
-                <ui:param name="model" value="Arrow\Access\User"/>
+                <ui:param name="model" value="Arrow\Access\Models\User"/>
                 <ui:param name="object_id" value="#id#"/>
             </ui:action>
             <ui:action id="save" name="edytuj" type="dialog" template="access::/users/edit">

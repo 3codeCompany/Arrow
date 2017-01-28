@@ -1,6 +1,9 @@
 <?php namespace Arrow\Models;
 
 
+use Arrow\Router;
+use Monolog\Formatter\LineFormatter;
+
 class ExceptionHandler implements IExceptionHandler
 {
     const DISPLAY = "display";
@@ -159,12 +162,15 @@ class ExceptionHandler implements IExceptionHandler
         //zmienić aby było pobierane przez handlery
         $user = null;
         if (class_exists("\\Arrow\\Access\\Auth", false))
-            $user = \Arrow\Access\Auth::getDefault()->getUser();
+            $user = \Arrow\Access\Models\Auth::getDefault()->getUser();
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
-        if (($user == null || !$user->isInGroup("Developers"))) {
+
+        /*print $this->getHead().print $this->printDeveloperMessage($exception).$this->getFooter();
+        exit();*/
+        if (($user == null || !$user->isInGroup("Developers")) ) {
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
             $this->printXHRException($exception);
@@ -187,18 +193,23 @@ class ExceptionHandler implements IExceptionHandler
     private function logError( $exception, $contents)
     {
         $dir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors/" . date("Y-m-d");
-        $file = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
-        if (!file_exists($dir))
-            @mkdir($dir);
+        $logFile = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
 
-        @file_put_contents($dir . "/" . $file, $contents);
+
+        if (!file_exists($dir))
+            mkdir($dir,0755, true);
+
+
+        file_put_contents($dir . "/" . $logFile, $contents);
         $logger = new \Monolog\Logger('mySiteLog');
+
         $hipChatHandler = new \Monolog\Handler\HipChatHandler(
             "LgyH7guDV2ZJ6VDubma2wfpzXFbeYTrY69l2PnF5", "3443801", 'Monolog', true,
             \Monolog\Logger::CRITICAL, true, true, 'text',
             "esotiq.hipchat.com",
             \Monolog\Handler\HipChatHandler::API_V2
         );
+        $hipChatHandler->setFormatter(new LineFormatter(null,null,true,true));
 
         if($exception instanceof \Exception) {
             $message = $exception->getMessage();
@@ -210,12 +221,13 @@ class ExceptionHandler implements IExceptionHandler
             $file = $exception["file"];
         }
 
+
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
-            (isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . "/data/logs/errors/" . date("Y-m-d") . "/" . $file:"") .
-            "\n\n" . $message.
-            "\n\n" . $file . ":" . $line
+            (isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"]. Router::getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile:"") .
+            "\n" . $message.
+            "\n" . $file . ":" . $line
 
 
         );

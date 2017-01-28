@@ -3,7 +3,7 @@
 namespace Arrow\Translationss;
 
 use Arrow\ORM\Persistent\Criteria,
-\Arrow\Access\Auth,
+\Arrow\Access\Models\Auth,
 \Arrow\ViewManager, \Arrow\RequestContext;
 
 /**
