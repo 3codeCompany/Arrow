@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<schema class-namespace="Arrow\Access">
-    <table name="access_user" class="User" >
+<schema >
+    <table name="access_user" class="Arrow\Access\Models\User" >
 
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="created" type="DATETIME" />
@@ -16,7 +16,7 @@
         <field name="name" type="VARCHAR" size="255"/>
         <field name="settings" type="text" />
     </table>
-    <table name="access_groups" class="AccessGroup" >
+    <table name="access_groups" class="Arrow\Access\Models\AccessGroup" >
         <trackers>
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
@@ -25,7 +25,7 @@
         <field name="name" type="VARCHAR"/>
         <field name="description" type="VARCHAR"/>
     </table>
-    <table name="access_user_group" class="AccessUserGroup" >
+    <table name="access_user_group" class="Arrow\Access\Models\AccessUserGroup" >
         <trackers>
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
@@ -48,7 +48,7 @@
         </foreign-key>
     </table>
 
-    <table name="access_points" class="AccessPoint" >
+    <table name="access_points" class="Arrow\Access\Models\AccessPoint" >
         <trackers>
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
         </trackers>
@@ -61,7 +61,7 @@
         <field name="groups" type="INTEGER" size="11" default="0"/>
     </table>
 
-    <table name="access_points_groups" class="AccessPointGroup">
+    <table name="access_points_groups" class="Arrow\Access\Models\AccessPointGroup">
         <trackers>
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
@@ -72,7 +72,7 @@
         <field name="policy" type="INTEGER"/>
     </table>
 
-    <table name="access_sessions" class="AccessSession">
+    <table name="access_sessions" class="Arrow\Access\Models\AccessSession">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="hash" type="VARCHAR" size="100"/>
         <field name="ip" type="VARBINARY" size="16"/>

@@ -1,11 +1,12 @@
 <?php
 namespace Arrow\Access\Models;
 
+use Arrow\ORM\ORM_Arrow_Access_Models_User;
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
 use Arrow\ORM\Persistent\PersistentObject;
 
-class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUser
+class User extends ORM_Arrow_Access_Models_User implements \Arrow\Models\IUser
 {
 
     /**

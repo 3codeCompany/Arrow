@@ -1,5 +1,6 @@
 <?php
 namespace Arrow\Access\Models;
+use Arrow\ORM\ORM_Arrow_Access_Models_AccessGroup;
 use Arrow\ORM\Persistent\PersistentObject,
     Arrow\ORM\SqlRouter;
 use Arrow\Utils\Developer;
@@ -11,7 +12,7 @@ use Arrow\Utils\Developer;
  * @license  GNU GPL
  * @author 3code Team
  */
-class AccessGroup extends \Arrow\ORM\ORM_Arrow_Access_AccessGroup
+class AccessGroup extends ORM_Arrow_Access_Models_AccessGroup
 {
 
     const DEVELOPERS = "Developers";

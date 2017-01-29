@@ -1,5 +1,6 @@
 <?php
 namespace Arrow\Access\Models;
+use Arrow\ORM\ORM_Arrow_Access_Models_AccessPointGroup;
 
 
 /**
@@ -9,7 +10,7 @@ namespace Arrow\Access\Models;
  * @license  GNU GPL
  * @author 3code Team 
  */
-class AccessPointGroup extends \Arrow\ORM\ORM_Arrow_Access_AccessPointGroup  {
+class AccessPointGroup extends ORM_Arrow_Access_Models_AccessPointGroup  {
 
     const TCLASS = __CLASS__;
 

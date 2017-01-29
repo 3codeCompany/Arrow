@@ -1,6 +1,6 @@
 <?php
 namespace Arrow\Access\Models;
-
+use Arrow\ORM\ORM_Arrow_Access_Models_AccessUserGroup;
 
 
 /**
@@ -10,7 +10,7 @@ namespace Arrow\Access\Models;
  * @license  GNU GPL
  * @author 3code Team 
  */
-class AccessUserGroup extends \Arrow\ORM\ORM_Arrow_Access_AccessUserGroup  {
+class AccessUserGroup extends ORM_Arrow_Access_Models_AccessUserGroup  {
 
     const TCLASS = __CLASS__;
 

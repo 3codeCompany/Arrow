@@ -1,6 +1,7 @@
 <?php
 namespace Arrow\Access\Models;
 
+use Arrow\ORM\ORM_Arrow_Access_Models_AccessPoint;
 use Arrow\ORM\Persistent\PersistentObject;
 
 
@@ -11,7 +12,7 @@ use Arrow\ORM\Persistent\PersistentObject;
  * @license  GNU GPL
  * @author 3code Team 
  */
-class AccessPoint extends \Arrow\ORM\ORM_Arrow_Access_AccessPoint  {
+class AccessPoint extends ORM_Arrow_Access_Models_AccessPoint  {
     public function afterObjectSave(PersistentObject $object)
     {
         parent::afterObjectSave($object);
