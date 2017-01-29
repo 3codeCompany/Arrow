@@ -46,15 +46,15 @@ class ExceptionHandler implements IExceptionHandler
 
         $error = error_get_last();
 
-        if ($error !== NULL) {
+        if ($error !== null) {
             $errno = $error["type"];
             $errfile = $error["file"];
             $errline = $error["line"];
             $errstr = $error["message"];
-            $error["url"] = isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]:'cli';
+            $error["url"] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli';
             $error["request"] = $_REQUEST;
 
-            $this->logError( $error, $error["message"] );
+            $this->logError($error, $error["message"]);
         }
     }
 
@@ -70,11 +70,13 @@ class ExceptionHandler implements IExceptionHandler
             unset($arr["msg"]);
 
 
-            if (!empty($arr))
+            if (!empty($arr)) {
                 $str .= "<pre>" . print_r($arr, 1) . "</pre>";
+            }
 
-        } else
+        } else {
             $str = print_r(get_class($exception) . " " . $exception->getMessage(), 1);
+        }
 
 
         if ($prev = $exception->getPrevious()) {
@@ -83,7 +85,9 @@ class ExceptionHandler implements IExceptionHandler
                 $str .= "<div style='margin-top: 20px;'><b>Previous:</b> " . $prev->getMessage() . "</div>";
                 $prev = $prev->getPrevious();
 
-                if ($i > 15) break;
+                if ($i > 15) {
+                    break;
+                }
                 $i++;
             }
         }
@@ -138,8 +142,9 @@ class ExceptionHandler implements IExceptionHandler
         $cli = \Arrow\Controller::isInCLIMode();
 
         if ($this->clearOutput && !$cli) {
-            while (ob_get_level())
+            while (ob_get_level()) {
                 ob_end_clean();
+            }
             ob_start("ob_gzhandler");
         }
 
@@ -161,8 +166,9 @@ class ExceptionHandler implements IExceptionHandler
 
         //zmienić aby było pobierane przez handlery
         $user = null;
-        if (class_exists("\\Arrow\\Access\\Auth", false))
+        if (class_exists("\\Arrow\\Access\\Auth", false)) {
             $user = \Arrow\Access\Models\Auth::getDefault()->getUser();
+        }
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
@@ -170,7 +176,7 @@ class ExceptionHandler implements IExceptionHandler
 
         /*print $this->getHead().print $this->printDeveloperMessage($exception).$this->getFooter();
         exit();*/
-        if (($user == null || !$user->isInGroup("Developers")) ) {
+        if (($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
             $this->printXHRException($exception);
@@ -178,10 +184,11 @@ class ExceptionHandler implements IExceptionHandler
             print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";
             print $this->getHead();
             echo '<h1>Exception occured</h1>';
-            if (!Project::$forceDisplayErrors && ($user == null || !($user->isInGroup("Developers"))))
+            if (!Project::$forceDisplayErrors && ($user == null || !($user->isInGroup("Developers")))) {
                 print $this->printUserMessage($exception);
-            else
+            } else {
                 print $this->printDeveloperMessage($exception);
+            }
             print $this->getFooter();
         }
 
@@ -190,14 +197,15 @@ class ExceptionHandler implements IExceptionHandler
     }
 
 
-    private function logError( $exception, $contents)
+    private function logError($exception, $contents)
     {
         $dir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors/" . date("Y-m-d");
         $logFile = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
 
 
-        if (!file_exists($dir))
-            mkdir($dir,0755, true);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        }
 
 
         file_put_contents($dir . "/" . $logFile, $contents);
@@ -209,13 +217,13 @@ class ExceptionHandler implements IExceptionHandler
             "esotiq.hipchat.com",
             \Monolog\Handler\HipChatHandler::API_V2
         );
-        $hipChatHandler->setFormatter(new LineFormatter(null,null,true,true));
+        $hipChatHandler->setFormatter(new LineFormatter(null, null, true, true));
 
-        if($exception instanceof \Exception) {
+        if ($exception instanceof \Exception) {
             $message = $exception->getMessage();
             $line = $exception->getLine();
             $file = $exception->getFile();
-        }else{
+        } else {
             $message = $exception["message"];
             $line = $exception["line"];
             $file = $exception["file"];
@@ -225,8 +233,8 @@ class ExceptionHandler implements IExceptionHandler
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
-            (isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"]. Router::getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile:"") .
-            "\n" . $message.
+            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Router::getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
+            "\n" . $message .
             "\n" . $file . ":" . $line
 
 
@@ -240,8 +248,9 @@ class ExceptionHandler implements IExceptionHandler
     private function printConsoleMessage($exception)
     {
         print $exception->getMessage();
-        if (method_exists($exception, "getState"))
+        if (method_exists($exception, "getState")) {
             print implode("\n", $exception->getData());
+        }
     }
 
     private function printUserMessage($exception)
@@ -259,15 +268,16 @@ class ExceptionHandler implements IExceptionHandler
 
     private function printRequest()
     {
-        if (!isset($_SERVER["REQUEST_URI"]))
+        if (!isset($_SERVER["REQUEST_URI"])) {
             return false;
+        }
 
         $refresh = '<form  action="' . $_SERVER["REQUEST_URI"] . '" method="post" __ARROW_TARGET__ >';
         foreach ($_REQUEST as $var => $value) {
 
-            if (!is_array($value))
+            if (!is_array($value)) {
                 $refresh .= '<input type="hidden" name="' . $var . '" value="' . $value . '">';
-            else {
+            } else {
                 foreach ($value as $index => $indexVal) {
                     //$refresh .= '<input type="hidden" name="' . $var . '[' . $index . ']" value="' . $indexVal . '">';
                 }
@@ -327,8 +337,9 @@ class ExceptionHandler implements IExceptionHandler
     public function printArguments($args, $i = 3)
     {
         $i--;
-        if ($i == 0)
+        if ($i == 0) {
             return "";
+        }
         $str = "";
         foreach ($args as $key => $arg) {
             if (is_object($arg)) {
@@ -338,8 +349,9 @@ class ExceptionHandler implements IExceptionHandler
             } elseif (is_string($arg)) {
                 $str .= substr($arg, 0, 20);
             }
-            if ($key + 1 < count($args))
+            if ($key + 1 < count($args)) {
                 $str .= ", ";
+            }
         }
         return $str;
     }

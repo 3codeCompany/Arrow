@@ -1,6 +1,6 @@
 <?php
 namespace Arrow\Access\Models;
-use Arrow\Access\Models\AccessUserGroup;
+
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
 use Arrow\ORM\Persistent\PersistentObject;
@@ -27,8 +27,8 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
      */
     public function beforeObjectCreate(PersistentObject $object)
     {
-        if($object["password"] == ""){
-            $this->setValue("password", md5(microtime()+rand(1,100)));
+        if ($object["password"] == "") {
+            $this->setValue("password", md5(microtime() + rand(1, 100)));
         }
         //$this->setValue(self::F_CREATED, date("Y-m-d H:i:s"));
         $this->setValue(self::F_PASSPORT_ID, self::generatePassportId());
@@ -50,8 +50,9 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
             if (!empty($newValue)) {
                 $this->data[self::F_PASSWORD] = self::generatePassword($newValue);
                 $this["password_changed"] = date("Y-m-d");
-            }else
+            } else {
                 $this->data[self::F_PASSWORD] = $oldValue;
+            }
         }
     }
 
@@ -63,11 +64,14 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
     {
         if (isset($this->parameters["accessGroups"])) {
             if (is_array($this->parameters["accessGroups"])) {
-                foreach ($this->parameters["accessGroups"] as $key => $val)
-                    if (empty($val)) unset($this->parameters["accessGroups"][$key]);
+                foreach ($this->parameters["accessGroups"] as $key => $val) {
+                    if (empty($val)) {
+                        unset($this->parameters["accessGroups"][$key]);
+                    }
+                }
 
                 $this->setGroups($this->parameters["accessGroups"]);
-            } elseif(!empty($this->parameters["accessGroups"])) {
+            } elseif (!empty($this->parameters["accessGroups"])) {
                 $this->setGroups([$this->parameters["accessGroups"]]);
             }
         }
@@ -96,7 +100,9 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
             ->c("user_id", $this->getPKey())
             ->find();
 
-        foreach ($res as $r) $r->delete();
+        foreach ($res as $r) {
+            $r->delete();
+        }
 
         foreach ($groups as $gr) {
             $g = new AccessUserGroup(array(
@@ -107,12 +113,13 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
         }
     }
 
-    private function loadAccessGroups(){
+    private function loadAccessGroups()
+    {
         $this->accessGroups = Criteria::query(AccessGroup::getClass())
-            ->_join(AccessUserGroup::getClass(),[
+            ->_join(AccessUserGroup::getClass(), [
                 "id" => "group_id",
                 "UserGroup:user_id" => "'{$this->getPKey()}'"
-            ],"UserGroup",["id"], JoinCriteria::J_OUTER)
+            ], "UserGroup", ["id"], JoinCriteria::J_OUTER)
             ->findAsFieldArray('name', true);
 
 
@@ -125,8 +132,9 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
      */
     public function getAccessGroups()
     {
-        if($this->accessGroups === null)
+        if ($this->accessGroups === null) {
             $this->loadAccessGroups();
+        }
         return $this->accessGroups;
     }
 
@@ -137,16 +145,18 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
      */
     public function isInGroup($groupName)
     {
-        if(is_array($groupName)){
+        if (is_array($groupName)) {
 
-            foreach($groupName as $name){
-                if($this->isInGroup($name))
+            foreach ($groupName as $name) {
+                if ($this->isInGroup($name)) {
                     return true;
+                }
             }
             return false;
         }
-        if($this->accessGroups === null)
+        if ($this->accessGroups === null) {
             $this->loadAccessGroups();
+        }
         return in_array($groupName, $this->accessGroups);
     }
 
@@ -156,8 +166,9 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
      */
     public function getAccessGroupsSum()
     {
-        if($this->accessGroupsSum === null)
+        if ($this->accessGroupsSum === null) {
             $this->loadAccessGroups();
+        }
 
         return $this->accessGroupsSum;
     }
@@ -193,11 +204,13 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
      */
     public static function comparePassword($storedPassHash, $userInput)
     {
-        if( $storedPassHash == md5($userInput))
+        if ($storedPassHash == md5($userInput)) {
             return true;
+        }
 
-        if (crypt($userInput, $storedPassHash) == $storedPassHash)
+        if (crypt($userInput, $storedPassHash) == $storedPassHash) {
             return true;
+        }
         return false;
     }
 
@@ -261,28 +274,32 @@ class User extends \Arrow\ORM\ORM_Arrow_Access_User implements \Arrow\Models\IUs
     }
 
     private $settings = null;
+
     public function getSetting($name, $default = null)
     {
-        if($this->settings == null){
-            if($this->_settings())
+        if ($this->settings == null) {
+            if ($this->_settings()) {
                 $this->settings = unserialize($this->_settings());
-            else
+            } else {
                 $this->settings = [];
+            }
         }
 
-        if(isset($this->settings[$name]))
+        if (isset($this->settings[$name])) {
             return $this->settings[$name];
+        }
 
         return $default;
     }
 
     public function setSetting($name, $value)
     {
-        if($this->settings == null){
-            if($this->_settings())
+        if ($this->settings == null) {
+            if ($this->_settings()) {
                 $this->settings = unserialize($this->_settings());
-            else
+            } else {
                 $this->settings = [];
+            }
         }
         $this->settings[$name] = $value;
         $this[self::F_SETTINGS] = serialize($this->settings);
