@@ -4,6 +4,7 @@ namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Exception;
+use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
 
 /**
@@ -235,7 +236,7 @@ class Project
                 if ($objClass == $class) {
                     foreach ($data as $loggerName => $loggerData) {
                         if ($loggerData["active"]) {
-                            $logger = new \Monolog\Logger($loggerName);
+                            $logger = new Logger($loggerName);
                             if ($loggerData["handler"] == '\Monolog\Handler\HipChatHandler') {
 
                                 $handler = new \Monolog\Handler\HipChatHandler(
