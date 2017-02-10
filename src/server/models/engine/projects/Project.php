@@ -225,11 +225,13 @@ class Project
     public function injectLoggers(LoggerAwareInterface $obj)
     {
         $loggers = ConfigProvider::get('loggers');
+        $confExist = false;
         if (is_array($loggers)) {
             foreach ($loggers as $class => $data) {
                 $objClass = get_class($obj);
-                if ($class[0] == "\\")
+                if ($class[0] == "\\") {
                     $class = substr($class, 1);
+                }
                 if ($objClass == $class) {
                     foreach ($data as $loggerName => $loggerData) {
                         if ($loggerData["active"]) {
@@ -247,12 +249,21 @@ class Project
                             }
                             $logger->pushHandler($handler);
                             $obj->setLogger($logger);
-                            if (method_exists($obj, "setLogLevel"))
+                            $confExist = true;
+                            if (method_exists($obj, "setLogLevel")) {
                                 $obj->setLogLevel($loggerData["level"]);
+                            }
                         }
                     }
                 }
             }
+        }
+
+        //iff logger dosnt exists
+        if (!$confExist) {
+            $logger = new Logger("null");
+            $logger->pushHandler(new NullHandler());
+            $obj->setLogger($logger);
         }
 
     }
