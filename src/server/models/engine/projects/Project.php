@@ -4,6 +4,7 @@ namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Exception;
+use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
 
