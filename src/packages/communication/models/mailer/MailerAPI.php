@@ -2,14 +2,18 @@
 
 namespace Arrow\Communication\Models\Mailer;
 
+use Psr\Log\LoggerInterface;
+
 class MailerAPI extends \Arrow\Object
 {
 
-    private static $mailLib = NULL;
+    private static $mailLib = null;
 
-    private static $lastError = NULL;
+    private static $lastError = null;
 
     private static $specialConf = null;
+
+
 
     public static function pushSendboxConf($host, $port, $secureType, $user, $password, $from, $fromMail)
     {
@@ -34,7 +38,7 @@ class MailerAPI extends \Arrow\Object
      * @param string $save - jeśli jest stringiem to jako taki typ zostanie zapisany
      * @return bool - true jeśli sie powiodło - flase w przeciwnym wypadku
      */
-    public static function send($emails, $content, $topic, $reply = "", $from = "", $from_name = "", $attachments = NULL)
+    public static function send($emails, $content, $topic, $reply = "", $from = "", $from_name = "", $attachments = null, $bcc = false, LoggerInterface $externalLogger = null)
     {
         //require_once ARROW_LIBS_PATH.DIRECTORY_SEPARATOR."Swift".DIRECTORY_SEPARATOR."lib".DIRECTORY_SEPARATOR."swift_required.php";
         $settings = self::$specialConf;
@@ -49,6 +53,9 @@ class MailerAPI extends \Arrow\Object
         // Create the Mailer using your created Transport
         $mailer = \Swift_Mailer::newInstance($transport);
 
+        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
+        $mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
+
         $emails = str_replace([";", " "], [",", ""], $emails);
 
         $message = \Swift_Message::newInstance($topic)
@@ -62,19 +69,10 @@ class MailerAPI extends \Arrow\Object
                 $message->attach(\Swift_Attachment::fromPath($a));
             }
         }
-
-        // Send the message
-        if (isset($_REQUEST["test55"])) {
-            print_r($emails);
-            print "<br /><br />";
-        }
-
         $result = $mailer->send($message);
 
-
-        if (!$result) {
-            print_r($emails);
-            exit("problem");
+        if(!$result && $externalLogger){
+            $externalLogger->critical("Mail sent error: ".$logger->dump());
         }
 
 

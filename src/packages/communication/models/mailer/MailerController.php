@@ -23,6 +23,7 @@ use Arrow\Shop\Models\Persistent\OrderProduct;
 use Arrow\Shop\Models\Persistent\OrderShipment;
 use Arrow\Shop\Models\Persistent\ProductVariant;
 use Arrow\Translations\Models\Translations;
+use Psr\Log\LoggerInterface;
 
 
 /**
@@ -40,27 +41,30 @@ class MailerController extends Controller
 
     public function prepareContent($conf, $data)
     {
-        if (!is_array($conf))
+        if (!is_array($conf)) {
             $conf = $this->configuration[$conf];
+        }
 
         $view = Dispatcher::getDefault()->get($conf[0]);
         $this->request = new RequestContext($data);
         return $view->fetch(new RequestContext($data));
     }
 
-    public function send($conf, $email, $data = [], $historyObject = null)
+    public function send($conf, $email, $data = [], $historyObject = null, $attachements = [],  $bcc = false, LoggerInterface $logger = null)
     {
 
 
         $mailerConf = ConfigProvider::get('communication')['emails']['default'];
 
         $from = $mailerConf['from'];
-        if ($this->forceFrom)
+        if ($this->forceFrom) {
             $from = $this->forceFrom;
+        }
         MailerAPI::pushSendboxConf($mailerConf['host'], $mailerConf['port'], $mailerConf['secureType'], $mailerConf['user'], $mailerConf['password'], $from, $from);
 
-        if (!isset($this->configuration[$conf]))
+        if (!isset($this->configuration[$conf])) {
             throw new Exception(["msg" => "Can't find configuration `$conf`", "currentConf" => $this->configuration]);
+        }
 
         $conf = $this->configuration[$conf];
 
@@ -79,19 +83,24 @@ class MailerController extends Controller
 
         try {
 
-            MailerAPI::send($email, $content, $title);
-            if ($historyObject)
+            MailerAPI::send($email, $content, $title, "", "", "", $attachments, $bcc, $logger);
+            if ($historyObject) {
                 History::addByObject($historyObject, $title, $email, $content);
+            }
         } catch (\Exception $ex) {
-            exit($ex->getMessage());
-            $params = [];
-            History::addByObject($historyObject, "[error] [{$ex->getMessage()}] " . $title . "\n\n" . print_r($params, 1), $email, $ex->getMessage());
+
+            if ($logger) {
+                $logger->critical($ex->getMessage());
+            }
+
+            if ($historyObject) {
+                History::addByObject($historyObject, "[error] [{$ex->getMessage()}] " . $title, $email, $ex->getMessage());
+            }
         }
 
         return $content;
 
     }
-
 
 
     public function eventRunBeforeAction(Action $action)
