@@ -128,9 +128,10 @@ class SessionHandler implements ISessionHandler
             $stm = $this->db->prepare("insert into access_sessions(`hash`,`last`,`ip`) values( ? , ?, ?)");
             $stm->execute(array($sessionHash, date("Y-m-d H:i:s"), $addr));
             $this->sessionId = $this->db->lastInsertId();
+            $this->data = "";
         }else{
             $this->sessionId = $data[0];
-            $this->data = $data[1];
+            $this->data = $data[1]?$data[1]:"";
             $this->userId = $data[2];
             $stm = $this->db->prepare("update access_sessions set `last`= ? where id= ?");
             $stm->execute(array(date("Y-m-d H:i:s"), $this->sessionId));
@@ -143,6 +144,7 @@ class SessionHandler implements ISessionHandler
     {
         $stm = $this->db->prepare("update access_sessions set `value` = ? where id = ?");
         $stm->execute(array($data, $this->sessionId));
+        return true;
     }
 
     public function destroy($id)

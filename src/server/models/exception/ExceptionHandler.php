@@ -58,7 +58,7 @@ class ExceptionHandler implements IExceptionHandler
         }
     }
 
-    private function printDeveloperMessage(\Exception $exception)
+    private function printDeveloperMessage( $exception)
     {
 
         $str = "";
@@ -132,7 +132,7 @@ class ExceptionHandler implements IExceptionHandler
 
     private function log($exception)
     {
-        \Arrow\Logger::log($this->printDeveloperMessage($exception), \Arrow\Logger::EL_ERROR);
+        //\Arrow\Logger::log($this->printDeveloperMessage($exception), \Arrow\Logger::EL_ERROR);
     }
 
     public function displayException($exception)
@@ -176,7 +176,7 @@ class ExceptionHandler implements IExceptionHandler
 
         /*print $this->getHead().print $this->printDeveloperMessage($exception).$this->getFooter();
         exit();*/
-        if (($user == null || !$user->isInGroup("Developers"))) {
+        if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
             $this->printXHRException($exception);
@@ -224,9 +224,13 @@ class ExceptionHandler implements IExceptionHandler
             $line = $exception->getLine();
             $file = $exception->getFile();
         } else {
-            $message = $exception["message"];
-            $line = $exception["line"];
-            $file = $exception["file"];
+
+
+            print_r($exception);
+            exit();
+            //$message = $exception["message"];
+            //$line = $exception["line"];
+            //$file = $exception["file"];
         }
 
 
@@ -349,9 +353,9 @@ class ExceptionHandler implements IExceptionHandler
             } elseif (is_string($arg)) {
                 $str .= substr($arg, 0, 20);
             }
-            if ($key + 1 < count($args)) {
-                $str .= ", ";
-            }
+            //if ($key + 1 < count($args)) {
+            $str .= ", ";
+            //}
         }
         return $str;
     }
