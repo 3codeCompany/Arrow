@@ -229,5 +229,14 @@
     }
 </style>
 <?}?>
+
+
+<? if ($this["webpackManifest"]) { ?>
+    <script type="text/javascript" src=".<?= $this["webpackManifest"]["js"] ?>"></script>
+    <link rel="stylesheet" href=".<?= $this["webpackManifest"]["css"] ?>"/>
+<? } else { ?>
+    <script type="text/javascript" src="http://localhost:3000/bundle.js" charset="utf-8"></script>
+<? } ?>
+
 </body>
 </html>

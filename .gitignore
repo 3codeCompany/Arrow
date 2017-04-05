@@ -2,3 +2,5 @@
 .idea/
 Ś
 /components/
+/assets/node_modules/
+/assets/public/

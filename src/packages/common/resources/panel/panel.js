@@ -41,6 +41,7 @@ require(["jquery"], function () {
         var onPageLoaded = function (context) {
             select2(context);
             Serenity.scanForWidgets(context);
+            ReactHelper.initComponents(context);
 
         };
 
