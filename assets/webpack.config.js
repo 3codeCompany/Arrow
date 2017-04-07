@@ -25,7 +25,7 @@ module.exports = function (env = {}) {
 
         module: {
             loaders: [
-                {test: /\.css/, loader: ExtractTextPlugin.extract('css-loader')},
+                {test: /\.css/, loader: 'style-loader!css-loader'},
                 {
                     test: [/\.js$/, /\.es6$/],
                     exclude: /node_modules/,
