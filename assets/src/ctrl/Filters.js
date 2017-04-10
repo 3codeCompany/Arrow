@@ -313,22 +313,22 @@ class NumericFilter extends Filter {
 
     constructor(props) {
         super(props)
-        this.state.option = "=";
+        this.state.option = '=';
     }
 
     handleApply() {
         this.setState({show: false});
         let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
         let val, label;
-        if (this.state.option != "IN") {
+        if (this.state.option != 'IN') {
             val = this.refs.input1.value;
-            if (this.state.option == "<x<") {
-                val += "-" + this.refs.input2.value
+            if (this.state.option == '<x<') {
+                val += '-' + this.refs.input2.value
             }
             label = val;
         } else {
             val = this.refs.input3.value.split('\n');
-            label = val.join(", ")
+            label = val.join(', ')
             if (label.length > 50) {
                 label = label.substring(0, 50) + '....';
             }

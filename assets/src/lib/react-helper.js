@@ -18,7 +18,7 @@ import {AppContainer} from 'react-hot-loader';
 
 
 
-var domReady = false, registry = {}, queue = [];
+let registry = {};
 
 window.ReactHelper = {
 
@@ -38,7 +38,6 @@ window.ReactHelper = {
 
     register: function (name, constructor) {
         registry[name] = {_obj: constructor};
-        queue.push(name);
     },
 
 
@@ -51,6 +50,7 @@ window.ReactHelper = {
 
         if(!registry[name]){
             console.error(`'${name}' component not registred `)
+            return;
         }
 
         let Component = registry[name]['_obj'];
