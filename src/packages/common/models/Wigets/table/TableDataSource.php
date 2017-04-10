@@ -10,8 +10,8 @@ namespace Arrow\Common;
 
 use Arrow\Controls\API\Table\ITableDataSource;
 use Arrow\Exception;
+use Arrow\ORM\DB\DB;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\ORM\DB;
 use Arrow\RequestContext;
 
 class TableDataSource extends Criteria implements ITableDataSource
@@ -130,6 +130,7 @@ class TableDataSource extends Criteria implements ITableDataSource
 
 
         switch ($type) {
+
             case ITableDataSource::FILTER_IN:
 
                 $this->c($field, $value, Criteria::C_IN);

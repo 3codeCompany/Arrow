@@ -158,77 +158,11 @@
 <link rel="stylesheet" href="assets/select2/dist/css/select2.min.css"/>
 <link rel="stylesheet" href="assets/fine-uploader/jquery.fine-uploader/fine-uploader-new.css"/>
 
-<script type="text/javascript"  src="assets/require.js"></script>
-<script type="text/javascript">
-    require([ "engine/src/packages/common/resources/panel/panel" ]);
-</script>
+
 <? $pathCss = "assets/controls/dist/serenity.css"; ?>
 <link rel="stylesheet" type="text/css" href="<?= $pathCss. "?" . filemtime($pathCss) ?>"/>
 
-<?if(false){?>
-<style>
 
-
-
-
-
-
-
-
-    body {
-        color: #333;
-    }
-
-    /* line 294, C:\dev\www\arrowplatform\src\packages\org.arrowplatform.common\resources\styles\less\mods\ui-mod.less */
-    .form-field-error-text {
-        color: red;
-        font-weight: bold;
-    }
-
-    .navbar {
-        margin-bottom: 5px;;
-    }
-
-    .navbar-nav li {
-        margin-right: 10px;;
-    }
-
-    .navbar-form .form-field-error-text {
-        top: -30px !important;
-        left: 20px !important;
-        border-radius: 4px;
-        border-left: solid 2px;
-    }
-
-    /* line 299, C:\dev\www\arrowplatform\src\packages\org.arrowplatform.common\resources\styles\less\mods\ui-mod.less */
-    .navbar-form .form-field-error-text:before,
-    .navbar-form .form-field-error-text:after {
-        display: none;
-    }
-
-    .w-uploader {
-        min-height: 35px;;
-    }
-
-    .w-textfilter-body .serenity-widget {
-        display: inline-block;
-
-    }
-
-    .select2-container .select2-choice {
-        height: 33px;
-        padding-top: 3px;
-    }
-
-    .navbar-collapse {
-        padding-left: 0px;
-    }
-
-    .tab-content > .tab-pane {
-        padding-left: 15px;
-    }
-</style>
-<?}?>
 
 
 <? if ($this["webpackManifest"]) { ?>
@@ -237,6 +171,9 @@
 <? } else { ?>
     <script type="text/javascript" src="http://localhost:3000/bundle.js" charset="utf-8"></script>
 <? } ?>
-
+<script type="text/javascript"  src="assets/require.js"></script>
+<script type="text/javascript">
+    require([ "engine/src/packages/common/resources/panel/panel" ]);
+</script>
 </body>
 </html>

@@ -22,64 +22,46 @@ var domReady = false, registry = {}, queue = [];
 
 window.ReactHelper = {
 
-    initComponents: function () {
-        for (var i = 0; i < queue.length; i += 1) {
-            this.initComponent(queue[i])
-        }
+    initComponents: function (context = document) {
+
+        const selector = '[react-component],[data-react-component]';
+        context.querySelectorAll(selector).forEach((node) => {
+            name =
+                node.getAttribute('react-component') ||
+                node.getAttribute('data-react-component');
+            this.initComponent(name, node)
+
+        });
+
     },
 
-    forceInitComponents: function () {
-        queue = queue.concat(Object.keys(registry));
-        this.initComponents();
-    },
 
     register: function (name, constructor) {
         registry[name] = {_obj: constructor};
         queue.push(name);
-
-
     },
 
-    render: function (Component, node) {
+
+    initComponent: function (name, node) {
+
+        let props = node.getAttribute('react-props') ||
+            node.getAttribute('data-react-props') || null;
+        if (props != null)
+            props = JSON.parse(atob(props));
+
+        if(!registry[name]){
+            console.error(`'${name}' component not registred `)
+        }
+
+        let Component = registry[name]['_obj'];
+
         ReactDOM.render((
                 <AppContainer>
-                    <Component/>
+                    <Component {...props} />
                 </AppContainer>
             ), node
         );
-    },
-
-    initComponent: function (name) {
-        var props, selector =
-            '[react-component="' + name + '"],[data-react-component="' + name + '"]';
-        document.querySelectorAll(selector).forEach(function (node) {
-
-            props = node.getAttribute('react-props') ||
-                node.getAttribute('data-react-props') || null;
-            if (props != null)
-                props = JSON.parse(atob(props));
-
-
-
-            let Component = registry[name]['_obj'];
-
-            ReactDOM.render((
-                    <AppContainer>
-                        <Component {...props} />
-                    </AppContainer>
-                ), node
-            );
-
-        });
 
 
     }
 };
-
-window.addEventListener('DOMContentLoaded', function () {
-    domReady = true;
-    ReactHelper.initComponents();
-});
-
-
-

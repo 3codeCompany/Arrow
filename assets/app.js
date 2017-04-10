@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom'
 import React from 'react'
 import App from './src/App'
-import {DateFilter} from './src/ctrl/Filters'
+import {DateFilter, SelectFilter, NumericFilter, SwitchFilter,TextFilter} from './src/ctrl/Filters'
 require('./styles/App.sass')
 require('./src/lib/react-helper.js');
 
@@ -13,6 +13,10 @@ if (!global.$)
 
 
 ReactHelper.register('DateFilter', DateFilter);
+ReactHelper.register('SelectFilter', SelectFilter);
+ReactHelper.register('SwitchFilter', SwitchFilter);
+ReactHelper.register('NumericFilter', NumericFilter);
+ReactHelper.register('TextFilter', TextFilter);
 
 ReactHelper.initComponents();
 

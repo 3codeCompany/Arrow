@@ -41,9 +41,22 @@ require(["jquery"], function () {
         var onPageLoaded = function (context) {
             select2(context);
             Serenity.scanForWidgets(context);
-            ReactHelper.initComponents(context);
+            if(typeof(ReactHelper) != "undefined")
+                ReactHelper.initComponents(context[0]);
+            else{
+                console.warn("React helper not found");
+            }
 
         };
+
+        SerenityWidget.classOn("", "htmlLoaded", function () {
+             if(typeof(ReactHelper) != "undefined")
+                ReactHelper.initComponents(this.host[0]);
+            else{
+                console.warn("React helper not found");
+            }
+
+        });
 
         loadPage = function (url) {
             $("#admin-loading-indicator").show();
