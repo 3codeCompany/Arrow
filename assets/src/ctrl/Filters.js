@@ -34,6 +34,11 @@ class Filter extends Component {
         return true
     }
 
+    handleTriggerClicked(e) {
+        e.stopPropagation();
+        this.setState({show: !this.state.show});
+    }
+
     onBlur(e) {
         var currentTarget = e.currentTarget;
 
@@ -79,9 +84,14 @@ class DateFilter extends Filter {
         if (timeStart == "00:00:00" && timeStop == "23:59:59")
             label = `${dateStart} ${separatorI} ${dateStop}`;
 
-        let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
-        table.data.addFilter(this.props.field, val, '<x<in', this.props.caption, ':', label);
-        table.refresh();
+
+        if (this.props.onChange) {
+            this.props.onChange(this.props.field, val, '<x<in', this.props.caption, ':', label);
+        } else {
+            let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
+            table.data.addFilter(this.props.field, val, '<x<in', this.props.caption, ':', label);
+            table.refresh();
+        }
 
     }
 
@@ -92,7 +102,7 @@ class DateFilter extends Filter {
                  ref="container"
                  tabIndex="0"
             >
-                <div className="w-filter-trigger" onClick={(e) => this.setState({show: !this.state.show})}><i className="fa fa-filter"></i></div>
+                <div className="w-filter-trigger" onClick={this.handleTriggerClicked.bind(this)}><i className="fa fa-filter"></i></div>
 
                 {this.state.show ?
                     <div className="w-filter-body" ref="body">
@@ -167,7 +177,9 @@ class DateFilter extends Filter {
 }
 class SelectFilter extends Filter {
 
-    handleApply() {
+    handleApply(e) {
+        e.stopPropagation();
+
         this.setState({show: false});
 
         let select = ReactDOM.findDOMNode(this.refs.value);
@@ -183,9 +195,13 @@ class SelectFilter extends Filter {
         });
 
 
-        let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
-        table.data.addFilter(this.props.field, values, 'IN', this.props.caption, ':', labels.join(", "));
-        table.refresh();
+        if (this.props.onChange) {
+            this.props.onChange(this.props.field, values, 'IN', this.props.caption, ':', labels.join(", "));
+        } else {
+            let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
+            table.data.addFilter(this.props.field, values, 'IN', this.props.caption, ':', labels.join(", "));
+            table.refresh();
+        }
 
     }
 
@@ -202,7 +218,7 @@ class SelectFilter extends Filter {
                  ref="container"
                  tabIndex="0"
             >
-                <div className="w-filter-trigger" onClick={(e) => this.setState({show: !this.state.show})}><i className="fa fa-filter"></i></div>
+                <div className="w-filter-trigger" onClick={this.handleTriggerClicked.bind(this)}><i className="fa fa-filter"></i></div>
 
                 {this.state.show ?
                     <div className="w-filter-body" ref="body">
@@ -218,6 +234,7 @@ class SelectFilter extends Filter {
                                     key={el[0]}
                                     value={el[0]}
                                     onMouseDown={(e) => {
+                                        e.stopPropagation();
                                         e.preventDefault();
                                         $(e.currentTarget).prop('selected', $(e.currentTarget).prop('selected') ? false : true);
                                         return false;
@@ -274,7 +291,7 @@ class SwitchFilter extends Filter {
                  ref="container"
                  tabIndex="0"
             >
-                <div className="w-filter-trigger" onClick={(e) => this.setState({show: !this.state.show})}><i className="fa fa-filter"></i></div>
+                <div className="w-filter-trigger" onClick={this.handleTriggerClicked.bind(this)}><i className="fa fa-filter"></i></div>
 
                 {this.state.show ?
                     <div className="w-filter-body" ref="body">
@@ -313,12 +330,12 @@ class NumericFilter extends Filter {
 
     constructor(props) {
         super(props)
-        this.state.option = '=';
+        this.state.option = '==';
     }
 
     handleApply() {
         this.setState({show: false});
-        let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
+
         let val, label;
         if (this.state.option != 'IN') {
             val = this.refs.input1.value;
@@ -335,8 +352,14 @@ class NumericFilter extends Filter {
 
         }
 
-        table.data.addFilter(this.props.field, val, this.state.option, this.props.caption, ':', label);
-        table.refresh();
+        if (this.props.onChange) {
+            this.props.onChange(this.props.field, val, this.state.option, this.props.caption, ':', label);
+        } else {
+            let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
+            table.data.addFilter(this.props.field, val, this.state.option, this.props.caption, ':', label);
+            table.refresh();
+        }
+
 
     }
 
@@ -348,7 +371,7 @@ class NumericFilter extends Filter {
 
     render() {
         const options = {
-            '=': 'równa',
+            '==': 'równa',
             '<': 'mniejsza',
             '<=': 'mniejsza równa',
             '>': 'większa',
@@ -362,7 +385,7 @@ class NumericFilter extends Filter {
                  ref="container"
                  tabIndex="0"
             >
-                <div className="w-filter-trigger" onClick={(e) => this.setState({show: !this.state.show})}><i className="fa fa-filter"></i></div>
+                <div className="w-filter-trigger" onClick={this.handleTriggerClicked.bind(this)}><i className="fa fa-filter"></i></div>
 
 
                 {this.state.show ?
@@ -422,8 +445,17 @@ class TextFilter extends Filter {
         this.setState({show: false});
         const value = this.refs.input.value;
         if (value) {
-            let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
-            table.data.addFilter(this.props.field, value, this.state.option, this.props.caption, this.options[this.state.option] + " :", this.refs.input.value);
+
+            if (this.props.onChange) {
+                this.props.onChange(this.props.field, value, this.state.option, this.props.caption, this.options[this.state.option] + " :", this.refs.input.value);
+            } else {
+                let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
+                table.data.addFilter(this.props.field, value, this.state.option, this.props.caption, this.options[this.state.option] + " :", this.refs.input.value);
+                table.refresh();
+            }
+
+
+
             table.refresh();
         }
 
@@ -443,7 +475,7 @@ class TextFilter extends Filter {
                  ref="container"
                  tabIndex="0"
             >
-                <div className="w-filter-trigger" onClick={(e) => this.setState({show: !this.state.show})}><i className="fa fa-filter"></i></div>
+                <div className="w-filter-trigger" onClick={this.handleTriggerClicked.bind(this)}><i className="fa fa-filter"></i></div>
 
                 {this.state.show ?
                     <div className="w-filter-body" ref="body">

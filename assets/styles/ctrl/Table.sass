@@ -1,4 +1,22 @@
 .w-table
+    .w-table-presenter
+        margin-bottom: 10px
+        >div
+            display: inline-block
+            margin-right: 20px
+            border-bottom: solid 1px grey
+            padding: 3px
+
+            >div
+                display: inline-block
+                margin-right: 5px
+                &.caption
+                &.value
+                    font-weight: bold
+                &.remove
+                    color: darkred
+
+
     table
         width: 100%
         .w-table-center
@@ -14,10 +32,27 @@
                     background-color: lightgrey
                     cursor: pointer
 
-
-
                 .w-filter
                     float: right
                     margin-top: -5px
                     margin-bottom: -5px
                     margin-right: 0
+
+        tbody
+            td
+
+                font-family: Arial, Verdana, Tahoma
+                border: 1px solid #e7efd3
+                padding: 6px
+                font-size: 12px
+
+            >tr:nth-child(odd) > td
+                //background-color: #f8faf2
+                background-color: #e7efd3
+
+
+            >tr:nth-child(odd) > td
+                background-color: #f9f9f9
+
+            >tr:hover > td
+                background-color: #eaeaea
