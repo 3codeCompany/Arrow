@@ -9,12 +9,12 @@ class Table extends Component {
         var x;
         this.props.columns.map(el => {
             if (el.template) {
-                el.template = eval("x = function(row){ return `" + el.template + "`; };")
+                el.template = eval('x = function(row){ return `' + el.template + '`; };')
             }
 
-            if(typeof(el.events) == "object") {
+            if (typeof(el.events) == 'object') {
                 Object.entries(el.events).map(([_key, val]) => {
-                    el.events[_key] = eval("x = function(row){ " + val + "; return false; };");
+                    el.events[_key] = eval('x = function(row){ ' + val + '; return false; };');
                 });
             }
 
@@ -24,13 +24,16 @@ class Table extends Component {
             loaded: false,
             data: [],
             dataSourceError: false,
-            filters: {}
+            filters: {},
+            onPage: this.props.onPage,
+            currentPage: 1
         };
 
         this.load();
 
 
     }
+
 
     load() {
         this.state.dataSourceError = false;
@@ -53,7 +56,12 @@ class Table extends Component {
         }
         xhr.open('PUT', this.props.url + '?' + new Date().getTime(), true);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({columns: this.props.columns, filters: this.state.filters}));
+        xhr.send(JSON.stringify({
+            columns: this.props.columns,
+            filters: this.state.filters,
+            onPage: this.state.onPage,
+            currentPage: this.state.currentPage
+        }));
     }
 
     handleFilterChanged(field, value, condition, caption, labelCaptionSeparator, label) {
@@ -65,8 +73,9 @@ class Table extends Component {
             labelCaptionSeparator: labelCaptionSeparator,
             label: label
         };
-        this.setState({filters: this.state.filters});
-        this.load();
+        this.setState({currentPage: 1, filters: this.state.filters}, this.load);
+
+
     }
 
     headClicked(index, e) {
@@ -100,9 +109,13 @@ class Table extends Component {
         this.load();
     }
 
+    handleCurrentPageChange(page) {
+        this.setState({currentPage: page}, this.load);
+    }
+
     render() {
         const columns = this.props.columns;
-        console.dir(columns);
+        //console.dir(columns);
 
         const filters = {
             'NumericFilter': NumericFilter,
@@ -141,7 +154,15 @@ class Table extends Component {
                     {this.state.loaded && this.state.data.length > 0 && <Rows columns={columns} data={this.state.data}/>}
 
                     <tfoot>
-                    {this.state.loaded && this.state.data.length > 0 && <Footer columns={columns} count={this.state.countAll}/>}
+                    {this.state.loaded && this.state.data.length > 0 &&
+                    <Footer
+                        columns={columns}
+                        count={this.state.countAll}
+                        onPage={this.state.onPage}
+                        onPageChanged={(onPage) => alert(onPage)}
+                        currentPage={this.state.currentPage}
+                        currentPageChanged={this.handleCurrentPageChange.bind(this)}
+                    />}
                     </tfoot>
                 </table>
                 <br /><br />
@@ -188,40 +209,49 @@ function FiltersPresenter(props) {
 
 function Loading(props) {
     return (
+        <tbody>
         <tr>
             <td className="w-table-center" colSpan={props.colspan}>
                 <i className="fa fa-spinner fa-spin"></i>
             </td>
         </tr>
+        </tbody>
     )
 }
 function EmptyResult(props) {
     return (
+        <tbody>
         <tr>
             <td className="w-table-center" colSpan={props.colspan}><h4>Brak danych</h4></td>
         </tr>
+        </tbody>
     )
 }
 
 
 function Error(props) {
     return (
+        <tbody>
         <tr>
             <td colSpan={props.colspan}>
                 <span dangerouslySetInnerHTML={{__html: props.error}}/>
             </td>
         </tr>
+        </tbody>
     )
 }
 function Rows(props) {
     return (
         <tbody>
-        {props.data.map(row =>
-            <tr>
-                {props.columns.map(column =>
-                    <td
-                        onClick={column.events.click?function(){ column.events.click(row);}:function(){}}
-                        className={'' + (column.events.click?'w-table-cell-clickable':'')}
+        {props.data.map((row, index) =>
+            <tr key={'row' + index}>
+                {props.columns.map((column, index2) =>
+                    <td key={'cell' + index2}
+                        onClick={column.events.click ? function () {
+                            column.events.click(row);
+                        } : function () {
+                        }}
+                        className={'' + (column.events.click ? 'w-table-cell-clickable' : '') + (column.class ? ' ' + column.class.join(' ') : '')}
                     >
                         {column.field && !column.template ? (row[column.field] ? row[column.field] : column.default) : ''}
                         {column.template ? <span dangerouslySetInnerHTML={{__html: (eval(column.template)(row))}}></span> : ''}
@@ -233,10 +263,28 @@ function Rows(props) {
     )
 }
 function Footer(props) {
+    const pages = Math.ceil(props.count / props.onPage);
+
     return (
         <tr>
-            <td colSpan={5}>
+            <td colSpan={props.columns.length}>
                 Wszystkich {props.count}
+                <br/>
+                na stronie : {props.onPage} , strona: {props.currentPage} , stron: {pages}
+                <div className="w-table-pager">
+                    {Array(Math.min(props.currentPage - 1, 5)).fill(1).map((el, i) =>
+                        <div key={i} onClick={(e) => {
+                            props.currentPageChanged(props.currentPage - Math.min(props.currentPage - 1, 5) + i)
+                        }}>{props.currentPage - Math.min(props.currentPage - 1, 5) + i}</div>
+                    )}
+                    <div className="w-table-pager-active">{props.currentPage}</div>
+                    {Array(Math.min(pages - props.currentPage, 5)).fill(1).map((el, i) =>
+                        <div key={i} onClick={(e) => {
+                            props.currentPageChanged(props.currentPage + 1 + i)
+                        }}>{props.currentPage + 1 + i}</div>
+                    )}
+                </div>
+
             </td>
         </tr>
     )
