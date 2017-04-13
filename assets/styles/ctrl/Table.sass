@@ -17,34 +17,50 @@
                     color: darkred
 
 
-    table
+    >table
+        border: solid 1px lightgrey
+
         width: 100%
         .w-table-center
             text-align: center
-        thead
+
+
+        >thead
             background: linear-gradient(to bottom, #f7f7f7 0, #DFDFDF 100%)
-            th
-                padding: 5px
-                padding-right: 0
-                font-weight: normal
+            >tr
+                >th
+                    padding: 5px
+                    padding-right: 0
+                    font-weight: normal
 
-                &:hover
-                    background-color: lightgrey
-                    cursor: pointer
+                    &:hover
+                        background-color: lightgrey
+                        cursor: pointer
 
-                .w-filter
-                    float: right
-                    margin-top: -5px
-                    margin-bottom: -5px
-                    margin-right: 0
+                    .w-filter
+                        float: right
+                        margin-top: -5px
+                        margin-bottom: -5px
+                        margin-right: 0
 
-        tbody
-            td
+        > tbody
+            >tr
+                >td
 
-                font-family: Arial, Verdana, Tahoma
-                border: 1px solid #e7efd3
-                padding: 6px
-                font-size: 12px
+                    font-family: Arial, Verdana, Tahoma
+                    border: 1px solid #e7efd3
+                    padding: 6px
+                    font-size: 12px
+                    &:first-child
+                        border-left: none
+                    &:last-child
+                        border-left: none
+
+                    &.w-table-cell-clickable
+                        cursor: pointer
+                        &:hover
+                            background-color: lightgrey
+
 
             >tr:nth-child(odd) > td
                 //background-color: #f8faf2
@@ -56,3 +72,9 @@
 
             >tr:hover > td
                 background-color: #eaeaea
+
+        > tfoot
+            >tr
+                >td
+                    padding: 6px
+                    background-color: #F5F5F5

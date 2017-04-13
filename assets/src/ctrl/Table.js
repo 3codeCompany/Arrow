@@ -6,6 +6,19 @@ class Table extends Component {
 
     constructor(props) {
         super(props);
+        var x;
+        this.props.columns.map(el => {
+            if (el.template) {
+                el.template = eval("x = function(row){ return `" + el.template + "`; };")
+            }
+
+            if(typeof(el.events) == "object") {
+                Object.entries(el.events).map(([_key, val]) => {
+                    el.events[_key] = eval("x = function(row){ " + val + "; return false; };");
+                });
+            }
+
+        });
 
         this.state = {
             loaded: false,
@@ -15,6 +28,8 @@ class Table extends Component {
         };
 
         this.load();
+
+
     }
 
     load() {
@@ -87,6 +102,7 @@ class Table extends Component {
 
     render() {
         const columns = this.props.columns;
+        console.dir(columns);
 
         const filters = {
             'NumericFilter': NumericFilter,
@@ -106,14 +122,14 @@ class Table extends Component {
                     <thead>
                     <tr>
                         {columns.map((el, index) => {
-                            const Component = filters[el.filter.type];
+                            const Component = el.filter ? filters[el.filter.type] : null;
                             return (
                                 <th key={index} onClick={this.headClicked.bind(this, index)}
                                     style={{width: el.width}}
                                 >
                                     {el.order ? <i className={'fa fa-' + (el.order == 'asc' ? 'arrow-down' : 'arrow-up')}></i> : ''}
                                     {el.caption}
-                                    {el.filter ? <Component onChange={this.handleFilterChanged.bind(this)} {...el.filter} caption={el.caption} /> : ''}
+                                    {el.filter ? <Component onChange={this.handleFilterChanged.bind(this)} {...el.filter} caption={el.caption}/> : ''}
                                 </th>)
                         })}
                     </tr>
@@ -128,8 +144,15 @@ class Table extends Component {
                     {this.state.loaded && this.state.data.length > 0 && <Footer columns={columns} count={this.state.countAll}/>}
                     </tfoot>
                 </table>
+                <br /><br />
                 <pre>{JSON.stringify(this.state.filters, null, 2)}</pre>
                 <pre>{JSON.stringify(this.props, null, 2)}</pre>
+                <pre>
+                    image
+                    link
+                    template
+                    menu
+                </pre>
             </div>
         )
     }
@@ -150,7 +173,7 @@ function FiltersPresenter(props) {
                     </div>
                 )}
 
-            {Object.entries(props.filters).map(([key,el]) =>
+            {Object.entries(props.filters).map(([key, el]) =>
                 <div>
                     <div><i className="fa fa-filter"></i></div>
                     <div className="caption">{el.caption}</div>
@@ -196,8 +219,12 @@ function Rows(props) {
         {props.data.map(row =>
             <tr>
                 {props.columns.map(column =>
-                    <td>
-                        {row[column.field]}
+                    <td
+                        onClick={column.events.click?function(){ column.events.click(row);}:function(){}}
+                        className={'' + (column.events.click?'w-table-cell-clickable':'')}
+                    >
+                        {column.field && !column.template ? (row[column.field] ? row[column.field] : column.default) : ''}
+                        {column.template ? <span dangerouslySetInnerHTML={{__html: (eval(column.template)(row))}}></span> : ''}
                     </td>
                 )}
             </tr>
