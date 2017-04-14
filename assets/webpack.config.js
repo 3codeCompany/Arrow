@@ -21,7 +21,7 @@ module.exports = function (env = {}) {
             publicPath: 'http://localhost:3000/'
         },
 
-        devtool: env.production ? 'source-map' : 'eval-cheap-module-source-map',
+        devtool: env.production ? 'source-map' : 'source-map', //
 
         module: {
             loaders: [

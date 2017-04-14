@@ -1,13 +1,18 @@
 .w-table
+    .w-table-buttons
+        float: right
     .w-table-presenter
+        float: left
         margin-bottom: 10px
-        >div
+        > div
             display: inline-block
             margin-right: 20px
             border-bottom: solid 1px grey
             padding: 3px
+            &:hover
+                border-bottom: solid 1px red
 
-            >div
+            > div
                 display: inline-block
                 margin-right: 5px
                 &.caption
@@ -15,23 +20,32 @@
                     font-weight: bold
                 &.remove
                     color: darkred
+                    cursor: pointer
 
+                    &:hover
+                        color: red
 
-    >table
+    > table
+        //color: #111111
         border: solid 1px lightgrey
-
         width: 100%
+        background-color: #A9A9A9
+
         .w-table-center
             text-align: center
 
-
-        >thead
+        > thead
             background: linear-gradient(to bottom, #f7f7f7 0, #DFDFDF 100%)
-            >tr
-                >th
+            > tr
+
+                border-bottom: solid 2px grey
+                > th
                     padding: 5px
                     padding-right: 0
                     font-weight: normal
+                    //text-align: center
+                    >i
+                        margin-right: 10px
 
                     &:hover
                         background-color: lightgrey
@@ -44,13 +58,19 @@
                         margin-right: 0
 
         > tbody
-            >tr
-                >td
+            max-height: 500px
+            color: #111111
+            > tr
+                border-collapse: collapse
+
+                > td
 
                     font-family: Arial, Verdana, Tahoma
                     border: 1px solid #e7efd3
                     padding: 6px
                     font-size: 12px
+                    border-collapse: collapse
+
                     &:first-child
                         border-left: none
                     &:last-child
@@ -61,36 +81,94 @@
                         &:hover
                             background-color: lightgrey
 
-
-            >tr:nth-child(odd) > td
+            > tr:nth-child(even) > td
                 //background-color: #f8faf2
-                background-color: #e7efd3
+                background-color: #f8faf2
 
+            > tr:nth-child(odd) > td
+                background-color: white
 
-            >tr:nth-child(odd) > td
-                background-color: #f9f9f9
-
-            >tr:hover > td
+            > tr:hover > td
                 background-color: #eaeaea
 
         > tfoot
-            >tr
-                >td
+            > tr
+                > td
+                    border-top: solid 2px grey
+
                     padding: 6px
                     background-color: #F5F5F5
 
+                    .w-table-footer-all
+                        float: left
+                        font-size: 18px
+                        line-height: 32px
+                        span
+                            font-weight: bold
+
+                    .w-table-footer-pageinfo
+                        float: right
+                        font-size: 18px
+                        line-height: 32px
+                        margin: 0 20px 0 20px
+
+                    .w-table-footer-onpage-select
+                        float: right
+                        select
+                            font-size: 16px
+                            margin-top: 6px
+
                     .w-table-pager
-                        >div
+                        float: right
+                        > div
+                            border-radius: 3px
+                            min-width: 27px
+                            padding: 0 4px
+                            height: 27px
+                            text-align: center
+                            line-height: 25px
                             cursor: pointer
                             display: inline-block
-                            padding: 5px
+
                             background-color: white
                             border: solid 1px lightgrey
                             margin: 2px
+                            user-select: none
+                            outline: 0
                             &:hover
                                 color: darkred
                                 border-color: darkred
 
-
                             &.w-table-pager-active
                                 background-color: lightgrey
+                                border-color: grey
+
+        &.w-table-fixed
+
+            width: 100%
+            > thead
+                width: calc( 100% - 18px )
+                display: table
+                table-layout: fixed
+
+            > tbody
+                display: block
+                width: 100%
+                overflow-y: auto
+                max-height: 500px
+
+                > tr
+                    margin-top: -1px
+                    display: table
+                    table-layout: fixed
+                    width: 100%
+
+            > tfoot
+
+                width: 100%
+                display: table
+                table-layout: fixed
+                tr
+                    display: table
+                    table-layout: fixed
+                    width: 100%
