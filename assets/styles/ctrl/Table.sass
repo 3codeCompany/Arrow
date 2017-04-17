@@ -1,9 +1,29 @@
 .w-table
+
+    &.w-table-loading
+        > table
+            > thead
+                > tr
+                    border-bottom-color: red
+
+
+    .w-table-loading-indicator
+        color: darkred
+        border: 0 !important
+
     .w-table-buttons
         float: right
+        button
+            background-color: transparent
+            border: solid 1px lightgrey
+            margin: 0 0 2px 2px
+
+            &:hover
+                color: darkred
+
     .w-table-presenter
         float: left
-        margin-bottom: 10px
+        margin-bottom: 2px
         > div
             display: inline-block
             margin-right: 20px
@@ -39,19 +59,20 @@
             > tr
 
                 border-bottom: solid 2px grey
+                transition: color 2.25s
                 > th
                     padding: 5px
                     padding-right: 0
                     font-weight: normal
                     //text-align: center
-                    >i
+                    > i
                         margin-right: 10px
 
                     &:hover
                         background-color: lightgrey
                         cursor: pointer
 
-                    .w-filter
+                    .w-filter-openable
                         float: right
                         margin-top: -5px
                         margin-bottom: -5px
@@ -81,6 +102,23 @@
                         &:hover
                             background-color: lightgrey
 
+                    .w-table-cell-multi
+                        margin-bottom: 5px
+                        margin-top: 5px
+                    .w-table-cell-multi:first-child
+                        margin-top: 0
+                    .w-table-cell-multi:last-child
+                        margin-bottom: 0
+                    .w-table-cell-date
+                        +clearfix
+                        > div
+                            float: left
+
+                        > div:nth-child(1)
+                            width: 18px
+                        > div:nth-child(2)
+                            width: calc(100% - 18px)
+
             > tr:nth-child(even) > td
                 //background-color: #f8faf2
                 background-color: #f8faf2
@@ -94,10 +132,19 @@
         > tfoot
             > tr
                 > td
-                    border-top: solid 2px grey
 
                     padding: 6px
                     background-color: #F5F5F5
+                    padding-top: 0
+
+                    .w-table-footer-drag
+                        background-color: grey
+                        height: 2px
+                        cursor: row-resize
+                        width: calc(100% + 12px)
+                        margin-bottom: 5px
+                        margin-left: -6px
+                        user-select: none
 
                     .w-table-footer-all
                         float: left
@@ -147,7 +194,7 @@
 
             width: 100%
             > thead
-                width: calc( 100% - 18px )
+                width: calc(100% - 18px)
                 display: table
                 table-layout: fixed
 
@@ -155,7 +202,7 @@
                 display: block
                 width: 100%
                 overflow-y: auto
-                max-height: 500px
+                position: relative
 
                 > tr
                     margin-top: -1px

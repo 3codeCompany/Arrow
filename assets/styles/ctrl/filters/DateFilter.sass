@@ -1,40 +1,31 @@
 &.w-filter-date
 
-    .w-filter-body
+    > i
+        vertical-align: -3px
+    .DateRangePickerInput
+        border: none
+    .w-filter-date-time
+        font-size: 18px
+        font-weight: lighter
 
-        >i
-            vertical-align: -3px
-        .DateRangePickerInput
-            border: none
-        .w-filter-date-time
-            font-size: 18px
-            font-weight: lighter
+        i
+            margin-right: 10px
 
-
-            i
+        > div
+            display: inline-block
+            width: 60px
+            &:nth-child(3)
+                width: 23px !important
+                margin-left: 62px
                 margin-right: 10px
+            svg
+                height: 24px
+                vertical-align: text-bottom
 
-            > div
-                display: inline-block
-                width: 60px
-                &:nth-child(3)
-                    width: 23px !important
-                    margin-left: 62px
-                    margin-right: 10px
-                svg
-                    height: 24px
-                    vertical-align: text-bottom
-
-                .rc-time-picker-input
-                    border: 0
-                    font-size: 18px
-                    font-weight: lighter
-
-
-
-
-
-
+            .rc-time-picker-input
+                border: 0
+                font-size: 18px
+                font-weight: lighter
 
 .rc-time-picker-panel
     width: 113px !important

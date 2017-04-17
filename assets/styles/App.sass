@@ -1,15 +1,36 @@
+@mixin clearfix()
+    &:before, &:after
+        content: " "
+        display: table
+
+    &:after
+        clear: both
+
 @import "ctrl/SerenityControls"
 
 .center
     text-align: center
+
 .left
     text-align: left
+
 .right
     text-align: right
-
 
 .darkred
     color: darkred
 
 .darkgreen
     color: darkgreen
+
+.green
+    color: green
+
+.reed
+    color: red
+
+.label > div
+    display: inline
+
+
+

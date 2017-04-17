@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {DateFilter, SelectFilter, NumericFilter, SwitchFilter, TextFilter} from './Filters'
+import {DateFilter, SelectFilter, NumericFilter, SwitchFilter, TextFilter, MultiFilter, filtersMapping, withFilterOpenLayer} from './Filters'
 
 
 class Table extends Component {
@@ -10,35 +10,61 @@ class Table extends Component {
         super(props);
 
         this.state = {
-            loaded: false,
+            loading: false,
+            firstLoaded: false,
             data: [],
             dataSourceError: false,
+            dataSourceDebug: false,
             filters: {},
+            order: {},
             onPage: this.props.onPage,
             currentPage: 1,
             countAll: 0,
-            fixedLayout: props.fixedLayout
+            fixedLayout: props.fixedLayout,
+            columns: this.props.columns,
+            bodyHeight: 500
         };
 
-        if(window.localStorage['list']){
-            this.state = JSON.parse(window.localStorage['list']);
-        }
-
+        //helpers
+        this.tmpDragStartY = 0;
+        this.xhrConnection = 0;
     }
 
+    componentWillMount() {
+        if (window.localStorage['list']) {
+            this.state = JSON.parse(...this.state, window.localStorage['list'] );
+            this.state.firstLoaded = false;
+        }
+    }
 
+    componentDidUpdate() {
+        window.localStorage['list'] = JSON.stringify({...this.state, data: []});
+    }
 
     componentDidMount() {
         this.load();
+
+        /*let handleDragStart = (e) => {
+         e.target.style.opacity = '0.4';
+
+         }*/
+
+        // console.log(this.refs.bodyResizeHandler);
+        //this.refs.bodyResizeHandler.addEventListener('dragstart', handleDragStart, false);
+
+
     }
 
-    componentDidUpdate(){
-        window.localStorage['list'] = JSON.stringify(this.state);
-    }
 
     load() {
 
+        if(this.xhrConnection){
+            this.xhrConnection.abort();
+        }
+
         this.state.dataSourceError = false;
+        //this.state.dataSourceDebug = false;
+        this.setState({loading: true});
         let xhr = new XMLHttpRequest();
         xhr.onload = (e) => {
             let parsed;
@@ -49,7 +75,9 @@ class Table extends Component {
                     this.setState({
                         data: parsed.data.slice(0),
                         countAll: 0 + parseInt(parsed.countAll),
-                        loaded: true
+                        loading: false,
+                        dataSourceDebug: parsed.debug ? parsed.debug : false,
+                        firstLoaded: true
                     });
                 } catch (e) {
                     this.setState({dataSourceError: xhr.responseText})
@@ -61,9 +89,18 @@ class Table extends Component {
         xhr.send(JSON.stringify({
             columns: this.props.columns,
             filters: this.state.filters,
+            order: this.state.order,
             onPage: this.state.onPage,
             currentPage: this.state.currentPage
         }));
+        this.xhrConnection = xhr;
+    }
+
+    handleStateRemove(){
+        delete window.localStorage['list'];
+        if(confirm("Wyczyszczono dane tabelki, czy chcesz odświeżyć stronę?")){
+            window.location.reload();
+        }
     }
 
     handleFilterChanged(field, value, condition, caption, labelCaptionSeparator, label) {
@@ -83,13 +120,8 @@ class Table extends Component {
         this.setState({currentPage: 1, filters: this.state.filters}, this.load);
     }
 
-    handleOnSortChange(sort) {
-        this.props.columns.map(el => {
-            if (el.field == sort) {
-                delete el['order'];
-                delete el['orderPrioryty'];
-            }
-        });
+    handleOrderDelete(field) {
+        delete this.state.order[field]
         this.setState({}, this.load);
     }
 
@@ -98,34 +130,31 @@ class Table extends Component {
             return;
         }
 
+        if (!this.props.columns[index].orderField)
+            return;
 
-        let currrent = this.props.columns.filter((el) => {
-            return el.order
-        });
+        let field = {};
+        const _field = this.props.columns[index].field;
 
-        let prioryty = 1;
-        if (currrent.length)
-            prioryty = currrent.reduce((pv, cv) => pv + cv.orderPrioryty, 0);
-
-
-        if (this.props.columns[index].order) {
-            if (this.props.columns[index].order == 'asc') {
-                this.props.columns[index].order = 'desc';
-                this.props.columns[index].orderPrioryty = prioryty;
-            } else {
-                this.props.columns[index].order = false;
-                this.props.columns[index].orderPrioryty = 0;
-            }
+        if (this.state.order[_field]) {
+            field = this.state.order[_field];
         } else {
-            this.props.columns[index].order = 'asc';
-            this.props.columns[index].orderPrioryty = prioryty;
+            field = {
+                caption: this.props.columns[index].caption,
+                field: this.props.columns[index].orderField,
+                dir: 'desc'
+            }
         }
-        this.setState({});
-        this.load();
+
+        field = {...field, dir: field.dir == "asc" ? "desc" : "asc"};
+
+        this.state.order[_field] = field;
+        this.setState({}, this.load);
+
     }
 
     handleOnPageChangepage(onPage) {
-        this.setState({onPage: onPage}, this.load);
+        this.setState({onPage: onPage, currentPage: 1}, this.load);
     }
 
     handleCurrentPageChange(page) {
@@ -138,13 +167,32 @@ class Table extends Component {
         });
     }
 
+    handleBodyResizeStart(e) {
+        this.tmpDragStartY = e.clientY
+        this.tmpCurrHeight = this.state.bodyHeight;
+    }
 
-    transformInput() {
+    handleBodyResize(e) {
+        if(e.clientY) {
+            //this.setState({bodyHeight:  this.tmpCurrHeight + (-this.tmpDragStartY + e.clientY)});
+        }
+    }
+
+     handleBodyResizeEnd(e) {
+        this.setState({bodyHeight: this.tmpCurrHeight + (-this.tmpDragStartY + e.clientY)});
+    }
+
+
+    transformInput(columns) {
         let x;
-        this.props.columns.map(el => {
+        columns.map(el => {
             if (el.template && typeof el.template != 'function') {
-                el.template = eval('x = function(row){ return `' + el.template + '`; };')
+                if (el.template.indexOf('return') == -1)
+                    el.template = eval('x = function(row){ return `' + el.template + '`; };')
+                else
+                    el.template = eval('x = function(row){ ' + el.template + ' };')
             }
+
 
             if (typeof(el.events) == 'object') {
                 Object.entries(el.events).map(([_key, val]) => {
@@ -152,35 +200,33 @@ class Table extends Component {
                         el.events[_key] = eval('x = function(row){ ' + val + '; return false; };');
                 });
             }
+            if (el.columns) {
+                this.transformInput(el.columns);
+            }
         });
     }
 
     render() {
 
-        this.transformInput();
+        this.transformInput(this.props.columns);
 
         const columns = this.props.columns;
         //console.dir(columns);
 
-        const filters = {
-            'NumericFilter': NumericFilter,
-            'DateFilter': DateFilter,
-            'SelectFilter': SelectFilter,
-            'SwitchFilter': SwitchFilter,
-            'TextFilter': TextFilter
-        };
 
         return (
-            <div className="w-table">
-                <h4>React table {this.props.id}</h4>
-                <div className="w-table-top">
+            <div className={'w-table ' + (this.state.loading?'w-table-loading':'')}>
 
-                    <FiltersPresenter columns={columns} filters={this.state.filters}
+                <div className="w-table-top">
+                    <FiltersPresenter order={this.state.order} filters={this.state.filters}
                                       FilterDelete={this.handleFilterDelete.bind(this)}
-                                      onSortChange={this.handleOnSortChange.bind(this)}
+                                      orderDelete={this.handleOrderDelete.bind(this)}
                     />
                     <div className="w-table-buttons">
-                        <button onClick={this.toggleFixedLayout.bind(this)}><i className="fa fa-window-restore"></i></button>
+                        {this.state.loading?<button className="w-table-loading-indicator"><i className="fa fa-spinner fa-spin"></i></button>:''}
+                        <button title="Usuń zmiany" onClick={this.handleStateRemove.bind(this)}><i className="fa fa-eraser"></i></button>
+                        <button title="Odśwież" onClick={this.load.bind(this)}><i className="fa fa-refresh"></i></button>
+                        <button title="Zmień sposób wyświetlania" onClick={this.toggleFixedLayout.bind(this)}><i className="fa fa-window-restore"></i></button>
                     </div>
                 </div>
 
@@ -189,7 +235,7 @@ class Table extends Component {
                     <thead>
                     <tr>
                         {columns.map((el, index) => {
-                            const Component = el.filter ? filters[el.filter.type] : null;
+                            const Component = el.filter ? withFilterOpenLayer(filtersMapping[el.filter.type]) : null;
                             return (
                                 <th key={index} onClick={this.headClicked.bind(this, index)}
                                     style={{width: el.width}}
@@ -202,14 +248,14 @@ class Table extends Component {
                     </tr>
                     </thead>
 
-                    {!this.state.loaded && <Loading colspan={columns.length}/>}
-                    {this.state.dataSourceError && <Error colspan={columns.length} error={this.state.dataSourceError}/>}
-                    {this.state.loaded && this.state.data.length == 0 && <EmptyResult colspan={columns.length}/>}
 
-                    {this.state.loaded && this.state.data.length > 0 && <Rows columns={columns} data={this.state.data}/>}
+                    {this.state.dataSourceError && <Error colspan={columns.length} error={this.state.dataSourceError}/>}
+                    {!this.state.loading && this.state.data.length == 0 && <EmptyResult colspan={columns.length}/>}
+                    {this.state.loading && !this.state.firstLoaded && <Loading colspan={columns.length}/>}
+                    {this.state.firstLoaded && this.state.data.length > 0 && <Rows columns={columns} loading={this.state.loading} bodyHeight={this.state.fixedLayout ? this.state.bodyHeight : 'auto'} data={this.state.data}/>}
 
                     <tfoot>
-                    {this.state.loaded && this.state.data.length > 0 &&
+                    {this.state.firstLoaded && this.state.data.length > 0 &&
                     <Footer
                         columns={columns}
                         count={this.state.countAll}
@@ -217,19 +263,24 @@ class Table extends Component {
                         onPageChanged={this.handleOnPageChangepage.bind(this)}
                         currentPage={this.state.currentPage}
                         currentPageChanged={this.handleCurrentPageChange.bind(this)}
+                        bodyResizeStart={this.handleBodyResizeStart.bind(this)}
+                        bodyResize={this.handleBodyResize.bind(this)}
+                        bodyResizeEnd={this.handleBodyResizeEnd.bind(this)}
                     />}
                     </tfoot>
                 </table>
+                {this.state.dataSourceDebug ? <pre>{this.state.dataSourceDebug}</pre> : null}
+
                 <br /><br />
 
-                <pre>{JSON.stringify(this.state.filters, null, 2)}</pre>
-                <pre>{JSON.stringify(this.props, null, 2)}</pre>
+                {/*<pre>{JSON.stringify(this.props.columns, null, 2)}</pre>
+                <pre>{JSON.stringify(this.state.order, null, 2)}</pre>
                 <pre>
                     image
                     link
                     template
                     menu
-                </pre>
+                </pre>*/}
             </div>
         )
     }
@@ -237,18 +288,17 @@ class Table extends Component {
 }
 
 function FiltersPresenter(props) {
+    {/*.sort((a, b) => a.prioryty > b.prioryty)*/
+    }
     return (
         <div className="w-table-presenter" style={{minHeight: '30px'}}>
-            {props.columns.filter((el) => {
-                return el.order
-            }).sort((a, b) => a.orderPrioryty > b.orderPrioryty)
-                .map((el, index) =>
-                    <div>
-                        <div><i className={'fa fa-' + (el.order == 'asc' ? 'arrow-down' : 'arrow-up')}></i></div>
-                        <div className="caption">{el.caption}</div>
-                        <div className="remove" onClick={(e) => props.onSortChange(el.field)}><i className="fa fa-times"></i></div>
-                    </div>
-                )}
+            {Object.entries(props.order).map(([field, el], index) =>
+                <div>
+                    <div><i className={'fa fa-' + (el.dir == 'asc' ? 'arrow-down' : 'arrow-up')}></i></div>
+                    <div className="caption">{el.caption}</div>
+                    <div className="remove" onClick={(e) => props.orderDelete(field)}><i className="fa fa-times"></i></div>
+                </div>
+            )}
 
             {Object.entries(props.filters).map(([key, el]) =>
                 <div>
@@ -296,31 +346,9 @@ function Error(props) {
         </tbody>
     )
 }
-function Rows(props) {
-    return (
-        <tbody>
-        {props.data.map((row, index) =>
-            <tr key={'row' + index}>
-                {props.columns.map((column, index2) =>
-                    <td key={'cell' + index2}
-                        style={{width: column.width}}
-                        onClick={column.events.click ? function () {
-                            column.events.click(row);
-                        } : function () {
-                        }}
-                        className={'' + (column.events.click ? 'w-table-cell-clickable' : '') + (column.class ? ' ' + column.class.join(' ') : '')}
-                    >
-                        {column.field && !column.template ? (row[column.field] ? row[column.field] : column.default) : ''}
-                        {column.template ? <span dangerouslySetInnerHTML={{__html: (column.template(row))}}></span> : ''}
-                    </td>
-                )}
-            </tr>
-        )}
-        </tbody>
-    )
-}
+
 function Footer(props) {
-    const pages = Math.floor(props.count / props.onPage);
+    const pages = Math.max( Math.floor(props.count / props.onPage), 1);
 
     const leftRightCount = 2;
 
@@ -336,6 +364,18 @@ function Footer(props) {
                 <div className="w-table-footer-all">
                     Wszystkich <span>{props.count}</span>
                 </div>
+
+                <div className="w-table-footer-drag"
+                     onDragStart={(e) => {
+                    props.bodyResizeStart(e)
+                }} onDrag={(e) => {
+                    props.bodyResize(e)
+                }}
+                     onDragEnd={(e) => {
+                    props.bodyResizeEnd(e)
+                }}
+                     draggable={true}
+                > </div>
                 <div className="w-table-pager">
                     <div onClick={(e) => props.currentPageChanged(1)}><i className="fa fa-angle-double-left"></i></div>
                     <div onClick={(e) => props.currentPageChanged(Math.max(1, props.currentPage - 1))}><i className="fa fa-angle-left"></i></div>
@@ -353,13 +393,112 @@ function Footer(props) {
                     <span>Na stronie: </span>
                     <select defaultValue={props.onPage} onChange={(e) => props.onPageChanged(parseInt(e.target.value))}>
                         {([25, 50, 100]).map((x, i) =>
-                            <option value={x}>{x}</option>
+                            <option key={'onpageval' + x} value={x}>{x}</option>
                         )}
                     </select>
                 </div>
 
             </td>
         </tr>
+    )
+}
+
+function Rows(props) {
+    const cells = {
+        'Simple': ColumnSimple,
+        'Template': ColumnTemplate,
+        'Map': ColumnMap,
+        'Date': ColumnDate,
+        'Multi': ColumnMulti,
+    };
+
+
+    return (
+
+        <tbody style={{maxHeight: props.bodyHeight}}>
+
+
+
+        {props.data.map((row, index) =>
+            <tr key={'row' + index}>
+                {props.columns.map((column, index2) => {
+                    const Component = column.type ? cells[column.type] : cells["Simple"];
+                    return (<td key={'cell' + index2}
+                                style={{width: column.width}}
+                                onClick={column.events.click ? function () {
+                                    column.events.click(row);
+                                } : function () {
+                                }}
+                                className={'' + (column.events.click ? 'w-table-cell-clickable ' : '') + (column.class ? ' ' + column.class.join(' ') : '') +
+                                (column.classDecorator[row[column.field]] ? column.classDecorator[row[column.field]] + " " : '')
+                                }
+                        >
+                            <Component column={column} row={row} cells={cells}/>
+                        </td>
+                    )
+                })}
+            </tr>
+        )}
+
+        </tbody>
+    )
+}
+
+function ColumnSimple(props) {
+    return (
+        <div>{props.column.field ? (props.row[props.column.field] ? props.row[props.column.field] : props.column.default) : ''} </div>
+    )
+}
+
+function ColumnDate(props) {
+    return (
+        <div className="w-table-cell-date">
+            <div>
+                <i className="fa fa-calendar-o"></i>
+            </div>
+            <div>
+                {props.column.field ? (props.row[props.column.field] ? props.row[props.column.field] : props.column.default) : ''}
+            </div>
+        </div>
+    )
+}
+
+function ColumnTemplate(props) {
+    return (
+        <div dangerouslySetInnerHTML={{__html: (props.column.template(props.row))}}></div>
+    )
+}
+
+function ColumnMap(props) {
+    const value = props.row[props.column.field];
+    return (
+        <div>
+            {props.column.map[value] ? props.column.map[value] : value}
+        </div>
+    )
+}
+
+function ColumnMulti(props) {
+    return (
+        <div>
+            {/*{JSON.stringify(props.column.columns)}*/}
+
+            {props.column.columns.map((column) => {
+                const Component = column.type ? props.cells[column.type] : props.cells["Simple"];
+                let classes = ['w-table-cell-multi']
+                if (column.classDecorator[props.row[column.field]])
+                    classes.push(column.classDecorator[props.row[column.field]]);
+                if (column.classDecorator[props.row[column.field]])
+                    classes.push(column.classDecorator[props.row[column.field]]);
+                if (column.class)
+                    classes = classes.concat(column.class);
+
+                return (<div key={'multi'+column.field} className={classes.join(' ')}>
+                    <Component column={column} row={props.row}/>
+                </div>)
+            })}
+
+        </div>
     )
 }
 

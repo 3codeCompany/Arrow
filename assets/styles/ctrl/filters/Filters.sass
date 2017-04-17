@@ -1,10 +1,8 @@
-.w-filter
+.w-filter-openable
     display: inline-block
     outline: none
     position: relative
-
-
-    .w-filter-trigger
+    .w-filter-openable-trigger
         margin: 0
         cursor: pointer
         padding: 5px
@@ -15,44 +13,43 @@
             background-color: lightgrey
             border: solid 1px grey
 
-    .w-filter-body
-        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)
-        position: absolute
-        width: 330px
+    .w-filter-openable-body
         background-color: white
-        border: solid 1px #c5c5c5
-        display: none
+        width: 100%
         z-index: 5
-        padding: 0 10px 10px
+        padding: 0px 10px 10px
+        position: absolute
+        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)
+        border: solid 1px #c5c5c5
+        width: 330px
+        margin-top: -1px
+        z-index: 20
         i
             font-size: 18px
             font-weight: lighter
             margin-left: 5px
 
-        .w-filter-apply
-            border: solid 1px lightgrey
-            padding: 6px
-            width: calc(100%)
-            background-color: #eeeeee
-            margin-top: 10px
-            &:hover
-                background-color: #dbdbdb
-
-    &.w-filter-opened
-        z-index: 20
-        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)
-        .w-filter-trigger
+    &.w-filter-openable-opened
+        .w-filter-openable-trigger
             background-color: white
             border: solid 1px #c5c5c5
             border-bottom: none
 
-        .w-filter-body
-            display: block
-            margin-top: -1px
 
     th &
-
         height: 100%
+
+.w-filter
+
+    .w-filter-apply
+        border: solid 1px lightgrey
+        padding: 6px
+        width: calc(100%)
+        background-color: #eeeeee
+        margin-top: 10px
+        &:hover
+            background-color: #dbdbdb
+
 
 
     @import "DateFilter"
@@ -60,3 +57,4 @@
     @import "NumericFilter"
     @import "SwitchFilter"
     @import "TextFilter"
+    @import "MultiFilter"
