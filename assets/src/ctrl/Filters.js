@@ -28,9 +28,10 @@ class DateFilter extends Filter {
     }
 
      componentDidMount() {
-        this.props.promise.then(value => {
+
+        /*this.props.promise.then(value => {
             this.setState({value});
-        });
+        });*/
     }
 
 
