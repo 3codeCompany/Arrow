@@ -22,7 +22,7 @@ class Table extends Component {
             countAll: 0,
             fixedLayout: props.fixedLayout,
             columns: this.props.columns,
-            bodyHeight: 500
+            bodyHeight: this.props.initHeight
         };
 
         //helpers
@@ -31,14 +31,15 @@ class Table extends Component {
     }
 
     componentWillMount() {
-        if (window.localStorage['list']) {
-            this.state = JSON.parse(...this.state, window.localStorage['list'] );
+        if (window.localStorage[this.props.controlKey]) {
+            this.state = JSON.parse(...this.state, window.localStorage[this.props.controlKey] );
             this.state.firstLoaded = false;
         }
     }
 
     componentDidUpdate() {
-        window.localStorage['list'] = JSON.stringify({...this.state, data: []});
+        console.log(this.props.controlKey);
+        window.localStorage[this.props.controlKey] = JSON.stringify({...this.state, data: []});
     }
 
     componentDidMount() {
@@ -293,7 +294,7 @@ function FiltersPresenter(props) {
     return (
         <div className="w-table-presenter" style={{minHeight: '30px'}}>
             {Object.entries(props.order).map(([field, el], index) =>
-                <div>
+                <div key={index}>
                     <div><i className={'fa fa-' + (el.dir == 'asc' ? 'arrow-down' : 'arrow-up')}></i></div>
                     <div className="caption">{el.caption}</div>
                     <div className="remove" onClick={(e) => props.orderDelete(field)}><i className="fa fa-times"></i></div>
@@ -301,7 +302,7 @@ function FiltersPresenter(props) {
             )}
 
             {Object.entries(props.filters).map(([key, el]) =>
-                <div>
+                <div  key={key}>
                     <div><i className="fa fa-filter"></i></div>
                     <div className="caption">{el.caption}</div>
                     <div className="value" dangerouslySetInnerHTML={{__html: el.label}}/>
