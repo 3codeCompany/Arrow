@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "webpack-dev-server -d",
+    "dev": "webpack-dev-server -d ",
     "build": "webpack --env.production --display-error-details",
     "watch": "webpack --watch --env.watch --display-error-details"
   },

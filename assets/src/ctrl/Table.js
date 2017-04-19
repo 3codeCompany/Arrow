@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 
+
 import {DateFilter, SelectFilter, NumericFilter, SwitchFilter, TextFilter, MultiFilter, filtersMapping, withFilterOpenLayer} from './Filters'
 
 
@@ -32,18 +33,20 @@ class Table extends Component {
 
     componentWillMount() {
         if (window.localStorage[this.props.controlKey]) {
-            this.state = JSON.parse(...this.state, window.localStorage[this.props.controlKey] );
+            this.state = JSON.parse(...this.state, window.localStorage[this.props.controlKey]);
             this.state.firstLoaded = false;
         }
+
     }
 
+
     componentDidUpdate() {
-        console.log(this.props.controlKey);
         window.localStorage[this.props.controlKey] = JSON.stringify({...this.state, data: []});
     }
 
     componentDidMount() {
         this.load();
+        this.refs.container.focus();
 
         /*let handleDragStart = (e) => {
          e.target.style.opacity = '0.4';
@@ -59,7 +62,7 @@ class Table extends Component {
 
     load() {
 
-        if(this.xhrConnection){
+        if (this.xhrConnection) {
             this.xhrConnection.abort();
         }
 
@@ -97,9 +100,9 @@ class Table extends Component {
         this.xhrConnection = xhr;
     }
 
-    handleStateRemove(){
+    handleStateRemove() {
         delete window.localStorage['list'];
-        if(confirm("Wyczyszczono dane tabelki, czy chcesz odświeżyć stronę?")){
+        if (confirm("Wyczyszczono dane tabelki, czy chcesz odświeżyć stronę?")) {
             window.location.reload();
         }
     }
@@ -159,7 +162,10 @@ class Table extends Component {
     }
 
     handleCurrentPageChange(page) {
-        this.setState({currentPage: page}, this.load);
+        let newPage = Math.max(1, Math.min(Math.ceil(this.state.countAll / this.state.onPage), page));
+        if (newPage != this.state.currentPage) {
+            this.setState({currentPage: newPage}, this.load);
+        }
     }
 
     toggleFixedLayout() {
@@ -174,24 +180,37 @@ class Table extends Component {
     }
 
     handleBodyResize(e) {
-        if(e.clientY) {
+        if (e.clientY) {
             //this.setState({bodyHeight:  this.tmpCurrHeight + (-this.tmpDragStartY + e.clientY)});
         }
     }
 
-     handleBodyResizeEnd(e) {
+    handleBodyResizeEnd(e) {
         this.setState({bodyHeight: this.tmpCurrHeight + (-this.tmpDragStartY + e.clientY)});
     }
 
+
+    handleKeyDown(e) {
+        //right
+        if (e.keyCode == 39) {
+            this.handleCurrentPageChange(this.state.currentPage + 1);
+        }
+
+        //left
+        if (e.keyCode == 37) {
+            this.handleCurrentPageChange(this.state.currentPage - 1);
+
+        }
+    }
 
     transformInput(columns) {
         let x;
         columns.map(el => {
             if (el.template && typeof el.template != 'function') {
                 if (el.template.indexOf('return') == -1)
-                    el.template = eval('x = function(row){ return `' + el.template + '`; };')
+                    el.template = eval('x = function(value, row){ return `' + el.template + '`; };')
                 else
-                    el.template = eval('x = function(row){ ' + el.template + ' };')
+                    el.template = eval('x = function(value, row){ ' + el.template + ' };')
             }
 
 
@@ -216,7 +235,7 @@ class Table extends Component {
 
 
         return (
-            <div className={'w-table ' + (this.state.loading?'w-table-loading':'')}>
+            <div className={'w-table ' + (this.state.loading ? 'w-table-loading' : '')} ref="container" tabIndex={0} onKeyDown={this.handleKeyDown.bind(this)}>
 
                 <div className="w-table-top">
                     <FiltersPresenter order={this.state.order} filters={this.state.filters}
@@ -224,7 +243,7 @@ class Table extends Component {
                                       orderDelete={this.handleOrderDelete.bind(this)}
                     />
                     <div className="w-table-buttons">
-                        {this.state.loading?<button className="w-table-loading-indicator"><i className="fa fa-spinner fa-spin"></i></button>:''}
+                        {this.state.loading ? <button className="w-table-loading-indicator"><i className="fa fa-spinner fa-spin"></i></button> : ''}
                         <button title="Usuń zmiany" onClick={this.handleStateRemove.bind(this)}><i className="fa fa-eraser"></i></button>
                         <button title="Odśwież" onClick={this.load.bind(this)}><i className="fa fa-refresh"></i></button>
                         <button title="Zmień sposób wyświetlania" onClick={this.toggleFixedLayout.bind(this)}><i className="fa fa-window-restore"></i></button>
@@ -272,16 +291,15 @@ class Table extends Component {
                 </table>
                 {this.state.dataSourceDebug ? <pre>{this.state.dataSourceDebug}</pre> : null}
 
-                <br /><br />
 
                 {/*<pre>{JSON.stringify(this.props.columns, null, 2)}</pre>
-                <pre>{JSON.stringify(this.state.order, null, 2)}</pre>
-                <pre>
-                    image
-                    link
-                    template
-                    menu
-                </pre>*/}
+                 <pre>{JSON.stringify(this.state.order, null, 2)}</pre>
+                 <pre>
+                 image
+                 link
+                 template
+                 menu
+                 </pre>*/}
             </div>
         )
     }
@@ -302,7 +320,7 @@ function FiltersPresenter(props) {
             )}
 
             {Object.entries(props.filters).map(([key, el]) =>
-                <div  key={key}>
+                <div key={key}>
                     <div><i className="fa fa-filter"></i></div>
                     <div className="caption">{el.caption}</div>
                     <div className="value" dangerouslySetInnerHTML={{__html: el.label}}/>
@@ -349,7 +367,7 @@ function Error(props) {
 }
 
 function Footer(props) {
-    const pages = Math.max( Math.floor(props.count / props.onPage), 1);
+    const pages = Math.max(Math.ceil(props.count / props.onPage), 1);
 
     const leftRightCount = 2;
 
@@ -361,22 +379,24 @@ function Footer(props) {
 
     return (
         <tr>
-            <td colSpan={props.columns.length}>
+            <td colSpan={props.columns.length} className="w-table-footer-main">
                 <div className="w-table-footer-all">
                     Wszystkich <span>{props.count}</span>
                 </div>
-
-                <div className="w-table-footer-drag"
-                     onDragStart={(e) => {
-                    props.bodyResizeStart(e)
-                }} onDrag={(e) => {
+                <div
+                    title="Przesuń i upuść aby zmienić rozmiar tabeli"
+                    className="w-table-footer-drag"
+                    onDragStart={(e) => {
+                        props.bodyResizeStart(e)
+                    }} onDrag={(e) => {
                     props.bodyResize(e)
                 }}
-                     onDragEnd={(e) => {
-                    props.bodyResizeEnd(e)
-                }}
-                     draggable={true}
-                > </div>
+                    onDragEnd={(e) => {
+                        props.bodyResizeEnd(e)
+                    }}
+                    draggable={true}
+                ><i className="fa fa-arrows-v"></i></div>
+
                 <div className="w-table-pager">
                     <div onClick={(e) => props.currentPageChanged(1)}><i className="fa fa-angle-double-left"></i></div>
                     <div onClick={(e) => props.currentPageChanged(Math.max(1, props.currentPage - 1))}><i className="fa fa-angle-left"></i></div>
@@ -399,6 +419,7 @@ function Footer(props) {
                     </select>
                 </div>
 
+
             </td>
         </tr>
     )
@@ -407,17 +428,26 @@ function Footer(props) {
 function Rows(props) {
     const cells = {
         'Simple': ColumnSimple,
-        'Template': ColumnTemplate,
         'Map': ColumnMap,
         'Date': ColumnDate,
         'Multi': ColumnMulti,
+    };
+
+    const packalue = (val, props) => {
+        return (
+            <div>
+                {props.column.icon ? <i className={'w-table-prepend-icon fa ' + props.column.icon}></i> : ''}
+                {props.column.prepend ? props.column.prepend : ''}
+                {props.column.template ? <span dangerouslySetInnerHTML={{__html: (props.column.template(val, props.row))}}></span> : (val ? val : props.column.default)}
+                {props.column.append ? props.column.append : ''}
+            </div>
+        )
     };
 
 
     return (
 
         <tbody style={{maxHeight: props.bodyHeight}}>
-
 
 
         {props.data.map((row, index) =>
@@ -434,7 +464,7 @@ function Rows(props) {
                                 (column.classDecorator[row[column.field]] ? column.classDecorator[row[column.field]] + " " : '')
                                 }
                         >
-                            <Component column={column} row={row} cells={cells}/>
+                            <Component column={column} row={row} cells={cells} packValue={packalue}/>
                         </td>
                     )
                 })}
@@ -447,34 +477,27 @@ function Rows(props) {
 
 function ColumnSimple(props) {
     return (
-        <div>{props.column.field ? (props.row[props.column.field] ? props.row[props.column.field] : props.column.default) : ''} </div>
+        <div>
+            {props.packValue(props.column.field ? (props.row[props.column.field] ? props.row[props.column.field] : props.column.default) : '', props)}
+
+        </div>
     )
 }
 
 function ColumnDate(props) {
     return (
         <div className="w-table-cell-date">
-            <div>
-                <i className="fa fa-calendar-o"></i>
-            </div>
-            <div>
-                {props.column.field ? (props.row[props.column.field] ? props.row[props.column.field] : props.column.default) : ''}
-            </div>
+            {props.packValue(props.column.field ? (props.row[props.column.field] ? props.row[props.column.field] : props.column.default) : '', props)}
         </div>
     )
 }
 
-function ColumnTemplate(props) {
-    return (
-        <div dangerouslySetInnerHTML={{__html: (props.column.template(props.row))}}></div>
-    )
-}
 
 function ColumnMap(props) {
     const value = props.row[props.column.field];
     return (
         <div>
-            {props.column.map[value] ? props.column.map[value] : value}
+            {props.packValue(props.column.map[value] ? props.column.map[value] : value, props)}
         </div>
     )
 }
@@ -494,8 +517,8 @@ function ColumnMulti(props) {
                 if (column.class)
                     classes = classes.concat(column.class);
 
-                return (<div key={'multi'+column.field} className={classes.join(' ')}>
-                    <Component column={column} row={props.row}/>
+                return (<div key={'multi' + column.field} className={classes.join(' ')}>
+                    <Component column={column} row={props.row} packValue={props.packValue}/>
                 </div>)
             })}
 

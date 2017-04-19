@@ -1,11 +1,12 @@
 .w-table
 
+    outline: none
+
     &.w-table-loading
         > table
             > thead
                 > tr
                     border-bottom-color: red
-
 
     .w-table-loading-indicator
         color: darkred
@@ -102,6 +103,9 @@
                         &:hover
                             background-color: lightgrey
 
+                    .w-table-prepend-icon
+                        margin-right: 5px
+
                     .w-table-cell-multi
                         margin-bottom: 5px
                         margin-top: 5px
@@ -110,14 +114,8 @@
                     .w-table-cell-multi:last-child
                         margin-bottom: 0
                     .w-table-cell-date
-                        +clearfix
-                        > div
-                            float: left
+                        //todo
 
-                        > div:nth-child(1)
-                            width: 18px
-                        > div:nth-child(2)
-                            width: calc(100% - 18px)
 
             > tr:nth-child(even) > td
                 //background-color: #f8faf2
@@ -130,6 +128,7 @@
                 background-color: #eaeaea
 
         > tfoot
+            border-top: solid 2px grey
             > tr
                 > td
 
@@ -137,58 +136,67 @@
                     background-color: #F5F5F5
                     padding-top: 0
 
-                    .w-table-footer-drag
-                        background-color: grey
-                        height: 2px
-                        cursor: row-resize
-                        width: calc(100% + 12px)
-                        margin-bottom: 5px
-                        margin-left: -6px
-                        user-select: none
+                    &.w-table-footer-main
+                        padding-top: 10px
 
-                    .w-table-footer-all
-                        float: left
-                        font-size: 18px
-                        line-height: 32px
-                        span
-                            font-weight: bold
-
-                    .w-table-footer-pageinfo
-                        float: right
-                        font-size: 18px
-                        line-height: 32px
-                        margin: 0 20px 0 20px
-
-                    .w-table-footer-onpage-select
-                        float: right
-                        select
-                            font-size: 16px
-                            margin-top: 6px
-
-                    .w-table-pager
-                        float: right
-                        > div
+                        .w-table-footer-drag
                             border-radius: 3px
                             min-width: 27px
                             padding: 0 4px
                             height: 27px
                             text-align: center
                             line-height: 25px
-                            cursor: pointer
-                            display: inline-block
-
+                            cursor: row-resize
                             background-color: white
                             border: solid 1px lightgrey
                             margin: 2px
                             user-select: none
-                            outline: 0
-                            &:hover
-                                color: darkred
-                                border-color: darkred
+                            float: right
+                            display: none
 
-                            &.w-table-pager-active
-                                background-color: lightgrey
-                                border-color: grey
+                        .w-table-footer-all
+                            float: left
+                            font-size: 18px
+                            line-height: 32px
+                            span
+                                font-weight: bold
+
+                        .w-table-footer-pageinfo
+                            float: right
+                            font-size: 18px
+                            line-height: 32px
+                            margin: 0 20px 0 20px
+
+                        .w-table-footer-onpage-select
+                            float: right
+                            select
+                                font-size: 16px
+                                margin-top: 6px
+
+                        .w-table-pager
+                            float: right
+                            > div
+                                border-radius: 3px
+                                min-width: 27px
+                                padding: 0 4px
+                                height: 27px
+                                text-align: center
+                                line-height: 25px
+                                cursor: pointer
+                                display: inline-block
+
+                                background-color: white
+                                border: solid 1px lightgrey
+                                margin: 2px
+                                user-select: none
+                                outline: 0
+                                &:hover
+                                    color: darkred
+                                    border-color: darkred
+
+                                &.w-table-pager-active
+                                    background-color: lightgrey
+                                    border-color: grey
 
         &.w-table-fixed
 
@@ -219,3 +227,7 @@
                     display: table
                     table-layout: fixed
                     width: 100%
+
+                    td
+                        .w-table-footer-drag
+                            display: block
