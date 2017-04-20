@@ -46,7 +46,8 @@ window.ReactHelper = {
         let props = node.getAttribute('react-props') ||
             node.getAttribute('data-react-props') || null;
         if (props != null)
-            props = JSON.parse(atob(props));
+            props = window[props];
+
 
         if(!registry[name]){
             console.error(`'${name}' component not registred `)

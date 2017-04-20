@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 
 import {DateFilter, SelectFilter, NumericFilter, SwitchFilter, TextFilter, MultiFilter, filtersMapping, withFilterOpenLayer} from './Filters'
 
+import {Button as MyButton} from '../ctrl/Button'
 
 class Table extends Component {
 
@@ -59,6 +60,15 @@ class Table extends Component {
 
     }
 
+    getRequestData(){
+        return {
+            columns: this.props.columns,
+            filters: this.state.filters,
+            order: this.state.order,
+            onPage: this.state.onPage,
+            currentPage: this.state.currentPage
+        }
+    }
 
     load() {
 
@@ -90,13 +100,7 @@ class Table extends Component {
         }
         xhr.open('PUT', this.props.url + '?' + new Date().getTime(), true);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify({
-            columns: this.props.columns,
-            filters: this.state.filters,
-            order: this.state.order,
-            onPage: this.state.onPage,
-            currentPage: this.state.currentPage
-        }));
+        xhr.send(JSON.stringify(this.getRequestData()));
         this.xhrConnection = xhr;
     }
 
@@ -203,7 +207,7 @@ class Table extends Component {
         }
     }
 
-    transformInput(columns) {
+/*    transformInput(columns) {
         let x;
         columns.map(el => {
             if (el.template && typeof el.template != 'function') {
@@ -217,18 +221,18 @@ class Table extends Component {
             if (typeof(el.events) == 'object') {
                 Object.entries(el.events).map(([_key, val]) => {
                     if (typeof el.events[_key] != 'function')
-                        el.events[_key] = eval('x = function(row){ ' + val + '; return false; };');
+                        el.events[_key] = eval('x = function(row, event){ ' + val + '; return false; };');
                 });
             }
             if (el.columns) {
                 this.transformInput(el.columns);
             }
         });
-    }
+    }*/
 
     render() {
 
-        this.transformInput(this.props.columns);
+        //this.transformInput(this.props.columns);
 
         const columns = this.props.columns;
         //console.dir(columns);
@@ -244,6 +248,11 @@ class Table extends Component {
                     />
                     <div className="w-table-buttons">
                         {this.state.loading ? <button className="w-table-loading-indicator"><i className="fa fa-spinner fa-spin"></i></button> : ''}
+
+                        {this.props.buttons.map((e)=>
+                            <MyButton {...e} context={this} />
+                        )}
+
                         <button title="Usuń zmiany" onClick={this.handleStateRemove.bind(this)}><i className="fa fa-eraser"></i></button>
                         <button title="Odśwież" onClick={this.load.bind(this)}><i className="fa fa-refresh"></i></button>
                         <button title="Zmień sposób wyświetlania" onClick={this.toggleFixedLayout.bind(this)}><i className="fa fa-window-restore"></i></button>
@@ -456,8 +465,10 @@ function Rows(props) {
                     const Component = column.type ? cells[column.type] : cells["Simple"];
                     return (<td key={'cell' + index2}
                                 style={{width: column.width}}
-                                onClick={column.events.click ? function () {
-                                    column.events.click(row);
+                                onClick={column.events.click ? function (event) {
+                                    column.events.click.map((callback)=> {
+                                        callback.bind(this)(row,event);
+                                    })
                                 } : function () {
                                 }}
                                 className={'' + (column.events.click ? 'w-table-cell-clickable ' : '') + (column.class ? ' ' + column.class.join(' ') : '') +

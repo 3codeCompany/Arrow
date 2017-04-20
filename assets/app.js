@@ -3,6 +3,7 @@ import React from 'react'
 import App from './src/App'
 import {DateFilter, SelectFilter, NumericFilter, SwitchFilter,TextFilter, MultiFilter} from './src/ctrl/Filters'
 import {Table} from './src/ctrl/Table'
+import {Button} from './src/ctrl/Button'
 require('./styles/App.sass')
 require('./src/lib/react-helper.js');
 
@@ -20,6 +21,7 @@ ReactHelper.register('NumericFilter', NumericFilter);
 ReactHelper.register('TextFilter', TextFilter);
 ReactHelper.register('MultiFilter', MultiFilter);
 ReactHelper.register('Table', Table);
+ReactHelper.register('Button', Button);
 
 ReactHelper.initComponents();
 
