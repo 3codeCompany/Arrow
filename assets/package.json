@@ -12,16 +12,20 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "eslint": "^3.17.1",
-    "material-ui": "^0.17.1",
+    "alertifyjs": "^1.10.0",
     "moment": "^2.18.1",
     "rc-time-picker": "^2.3.3",
     "react-addons-shallow-compare": "^15.4.2",
     "react-dates": "^10.0.0",
     "react-dom": "^15.4.2",
-    "redux": "^3.6.0"
+    "redux": "^3.6.0",
+    "rxjs": "^5.3.0"
+
   },
   "devDependencies": {
+    "webpack-bundle-analyzer": "^2.4.0",
+    "babel-plugin-react-transform": "^2.0.2",
+    "eslint": "^3.17.1",
     "assets-webpack-plugin": "^3.5.1",
     "babel-cli": "^6.23.0",
     "babel-core": "^6.23.1",
@@ -34,7 +38,7 @@
     "babel-preset-react": "^6.23.0",
     "babel-preset-stage-2": "^6.22.0",
     "bootstrap": "^3.3.7",
-    "bootstrap-sass": "^3.3.7",
+    "chokidar": "^1.6.1",
     "clean-webpack-plugin": "^0.1.16",
     "css-loader": "^0.26.2",
     "eslint": "^3.17.1",
@@ -46,7 +50,6 @@
     "image-webpack-loader": "^3.2.0",
     "install": "^0.8.7",
     "jquery": "^3.1.1",
-    "muicss": "^0.9.9-rc2",
     "node-sass": "^4.5.2",
     "npm": "^4.4.1",
     "react": "^15.4.2",
@@ -58,6 +61,9 @@
     "url-loader": "^0.5.8",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1",
-    "webpack-hot-middleware": "^2.17.1"
+    "webpack-hot-middleware": "^2.17.1",
+    "react-tools": "^0.13.3",
+    "react-transform": "^0.0.3",
+    "react-transform-catch-errors": "^1.0.2"
   }
 }

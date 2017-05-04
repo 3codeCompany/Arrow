@@ -13,60 +13,96 @@
         border: 0 !important
 
     .w-table-buttons
-        float: right
+        float: left
+        margin-right: 20px
+        opacity: 0.6
 
         button
-            background-color: transparent
+            background-color: white
+            min-width: 27px
+            padding: 0 4px
+            height: 27px
+            text-align: center
+            //line-height: 25px
+            padding: 4px
+            border-radius: 3px
             border: solid 1px lightgrey
-            margin: 0 0 2px 2px
+            margin: 2px
 
             &:hover
                 color: darkred
 
     .w-table-presenter
-        float: left
-        margin-bottom: 2px
-        > div
-            display: inline-block
-            margin-right: 20px
-            border-bottom: solid 1px grey
-            padding: 3px
-            &:hover
-                border-bottom: solid 1px red
+        max-height: 500px
+
+        &.w-table-presenter-hidden
+            max-height: 0
+            padding: 0
+            .w-table-presenter-inner
+                margin-top: 0
+                margin-bottom: 0
+                transition: margin .5s ease
+
+        transition: max-height .5s ease
+        height: auto
+
+        .w-table-presenter-inner
+            background-color: white
+            width: calc(100% - 10px)
+
+            min-height: 38px
+            padding: 5px
+            margin: 5px
+            border: solid 1px lightgrey
+            box-shadow: 0 2px 15px 0 rgba(0, 0, 0, .15)
 
             > div
                 display: inline-block
-                margin-right: 5px
-                &.caption
-                &.value
-                    font-weight: bold
-                &.remove
-                    color: darkred
-                    cursor: pointer
+                margin-right: 20px
+                border-bottom: solid 1px grey
+                padding: 3px
+                &:hover
+                    border-bottom: solid 1px red
 
-                    &:hover
-                        color: red
+                > div
+                    display: inline-block
+                    margin-right: 5px
+                    &.caption
+                    &.value
+                        font-weight: bold
+                    &.remove
+                        color: darkred
+                        cursor: pointer
+
+                        &:hover
+                            color: red
 
     > table
         //color: #111111
         border: solid 1px lightgrey
         width: 100%
         background-color: #A9A9A9
+        font-family: "Open Sans", sans-serif
 
+        box-shadow: 0 2px 15px 0 rgba(0, 0, 0, .15)
         .w-table-center
             text-align: center
 
         > thead
-            background: linear-gradient(to bottom, #f7f7f7 0, #DFDFDF 100%)
+            background: linear-gradient(to bottom, #f7f7f7 0, #dddddd 100%)
+
             > tr
 
                 border-bottom: solid 2px grey
                 transition: color 2.25s
+
                 > th
+
                     padding: 5px
                     padding-right: 0
-                    font-weight: normal
-                    //text-align: center
+                    font-weight: 400
+                    text-align: center
+                    border-right: 1px solid rgba(0, 0, 0, .1)
                     > i
                         margin-right: 10px
 
@@ -74,11 +110,17 @@
                         background-color: lightgrey
                         cursor: pointer
 
+                    &.w-table-sorted, &.w-table-filtered
+                        background-color: lightgrey
+                        border-bottom: solid 2px darkred
+                        color: black
+
                     .w-filter-openable
                         float: right
                         margin-top: -5px
                         margin-bottom: -5px
                         margin-right: 0
+
 
         > tbody
             max-height: 500px
@@ -89,7 +131,8 @@
                 > td
 
                     font-family: Arial, Verdana, Tahoma
-                    border: 1px solid #e7efd3
+
+                    border: 1px solid rgb(220, 220, 220)
                     padding: 6px
                     font-size: 12px
                     border-collapse: collapse
@@ -104,6 +147,12 @@
                         &:hover
                             background-color: lightgrey
 
+                    &.w-table-sorted, &.w-table-filtered
+                        background-color: lightgrey
+                        border-right: solid 2px rgba(212, 0,0,0.2)
+                        border-left: solid 2px rgba(212, 0,0,0.2)
+                        color: black
+
                     .w-table-prepend-icon
                         margin-right: 5px
 
@@ -115,15 +164,16 @@
                     .w-table-cell-multi:last-child
                         margin-bottom: 0
                     .w-table-cell-date
-                        //todo
+            //todo
 
 
             > tr:nth-child(even) > td
                 //background-color: #f8faf2
-                background-color: #f8faf2
+                background-color: white
 
             > tr:nth-child(odd) > td
-                background-color: white
+
+                background-color: #F7F7F7
 
             > tr:hover > td
                 background-color: #eaeaea
@@ -165,14 +215,14 @@
                         .w-table-footer-pageinfo
                             float: right
                             font-size: 18px
-                            line-height: 32px
+                            line-height: 28px
                             margin: 0 20px 0 20px
 
                         .w-table-footer-onpage-select
                             float: right
                             select
                                 font-size: 16px
-                                margin-top: 6px
+                                margin-top: 4px
 
                         .w-table-pager
                             float: right

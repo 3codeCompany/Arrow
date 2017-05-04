@@ -14,7 +14,6 @@ class MailerAPI extends \Arrow\Object
     private static $specialConf = null;
 
 
-
     public static function pushSendboxConf($host, $port, $secureType, $user, $password, $from, $fromMail)
     {
         self::$specialConf = [
@@ -60,7 +59,7 @@ class MailerAPI extends \Arrow\Object
 
         $message = \Swift_Message::newInstance($topic)
             ->setSubject($topic)
-            ->setFrom(array($settings["from_mail"] => $settings["from_name"]))
+            ->setFrom(array($from => $from_name))
             ->setTo(is_array($emails) ? $emails : explode(",", $emails))
             ->setBody($content, 'text/html');
 
@@ -71,8 +70,8 @@ class MailerAPI extends \Arrow\Object
         }
         $result = $mailer->send($message);
 
-        if(!$result && $externalLogger){
-            $externalLogger->critical("Mail sent error: ".$logger->dump());
+        if (!$result && $externalLogger) {
+            $externalLogger->critical("Mail sent error: " . $logger->dump());
         }
 
 

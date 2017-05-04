@@ -1,13 +1,17 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {LazilyLoad, importLazy} from "../lib/LazilyLoad"
-import {DateRangePicker} from 'react-dates';
-import 'react-dates/lib/css/_datepicker.css';
-import 'rc-time-picker/assets/index.css';
-import TimePicker from 'rc-time-picker';
-import moment from 'moment'
-
-moment.locale('pl');
+/*import {DateRangePicker} from 'react-dates';
+ import 'react-dates/lib/css/_datepicker.css';
+ import 'rc-time-picker/assets/index.css';
+ import TimePicker from 'rc-time-picker';
+ import moment from 'moment'
+ require( 'moment/locale/pl' )
+ moment.locale('pl');*/
+let moment;
+let locale;
+let datePicker;
+let timePicker;
 
 
 class Filter extends Component {
@@ -20,26 +24,45 @@ class DateFilter extends Filter {
         super(props)
 
         this.state = {
-            startDate: moment(),
-            endDate: moment(),
-            startTime: moment().startOf('day'),
-            endTime: moment().endOf('day'),
-            libsLoaded: false
+            startDate: null,
+            endDate: null,
+            startTime: null,
+            endTime: null,
+            libsLoaded: false,
+            choiceType: 'range' // exists, not-exists
         }
 
+        this.datepicker = null;
+        this.timepicker = null;
     }
 
-    componentDidMount() {
-        console.log('Calendar mount');
+    componentWillMount() {
+
+        Promise.all([
+            import( 'moment'),
+            import( 'moment/locale/pl' ),
+            import( 'react-dates' ),
+            //import( 'rc-time-picker' ),
+            import( 'react-dates/lib/css/_datepicker.css' ),
+            //import( 'rc-time-picker/assets/index.css' )
+
+        ]).then(imported => {
+            [moment, locale, datePicker/*, timePicker*/] = imported;
+            this.setState({
+                startDate: moment(),
+                endDate: moment(),
+                startTime: moment().startOf('day'),
+                endTime: moment().endOf('day'),
+                libsLoaded: true
+            });
+        });
 
 
     }
-
 
     handleApply() {
 
         this.setState({show: false});
-
         let dateStart = this.state.startDate.format('YYYY-MM-DD');
         let timeStart = this.state.startTime.format('HH:mm:ss');
         let dateStop = this.state.endDate.format('YYYY-MM-DD');
@@ -55,8 +78,15 @@ class DateFilter extends Filter {
             label = `${dateStart} ${separatorI} ${dateStop}`;
 
 
+        console.log("here");
         if (this.props.onChange) {
-            this.props.onChange(this.props.field, val, '<x<in', this.props.caption, ':', label);
+            if(this.state.choiceType == "range") {
+                this.props.onChange(this.props.field, val, '<x<in', this.props.caption, ':', label);
+            }else if(this.state.choiceType == "exists"){
+                this.props.onChange(this.props.field, '0000-00-00 00:00:00', '>', this.props.caption, ':', "Data ustalona");
+            }else if(this.state.choiceType == "not-exists"){
+                this.props.onChange(this.props.field, ['0000-00-00 00:00:00', null, ""], 'IN', this.props.caption, ':', "Data nie ustalona");
+            }
         } else {
             let table = window.Serenity.get($(ReactDOM.findDOMNode(this)).parents('.serenity-widget:eq(0)')[0]);
             table.data.addFilter(this.props.field, val, '<x<in', this.props.caption, ':', label);
@@ -66,78 +96,105 @@ class DateFilter extends Filter {
     }
 
     render() {
-        {
-            /*<LazilyLoad modules={{
-             dates: () => import('react-dates'),
 
-             }}>
-             {({dates}) => (*/
+        if (this.state.libsLoaded == false) {
+            return <div className={'w-filter w-filter-date' }>
+                <div><i className="fa fa-cog fa-spin"></i></div>
+            </div>
         }
 
-        /*)}
-         </LazilyLoad>*/
 
+        let s = this.state;
         return (
-            <div className={'w-filter w-filter-date' } >
+            <div className={'w-filter w-filter-date' }>
 
-                <i className="fa fa-calendar-o"></i>
-                <DateRangePicker
-                    startDate={this.state.startDate} // momentPropTypes.momentObj or null,
-                    endDate={this.state.endDate} // momentPropTypes.momentObj or null,
-                    onDatesChange={({startDate, endDate}) => this.setState({startDate, endDate})} // PropTypes.func.isRequired,
-                    focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
-                    onFocusChange={focusedInput => {
-                        if (focusedInput == null) {
-                            this.props.container.focus()
-                        }
-                        this.setState({focusedInput});
-                    }} // PropTypes.func.isRequired,
-                    startDatePlaceholderText="Data od"
-                    endDatePlaceholderText="Data do"
-                    minimumNights={0}
-                    isOutsideRange={() => {
-                        return false
-                    }}
-                    onPrevMonthClick={() => this.props.container.focus()}
-                    onNextMonthClick={() => this.props.container.focus()}
-                />
-                <div className="w-filter-date-time">
-                    <i className="fa fa-clock-o"></i>
+                <div style={{display: (s.choiceType != "range"?'none':'block')}}>
+                    <i className="fa fa-calendar-o"></i>
+                    <datePicker.DateRangePicker
+                        startDate={this.state.startDate} // momentPropTypes.momentObj or null,
+                        endDate={this.state.endDate} // momentPropTypes.momentObj or null,
+                        onDatesChange={({startDate, endDate}) => this.setState({startDate, endDate})} // PropTypes.func.isRequired,
+                        focusedInput={this.state.focusedInput} // PropTypes.oneOf([START_DATE, END_DATE]) or null,
+                        onFocusChange={focusedInput => {
+                            if (focusedInput == null) {
+                                this.props.container.focus()
+                            }
+                            this.setState({focusedInput});
+                        }} // PropTypes.func.isRequired,
+                        startDatePlaceholderText="Data od"
+                        endDatePlaceholderText="Data do"
+                        minimumNights={0}
+                        isOutsideRange={() => {
+                            return false
+                        }}
+                        onPrevMonthClick={(e) => {
+                            e.preventDefault();
+                            this.props.container.focus();
+                            setTimeout(() => { this.props.container.focus(); }, 250)
+                        }}
+                        onNextMonthClick={() =>{
+                            this.props.container.focus();
+                            setTimeout(() => { this.props.container.focus(); }, 250)
+                        }}
+                        renderCalendarInfo={() => false}
+                    />
+                </div>
+                <div className="w-filter-date-exists">
                     <div>
-                        <TimePicker defaultValue={this.state.startTime} showSecond={false}
-                                    onChange={(value) => {
-                                        if (value) {
-                                            this.setState({startTime: value})
-
-                                        }
-                                        this.props.container.focus()
-                                    }}
-                                    onClose={() => {
-                                        setTimeout(() => this.props.container.focus(), 20);
-                                    }}
-                                    value={this.state.startTime}
-                        />
-                    </div>
-                    <div >
-                        <svg viewBox="0 0 1000 1000">
-                            <path d="M694.4 242.4l249.1 249.1c11 11 11 21 0 32L694.4 772.7c-5 5-10 7-16 7s-11-2-16-7c-11-11-11-21 0-32l210.1-210.1H67.1c-13 0-23-10-23-23s10-23 23-23h805.4L662.4 274.5c-21-21.1 11-53.1 32-32.1z"></path>
-                        </svg>
+                        <label>
+                            <input checked={s.choiceType == "range"} onChange={e => this.setState({choiceType: "range"})} type="checkbox"/><i className="fa fa-arrows-h"></i> Według wybou
+                        </label>
                     </div>
                     <div>
-                        <TimePicker defaultValue={this.state.endTime} showSecond={false}
-                                    onChange={(value) => {
-                                        if (value) {
-                                            this.setState({endTime: value})
-                                        }
-                                        this.props.container.focus()
-                                    }}
-                                    onClose={() => {
-                                        setTimeout(() => this.props.container.focus(), 20);
-                                    }}
-                                    value={this.state.endTime}
-                        />
+                        <label>
+                            <input checked={s.choiceType == "exists"} onChange={e => this.setState({choiceType: "exists"})} type="checkbox"/><i className="fa fa-check"></i> Data ustalona
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <input checked={s.choiceType == "not-exists"} onChange={e => this.setState({choiceType: "not-exists"})} type="checkbox"/><i className="fa fa-times"></i> Brak daty
+                        </label>
                     </div>
                 </div>
+
+                {/*<div className="w-filter-date-time">
+                 <i className="fa fa-clock-o"></i>
+                 <div>
+                 <timePicker defaultValue={this.state.startTime} showSecond={false}
+                 onChange={(value) => {
+                 if (value) {
+                 this.setState({startTime: value})
+
+                 }
+                 this.props.container.focus()
+                 }}
+                 onClose={() => {
+                 setTimeout(() => this.props.container.focus(), 20);
+                 }}
+                 value={this.state.startTime}
+                 />
+                 </div>
+                 <div >
+                 <svg viewBox="0 0 1000 1000">
+                 <path d="M694.4 242.4l249.1 249.1c11 11 11 21 0 32L694.4 772.7c-5 5-10 7-16 7s-11-2-16-7c-11-11-11-21 0-32l210.1-210.1H67.1c-13 0-23-10-23-23s10-23 23-23h805.4L662.4 274.5c-21-21.1 11-53.1 32-32.1z"></path>
+                 </svg>
+                 </div>
+                 <div>
+                 <timePicker defaultValue={this.state.endTime} showSecond={false}
+                 onChange={(value) => {
+                 if (value) {
+                 this.setState({endTime: value})
+                 }
+                 this.props.container.focus()
+                 }}
+                 onClose={() => {
+                 setTimeout(() => this.props.container.focus(), 20);
+                 }}
+                 value={this.state.endTime}
+                 />
+                 </div>
+                 </div>*/}
                 <div>
                     <button className="w-filter-apply" onClick={this.handleApply.bind(this)}>Zastosuj</button>
                 </div>
@@ -224,9 +281,6 @@ SelectFilter.defaultProps = {
 
 };
 
-SelectFilter.propTypes = {
-    multiselect: React.PropTypes.bool
-}
 
 class SwitchFilter extends Filter {
 
@@ -403,6 +457,7 @@ class TextFilter extends Filter {
         return (
 
             <div className={'w-filter w-filter-text ' } ref="body">
+
                 <input type="" autoFocus onKeyPress={this._handleKeyPress.bind(this)} ref="input"/>
 
                 <select name="" id=""
@@ -432,10 +487,10 @@ class MultiFilter extends Filter {
         return (
 
             <div className={'w-filter w-filter-multi'} ref="body">
-                {this.props.filters.map(el => {
+                {this.props.filters.map((el, index) => {
                     let Component = filtersMapping[el.type]
                     return (
-                        <div key={'multi_' + el.field}>
+                        <div key={'multi_' + index}>
                             <div className="w-filter-multi-title">{el.title}</div>
                             <Component  {...this.props} {...el} showCaption={true}/>
                         </div>
@@ -468,6 +523,7 @@ const withFilterOpenLayer = (Filter) => {
                 show: false,
             }
 
+            this.hideTimeout = null;
         }
 
         componentDidUpdate(nextProps, nextState) {
@@ -490,20 +546,26 @@ const withFilterOpenLayer = (Filter) => {
             this.setState({show: !this.state.show});
         }
 
-        onBlur(e) {
-            var currentTarget = e.currentTarget;
+        onFocus(e) {
+            clearTimeout(this.hideTimeout);
+            this.hideTimeout = null;
+        }
 
-            setTimeout(() => {
+        onBlur(e) {
+            var currentTarget = e.target;
+            this.hideTimeout = setTimeout(() => {
                 if (!currentTarget.contains(document.activeElement)) {
                     this.setState({show: false})
                 }
-            }, 100);
+            }, 50);
         }
 
         render() {
             return (
                 <div className={'w-filter-openable ' + (this.state.show ? 'w-filter-openable-opened ' : '') }
                      onBlur={this.onBlur.bind(this)}
+                     onFocus={this.onFocus.bind(this)}
+                     onFocusCapture={this.onFocus.bind(this)}
                      ref="container"
                      tabIndex="0"
                 >
@@ -512,7 +574,7 @@ const withFilterOpenLayer = (Filter) => {
                     }
                     {this.state.show ?
                         <div className="w-filter-openable-body" ref="body">
-                            <Filter {...this.props} opened={this.state.show} container={this.refs.container} />
+                            <Filter {...this.props} opened={this.state.show} container={this.refs.container}/>
                         </div>
                         : ''}
                 </div>

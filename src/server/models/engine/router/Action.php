@@ -1,5 +1,7 @@
 <?php
+
 namespace Arrow\Models;
+
 /**
  * Created by JetBrains PhpStorm.
  * User: Artur
@@ -7,9 +9,11 @@ namespace Arrow\Models;
  * Time: 12:26
  * To change this template use File | Settings | File Templates.
  */
+use ADebug;
 use Arrow\Exception;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
+use function htmlentities;
 
 class Action implements \ArrayAccess, IAction
 {
@@ -18,6 +22,9 @@ class Action implements \ArrayAccess, IAction
     private $path;
     private $shortPath;
     private $controller;
+    /**
+     * @var AbstractLayout
+     */
     private $layout;
     private $XHRLayout;
     private $package;
@@ -59,7 +66,7 @@ class Action implements \ArrayAccess, IAction
     public function exists()
     {
 
-        $action = trim( str_replace(DIRECTORY_SEPARATOR, "_", $this->getShortPath()), "_");
+        $action = trim(str_replace(DIRECTORY_SEPARATOR, "_", $this->getShortPath()), "_");
 
 
         return method_exists($this->getController(), $action);
@@ -84,15 +91,14 @@ class Action implements \ArrayAccess, IAction
     }
 
 
-
-
     public function fetch(RequestContext $request = null)
     {
         $viewManager = new \Arrow\ViewManager($this);
         return $viewManager->display($request);
     }
 
-    public function getRequest(){
+    public function getRequest()
+    {
         return RequestContext::getDefault();
     }
 
@@ -202,10 +208,6 @@ class Action implements \ArrayAccess, IAction
     }
 
 
-
-
-
-
     //todo uporzadkowac
     public function includeView()
     {
@@ -213,17 +215,22 @@ class Action implements \ArrayAccess, IAction
 
         if (file_exists($file)) {
             return file_get_contents($file);
-        }else{
+        } else {
             $parent = dirname($file);
             if (!file_exists($parent)) {
-                if(!@mkdir($parent, 0777, true)){
-                    throw new Exception("Can't create action  dir: ".$parent);
+                if (!@mkdir($parent, 0777, true)) {
+                    throw new Exception("Can't create action  dir: " . $parent);
                 }
             }
-            $phpCode = "<?\n /* @var \$this \\Arrow\\Models\\View */\n/* @var \$request \\Arrow\\RequestContext */\n ?>\n\n";
+            $code = $this->layout->getFirstTemplateContent($this);
 
-            if( !@file_put_contents($file, $phpCode . "View: " . $this->getPath() . "\n package: " . $this->getPackage() . "\n file: " . $file)){
-                throw new Exception("Can't create action  file: ".$file);
+            if (!$code) {
+                $code = "<?\n /* @var \$this \\Arrow\\Models\\View */\n/* @var \$request \\Arrow\\RequestContext */\n ?>\n\n";
+                $code .= "View: " . $this->getPath() . "\n package: " . $this->getPackage() . "\n file: " . $file;
+            }
+
+            if (!@file_put_contents($file, $code)) {
+                throw new Exception("Can't create action  file: " . $file);
             }
             chmod($file, 0777);
         }
@@ -238,33 +245,40 @@ class Action implements \ArrayAccess, IAction
 
         $controller = $this->getController();
         $controller->viewBeforeCompileEvent($this);
-        if($this->getLayout()){
+        if ($this->getLayout()) {
             $layoutSource = file_get_contents($this->getLayout()->getLayoutFile());
             $str = str_replace("[[include::view]]", $this->includeView(), $layoutSource);
-        }else{
+        } else {
             $str = $this->includeView();
         }
 
 
         foreach ($this->parserProviders as $provider) {
-            foreach ($provider->getParsers() as $parser)
+            foreach ($provider->getParsers() as $parser) {
                 $str = preg_replace_callback($parser->getRegularExpression(), $parser->getCallback(), $str);
+            }
         }
 
         if ($this->parsers) {
-            foreach ($this->parsers as $parser)
+            foreach ($this->parsers as $parser) {
                 $str = preg_replace_callback($parser->getRegularExpression(), $parser->getCallback(), $str);
+            }
         }
 
         $controller->viewAfterCompileEvent($this);
 
-        if($file)
+        if ($file) {
             file_put_contents($file, $str);
-        else
+        } else {
             return $str;
+        }
 
     }
 
+    public function getVars()
+    {
+        return $this->vars;
+    }
 
     public function offsetExists($offset)
     {
@@ -273,8 +287,9 @@ class Action implements \ArrayAccess, IAction
 
     public function offsetGet($offset)
     {
-        if (!array_key_exists($offset, $this->vars))
+        if (!array_key_exists($offset, $this->vars)) {
             throw new Exception(array("msg" => "Template var `{$offset}` not exists"));
+        }
         return $this->vars[$offset];
     }
 
@@ -289,18 +304,28 @@ class Action implements \ArrayAccess, IAction
     }
 
 
-
     public function getFile()
     {
-        $appFile = ".".DIRECTORY_SEPARATOR."app".DIRECTORY_SEPARATOR."views" . $this->path.".phtml";
 
-        if ($this->package != "app"){
+        if ($this->layout) {
+            $name = $this->layout->getFileName($this->path);
+        } else {
+            $name = $this->path . ".phtml";
+        }
 
+        $appFile = "." . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views" . $name;
 
-            $file = ARROW_DOCUMENTS_ROOT."/".Project::getInstance()->getPackages()[$this->package].DIRECTORY_SEPARATOR."views". DIRECTORY_SEPARATOR . $this->shortPath.".phtml";
-            //fwrite(STDOUT, $file . "\n");
-            if(file_exists($file) && !file_exists($appFile))
+        if ($this->package != "app") {
+            if ($this->layout) {
+                $name = $this->layout->getFileName($this->shortPath);
+            } else {
+                $name = $this->shortPath . ".phtml";
+            }
+            $file = ARROW_DOCUMENTS_ROOT . "/" . Project::getInstance()->getPackages()[$this->package] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $name;
+
+            if (file_exists($file) && !file_exists($appFile)) {
                 return $file;
+            }
         }
 
         return $appFile;

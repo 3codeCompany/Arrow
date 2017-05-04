@@ -52,9 +52,9 @@ class LazilyLoad extends React.Component {
     }
 }
 
-LazilyLoad.propTypes = {
+/*LazilyLoad.propTypes = {
     children: React.PropTypes.func.isRequired,
-};
+};*/
 
 export const LazilyLoadFactory = (Component, modules) => {
     return (props) => (

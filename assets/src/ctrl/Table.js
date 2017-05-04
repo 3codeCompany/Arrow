@@ -1,15 +1,28 @@
 import React, {Component} from 'react';
-
+import PropTypes from 'prop-types';
 
 import {DateFilter, SelectFilter, NumericFilter, SwitchFilter, TextFilter, MultiFilter, filtersMapping, withFilterOpenLayer} from './Filters'
 
-import {Button as MyButton} from '../ctrl/Button'
+import {Button as MyButton} from 'ctrl/Button'
 
 class Table extends Component {
+
+    static propsTypes = {
+        data: PropTypes.array,
+        remoteURL: PropTypes.string,
+    }
+
+    static defaultProps = {
+        onPage: 20,
+        columns: [],
+        buttons: [],
+    }
+
 
     constructor(props) {
 
         super(props);
+
 
         this.state = {
             loading: false,
@@ -30,39 +43,59 @@ class Table extends Component {
         //helpers
         this.tmpDragStartY = 0;
         this.xhrConnection = 0;
+
+        if (window.controls === undefined)
+            window.controls = {};
+        window.controls[this.props.id] = () => this;
+
+
+        let hashCode = function (s) {
+            return s.split("").reduce(function (a, b) {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a
+            }, 0);
+        }
+        this.hashCode = hashCode(this.props.controlKey + window.location.href);
+
     }
 
+
     componentWillMount() {
-        if (window.localStorage[this.props.controlKey]) {
-            this.state = JSON.parse(...this.state, window.localStorage[this.props.controlKey]);
+
+        if (window.localStorage[this.hashCode]) {
+            this.state = {...this.state, ...JSON.parse(window.localStorage[this.hashCode])};
             this.state.firstLoaded = false;
         }
+    }
+
+    getDataFromChildren() {
+        let loader = new MarkupLoader(this.props.children);
+        this.state.columns = loader.getConfig();
 
     }
 
 
     componentDidUpdate() {
-        window.localStorage[this.props.controlKey] = JSON.stringify({...this.state, data: []});
+        let state = this.state;
+        window.localStorage[this.hashCode] = JSON.stringify({
+            onPage: state.onPage,
+            currentPage: state.currentPage,
+            bodyHeight: state.bodyHeight,
+            filters: state.filters,
+            order: state.order,
+            fixedLayout: state.fixedLayout
+
+        });
     }
 
     componentDidMount() {
         this.load();
-        this.refs.container.focus();
-
-        /*let handleDragStart = (e) => {
-         e.target.style.opacity = '0.4';
-
-         }*/
-
-        // console.log(this.refs.bodyResizeHandler);
-        //this.refs.bodyResizeHandler.addEventListener('dragstart', handleDragStart, false);
-
-
     }
 
-    getRequestData(){
+    getRequestData() {
         return {
-            columns: this.props.columns,
+            //need to deep clone and events remove
+            columns: JSON.parse(JSON.stringify(this.state.columns)),
             filters: this.state.filters,
             order: this.state.order,
             onPage: this.state.onPage,
@@ -71,7 +104,6 @@ class Table extends Component {
     }
 
     load() {
-
         if (this.xhrConnection) {
             this.xhrConnection.abort();
         }
@@ -98,7 +130,7 @@ class Table extends Component {
                 }
             }
         }
-        xhr.open('PUT', this.props.url + '?' + new Date().getTime(), true);
+        xhr.open('PUT', this.props.remoteURL + '?' + new Date().getTime(), true);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify(this.getRequestData()));
         this.xhrConnection = xhr;
@@ -138,18 +170,22 @@ class Table extends Component {
             return;
         }
 
-        if (!this.props.columns[index].orderField)
+        let column = this.state.columns.filter(c => c.display === true)[index];
+
+        if (!column.orderField)
             return;
 
         let field = {};
-        const _field = this.props.columns[index].field;
+
+        const _field = column.field;
+
 
         if (this.state.order[_field]) {
             field = this.state.order[_field];
         } else {
             field = {
-                caption: this.props.columns[index].caption,
-                field: this.props.columns[index].orderField,
+                caption: column.caption,
+                field: column.orderField,
                 dir: 'desc'
             }
         }
@@ -157,11 +193,13 @@ class Table extends Component {
         field = {...field, dir: field.dir == "asc" ? "desc" : "asc"};
 
         this.state.order[_field] = field;
-        this.setState({}, this.load);
+
+        this.setState({order: this.state.order}, this.load);
 
     }
 
     handleOnPageChangepage(onPage) {
+        console.log("zmieniam");
         this.setState({onPage: onPage, currentPage: 1}, this.load);
     }
 
@@ -207,35 +245,13 @@ class Table extends Component {
         }
     }
 
-/*    transformInput(columns) {
-        let x;
-        columns.map(el => {
-            if (el.template && typeof el.template != 'function') {
-                if (el.template.indexOf('return') == -1)
-                    el.template = eval('x = function(value, row){ return `' + el.template + '`; };')
-                else
-                    el.template = eval('x = function(value, row){ ' + el.template + ' };')
-            }
-
-
-            if (typeof(el.events) == 'object') {
-                Object.entries(el.events).map(([_key, val]) => {
-                    if (typeof el.events[_key] != 'function')
-                        el.events[_key] = eval('x = function(row, event){ ' + val + '; return false; };');
-                });
-            }
-            if (el.columns) {
-                this.transformInput(el.columns);
-            }
-        });
-    }*/
 
     render() {
 
-        //this.transformInput(this.props.columns);
-
-        const columns = this.props.columns;
-        //console.dir(columns);
+        if (this.props.children !== undefined) {
+            this.getDataFromChildren();
+        }
+        const columns = this.state.columns;
 
 
         return (
@@ -246,28 +262,26 @@ class Table extends Component {
                                       FilterDelete={this.handleFilterDelete.bind(this)}
                                       orderDelete={this.handleOrderDelete.bind(this)}
                     />
-                    <div className="w-table-buttons">
-                        {this.state.loading ? <button className="w-table-loading-indicator"><i className="fa fa-spinner fa-spin"></i></button> : ''}
 
-                        {this.props.buttons.map((e)=>
-                            <MyButton {...e} context={this} />
-                        )}
-
-                        <button title="Usuń zmiany" onClick={this.handleStateRemove.bind(this)}><i className="fa fa-eraser"></i></button>
-                        <button title="Odśwież" onClick={this.load.bind(this)}><i className="fa fa-refresh"></i></button>
-                        <button title="Zmień sposób wyświetlania" onClick={this.toggleFixedLayout.bind(this)}><i className="fa fa-window-restore"></i></button>
-                    </div>
                 </div>
 
 
                 <table className={this.state.fixedLayout ? 'w-table-fixed' : ''}>
                     <thead>
                     <tr>
-                        {columns.map((el, index) => {
+                        {columns.filter(el => el.display === true).map((el, index) => {
                             const Component = el.filter ? withFilterOpenLayer(filtersMapping[el.filter.type]) : null;
+                            let classes = []
+                            if (this.state.order[el.field] !== undefined) {
+                                classes.push('w-table-sorted w-table-sorted-' + this.state.order[el.field].dir)
+                            }
+                            if (this.state.filters[el.field] !== undefined) {
+                                classes.push('w-table-filtered')
+                            }
                             return (
                                 <th key={index} onClick={this.headClicked.bind(this, index)}
                                     style={{width: el.width}}
+                                    className={classes.join(" ")}
                                 >
                                     {el.order ? <i className={'fa fa-' + (el.order == 'asc' ? 'arrow-down' : 'arrow-up')}></i> : ''}
                                     {el.caption}
@@ -281,7 +295,7 @@ class Table extends Component {
                     {this.state.dataSourceError && <Error colspan={columns.length} error={this.state.dataSourceError}/>}
                     {!this.state.loading && this.state.data.length == 0 && <EmptyResult colspan={columns.length}/>}
                     {this.state.loading && !this.state.firstLoaded && <Loading colspan={columns.length}/>}
-                    {this.state.firstLoaded && this.state.data.length > 0 && <Rows columns={columns} loading={this.state.loading} bodyHeight={this.state.fixedLayout ? this.state.bodyHeight : 'auto'} data={this.state.data}/>}
+                    {this.state.firstLoaded && this.state.data.length > 0 && <Rows columns={columns} filters={this.state.filters} order={this.state.order} loading={this.state.loading} bodyHeight={this.state.fixedLayout ? this.state.bodyHeight : 'auto'} data={this.state.data}/>}
 
                     <tfoot>
                     {this.state.firstLoaded && this.state.data.length > 0 &&
@@ -295,13 +309,15 @@ class Table extends Component {
                         bodyResizeStart={this.handleBodyResizeStart.bind(this)}
                         bodyResize={this.handleBodyResize.bind(this)}
                         bodyResizeEnd={this.handleBodyResizeEnd.bind(this)}
+                        parent={this}
                     />}
                     </tfoot>
                 </table>
+
                 {this.state.dataSourceDebug ? <pre>{this.state.dataSourceDebug}</pre> : null}
 
 
-                {/*<pre>{JSON.stringify(this.props.columns, null, 2)}</pre>
+                {/*<pre>{JSON.stringify(this.state.columns, null, 2)}</pre>
                  <pre>{JSON.stringify(this.state.order, null, 2)}</pre>
                  <pre>
                  image
@@ -309,33 +325,37 @@ class Table extends Component {
                  template
                  menu
                  </pre>*/}
+
             </div>
         )
     }
 
 }
 
-function FiltersPresenter(props) {
-    {/*.sort((a, b) => a.prioryty > b.prioryty)*/
-    }
-    return (
-        <div className="w-table-presenter" style={{minHeight: '30px'}}>
-            {Object.entries(props.order).map(([field, el], index) =>
-                <div key={index}>
-                    <div><i className={'fa fa-' + (el.dir == 'asc' ? 'arrow-down' : 'arrow-up')}></i></div>
-                    <div className="caption">{el.caption}</div>
-                    <div className="remove" onClick={(e) => props.orderDelete(field)}><i className="fa fa-times"></i></div>
-                </div>
-            )}
 
-            {Object.entries(props.filters).map(([key, el]) =>
-                <div key={key}>
-                    <div><i className="fa fa-filter"></i></div>
-                    <div className="caption">{el.caption}</div>
-                    <div className="value" dangerouslySetInnerHTML={{__html: el.label}}/>
-                    <div className="remove" onClick={(e) => props.FilterDelete(key)}><i className="fa fa-times"></i></div>
-                </div>
-            )}
+function FiltersPresenter(props) {
+
+    let isVisible = Object.entries(props.order).length > 0 || Object.entries(props.filters).length > 0;
+    return (
+        <div className={'w-table-presenter ' + (!isVisible ? 'w-table-presenter-hidden' : '')}>
+            <div className="w-table-presenter-inner">
+                {Object.entries(props.order).map(([field, el], index) =>
+                    <div key={index}>
+                        <div><i className={'fa fa-' + (el.dir == 'asc' ? 'arrow-down' : 'arrow-up')}></i></div>
+                        <div className="caption">{el.caption}</div>
+                        <div className="remove" onClick={(e) => props.orderDelete(field)}><i className="fa fa-times"></i></div>
+                    </div>
+                )}
+
+                {Object.entries(props.filters).map(([key, el]) =>
+                    <div key={key}>
+                        <div><i className="fa fa-filter"></i></div>
+                        <div className="caption">{el.caption}</div>
+                        <div className="value" dangerouslySetInnerHTML={{__html: el.label}}/>
+                        <div className="remove" onClick={(e) => props.FilterDelete(key)}><i className="fa fa-times"></i></div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
@@ -378,33 +398,19 @@ function Error(props) {
 function Footer(props) {
     const pages = Math.max(Math.ceil(props.count / props.onPage), 1);
 
-    const leftRightCount = 2;
+    const leftRightCount = 0;
 
     const from = Math.max(1, Math.min(pages - leftRightCount * 2, Math.max(1, props.currentPage - leftRightCount)));
     var arr = (function (a, b) {
         while (a--)b[a] = a + from;
         return b
     })(Math.min(leftRightCount * 2 + 1, pages > 0 ? pages : 1), []);
+    const table = props.parent;
 
     return (
         <tr>
             <td colSpan={props.columns.length} className="w-table-footer-main">
-                <div className="w-table-footer-all">
-                    Wszystkich <span>{props.count}</span>
-                </div>
-                <div
-                    title="Przesuń i upuść aby zmienić rozmiar tabeli"
-                    className="w-table-footer-drag"
-                    onDragStart={(e) => {
-                        props.bodyResizeStart(e)
-                    }} onDrag={(e) => {
-                    props.bodyResize(e)
-                }}
-                    onDragEnd={(e) => {
-                        props.bodyResizeEnd(e)
-                    }}
-                    draggable={true}
-                ><i className="fa fa-arrows-v"></i></div>
+
 
                 <div className="w-table-pager">
                     <div onClick={(e) => props.currentPageChanged(1)}><i className="fa fa-angle-double-left"></i></div>
@@ -416,16 +422,44 @@ function Footer(props) {
                     <div onClick={(e) => props.currentPageChanged(pages)}><i className="fa fa-angle-double-right"></i></div>
                 </div>
 
-                <div className="w-table-footer-pageinfo"> strona: <b>{props.currentPage}</b> z <b>{pages}</b>
+                <div className="w-table-footer-pageinfo">
+                    <b>{props.currentPage}</b> / <b>{pages} ( {props.count} )</b>
                 </div>
 
                 <div className="w-table-footer-onpage-select">
                     <span>Na stronie: </span>
                     <select defaultValue={props.onPage} onChange={(e) => props.onPageChanged(parseInt(e.target.value))}>
-                        {([25, 50, 100]).map((x, i) =>
+                        {([10, 25, 50, 100]).map((x, i) =>
                             <option key={'onpageval' + x} value={x}>{x}</option>
                         )}
                     </select>
+                </div>
+
+
+                <div className="w-table-buttons">
+
+
+                    {table.props.buttons.map((e) =>
+                        <MyButton {...e} context={table}/>
+                    )}
+
+                    <button title="Usuń zmiany" onClick={table.handleStateRemove.bind(table)}><i className="fa fa-eraser"></i></button>
+                    <button title="Odśwież" onClick={table.load.bind(table)}><i className="fa fa-refresh"></i></button>
+                    <button title="Zmień sposób wyświetlania" onClick={table.toggleFixedLayout.bind(table)}><i className="fa fa-window-restore"></i></button>
+                    <div
+                        title="Przesuń i upuść aby zmienić rozmiar tabeli"
+                        className="w-table-footer-drag"
+                        onDragStart={(e) => {
+                            props.bodyResizeStart(e)
+                        }} onDrag={(e) => {
+                        props.bodyResize(e)
+                    }}
+                        onDragEnd={(e) => {
+                            props.bodyResizeEnd(e)
+                        }}
+                        draggable={true}
+                    ><i className="fa fa-arrows-v"></i></div>
+                    {/*{table.state.loading ? <button className="w-table-loading-indicator"><i className="fa fa-spinner fa-spin"></i></button> : ''}*/}
                 </div>
 
 
@@ -442,40 +476,77 @@ function Rows(props) {
         'Multi': ColumnMulti,
     };
 
-    const packalue = (val, props) => {
+    const packValue = (val, props) => {
+        let templateResult = false;
+        if (props.column.template) {
+            templateResult = props.column.template(val, props.row);
+
+        }
         return (
             <div>
                 {props.column.icon ? <i className={'w-table-prepend-icon fa ' + props.column.icon}></i> : ''}
                 {props.column.prepend ? props.column.prepend : ''}
-                {props.column.template ? <span dangerouslySetInnerHTML={{__html: (props.column.template(val, props.row))}}></span> : (val ? val : props.column.default)}
+                {templateResult ? (typeof templateResult == "string" ? <span dangerouslySetInnerHTML={{__html: (props.column.template(val, props.row))}}></span> : templateResult) : (val ? val : props.column.default)}
                 {props.column.append ? props.column.append : ''}
             </div>
         )
     };
 
+    const columns = props.columns.filter(el => el.display === true);
+
+    let cache = {};
+
+    for (let index = 0; index < columns.length; index++) {
+        let column = columns[index];
+        cache[index] = cache[index] || {}
+        cache[index].classes = [];
+        if (props.order[column.field] !== undefined) {
+            cache[index].classes.push('w-table-sorted w-table-sorted-' + props.order[column.field].dir);
+        }
+        if (props.filters[column.field] !== undefined) {
+            cache[index].classes.push('w-table-filtered')
+        }
+        if (column.events.click && column.events.click.length > 0) {
+            cache[index].classes.push('w-table-cell-clickable');
+        }
+        cache[index].classes = cache[index].classes.concat(column.class);
+    }
+
 
     return (
+
 
         <tbody style={{maxHeight: props.bodyHeight}}>
 
 
         {props.data.map((row, index) =>
             <tr key={'row' + index}>
-                {props.columns.map((column, index2) => {
+                {columns.map((column, index2) => {
                     const Component = column.type ? cells[column.type] : cells["Simple"];
                     return (<td key={'cell' + index2}
                                 style={{width: column.width}}
-                                onClick={column.events.click ? function (event) {
-                                    column.events.click.map((callback)=> {
-                                        callback.bind(this)(row,event);
+                                onClick={column.events.click ? (event) => {
+
+                                    column.events.click.map((callback) => {
+                                        callback.bind(this)(row, event);
                                     })
                                 } : function () {
                                 }}
-                                className={'' + (column.events.click ? 'w-table-cell-clickable ' : '') + (column.class ? ' ' + column.class.join(' ') : '') +
-                                (column.classDecorator[row[column.field]] ? column.classDecorator[row[column.field]] + " " : '')
-                                }
+                                onMouseEnter={column.events.enter ? (event) => {
+                                    column.events.enter.map((callback) => {
+                                        callback.bind(this)(row, event);
+                                    })
+                                } : function () {
+                                }}
+                                onMouseLeave={column.events.leave ? (event) => {
+                                    column.events.leave.map((callback) => {
+                                        callback.bind(this)(row, event);
+                                    })
+                                } : function () {
+                                }}
+                                className={cache[index2].classes.concat(column.classDecorator[row[column.field]]).join(' ')}
                         >
-                            <Component column={column} row={row} cells={cells} packValue={packalue}/>
+                            <Component column={column} row={row} cells={cells} packValue={packValue}/>
                         </td>
                     )
                 })}
@@ -537,4 +608,140 @@ function ColumnMulti(props) {
     )
 }
 
-export {Table}
+
+const defaultColumnData = {
+    field: "",
+    caption: "",
+    isSortable: true,
+    display: true,
+    toolTip: null,
+    width: null,
+    class: [],
+    type: "Simple",
+    orderField: "id",
+    icon: null,
+    append: null,
+    prepend: null,
+    classDecorator: [],
+    template: null,
+    default: ""
+};
+
+class MarkupLoader {
+    constructor(columns) {
+        this.config = [];
+        //this.firstLevel = firstLevel;
+        columns = Array.isArray(columns) ? columns : [columns];
+        columns.map(column => {
+
+
+            if (column.type.name == "Column") {
+                let data = this.getPropsAsData(column.props);
+                data.orderField = data.orderField || data.field;
+                data.type = data.type || "Simple";
+                data.isSortable = data.isSortable || true;
+                data.default = data.default || "";
+                data.events = {
+                    click: [], enter: [], leave: []
+                };
+                if (data.onClick) {
+                    data.events.click.push(data.onClick);
+                    delete data.onClick;
+                }
+                if (data.onMouseEnter) {
+                    data.events.enter.push(data.onMouseEnter);
+                    delete data.onMouseEnter;
+                }
+                if (data.onMouseLeave) {
+                    data.events.leave.push(data.onMouseLeave);
+                    delete data.onMouseLeave;
+                }
+
+                if (data.className) {
+                    data.class = [data.className];
+                    delete data.className;
+                }
+
+                let config = {...defaultColumnData, ...data};
+
+                let filters = [];
+                let sorters = [];
+                if (column.props.children !== undefined) {
+                    let children = column.props.children;
+                    if (!Array.isArray(children))
+                        children = [children];
+
+
+                    children.map((child) => {
+                        if (child.type.name == "Filter") {
+                            filters.push(this.getFilterConf(this.getPropsAsData(child.props), data))
+                        }
+                        if (child.type.name == "Sorter") {
+                            sorters.push(this.getSorterConf(this.getPropsAsData(child.props), data));
+                        }
+
+                    });
+                }
+
+                if (filters.length == 0 && data.noDefaultFilter === undefined) {
+                    config.filter = this.getColumnDefaultFilter(data);
+                } else if (filters.length == 1) {
+                    config.filter = filters[0];
+                } else if (filters.length > 1) {
+                    config.filter = {
+                        "type": "MultiFilter",
+                        "field": "id",
+                        "title": "Id",
+                        "caption": "Id",
+                        filters: filters
+                    }
+                }
+
+
+                this.config.push(config);
+            }
+        });
+    }
+
+    getFilterConf(data, column) {
+        return {
+            ...data, ...{
+                type: data.type[0].toUpperCase() + data.type.slice(1) + "Filter",
+                field: data.field || column.field,
+                title: data.caption || column.caption,
+                caption: data.caption || column.caption,
+
+            }
+        }
+    }
+
+    getColumnDefaultFilter(column) {
+        return {
+            type: "TextFilter",
+            field: column.field,
+            title: column.caption,
+            caption: column.caption,
+        }
+    }
+
+    getPropsAsData(props) {
+        let data = {};
+        for (let i in props) {
+            if (i != "children") {
+                data[i] = props[i];
+            }
+        }
+        return data;
+    }
+
+    getConfig() {
+        return this.config;
+    }
+
+}
+const Column = () => null
+const Filter = () => null
+const Sorter = () => null
+
+
+export {Table, Column, Filter, Sorter}

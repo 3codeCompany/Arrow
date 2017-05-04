@@ -2,7 +2,11 @@
 
 namespace Arrow\Access\Controllers;
 
+use App\Layouts\ReactComponentLayout;
+use function array_reduce;
 use Arrow\Access\Models\AccessAPI;
+use Arrow\Access\Models\AccessGroup;
+use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
 use Arrow\ConfigProvider;
@@ -33,6 +37,7 @@ use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
+use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\EmptyLayout;
@@ -100,8 +105,9 @@ class AccessController extends \Arrow\Models\Controller
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
 
-        if (!$validator->check())
+        if (!$validator->check()) {
             $this->json($validator->response());
+        }
 
 
         $authHandler = Auth::getDefault();
@@ -187,7 +193,8 @@ class AccessController extends \Arrow\Models\Controller
         $view->setGenerator(AdministrationLayout::page($l));
     }
 
-    public function users_accountSave($op, RequestContext $request){
+    public function users_accountSave($op, RequestContext $request)
+    {
         $user = Auth::getDefault()->getUser();
         $user->setValues($request["data"]);
         $user->save();
@@ -233,71 +240,60 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function users_list(Action $view, RequestContext $request)
+    public function users_getData()
     {
-        $ds = TableDataSource::fromClass(User::getClass());
+        $data = json_decode(file_get_contents('php://input'), true);
 
-        $filterPanel = FilterPanel::create()
-            ->addSection("Użytkownik", [
-                SelectFilter::create("access_group", "Grupa dostępu")
-                    ->setContent([0 => "---"] + AccessGroup::get()->_id(1, Criteria::C_NOT_EQUAL)->findAsFieldArray(AccessGroup::F_NAME, true)),
-            ]);
-
-        $filters = $filterPanel->getFilterValues();
-        $options = $filterPanel->getFilterOptions();
-        foreach ($filters as $field => $value) {
-            if ($value) {
-                if ($field == "access_group") {
-                    $ds->_join(AccessUserGroup::getClass(), ["id" => AccessUserGroup::F_USER_ID], "AG", ["id"]);
-                    $ds->c("AG:" . AccessUserGroup::F_GROUP_ID, $value);
-                }
-            }
+        //group filtering
+        $groups = false;
+        if (isset($data["filters"]["group"])) {
+            $groups = $data["filters"]["group"]["value"];
+            unset($data["filters"]["group"]);
         }
 
-        $l = LayoutBuilder::create();
-        $l->col12(Toolbar::_new([
-            Breadcrumb::create([
-                "System",
-                BreadcrumbElement::create("Użytkownicy")->setActive(1)
-            ]),
-            Link::_new("Dodaj")
-                ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")) . SerenityJS::returnFalse())
-                ->addLinkCSSClass("btn btn-primary")
-        ]));
+        $criteria = TableDataSource::prepareCriteria(User::get(), $data);
 
-        $table = Table::create("users", $ds)
-            ->setContextData(["id"])
-            ->on(Table::EVENT_ROW_CLICKED, SerenityJS::hash(Router::link("./edit?key=#{context.id}")));
-        $table->getColumnsList()
-            ->addColumn(Simple::_new("id", "id")->setWidth(70))
-            ->addColumn(Editable::_boolswitch("active", "Aktywny", Router::link("./save?activity=1"), ["id"])->setWidth(60))
-            ->addColumn(Simple::_new("login", "login"))
-            ->addColumn(Simple::_new(User::F_EMAIL, "Email"))
-            ->addColumn(Template::_new(function (User $context) {
-                return implode(",", $context->getAccessGroups());
-            }, "Grupy dostępu"))
-            ->addColumn(Template::_new(function (User $context) use ($table) {
-                return ContextMenu::_new([
-                    Link::_new(Icons::icon(Icons::PENCIL) . " Edytuj")->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit?key=" . $context->_id()))),
-                    ContextMenu::separator(),
-                    AjaxLink::_new(Icons::icon(Icons::TRASH_O) . " Usuń", Router::link("./delete?key=" . $context->_id()))
-                        ->setSuccessInformation("Usunięto")
-                        ->setConfirmQuestion("Czy napewno usunąć `{$context->_login()}`?")
-                        ->setSuccessRefresh($table->getId())
-                ])->generate();
-            }, "Opcje"));
+        if ($groups) {
+            $criteria->_join(AccessUserGroup::getClass(), ["id" => AccessUserGroup::F_USER_ID], "AG", ["id"]);
+            $criteria->c("AG:" . AccessUserGroup::F_GROUP_ID, $groups, Criteria::C_IN);
+        }
 
-        $table->prependWidged(FiltersPresenter::create([$table, $filterPanel]));
-        $filterPanel->addConnectedWidget($table);
+        $response = TableDataSource::prepareResponse($criteria, $data);
 
-        $l->add($table);
-        $l->insert($filterPanel);
-        $l->insert($filterPanel->getOpenButton());
-        $view->setGenerator(AdministrationLayout::page(new WidgetsSet([$l])));
+        //adding access group information
+        $usersId = array_reduce($response["data"], function ($p, $c) {
+            $p[] = $c["id"];
+            return $p;
+        }, []);
+        $groups = AccessGroup::get()
+            ->setColumns([AccessGroup::F_NAME])
+            ->_join(AccessUserGroup::getClass(), ["id" => AccessUserGroup::F_GROUP_ID], "UG", [AccessUserGroup::F_USER_ID])
+            ->c("UG:" . AccessUserGroup::F_USER_ID, $usersId, Criteria::C_IN)
+            ->find()->toArray(DataSet::AS_ARRAY);
+
+        foreach ($response["data"] as &$user) {
+            $user["groups"] = [];
+            foreach ($groups as $row) {
+                if ($row["UG:user_id"] == $user["id"]) {
+                    $user["groups"][] = $row["name"];
+                }
+            }
+
+        }
+
+        $response["debug"] = false;
+        $this->json($response);
+    }
+
+    public function users_list(Action $view, RequestContext $request)
+    {
+        $this->action->setLayout(new ReactComponentLayout());
+        $this->action->assign("accessGroups", AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true));
 
     }
 
-    public function users_delete($view, RequestContext $request){
+    public function users_delete($view, RequestContext $request)
+    {
         $user = User::get()->findByKey($request["key"]);
         $user->delete();
         $this->json([1]);
@@ -350,8 +346,9 @@ class AccessController extends \Arrow\Models\Controller
                     $tmp[$l->_code()] = $l->_name();
                 }
                 $keys = array_keys($tmp);
-                if (defined("User::F_LANG"))
+                if (defined("User::F_LANG")) {
                     $list->formField("Język", SwitchF::_new(User::F_LANG, $tmp, reset($keys)));
+                }
             }
         }
 
@@ -442,14 +439,16 @@ class AccessController extends \Arrow\Models\Controller
             ]),
             Link::_new("Dodaj")
                 ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")) . SerenityJS::returnFalse())
-                ->addLinkCSSClass("btn btn-primary")]));
+                ->addLinkCSSClass("btn btn-primary")
+        ]));
         $l->add($table);
 
 
         $view->assign("generator", AdministrationLayout::page($l));
     }
 
-    public function groups_delete($view, RequestContext $request){
+    public function groups_delete($view, RequestContext $request)
+    {
         AccessGroup::get()->findByKey($request["key"])->delete();
 
         $this->json([1]);
@@ -486,9 +485,9 @@ class AccessController extends \Arrow\Models\Controller
 
     public function groups_save($view, RequestContext $request)
     {
-        if ($request["key"])
+        if ($request["key"]) {
             AccessGroup::get()->findByKey($request["key"])->setValues($request["data"])->save();
-        else {
+        } else {
             AccessGroup::create($request["data"]);
         }
 
@@ -515,10 +514,10 @@ class AccessController extends \Arrow\Models\Controller
             ->addColumn(Simple::_new("point_object_friendly_id", "Friendly id"))
             ->addColumn(Editable::_boolswitch("control_enabled", "Control", Router::link("./changePointControl"), ["id"]))
             ->addColumn(Template::_new(function ($context) use ($groups) {
-                print '<select multiple="multiple" class="span5 group-select" context="'. $context["id"].' >';
+                print '<select multiple="multiple" class="span5 group-select" context="' . $context["id"] . ' >';
                 foreach ($groups as $id => $name) {
                     if (!in_array($id, array(2, 4))) {
-                        print  '<option'.( $id & $context["groups"] ? 'selected="selected"' : '' ).' value="'.$id .'">'.$name.'</option>';
+                        print  '<option' . ($id & $context["groups"] ? 'selected="selected"' : '') . ' value="' . $id . '">' . $name . '</option>';
                     }
                 }
                 print  "</select>";
@@ -560,8 +559,9 @@ class AccessController extends \Arrow\Models\Controller
         if ($request["groups"]) {
             $sum = array_sum($request["groups"]);
             $point["groups"] = $sum;
-        } else
+        } else {
             $point["groups"] = 0;
+        }
 
 
         $point->save();
@@ -577,13 +577,15 @@ class AccessController extends \Arrow\Models\Controller
         } elseif ($request["id"]) {
             $user = User::get()->findByKey($request["id"]);
             $auth->doLogin($user["login"], false, true);
-        } else
+        } else {
             $auth->doLogin($request["loginToLoginAs"], false, true);
+        }
 
-        if (RequestContext::getDefault()->isXHR())
+        if (RequestContext::getDefault()->isXHR()) {
             $this->json([true]);
-        else
+        } else {
             $this->back();
+        }
     }
 
     public function dashboard_currentlyLogged(Action $view, RequestContext $request)

@@ -20,15 +20,9 @@ class StandardParsersProvider implements IParsersProvider
     public function getParsers()
     {
         return [
-            (new ViewParser('/(import|t|o|r|v):(\.|)\/([\w\/.-]+)/', function ($matches) {
-                if ($matches[1] == "import")
-                    return Dispatcher::getDefault()->get($matches[3])->generate();
+            (new ViewParser('/(import):(\.|)\/([\w\/.-]+)/', function ($matches) {
+                return Dispatcher::getDefault()->get($matches[3])->generate();
             })),
-            (new ViewParser('/r:(\w*?)::([\w\/.-]+)/', function ($matches) {
-                $package = $matches[1] ? $matches[1] : 'application';
-                return \Arrow\Controller::$project->getResources()->getResource($matches[2], $package)->getRelativePath();
-            }))
-
         ];
     }
 }
