@@ -1,6 +1,7 @@
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-class Panel extends React.Component {
+class Panel extends Component {
 
     static propTypes = {
         title: PropTypes.string,
@@ -14,17 +15,19 @@ class Panel extends React.Component {
 
     render() {
         const props = this.props
-        let classes = [ 'panel' ]
-        if(this.props.noPadding) {
+        let classes = ['panel']
+        if (this.props.noPadding) {
             classes.push('panel-no-padding')
         }
-        if(this.props.noBottomMargin) {
+        if (this.props.noBottomMargin) {
             classes.push('panel-no-bottom-margin')
         }
         return (
             <div className={classes.join(" ")}>
                 <div className="panel-body">
-                    {props.title ? <div className="title">{props.title}</div> : '' }
+                    {props.title ? <div className="title">{props.title}
+                        <div className="panel-toolbar">{props.toolbar}</div>
+                    </div> : '' }
                     {props.children}
                 </div>
             </div>
@@ -35,7 +38,7 @@ class Panel extends React.Component {
 
 const Navbar = (props) => {
 
-    let children = Array.isArray(props.children) ? props.children: [props.children];
+    let children = Array.isArray(props.children) ? props.children : [props.children];
 
     return (
         <div className="row">
@@ -120,12 +123,12 @@ Row.propTypes = {
 const SimpleTable = (props) => {
 
     let children = props.children;
-    if(children == undefined){
+    if (children == undefined) {
         children = [];
     }
 
-    for( let i in props.fromFlatObject){
-        children.push( <SimpleTableRow key={i} cols={[i, props.fromFlatObject[i]]} /> )
+    for (let i in props.fromFlatObject) {
+        children.push(<SimpleTableRow key={i} cols={[i, props.fromFlatObject[i]]}/>)
     }
 
     return (
@@ -145,7 +148,7 @@ SimpleTable.defaultProps = {
 const SimpleTableRow = (props) => {
     return (
         <tr>
-            {props.cols.map( (el,index) =>
+            {props.cols.map((el, index) =>
                 <td key={index}>{el}</td>
             )}
         </tr>
@@ -155,5 +158,7 @@ const SimpleTableRow = (props) => {
 SimpleTableRow.propTypes = {
     cols: PropTypes.array.isRequired
 }
+
+
 
 export {Panel, Navbar, Row, Container, SimpleTable, SimpleTableRow}

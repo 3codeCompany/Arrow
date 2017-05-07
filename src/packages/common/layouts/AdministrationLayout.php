@@ -15,6 +15,7 @@ use
     Arrow\ViewManager;
 use Arrow\ORM\Table;
 use Arrow\Router;
+use const ARROW_DOCUMENTS_ROOT;
 
 class AdministrationLayout extends \Arrow\Models\AbstractLayout
 {
@@ -63,10 +64,10 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
         }
 
 
-        $basePath = "./vendor/arrow/engine/assets";
         $manifest = false;
-        if (file_exists($basePath . "/dist/webpack-assets.json")) {
-            $manifest = json_decode(file_get_contents($basePath . "/dist/webpack-assets.json"), true)["main"];
+        $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
+        if (file_exists($manifestFile)) {
+            $manifest = json_decode(file_get_contents($manifestFile), true)["admin"];
         }
 
         $this->view->assign("webpackManifest", $manifest);

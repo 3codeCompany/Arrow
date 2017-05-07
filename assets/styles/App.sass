@@ -6,6 +6,7 @@
     &:after
         clear: both
 
+@import "theme-blue"
 @import "ctrl/SerenityControls"
 
 @import ../node_modules/alertifyjs/build/css/alertify.min.css
@@ -69,6 +70,12 @@
             border-bottom: #F7F7F7 solid 1px
             background: #FFF
             font-family: Montserrat, sans-serif
+        .panel-toolbar
+            float: right
+            margin: -10px -0px 15px
+            >*
+                margin: 5px
+
     &.panel-no-bottom-margin
         margin-bottom: 0
     &.panel-no-padding
@@ -106,5 +113,33 @@
 
 
 .btn
+    margin-right: 5px
+    margin-bottom: 5px
     i
         margin-right: 5px
+
+.btn-default
+    background-color: lightgrey
+    border-color: lightgrey
+    &:hover
+        color: black
+
+
+.amcharts-main-div
+    a[title='JavaScript charts']
+        display: none !important
+
+.hr-line-dashed
+    border-top: 1px dashed #e7eaec
+    color: #ffffff
+    background-color: #ffffff
+    height: 1px
+    margin: 20px 0
+
+
+form
+    .bg-danger
+        padding: 5px
+        li
+            list-style: square
+            margin-left: 20px

@@ -9,6 +9,7 @@ use Arrow\Access\Models\AccessGroup;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
+use Arrow\Common\Models\History\History;
 use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\AjaxLink;
 use Arrow\Controls\api\common\BreadcrumbElement;
@@ -301,106 +302,69 @@ class AccessController extends \Arrow\Models\Controller
 
     public function users_edit(Action $view, RequestContext $request)
     {
-        $view->setLayout(new EmptyLayout());
-
+        $view->setLayout(new ReactComponentLayout());
         $user = User::get()->findByKey($request["key"]);
-        $form = Form::_new("edit", $user)
-            ->setNamespace("data")
-            ->addHiddenField("key", $request["key"])
-            ->setAction(Router::link("./save"))
-            ->on(Form::EVENT_SUCCESS, SerenityJS::back());
+
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
         $selectedGroups = [];
+        $history = false;
         if ($user) {
             $selectedGroups = AccessUserGroup::get()
                 ->c("user_id", $user->getPKey())
                 ->findAsFieldArray('group_id');
+
+
+            $history = History::getObjectHistoryCriteria($user)
+                ->order("id", "desc")
+                ->limit(0, 10)
+                ->find()
+            ;
         }
-
-        $list = LayoutBuilder::create()
-            ->insert(Toolbar::_new([
-                Breadcrumb::create([
-                    "System",
-                    BreadcrumbElement::create("Użytkownicy", SerenityJS::hash(Router::link("./list"))),
-                    BreadcrumbElement::create($user ? $user->_login() : "Nowy")->setActive(1)
-                ]),
-                $form->getSubmit(),
-                Link::_new("Anuluj")
-                    ->on(Link::EVENT_CLICK, SerenityJS::back())
-                    ->addCSSClass("btn btn-default")
-
-            ]))
-            ->form($form)
-            ->panel("Dane podstawowe", Icons::USER)
-            ->formField("Login", Text::_new(User::F_LOGIN));
+        $this->action->assign("history", $history);
+        $this->action->assign("groups", $groups);
+        $this->action->assign("user", $user);
+        $this->action->assign("selectedGroups", $selectedGroups);
 
 
-        if (class_exists("Language")) {
-            $langs = Language::get()->find();
-
-            if ($langs->count() > 1) {
-                $tmp = [];
-
-                foreach ($langs as $l) {
-                    $tmp[$l->_code()] = $l->_name();
-                }
-                $keys = array_keys($tmp);
-                if (defined("User::F_LANG")) {
-                    $list->formField("Język", SwitchF::_new(User::F_LANG, $tmp, reset($keys)));
-                }
-            }
-        }
-
-        $list
-            ->formField("Email", Text::_new(User::F_EMAIL))
-            //->formField("External id", Text::_new(User::F_EXTERNAL_ID))
-            ->formField("Aktywny", SwitchF::_bool(User::F_ACTIVE, 1))
-            ->formField(null, Hidden::_new("accessGroups][", "")->setNamespace("parameters"))
-            ->formField("Grupy dostępu",
-                Select::_multi("accessGroups", $groups)
-                    ->setValue($selectedGroups)
-                    ->setNamespace("parameters")
-                    ->setWidth(880)
-
-            )
-            ->sectionEnd()
-            ->panelEnd()
-            ->panel("Zmiana hasła", Icons::KEY)
-            ->formField("Hasło", Text::_new(User::F_PASSWORD)->setValue(""))
-            ->formField("Powtórz", Text::_new("repassword")->setNamespace(""))
-            ->sectionEnd()
-            ->panelEnd()
-            ->formEnd();
-
-
-        $view->assign("generator", AdministrationLayout::page($list));
+        return;
 
     }
 
-    public function users_save($view, RequestContext $request)
+    public function users_save()
     {
-        if ($request["activity"]) {
+
+        $data = $this->request["data"];
+
+        $validator = Validator::create($data)
+            ->required(["login", "email", "active"])
+            ->email("email");
+
+
+        if (!isset($data["id"])) {
+            $validator->required(["password"]);
+        }
+
+        if (!$validator->check()) {
+            $this->json($validator->response());
+        }
+
+        $accessGroups = isset($data["selectedGroups"]) ? $data["selectedGroups"] : [];
+        unset($data["selectedGroups"]);
+
+        if (isset($data["id"])) {
             $user = User::get()
-                ->findByKey($request["id"]);
-
-            $user[User::F_ACTIVE] = $user->_active() ? 0 : 1;
-            $user->save();
-            $this->json([1]);
-        }
-
-        if ($request["key"]) {
-            User::get()
-                ->findByKey($request["key"])
-                ->setValues($request["data"])
-                ->setParameters($request["parameters"])
+                ->findByKey($data["id"]);
+            $user
+                ->setValues($data)
                 ->save();
+
         } else {
-            $u = User::create($request["data"]);
-            $u->setParameters($request["parameters"])
-                ->save();
+            $user = User::create($data);
+
 
         }
+        $user->setGroups($accessGroups);
 
         $this->json([1]);
     }

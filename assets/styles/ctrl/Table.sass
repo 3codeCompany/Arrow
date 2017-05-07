@@ -48,11 +48,12 @@
 
         .w-table-presenter-inner
             background-color: white
-            width: calc(100% - 10px)
+            width: calc(100%)
 
             min-height: 38px
             padding: 5px
-            margin: 5px
+            margin: 5px 0 5px 0
+
             border: solid 1px lightgrey
             box-shadow: 0 2px 15px 0 rgba(0, 0, 0, .15)
 
@@ -89,25 +90,26 @@
             text-align: center
 
         > thead
-            background: linear-gradient(to bottom, #f7f7f7 0, #dddddd 100%)
-
+            //background: linear-gradient(to bottom, #f7f7f7 0, #dddddd 100%)
+            background-color: white
             > tr
 
-                border-bottom: solid 2px grey
+
+
                 transition: color 2.25s
 
                 > th
-
+                    border-bottom: solid 1px grey
                     padding: 5px
                     padding-right: 0
-                    font-weight: 400
+                    font-weight: 500
                     text-align: center
                     border-right: 1px solid rgba(0, 0, 0, .1)
                     > i
                         margin-right: 10px
 
                     &:hover
-                        background-color: lightgrey
+                        background-color: #e7e7e7
                         cursor: pointer
 
                     &.w-table-sorted, &.w-table-filtered
@@ -179,15 +181,17 @@
                 background-color: #eaeaea
 
         > tfoot
-            border-top: solid 2px grey
+
             > tr
                 > td
+
 
                     padding: 6px
                     background-color: #F5F5F5
                     padding-top: 0
 
                     &.w-table-footer-main
+
                         padding-top: 10px
 
                         .w-table-footer-drag

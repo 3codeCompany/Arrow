@@ -1,34 +1,33 @@
 <?xml version="1.0"?>
-<schema >
-    <table name="access_user" class="Arrow\Access\Models\User" >
+<schema>
+    <table name="access_user" class="Arrow\Access\Models\User">
 
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="created" type="DATETIME" />
+        <field name="created" type="DATETIME"/>
         <field name="login" type="VARCHAR" required="true" size="100"/>
-        <field name="email" type="VARCHAR"  size="255"/>
+        <field name="email" type="VARCHAR" size="255"/>
         <field name="password" type="VARCHAR" required="true" size="32"/>
-        <field name="password_changed" type="date" />
+        <field name="password_changed" type="date"/>
         <field name="passport_id" type="VARCHAR" required="true" size="32"/>
         <field name="remember_key" type="VARCHAR" required="false" size="35"/>
         <field name="bad_log" type="TINYINT"/>
         <field name="active" type="TINYINT" size="1"/>
-        <field name="need_change_password" type="TINYINT" size="1" />
+        <field name="need_change_password" type="TINYINT" size="1"/>
         <field name="name" type="VARCHAR" size="255"/>
-        <field name="settings" type="text" />
+        <field name="settings" type="text"/>
     </table>
-    <table name="access_groups" class="Arrow\Access\Models\AccessGroup" >
+    <table name="access_groups" class="Arrow\Access\Models\AccessGroup">
         <trackers>
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
+            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="name" type="VARCHAR"/>
         <field name="description" type="VARCHAR"/>
     </table>
-    <table name="access_user_group" class="Arrow\Access\Models\AccessUserGroup" >
+    <table name="access_user_group" class="Arrow\Access\Models\AccessUserGroup">
         <trackers>
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
+            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
+
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="user_id" type="INTEGER" size="30"/>
@@ -48,9 +47,9 @@
         </foreign-key>
     </table>
 
-    <table name="access_points" class="Arrow\Access\Models\AccessPoint" >
+    <table name="access_points" class="Arrow\Access\Models\AccessPoint">
         <trackers>
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="point_type" type="VARCHAR" size="20"/>
@@ -63,8 +62,8 @@
 
     <table name="access_points_groups" class="Arrow\Access\Models\AccessPointGroup">
         <trackers>
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
-            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
+            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
+            <tracker class="Arrow\Common\Models\Track\ORMObjectsArchiver"/>
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="access_points_id" type="INTEGER"/>
@@ -76,8 +75,8 @@
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="hash" type="VARCHAR" size="100"/>
         <field name="ip" type="VARBINARY" size="16"/>
-        <field name="last" type="DATETIME" />
+        <field name="last" type="DATETIME"/>
         <field name="user_id" type="INTEGER" size="11"/>
-        <field name="value" type="TEXT" />
+        <field name="value" type="TEXT"/>
     </table>
 </schema>

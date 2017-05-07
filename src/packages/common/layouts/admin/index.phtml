@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/panel.css">
     <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/theme-<?= $this["user"]->getSetting('admin-theme', 'blue') ?>.css">
 
+
+
 </head>
 <body id="app" class="app app <?= $this["user"]->getSetting('sidebar-collapse', 1) ? 'nav-collapsed-min' : '' ?>" >
 
@@ -147,12 +149,6 @@
 
 <script>window.appBaseUrl = '<?=\Arrow\Router::getBasePath()?>'; </script>
 
-<!--<script src="//code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.css' />
-<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.0/moment.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/fullcalendar.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.6.0/lang/pl.js'></script>-->
 
 
 <link rel="stylesheet" href="assets/select2/dist/css/select2.min.css"/>
@@ -162,13 +158,16 @@
 <? $pathCss = "assets/controls/dist/serenity.css"; ?>
 <link rel="stylesheet" type="text/css" href="<?= $pathCss. "?" . filemtime($pathCss) ?>"/>
 
+<?if(!isset($_SESSION["inDev"])){ $_SESSION["inDev"] = false; }?>
+<?if(isset($_REQUEST["inDev"])){ $_SESSION["inDev"] = $_REQUEST["inDev"]; }?>
 
 
 
-<? if ($this["webpackManifest"]) { ?>
+<? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
     <script type="text/javascript" src=".<?= $this["webpackManifest"]["js"] ?>"></script>
     <link rel="stylesheet" href=".<?= $this["webpackManifest"]["css"] ?>"/>
 <? } else { ?>
+
     <script type="text/javascript" src="http://localhost:3000/bundle.js" charset="utf-8"></script>
 <? } ?>
 <script type="text/javascript"  src="assets/require.js"></script>

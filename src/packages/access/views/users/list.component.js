@@ -26,12 +26,8 @@ export default class access_access_users_list extends Component {
                     <span>Użytkownicy</span>
                 </Navbar>
                 <Row>
-                    <Panel>
-                        <button className="btn btn-primary"><i className="fa fa-plus"></i>Dodaj</button>
-                    </Panel>
-                </Row>
-                <Row>
-                    <Panel noPadding>
+                    <Panel title="Lista użytkowników systemu">
+                        <a href={'#' + this.props.baseURL + "/edit"} className="btn btn-sm btn-primary"><i className="fa fa-plus"></i>Dodaj</a>
                         <Table remoteURL={this.props.baseURL + '/getData'} ref="table">
                             <Column field="id" caption="Id" className="right">
                                 <Filter type="numeric"/>

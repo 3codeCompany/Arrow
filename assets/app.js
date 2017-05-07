@@ -35,14 +35,11 @@ ReactHelper.register('MultiFilter', MultiFilter);
 ReactHelper.register('Table', Table);
 ReactHelper.register('Button', Button);
 
-require ("./build/components.include");
+require ("components.include");
 
 ReactHelper.initComponents();
 
 
-//import admin_reclaim_todo from '../../../../app/views/admin/reclaim/todo.component.js';
-//ReactHelper.register('admin_reclaim_todo', admin_reclaim_todo);
-//ReactHelper.register('admin_reclaim_todo', ArrowViews["admin_reclaim_todo"]);
 
 
 if (module.hot) {

@@ -35,7 +35,7 @@ class Table extends Component {
             onPage: this.props.onPage,
             currentPage: 1,
             countAll: 0,
-            fixedLayout: props.fixedLayout,
+            fixedLayout: false, // props.fixedLayout,
             columns: this.props.columns,
             bodyHeight: this.props.initHeight
         };
@@ -55,8 +55,8 @@ class Table extends Component {
                 return a & a
             }, 0);
         }
-        this.hashCode = hashCode(this.props.controlKey + window.location.href);
 
+        this.hashCode = hashCode(this.props.controlKey + window.CONTROLS_BASE_LOCATION != undefined?window.CONTROLS_BASE_LOCATION:window.location.href);
     }
 
 
@@ -445,7 +445,7 @@ function Footer(props) {
 
                     <button title="Usuń zmiany" onClick={table.handleStateRemove.bind(table)}><i className="fa fa-eraser"></i></button>
                     <button title="Odśwież" onClick={table.load.bind(table)}><i className="fa fa-refresh"></i></button>
-                    <button title="Zmień sposób wyświetlania" onClick={table.toggleFixedLayout.bind(table)}><i className="fa fa-window-restore"></i></button>
+                    {/*<button title="Zmień sposób wyświetlania" onClick={table.toggleFixedLayout.bind(table)}><i className="fa fa-window-restore"></i></button>*/}
                     <div
                         title="Przesuń i upuść aby zmienić rozmiar tabeli"
                         className="w-table-footer-drag"
