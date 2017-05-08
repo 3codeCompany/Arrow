@@ -14,7 +14,7 @@ require('./src/lib/AjaxForm.js');
 //todo in future
 //require('./src/common/panel');
 
-import alertify from './node_modules/alertifyjs/build/alertify.min'
+import alertify from 'alertifyjs/build/alertify.min'
 
 
 if (!global.$)

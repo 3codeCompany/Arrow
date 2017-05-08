@@ -55,8 +55,7 @@ class Table extends Component {
                 return a & a
             }, 0);
         }
-
-        this.hashCode = hashCode(this.props.controlKey + window.CONTROLS_BASE_LOCATION != undefined?window.CONTROLS_BASE_LOCATION:window.location.href);
+        this.hashCode = hashCode(this.props.controlKey + (window.CONTROLS_BASE_LOCATION != undefined ? window.CONTROLS_BASE_LOCATION : window.location.href));
     }
 
 
@@ -137,7 +136,7 @@ class Table extends Component {
     }
 
     handleStateRemove() {
-        delete window.localStorage['list'];
+        delete  window.localStorage[this.hashCode];
         if (confirm("Wyczyszczono dane tabelki, czy chcesz odświeżyć stronę?")) {
             window.location.reload();
         }
@@ -256,7 +255,9 @@ class Table extends Component {
 
         return (
             <div className={'w-table ' + (this.state.loading ? 'w-table-loading' : '')} ref="container" tabIndex={0} onKeyDown={this.handleKeyDown.bind(this)}>
-
+                <div className="w-table-loader">
+                    <span><i></i><i></i><i></i><i></i></span>
+                </div>
                 <div className="w-table-top">
                     <FiltersPresenter order={this.state.order} filters={this.state.filters}
                                       FilterDelete={this.handleFilterDelete.bind(this)}
@@ -366,7 +367,7 @@ function Loading(props) {
         <tbody>
         <tr>
             <td className="w-table-center" colSpan={props.colspan}>
-                <i className="fa fa-spinner fa-spin"></i>
+                {/*<i className="fa fa-spinner fa-spin"></i>*/}
             </td>
         </tr>
         </tbody>
@@ -423,7 +424,7 @@ function Footer(props) {
                 </div>
 
                 <div className="w-table-footer-pageinfo">
-                    <b>{props.currentPage}</b> / <b>{pages} ( {props.count} )</b>
+                    {props.currentPage} / {pages} [ {props.count} ]
                 </div>
 
                 <div className="w-table-footer-onpage-select">
