@@ -10,6 +10,8 @@ class Table extends Component {
     static propsTypes = {
         data: PropTypes.array,
         remoteURL: PropTypes.string,
+        selectable: PropTypes.bool,
+        onSelectionChange: PropTypes.func
     }
 
     static defaultProps = {
@@ -37,7 +39,9 @@ class Table extends Component {
             countAll: 0,
             fixedLayout: false, // props.fixedLayout,
             columns: this.props.columns,
-            bodyHeight: this.props.initHeight
+            bodyHeight: this.props.initHeight,
+            allChecked: false,
+            selection: []
         };
 
         //helpers
@@ -122,7 +126,9 @@ class Table extends Component {
                         countAll: 0 + parseInt(parsed.countAll),
                         loading: false,
                         dataSourceDebug: parsed.debug ? parsed.debug : false,
-                        firstLoaded: true
+                        firstLoaded: true,
+                        selection: [],
+                        allChecked: false
                     });
                 } catch (e) {
                     this.setState({dataSourceError: xhr.responseText})
@@ -198,14 +204,13 @@ class Table extends Component {
     }
 
     handleOnPageChangepage(onPage) {
-        console.log("zmieniam");
         this.setState({onPage: onPage, currentPage: 1}, this.load);
     }
 
     handleCurrentPageChange(page) {
         let newPage = Math.max(1, Math.min(Math.ceil(this.state.countAll / this.state.onPage), page));
         if (newPage != this.state.currentPage) {
-            this.setState({currentPage: newPage}, this.load);
+            this.setState({currentPage: newPage, selection: [], allChecked: false}, this.load);
         }
     }
 
@@ -244,6 +249,46 @@ class Table extends Component {
         }
     }
 
+    handleCheckClicked(index) {
+        let s = this.state.selection;
+        if (index == 'all') {
+
+            if (!this.state.allChecked) {
+                this.state.data.forEach((el, index) => {
+                    if (s.indexOf(index) == -1) {
+                        s.push(index);
+                    }
+                });
+            } else {
+                s = [];
+            }
+            this.setState({allChecked: !this.state.allChecked});
+        } else {
+
+            let selected = s.indexOf(index);
+            if (selected == -1)
+                s.push(index);
+            else
+                s.splice(selected, 1);
+
+            if (s.length == this.state.data.length) {
+                this.state.allChecked = true;
+            } else {
+                this.state.allChecked = false;
+            }
+
+        }
+
+        if (this.props.onSelectionChange) {
+            let tmp = [];
+            s.forEach(index => tmp.push(this.state.data[index]));
+            this.props.onSelectionChange(tmp, this);
+        }
+
+        this.setState({selection: s});
+
+    }
+
 
     render() {
 
@@ -270,6 +315,12 @@ class Table extends Component {
                 <table className={this.state.fixedLayout ? 'w-table-fixed' : ''}>
                     <thead>
                     <tr>
+                        {this.props.selectable ?
+                            <th className="w-table-selection-header" onClick={this.handleCheckClicked.bind(this, 'all')}>
+                                <input type="checkbox" checked={this.state.allChecked}/>
+                            </th>
+                            : null
+                        }
                         {columns.filter(el => el.display === true).map((el, index) => {
                             const Component = el.filter ? withFilterOpenLayer(filtersMapping[el.filter.type]) : null;
                             let classes = []
@@ -282,7 +333,7 @@ class Table extends Component {
                             return (
                                 <th key={index} onClick={this.headClicked.bind(this, index)}
                                     style={{width: el.width}}
-                                    className={classes.join(" ")}
+                                    className={classes.join(' ')}
                                 >
                                     {el.order ? <i className={'fa fa-' + (el.order == 'asc' ? 'arrow-down' : 'arrow-up')}></i> : ''}
                                     {el.caption}
@@ -293,10 +344,18 @@ class Table extends Component {
                     </thead>
 
 
-                    {this.state.dataSourceError && <Error colspan={columns.length} error={this.state.dataSourceError}/>}
-                    {!this.state.loading && this.state.data.length == 0 && <EmptyResult colspan={columns.length}/>}
-                    {this.state.loading && !this.state.firstLoaded && <Loading colspan={columns.length}/>}
-                    {this.state.firstLoaded && this.state.data.length > 0 && <Rows columns={columns} filters={this.state.filters} order={this.state.order} loading={this.state.loading} bodyHeight={this.state.fixedLayout ? this.state.bodyHeight : 'auto'} data={this.state.data}/>}
+                    {this.state.dataSourceError && <Error colspan={columns.length+1} error={this.state.dataSourceError}/>}
+                    {!this.state.loading && this.state.data.length + 1 == 0 && <EmptyResult colspan={columns.length+1}/>}
+                    {this.state.loading && !this.state.firstLoaded && <Loading colspan={columns.length+1}/>}
+                    {this.state.firstLoaded && this.state.data.length > 0 && <Rows
+                        selection={this.state.selection}
+                        onCheck={this.handleCheckClicked.bind(this)}
+                        selectable={this.props.selectable}
+                        columns={columns} filters={this.state.filters}
+                        order={this.state.order} loading={this.state.loading}
+                        bodyHeight={this.state.fixedLayout ? this.state.bodyHeight : 'auto'}
+                        data={this.state.data}
+                    />}
 
                     <tfoot>
                     {this.state.firstLoaded && this.state.data.length > 0 &&
@@ -410,7 +469,7 @@ function Footer(props) {
 
     return (
         <tr>
-            <td colSpan={props.columns.length} className="w-table-footer-main">
+            <td colSpan={props.columns.length + 1} className="w-table-footer-main">
 
 
                 <div className="w-table-pager">
@@ -430,7 +489,7 @@ function Footer(props) {
                 <div className="w-table-footer-onpage-select">
                     <span>Na stronie: </span>
                     <select defaultValue={props.onPage} onChange={(e) => props.onPageChanged(parseInt(e.target.value))}>
-                        {([10, 25, 50, 100]).map((x, i) =>
+                        {([10, 25, 50, 100, 500]).map((x, i) =>
                             <option key={'onpageval' + x} value={x}>{x}</option>
                         )}
                     </select>
@@ -522,8 +581,13 @@ function Rows(props) {
 
         {props.data.map((row, index) =>
             <tr key={'row' + index}>
+                {props.selectable ?
+                    <td className="w-table-selection-cell" onClick={(e) => props.onCheck(index, e)}>
+                        <input type="checkbox" checked={props.selection.indexOf(index) != -1}/>
+                    </td>
+                    : ''}
                 {columns.map((column, index2) => {
-                    const Component = column.type ? cells[column.type] : cells["Simple"];
+                    const Component = column.type ? cells[column.type] : cells['Simple'];
                     return (<td key={'cell' + index2}
                                 style={{width: column.width}}
                                 onClick={column.events.click ? (event) => {
