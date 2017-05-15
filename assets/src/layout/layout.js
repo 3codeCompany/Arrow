@@ -59,7 +59,13 @@ const Navbar = (props) => {
                             </li>
                             {/*<li>Tutaj coś  jeszcze może być</li>*/}
                         </ul>
+                        <div style={{float: 'right'}}>
+                            <div style={{display: 'table-cell', height: '50px', verticalAlign: 'middle'}}>
+                                {props.toolbar}
+                            </div>
+                        </div>
                     </div>
+
                 </nav>
             </div>
         </div>
@@ -158,7 +164,6 @@ const SimpleTableRow = (props) => {
 SimpleTableRow.propTypes = {
     cols: PropTypes.array.isRequired
 }
-
 
 
 export {Panel, Navbar, Row, Container, SimpleTable, SimpleTableRow}
