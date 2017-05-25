@@ -40,6 +40,10 @@ window.ReactHelper = {
         registry[name] = {_obj: constructor};
     },
 
+    get: function (name) {
+        return  registry[name]['_obj'];
+    },
+
 
     initComponent: function (name, node) {
 

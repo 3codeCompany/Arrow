@@ -1,0 +1,39 @@
+.w-timeline
+    ul
+        margin: 0
+        padding: 0
+        li
+            position: relative
+            padding: 0 0 12px
+            list-style: none
+            margin: 0
+            .tail
+                position: absolute
+                left: 5px
+                top: 0
+                height: 100%
+                border-left: 2px solid #e9e9e9
+            .head
+                position: absolute
+                width: 12px
+                height: 12px
+                background-color: #fff
+                border-radius: 100px
+                border: 2px solid transparent
+
+                border-color: #108ee9
+                color: #108ee9
+                &.green
+                    border-color: #00a854
+                    color: #00a854
+                &.red
+                    border-color: #f04134
+                    color: #f04134
+
+            .content
+                padding: 0 0 10px 24px
+                font-size: 12px
+                position: relative
+                top: -3px
+                .content-head
+                    color: black

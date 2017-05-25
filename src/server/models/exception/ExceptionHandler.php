@@ -225,9 +225,15 @@ class ExceptionHandler implements IExceptionHandler
             $file = $exception->getFile();
         } else {
 
+            if($exception["type"] != 8192) {
 
-            print_r($exception);
-            exit();
+                print "\n\n";
+                print_r($exception);
+
+                exit();
+
+            }
+            return;
             //$message = $exception["message"];
             //$line = $exception["line"];
             //$file = $exception["file"];

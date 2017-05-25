@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <schema>
     <table name="access_user" class="Arrow\Access\Models\User">
-
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="created" type="DATETIME"/>
         <field name="login" type="VARCHAR" required="true" size="100"/>
@@ -15,6 +14,14 @@
         <field name="need_change_password" type="TINYINT" size="1"/>
         <field name="name" type="VARCHAR" size="255"/>
         <field name="settings" type="text"/>
+
+
+        <connection name="AccessGroups">
+            <table name="access_user_group" local="id" foreign="user_id" />
+            <table name="access_groups" local="group_id" foreign="id" />
+        </connection>
+
+
     </table>
     <table name="access_groups" class="Arrow\Access\Models\AccessGroup">
         <trackers>

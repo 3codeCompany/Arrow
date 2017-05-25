@@ -4,6 +4,7 @@ import App from './src/App'
 import {DateFilter, SelectFilter, NumericFilter, SwitchFilter,TextFilter, MultiFilter, withFilterOpenLayer} from './src/ctrl/Filters'
 import {Table} from './src/ctrl/Table'
 import {Button} from 'ctrl/Button'
+import PanelComponentLoader from './src/lib/PanelComponentLoader'
 
 
 require('./styles/App.sass')
@@ -34,6 +35,7 @@ ReactHelper.register('TextFilter', withFilterOpenLayer(TextFilter));
 ReactHelper.register('MultiFilter', MultiFilter);
 ReactHelper.register('Table', Table);
 ReactHelper.register('Button', Button);
+ReactHelper.register('PanelComponentLoader', PanelComponentLoader);
 
 require ("components.include");
 

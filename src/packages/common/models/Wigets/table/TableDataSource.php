@@ -75,13 +75,13 @@ class TableDataSource extends Criteria implements ITableDataSource
         return $criteria;
     }
 
-    public static function prepareResponse(Criteria $criteria, $data)
+    public static function prepareResponse(Criteria $criteria, $data, $fetchType = DataSet::AS_ARRAY)
     {
         $countAll = $criteria->count();
         $criteria->limit(($data["currentPage"] - 1) * $data["onPage"], $data["onPage"]);
         $result = $criteria->find();
         $query = $result->getQuery();
-        $result = $result->toArray(DataSet::AS_ARRAY);
+        $result = $result->toArray($fetchType);
         return ["data" => $result, "countAll" => $countAll, "debug" => $query];
     }
 

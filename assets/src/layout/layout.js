@@ -111,10 +111,15 @@ const Row = (props) => {
         colsMd[i] = Math.floor(colMd);
     }
 
+    let style = {};
+    if(props.noGutters) {
+        style.padding = 0;
+        style.margin = 0;
+    }
     return (
         <div className="row">
             {children.map((child, key) =>
-                <div key={key} style={{padding: 0}} className={"col-md-" + colsMd[key]}>{child}</div>
+                <div key={key} style={style} className={"col-md-" + colsMd[key]}>{child}</div>
             )}
         </div>
     )
@@ -122,7 +127,12 @@ const Row = (props) => {
 
 Row.propTypes = {
     children: PropTypes.node.isRequired,
-    md: PropTypes.array
+    md: PropTypes.array,
+    noGutters: PropTypes.bool
+}
+
+Row.defaultProps = {
+    noGutters: true
 }
 
 
@@ -164,6 +174,17 @@ const SimpleTableRow = (props) => {
 SimpleTableRow.propTypes = {
     cols: PropTypes.array.isRequired
 }
+
+/*
+* <Tabs defaultActiveKey="1" onChange={callback}>
+    <TabPane tab="Tab 1" key="1">Content of Tab Pane 1</TabPane>
+    <TabPane tab="Tab 2" key="2">Content of Tab Pane 2</TabPane>
+    <TabPane tab="Tab 3" key="3">Content of Tab Pane 3</TabPane>
+  </Tabs>
+*
+* */
+
+
 
 
 export {Panel, Navbar, Row, Container, SimpleTable, SimpleTableRow}

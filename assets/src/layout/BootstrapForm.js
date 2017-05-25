@@ -1,5 +1,5 @@
 import React, {Children} from "react"
-import {Text, Select, Switch, CheckboxGroup} from "ctrl/Fields"
+import {Text, Select, Switch, CheckboxGroup, Textarea} from "ctrl/Fields"
 import PropTypes from 'prop-types';
 
 const withBootstrapFormField = (Field) => {
@@ -265,7 +265,8 @@ class BForm extends React.Component {
 }
 
 const BText = withBootstrapFormField(Text);
+const BTextarea = withBootstrapFormField(Textarea);
 const BSelect = withBootstrapFormField(Select);
 const BSwitch = withBootstrapFormField(Switch);
 const BCheckboxGroup = withBootstrapFormField(CheckboxGroup);
-export{BForm, BText, BSwitch, BSelect, BCheckboxGroup};
+export{BForm, BText, BSwitch, BSelect, BCheckboxGroup, BTextarea};

@@ -14,13 +14,27 @@ const Text = (props) => {
             className={props.className}
             name={props.name}
             type={props.type}
-            value={props.value||''}
+            value={props.value || ''}
             onChange={props.onChange}
             placeholder={props.placeholder}
         />
 
     )
 }
+
+const Textarea = (props) => {
+    return (
+        <textarea
+            className={props.className}
+            name={props.name}
+            type={props.type}
+            onChange={props.onChange}
+            placeholder={props.placeholder}
+        >{props.value || ''}</textarea>
+
+    )
+}
+
 
 const Switch = (props) => {
 
@@ -113,5 +127,5 @@ const CheckboxGroup = (props) => {
 
  * */
 
-export {Text, Select, Switch, CheckboxGroup};
+export {Text, Select, Switch, CheckboxGroup, Textarea};
 
