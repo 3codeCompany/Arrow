@@ -22,6 +22,11 @@
         </connection>
 
 
+        <connection name="History">
+            <table name="common_history" local="id" foreign="element_id">
+                <condition field="class" value="Arrow\Access\Models\User"/>
+            </table>
+        </connection>
     </table>
     <table name="access_groups" class="Arrow\Access\Models\AccessGroup">
         <trackers>
@@ -48,7 +53,7 @@
         <foreign-key foreignTable="access_groups" onUpdate="" onDelete="">
             <reference local="group_id" foreign="id"/>
         </foreign-key>
-
+ -
         <foreign-key foreignTable="access_user" onUpdate="" onDelete="">
             <reference local="user_id" foreign="id"/>
         </foreign-key>

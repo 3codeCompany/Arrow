@@ -6,6 +6,7 @@ use App\Layouts\ReactComponentLayout;
 use function array_reduce;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\Access\Models\AccessGroup;
+use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
