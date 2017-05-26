@@ -22,18 +22,18 @@ const withBootstrapFormField = (Field) => {
                 classes.push('has-error')
             }
 
-            if (props.layoutType == "horizontal") {
+            if (props.layoutType == 'horizontal') {
 
                 return (
-                    <div className={classes.join(" ")}>
+                    <div className={classes.join(' ')}>
                         <label className="col-sm-2 control-label">{props.label}</label>
                         <div className="col-sm-10"><Field {...props} className="form-control"/></div>
                     </div>
                 )
             }
-            if (props.layoutType == "default" || props.layoutType == "inline" || !props.layoutType) {
+            if (props.layoutType == 'default' || props.layoutType == 'inline' || !props.layoutType) {
                 return (
-                    <div className={classes.join(" ")}>
+                    <div className={classes.join(' ')}>
                         <label >{this.props.label}</label>
                         <Field {...this.props} className="form-control"/>
 
@@ -237,7 +237,7 @@ class BForm extends React.Component {
         }
 
         return (
-            <form className={classes.join(" ")} onSubmit={this.handleSubmit.bind(this)}>
+            <form className={classes.join(' ')} onSubmit={this.handleSubmit.bind(this)}>
                 {this.state.formErrors.length > 0 ?
                     <ul className="bg-danger ">
                         {this.state.formErrors.map(el => <li>{el}</li>)}
@@ -251,7 +251,7 @@ class BForm extends React.Component {
                     :
                     this.renderChildren(this.props.children)
                 }
-                <div className="hr-line-dashed"></div>
+
                 {layoutType == 'horizontal' ?
                     <div className="form-group">
                         <div className="col-sm-10 col-sm-offset-2">
