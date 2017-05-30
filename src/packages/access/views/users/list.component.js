@@ -1,6 +1,17 @@
 import React, {Component} from 'react';
-import {Navbar, Row, Panel, SimpleTable, SimpleTableRow}  from 'layout/layout'
-import {Table, Column, Filter} from 'ctrl/Table'
+
+import Navbar from 'frontend/lib/ctrl/Navbar'
+
+import {BForm, BText, BSwitch, BSelect, BCheckboxGroup, BTextarea} from 'frontend/lib/layout/BootstrapForm'
+import {Table, Column, Filter} from 'frontend/lib/ctrl/Table'
+import Panel from 'frontend/lib/ctrl/Panel'
+
+import {SimpleTable, SimpleTableRow} from 'frontend/lib/ctrl/SimpleTable'
+import {Row} from 'frontend/lib/layout/BootstrapLayout'
+import {Timeline, TimelineItem} from 'frontend/lib/ctrl/Timeline'
+import {Tabs, TabPane} from 'frontend/lib/ctrl/Tabs'
+import {Comments, CommentItem} from 'frontend/lib/ctrl/Comments'
+import {Modal} from 'frontend/lib/ctrl/Overlays'
 export default class access_access_users_list extends Component {
     constructor(props) {
         super(props);
