@@ -58,7 +58,7 @@ class ExceptionHandler implements IExceptionHandler
         }
     }
 
-    private function printDeveloperMessage( $exception)
+    private function printDeveloperMessage($exception)
     {
 
         $str = "";
@@ -219,20 +219,23 @@ class ExceptionHandler implements IExceptionHandler
         );
         $hipChatHandler->setFormatter(new LineFormatter(null, null, true, true));
 
-        if ($exception instanceof \Exception) {
+        if ($exception instanceof \Exception || $exception instanceof \Error) {
             $message = $exception->getMessage();
             $line = $exception->getLine();
             $file = $exception->getFile();
         } else {
 
-            if($exception["type"] != 8192) {
+            /*if (is_array($exception["type"]) && $exception["type"] != 8192) {
+                return;
+            }*/
 
-                print "\n\n";
-                print_r($exception);
 
-                exit();
+            print "\n\n";
+            print_r($exception);
 
-            }
+            exit();
+
+
             return;
             //$message = $exception["message"];
             //$line = $exception["line"];

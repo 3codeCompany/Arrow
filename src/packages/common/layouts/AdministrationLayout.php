@@ -1,6 +1,6 @@
 <?php
 
-namespace Arrow\Common;
+namespace Arrow\Common\Layouts;
 
 use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\HTMLNode;
