@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Common;
+namespace Arrow\Common\Layouts;
 
 use
 Arrow\ORM\Persistent\Criteria,

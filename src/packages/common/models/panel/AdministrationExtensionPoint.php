@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Common;
+namespace Arrow\Common\Models\Panel;
 /**
  * Created by JetBrains PhpStorm.
  * User: artur

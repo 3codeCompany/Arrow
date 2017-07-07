@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-namespace Arrow\Common;
+namespace Arrow\Common\Models\Wigets\Table;
 
 use Arrow\Controls\API\Table\ITableDataSource;
 use Arrow\Exception;
