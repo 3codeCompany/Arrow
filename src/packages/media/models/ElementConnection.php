@@ -1,9 +1,11 @@
 <?php
-namespace Arrow\Media;
+namespace Arrow\Media\Models;
 
+
+use Arrow\ORM\ORM_Arrow_Media_Models_ElementConnection;
 use Arrow\ORM\Persistent\PersistentObject;
 
-class ElementConnection extends \Arrow\ORM\ORM_Arrow_Media_ElementConnection {
+class ElementConnection extends ORM_Arrow_Media_Models_ElementConnection {
     public function afterObjectCreate(PersistentObject $object)
     {
 

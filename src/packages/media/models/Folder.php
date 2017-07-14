@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Media;
+namespace Arrow\Media\Models;
 
 use Arrow\ORM\Extensions\TreeNode;
 use Arrow\ORM\Persistent\PersistentObject;

@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Media;
+namespace Arrow\Media\Models;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria, Arrow\ORM\SqlRouter;
 use Arrow\ORM\JoinCriteria;
@@ -7,7 +7,7 @@ use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\Package\Application\Product;
 
 
-class MediaAPI extends \Arrow\Object
+class MediaAPI
 {
 
     const VERSIONS_VAR = "ver";

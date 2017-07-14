@@ -57,6 +57,8 @@ class TableDataSource extends Criteria implements ITableDataSource
             $criteria->order($order["field"], $order["dir"]);
         }
 
+        //print_r($data["filters"]);
+
 
         foreach ($data["filters"] as $filter) {
             if ($filter["condition"] == "<x<in") {

@@ -42,11 +42,8 @@ class Router extends \Arrow\Object
 
     private static $basePath = "";
 
-    private static $packageSeparator = ",-";
-    private static $actionsSeparator = ",";
-
     private static $actionName = null;
-    private static $actions = array();
+
 
     public static function getActionName()
     {
@@ -175,6 +172,8 @@ class Router extends \Arrow\Object
         if (empty($action))
             $action = "index";
 
+
+
         self::$actionName = $action;
     }
 
@@ -210,6 +209,8 @@ class Router extends \Arrow\Object
 
             $this->action = $dispatcher->get(self::$actionName);
         }
+
+
 
         if(!$this->action->exists()){
             $this->notFound($this->action);

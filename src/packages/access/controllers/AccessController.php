@@ -42,7 +42,7 @@ use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
 use Arrow\Common\AdministrationLayout;
-use Arrow\Common\EmptyLayout;
+use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\TableDataSource;
 use Arrow\Router;
 use Arrow\Controls\API\Table\Table;

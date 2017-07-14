@@ -32,7 +32,7 @@ use Arrow\Controls\API\Forms\BuilderSchemas\Bootstrap;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\AdministrationPopupLayout;
 use Arrow\Common\BreadcrumbGenerator;
-use Arrow\Common\EmptyLayout;
+use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;

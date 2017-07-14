@@ -38,6 +38,8 @@ class Dispatcher
         $equateConf = false;
 
 
+
+
         foreach ($this->configuration["path"] as $routeConfigPath => $routeConfig) {
 
 
@@ -49,50 +51,14 @@ class Dispatcher
 
                 if (preg_match_all($pattern, $path, $matches)) {
                     $equateConf = $routeConfig;
-                    /*  print_r($matches);
-                      print $pattern."\n".$path.PHP_EOL;
-                  exit();*/
                 }
 
 
             }
 
-
-            //@todo rozwinąć routing
-            /*if(is_string($routeConfigPath) ) {
-
-
-
-            }else if ($routeConfigPath["type"] == "prefix" && strpos($path, $routeConfigPath["path"]) === 0) {
-                $equateConf = $routeConfigPath;
-                break;
-            } elseif ($routeConfigPath["type"] == "path" && strpos($path, $routeConfigPath["path"]) === 0) {
-
-                $tmp = str_replace($routeConfigPath["path"], "", $path);
-                $tmp = explode("/", $tmp);
-                $controllerName = $tmp[0];
-                $controller = str_replace("*", $controllerName, $routeConfigPath["controller"]);
-                unset($tmp[0]);
-                $path = implode("/", $tmp);
-                $equateConf = [
-                    "controller" => $controller,
-                    "path" => $path,
-                    "layout" => "",
-                    "package" => "",
-                    "base" => $routeConfigPath["base"] .  $controllerName
-                ];
-                break;
-            } elseif ($routeConfigPath["type"] == "regex" && preg_match($routeConfigPath["path"], $path)) {
-                $equateConf = $routeConfigPath;
-                break;
-            } elseif ($routeConfigPath["type"] == "equal" && $routeConfigPath["path"] == $path) {
-                $equateConf = $routeConfigPath;
-                break;
-            }*/
         }
 
-        //print_r($equateConf);
-        //exit();
+
 
         if ($equateConf !== false) {
 
@@ -155,6 +121,7 @@ class Dispatcher
                     $data["shortPath"] = $equateConf["__actionPrefix"] . "/" . $data["shortPath"];
             }
         }
+
 
         return $data;
     }

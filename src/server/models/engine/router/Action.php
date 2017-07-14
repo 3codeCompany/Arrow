@@ -57,9 +57,15 @@ class Action implements \ArrayAccess, IAction
     {
         $this->path = str_replace("/", DIRECTORY_SEPARATOR, $path);
         $this->shortPath = str_replace("/", DIRECTORY_SEPARATOR, $shortPath);
+        /*$this->path = $path;
+        $this->shortPath = $shortPath;*/
         $this->controller = $controller;
         $this->package = $package;
         $this->layout = $layout;
+
+/*        print "<pre>";
+        print_r($this);
+        exit();*/
 
     }
 
@@ -137,7 +143,7 @@ class Action implements \ArrayAccess, IAction
 
     function __toString()
     {
-        return $this->package . "::" . $this->path;
+        return $this->path;
     }
 
     public function isAccessible()

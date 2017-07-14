@@ -1,13 +1,14 @@
 <?php
-namespace Arrow\Media;
+namespace Arrow\Media\Models;
 
 
 use Arrow\Models\Project;
+use Arrow\ORM\ORM_Arrow_Media_Models_Element;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\RequestContext;
 
-class Element extends \Arrow\ORM\ORM_Arrow_Media_Element
+class Element extends ORM_Arrow_Media_Models_Element
 {
 
     public static $forceNoDeleteSource = false;

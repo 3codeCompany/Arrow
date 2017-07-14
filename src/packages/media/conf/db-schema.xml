@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <schema class-namespace="Arrow\Media">
-  <table name="media_folders" class="Folder" >
+  <table name="media_folders" class="Arrow\Media\Models\Folder" >
     <extensions>
         <extension class="Arrow\ORM\Extensions\Tree" />
     </extensions>
@@ -18,7 +18,7 @@
     <field name="system_name" type="VARCHAR" size="255"/>
     <field name="accepted_files" type="VARCHAR" size="50"/>
   </table>
-  <table name="media_elements" class="Element">
+  <table name="media_elements" class="Arrow\Media\Models\Element">
     <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
     <field name="folder_id" type="INTEGER"/>
     <field name="name" type="VARCHAR" size="255"/>
@@ -33,7 +33,7 @@
       <index-field name="folder_id"/>
     </index>
   </table>
-  <table name="media_element_connections" class="ElementConnection">
+  <table name="media_element_connections" class="Arrow\Media\Models\ElementConnection">
     <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
     <field name="element_id" type="INTEGER"/>
     <field name="object_id" type="INTEGER"/>

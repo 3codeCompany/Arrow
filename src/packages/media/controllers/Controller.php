@@ -6,7 +6,7 @@ use Arrow\Models\Operation;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\View;
-use Arrow\Common\EmptyLayout;
+use Arrow\Common\Layouts\EmptyLayout;
 
 /**
  * Created by JetBrains PhpStorm.
