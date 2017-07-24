@@ -8,20 +8,12 @@
     }
   ],
   "require": {
-    "robloach/component-installer": "*",
     "symfony/yaml": "^3.2"
   },
   "autoload": {
     "classmap": [
       "src/"
     ]
-  },
-  "extra": {
-    "component": {
-      "files": [
-        "src/packages/common/resources/panel/*.*",
-        "src/packages/common/resources/panel/**/*.*"
-      ]
-    }
   }
+
 }
