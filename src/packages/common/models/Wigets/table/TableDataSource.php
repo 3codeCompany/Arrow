@@ -83,7 +83,9 @@ class TableDataSource extends Criteria implements ITableDataSource
         $criteria->limit(($data["currentPage"] - 1) * $data["onPage"], $data["onPage"]);
         $result = $criteria->find();
         $query = $result->getQuery();
-        $result = $result->toArray($fetchType);
+        if($fetchType == DataSet::AS_ARRAY) {
+            $result = $result->toArray($fetchType);
+        }
         return ["data" => $result, "countAll" => $countAll, "debug" => $query];
     }
 
