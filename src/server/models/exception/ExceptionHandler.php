@@ -1,6 +1,7 @@
 <?php namespace Arrow\Models;
 
 
+use Arrow\Access\Models\Auth;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
 
@@ -166,9 +167,8 @@ class ExceptionHandler implements IExceptionHandler
 
         //zmienić aby było pobierane przez handlery
         $user = null;
-        if (class_exists("\\Arrow\\Access\\Auth", false)) {
-            $user = \Arrow\Access\Models\Auth::getDefault()->getUser();
-        }
+
+        $user = Auth::getDefault()->getUser();
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
