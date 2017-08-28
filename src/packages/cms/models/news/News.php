@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\CMS;
+namespace Arrow\CMS\Models;
 
 use Arrow\Translations\Models\IMultilangObject;
 

@@ -2,7 +2,7 @@
 
 namespace Arrow\Access\Controllers;
 
-use App\Layouts\ReactComponentLayout;
+
 use function array_reduce;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\Access\Models\AccessGroup;
@@ -10,6 +10,7 @@ use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
+use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Common\Models\History\History;
 use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\AjaxLink;
@@ -37,13 +38,14 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
+use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\Layouts\EmptyLayout;
-use Arrow\Common\TableDataSource;
+use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\Router;
 use Arrow\Controls\API\Table\Table;
 use
@@ -319,8 +321,7 @@ class AccessController extends \Arrow\Models\Controller
             $history = History::getObjectHistoryCriteria($user)
                 ->order("id", "desc")
                 ->limit(0, 10)
-                ->find()
-            ;
+                ->find();
         }
         $this->action->assign("history", $history);
         $this->action->assign("groups", $groups);
@@ -370,46 +371,17 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-    public function groups_list(Action $view, RequestContext $request)
+    public function groups_getData()
     {
-        $view->setLayout(new EmptyLayout());
-
-        $ds = TableDataSource::fromClass(AccessGroup::getClass())
-            ->c("id", 4, Criteria::C_GREATER_THAN);
-
-        $list = ColumnList::create()
-            ->addColumn(Simple::_new("id", "id"))
-            ->addColumn(Simple::_new("name", "Nazwa"))
-            ->addColumn(Template::_new(function (AccessGroup $context) {
-                return ContextMenu::_new([
-                    Link::_new(Icons::icon(Icons::PENCIL) . " Edytuj")->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit?key=" . $context->_id()))),
-                    ContextMenu::separator(),
-                    AjaxLink::_new(Icons::icon(Icons::TRASH_O) . " Usuń", Router::link("./delete?key=" . $context->_id()))
-                        ->setSuccessInformation("Usunięto")
-                        ->setConfirmQuestion("Czy napewno usunąć `{$context->_name()}`?")
-                        ->setSuccessRefresh("groups")
-                ])->generate();
-            }, "Opcje"));
+        $helper = new TableListORMHelper();
+        $this->json($helper->getListData(AccessGroup::get()->_id(4, Criteria::C_GREATER_THAN)));
+    }
 
 
-        $table = Table::create("groups", $ds, $list)
-            ->setContextData(["id"])
-            ->on(Table::EVENT_ROW_CLICKED, SerenityJS::hash(Router::link("./edit?key=#{context.id}")));;
+    public function groups_list()
+    {
+        $this->action->setLayout(new ReactComponentLayout());
 
-        $l = LayoutBuilder::create();
-        $l->insert(Toolbar::_new([
-            Breadcrumb::create([
-                "System",
-                BreadcrumbElement::create("Grupy dostępu")->setActive(1)
-            ]),
-            Link::_new("Dodaj")
-                ->on(Link::EVENT_CLICK, SerenityJS::hash(Router::link("./edit")) . SerenityJS::returnFalse())
-                ->addLinkCSSClass("btn btn-primary")
-        ]));
-        $l->add($table);
-
-
-        $view->assign("generator", AdministrationLayout::page($l));
     }
 
     public function groups_delete($view, RequestContext $request)
@@ -421,30 +393,12 @@ class AccessController extends \Arrow\Models\Controller
 
     public function groups_edit(Action $view, RequestContext $request)
     {
-        $view->setLayout(new EmptyLayout());
+
+        $this->action->setLayout(new ReactComponentLayout());
+
         $group = AccessGroup::get()->findByKey($request['key']);
-        $form = Form::_new("edit", $group)
-            ->setNamespace("data")
-            ->addHiddenField("key", $request["key"])
-            ->setAction(Router::link("./save"))
-            ->on(Form::EVENT_SUCCESS, SerenityJS::back());
+        $this->action->assign("group", $group);
 
-        $list = LayoutBuilder::create()
-            ->form($form)
-            ->panel("Edycja grupy dostępu", Icons::USERS)
-            ->formField("Nazwa", Text::_new("name"))
-            ->formField("Opis", Textarea::_new("description"))
-            ->panelEnd()
-            ->formEnd();
-
-        $list->add(Toolbar::_new(null, [
-            $form->getSubmit(),
-            Link::_new("Anuluj")
-                ->on(Link::EVENT_CLICK, SerenityJS::back())
-                ->addCSSClass("btn btn-default")
-        ]));
-
-        $view->assign("generator", AdministrationLayout::page($list));
 
     }
 
@@ -459,8 +413,31 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
+    public function access_getData(){
+        $helper = new TableListORMHelper();
+        $criteria = AccessPoint::get();
+        $this->json($helper->getListData($criteria));
+    }
+
+    public function access_save(){
+        AccessPoint::get()
+            ->findByKey($this->request["key"])
+            ->setValues($this->request["data"])
+            ->save();
+        $this->json([1]);
+    }
+
     public function access_list(Action $view, RequestContext $request)
     {
+
+        $this->action->setLayout(new ReactComponentLayout());
+        $groups = AccessGroup::get()
+            ->_id(4, Criteria::C_GREATER_THAN)
+            ->findAsFieldArray(AccessGroup::F_NAME, true);
+        $view->assign("agroups", $groups);
+
+        return;
+
         $view->setLayout(new AdministrationLayout(), new EmptyLayout());
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray(AccessGroup::F_NAME, true);
         $view->assign("agroups", $groups);

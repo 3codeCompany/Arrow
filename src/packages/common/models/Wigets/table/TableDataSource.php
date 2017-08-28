@@ -40,7 +40,7 @@ class TableDataSource extends Criteria implements ITableDataSource
         $criteria->setColumns([]);
 
         foreach ($data["columns"] as $col) {
-            if ($col["field"]) {
+            if (isset($col["field"]) && $col["field"]) {
                 $criteria->addColumn($col["field"]);
 
             } elseif (isset($col["columns"])) {
@@ -53,23 +53,27 @@ class TableDataSource extends Criteria implements ITableDataSource
 
         }
 
-        foreach ($data["order"] as $order) {
-            $criteria->order($order["field"], $order["dir"]);
-        }
+         if (isset($data["order"])) {
+             foreach ($data["order"] as $order) {
+                 $criteria->order($order["field"], $order["dir"]);
+             }
+         }
 
         //print_r($data["filters"]);
 
 
-        foreach ($data["filters"] as $filter) {
-            if ($filter["condition"] == "<x<in") {
-                $tmp = explode(" : ", $filter["value"]);
-                self::applyCriteriaFilterSearch($criteria, $filter["field"], $tmp[0], Criteria::C_GREATER_EQUAL, "x");
-                if (isset($tmp[1])) {
-                    self::applyCriteriaFilterSearch($criteria, $filter["field"], $tmp[1], Criteria::C_LESS_EQUAL, "x");
-                }
+        if (isset($data["filters"])) {
+            foreach ($data["filters"] as $filter) {
+                if ($filter["condition"] == "<x<in") {
+                    $tmp = explode(" : ", $filter["value"]);
+                    self::applyCriteriaFilterSearch($criteria, $filter["field"], $tmp[0], Criteria::C_GREATER_EQUAL, "x");
+                    if (isset($tmp[1])) {
+                        self::applyCriteriaFilterSearch($criteria, $filter["field"], $tmp[1], Criteria::C_LESS_EQUAL, "x");
+                    }
 
-            } else {
-                self::applyCriteriaFilterSearch($criteria, $filter["field"], $filter["value"], $filter["condition"], "x");
+                } else {
+                    self::applyCriteriaFilterSearch($criteria, $filter["field"], $filter["value"], $filter["condition"], "x");
+                }
             }
         }
 
@@ -83,7 +87,9 @@ class TableDataSource extends Criteria implements ITableDataSource
         $criteria->limit(($data["currentPage"] - 1) * $data["onPage"], $data["onPage"]);
         $result = $criteria->find();
         $query = $result->getQuery();
-        $result = $result->toArray($fetchType);
+        if($fetchType == DataSet::AS_ARRAY) {
+            $result = $result->toArray($fetchType);
+        }
         return ["data" => $result, "countAll" => $countAll, "debug" => $query];
     }
 

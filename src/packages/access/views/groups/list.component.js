@@ -14,9 +14,9 @@ export default class access_access_users_list extends Component {
     }
 
     handleDelete(row, event) {
-        confirm(`Czy na pewno usunąć "${row.login}" ?`).then(() => {
+        confirm(`Czy na pewno usunąć "${row.name}" ?`).then(() => {
             Comm._post(this.props.baseURL + '/delete', {key: row.id}).then(() => {
-                this.props._notification(`Urzytkownik  "${row.login}" został usunięty.`)
+                this.props._notification(`Grupa  "${row.name}" została usunięta.`)
                 this.table.load();
             })
         });
@@ -27,10 +27,10 @@ export default class access_access_users_list extends Component {
             <div>
                 <Navbar>
                     <span>System</span>
-                    <span>Użytkownicy</span>
+                    <span>Grupy dostępu</span>
                 </Navbar>
                 <Row>
-                    <Panel title="Lista użytkowników systemu"
+                    <Panel title="Lista grup dostępu systemu"
                            toolbar={[
                                <a href={'#' + this.props.baseURL + '/edit'} className="btn btn-sm btn-primary"><i className="fa fa-plus"></i>Dodaj</a>
                            ]}
@@ -40,16 +40,7 @@ export default class access_access_users_list extends Component {
                             ref={(table) => this.table = table}
                             columns={[
                                 Column.id('id', 'Id'),
-                                Column.bool('active', 'Aktywny'),
-                                Column.text('login', 'Login'),
-                                Column.email('email', 'Email'),
-                                Column.template('Grupy dostępu', (val, row) => {
-                                    if (row.groups.length > 0) {
-                                        return <div><i className="fa fa-lock"></i> {row.groups.join(', ')}</div>
-                                    } else {
-                                        return <div className="lightgrey center"><i className="fa fa-times"></i></div>
-                                    }
-                                }),
+                                Column.text('name', 'Nazwa'),
                                 Column.template('Zobacz', () => <i className="fa fa-search"></i>)
                                     .onClick((row) => window.location.hash = this.props.baseURL + `/edit?key=${row.id}`)
                                     .className('center darkgreen'),
