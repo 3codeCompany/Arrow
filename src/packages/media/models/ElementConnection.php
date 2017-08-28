@@ -47,7 +47,7 @@ class ElementConnection extends ORM_Arrow_Media_Models_ElementConnection {
 	}
 	
 	public function delete(){
-		$element = \Arrow\ORM\Persistent\Criteria::query('\Arrow\Media\Element')->c('id', $this["element_id"])->findFirst();
+		$element = Element::get()->c('id', $this["element_id"])->findFirst();
 		$direct = $this[self::F_DIRECT];
 		//Track::createSpecialTrack($this[self::F_OBJECT_ID], $class, "delete_file", "usunięto plik: [{$element[Element::F_ID]}]<b>". $element[Element::F_NAME]."</b>" ) ;
 		parent::delete();
