@@ -20,9 +20,16 @@ class Translations
     private static $currLanguage = "pl";
     public static $module = null;
 
+    private static $classMapping = [];
+
     public static function getLangs()
     {
-        return ["pl" => "Polski", "en" => "Angielski", "ua" => "Ukraiński", "ru" => "Rosyjski", "de" => "Niemiecki"];
+        return Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE);
+
+    }
+
+    public static function addClassMapping($old, $new){
+        self::$classMapping[$new] = $old;
     }
 
     public static function setupLang($lang)
@@ -119,7 +126,7 @@ class Translations
 
     public static function translateObject($object, $lang = false)
     {
-        self::translateObjectsList([$object], false, $lang);
+        self::translateObjectsList([$object], get_class($object), $lang);
         return $object;
     }
 
@@ -168,15 +175,19 @@ class Translations
         }
         $db = Project::getInstance()->getDB();
 
-        //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
+        if(isset(self::$classMapping[$class])) {
+            $class = self::$classMapping[$class];
+        }
 
-        $stm = $db->prepare("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc");
+        //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
+
+        $stm = $db->prepare("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc");
 
 
         try {
             $stm->execute();
         } catch (\PDOException $ex) {
-            exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "')  order by value desc");
+            exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "')  order by value desc");
         }
         $data = array();
         while ($row = $stm->fetch(\PDO::FETCH_ASSOC)) {
@@ -202,7 +213,7 @@ class Translations
             }
         }
         if (!empty($secondLoad["objects"])) {
-            $query = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $secondLoad["objects"]) . ") and `class`='" . mysql_escape_string($class) . "' and lang='" . "en" . "' and field in('" . implode("','", $secondLoad["fields"]) . "') ";
+            $query = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $secondLoad["objects"]) . ") and `class`='" . addslashes($class) . "' and lang='" . "en" . "' and field in('" . implode("','", $secondLoad["fields"]) . "') ";
             $stm = $db->prepare($query);
 
             try {
@@ -249,9 +260,15 @@ class Translations
         if (!$obiect)
             return;
         $langFields = $obiect::getMultiLangFields();
+        $class = $obiect::getClass();
+
+        if(isset(self::$classMapping[$class])) {
+            $class = self::$classMapping[$class];
+        }
+
         foreach ($langFields as $field) {
             ObjectTranslation::createIfNotExists([
-                ObjectTranslation::F_CLASS => $obiect::getClass(),
+                ObjectTranslation::F_CLASS => $class,
                 ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
                 ObjectTranslation::F_LANG => self::$currLanguage,
                 ObjectTranslation::F_FIELD => $field,
@@ -261,22 +278,27 @@ class Translations
         }
     }
 
-    public static function saveObjectTranslation($obiect, $data)
+    public static function saveObjectTranslation($object, $data, $lang = null)
     {
+
+        $lang = $lang ?? self::$currLanguage;
         $fields = array_keys($data);
-        $query = "delete from common_lang_objects_translaction where field in('" . implode("','", $fields) . "') and class='" . addslashes(get_class($obiect)) . "' and lang='" . self::$currLanguage . "' and id_object=" . $obiect->getPKey();
+
+        $class = get_class($object);
+        $langFields = $class::getMultiLangFields();
+
+        if(isset(self::$classMapping[$class])) {
+            $class = self::$classMapping[$class];
+        }
+
+        $query = "delete from common_lang_objects_translaction where field in('" . implode("','", $fields) . "') and class='" . addslashes($class) . "' and lang='" . $lang . "' and id_object=" . $object->getPKey();
         $db = Project::getInstance()->getDB();
         $db->exec($query);
-
-
-        $class = get_class($obiect);
-
-        $langFields = $class::getMultiLangFields();
 
         foreach ($data as $field => $value) {
             if (!in_array($field, $langFields))
                 continue;
-            $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $obiect->getPKey() . "','" . self::$currLanguage . "','" . mysql_escape_string($value) . "', '" . addslashes(get_class($obiect)) . "')";
+            $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $object->getPKey() . "','" . $lang . "','" . addslashes($value) . "', '" . addslashes($class) . "')";
             $db->exec($query);
         }
 

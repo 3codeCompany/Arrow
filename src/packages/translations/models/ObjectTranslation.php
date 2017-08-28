@@ -10,8 +10,9 @@ namespace Arrow\Translations\Models;
 
 
 
-use Arrow\ORM\ORM_Arrow_Translations_ObjectTranslation;
 
-class ObjectTranslation extends ORM_Arrow_Translations_ObjectTranslation {
+use Arrow\ORM\ORM_Arrow_Translations_Models_ObjectTranslation;
+
+class ObjectTranslation extends ORM_Arrow_Translations_Models_ObjectTranslation {
 
 } 

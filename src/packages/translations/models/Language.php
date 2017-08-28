@@ -2,9 +2,9 @@
 namespace Arrow\Translations\Models;
 
 
-use Arrow\ORM\ORM_Arrow_Translations_Language;
+use Arrow\ORM\ORM_Arrow_Translations_Models_Language;
 
-class Language extends ORM_Arrow_Translations_Language
+class Language extends ORM_Arrow_Translations_Models_Language
 {
 
     const TCLASS = __CLASS__;
