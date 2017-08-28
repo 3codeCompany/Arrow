@@ -94,7 +94,7 @@ abstract class Controller implements IController
         }
         exit();
     }
-    final protected function json( array $data = [] ){
+    final protected function json(  $data = [] ){
 
         header("Content-type: text/json");
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");

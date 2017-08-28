@@ -57,17 +57,6 @@
 
 <script src="r:common::/js/administration.js"></script>
 
-<?
-if (\Arrow\ViewManager::startCache('ARROW_CONTROLS_INIT', -1, $_SERVER["HTTP_HOST"])) {
-    ?>
-    <? $path = "./libs/controls/resources/controls-api.css" ?>
-    <link rel="stylesheet" type="text/css" href=".<?= $path . "?" . substr(md5(file_get_contents((ARROW_APPLICATION_PATH==ARROW_DOCUMENTS_ROOT?"":"../").$path)), 0, 5) ?>"/>
-    <? $path = "./libs/controls/resources/controls-api.js" ?>
-    <script src=".<?= $path . "?" . substr(md5(file_get_contents((ARROW_APPLICATION_PATH==ARROW_DOCUMENTS_ROOT?"":"../").$path)), 0, 5) ?>"></script>
-<?
-}
-\Arrow\ViewManager::endCache();
-?>
 
 <link rel="stylesheet" href="r:common::/styles/administration.css" />
 

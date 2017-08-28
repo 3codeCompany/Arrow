@@ -118,6 +118,13 @@
                             </a>
                         </li>
                     </ul>
+
+                </li>
+                <li>
+                     <a href="/access/auth/logout">
+                                <i class="fa fa-sign-out"></i>
+                                Wyloguj się
+                            </a>
                 </li>
 
 
@@ -151,12 +158,6 @@
 
 
 
-<link rel="stylesheet" href="assets/select2/dist/css/select2.min.css"/>
-<link rel="stylesheet" href="assets/fine-uploader/jquery.fine-uploader/fine-uploader-new.css"/>
-
-
-<? $pathCss = "assets/controls/dist/serenity.css"; ?>
-<link rel="stylesheet" type="text/css" href="<?= $pathCss. "?" . filemtime($pathCss) ?>"/>
 
 <?if(!isset($_SESSION["inDev"])){ $_SESSION["inDev"] = false; }?>
 <?if(isset($_REQUEST["inDev"])){ $_SESSION["inDev"] = $_REQUEST["inDev"]; }?>
@@ -164,8 +165,8 @@
 
 
 <? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
-    <script type="text/javascript" src=".<?= $this["webpackManifest"]["js"] ?>"></script>
-    <link rel="stylesheet" href=".<?= $this["webpackManifest"]["css"] ?>"/>
+    <script type="text/javascript" src="<?= $this["webpackManifest"]["js"] ?>"></script>
+    <link rel="stylesheet" href="<?= $this["webpackManifest"]["css"] ?>"/>
 <? } else { ?>
 
     <script type="text/javascript" src="https://localhost:3000/bundle.js" charset="utf-8"></script>
