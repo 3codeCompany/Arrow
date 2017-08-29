@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <schema class-namespace="Arrow\CMS">
+
     <table name="cms_pages"  class="Arrow\CMS\Models\Persistent\Page">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="parent_id" type="INTEGER" size="11"/>
@@ -10,6 +11,7 @@
         <field name="name" type="VARCHAR" size="255"/>
         <field name="link" type="VARCHAR" size="255"/>
         <field name="seo_title" type="VARCHAR" size="255"/>
+        <field name="seo_title2" type="VARCHAR" size="255"/>
         <field name="seo_keywords" type="VARCHAR" size="255"/>
         <field name="seo_description" type="VARCHAR" size="255"/>
         <field name="seo_page_text" type="VARCHAR" size="1255"/>

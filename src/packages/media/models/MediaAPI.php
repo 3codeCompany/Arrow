@@ -121,16 +121,21 @@ class MediaAPI
         return Element::uploadToObject($object, $connName, $uploadName, $uploadPath);
     }
 
-    public static function removeFilesFromObject($object, $connName)
+
+    public static function removeFilesFromObject($object, $connName = false)
     {
 
         $tmp = explode('\\', $object::getclass());
         $class = end($tmp);
 
-        $conn = ElementConnection::get()
-            ->_name($connName)
+        $criteria = ElementConnection::get()
             ->_objectId($object->_id())
-            ->_model("%".$class, Criteria::C_LIKE)
+            ->_model("%" . $class, Criteria::C_LIKE);
+        if ($connName) {
+            $criteria->_name($connName);
+        }
+
+        $conn = $criteria
             ->findAsFieldArray(ElementConnection::F_ELEMENT_ID, true);
 
 
