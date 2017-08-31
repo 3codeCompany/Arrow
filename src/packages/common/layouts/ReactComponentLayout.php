@@ -33,8 +33,7 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $action = $action->getPackage() . "_" . str_replace("\\", "_", trim($action->getPath(), "\\"));
         $code = <<<CODE
 import React, {Component} from 'react';
-//import {Navbar, Row, Panel, SimpleTable, SimpleTableRow}  from 'layout/layout'
-//import {Table, Column, Filter} from 'ctrl/Table'
+
 //$action
 export default class ArrowViewComponent extends Component{
     constructor(props){

@@ -3,6 +3,7 @@
 namespace Arrow\CMS;
 
 
+use App\Controllers\BaseController;
 use Arrow\Controls\API\Components\Toolbar;
 use Arrow\Controls\API\Forms\Fields\Button;
 use Arrow\Controls\API\Forms\Fields\File;
@@ -51,7 +52,7 @@ use Arrow\Router;
  * To change this template use File | Settings | File Templates.
  */
 
-class Controller extends \Arrow\Package\Application\Controller
+class Controller extends BaseController
 {
 
     private $br = array(
