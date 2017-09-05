@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <schema class-namespace="Arrow\CMS">
+
     <table name="cms_pages"  class="Arrow\CMS\Models\Persistent\Page">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="parent_id" type="INTEGER" size="11"/>
