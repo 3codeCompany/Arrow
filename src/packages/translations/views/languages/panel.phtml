@@ -1,0 +1,147 @@
+<?
+/* @var $this \Arrow\Models\View */
+/* @var $request \Arrow\RequestContext */
+$langs = array("en" => "Angielski", "de" => "Niemiecki", "ru" => "Rosyjski", "gr" => "Grecki");
+?>
+
+
+
+<div id="admin-lang-panel">
+    <div class="clearfix"></div>
+    <div class="elements">
+
+        <ul class="nav nav-tabs" id="lang-panel-tabs">
+            <? foreach ($this["langs"] as $code => $lang) { ?>
+                <li style="width: 150px">
+                    <a href="#lang-<?= $code ?>" data-toggle="tab"><?= $lang["name"] ?>
+                        <span <? if ($this["translation"][$code]["empty"] != 0){ ?>style="color: red;" <? } ?>>
+                        <?= $this["translation"][$code]["all"] - $this["translation"][$code]["empty"] ?>
+                            / <?= $this["translation"][$code]["all"] ?>
+                    </span>
+                    </a>
+                </li>
+            <? } ?>
+        </ul>
+
+        <div class="tab-content">
+            <? foreach ($this["langs"] as $code => $lang) { ?>
+                <div class="tab-pane" id="lang-<?= $code ?>">
+                    <div style="background-color: lightgrey;padding: 4px; font-weight: bold; color: rgb(180, 0, 0);">
+                        <div style="float: left; ">
+                            <?= $lang["name"] ?>
+                        </div>
+                        <div style="float: left; margin-left: 720px;">
+                            <a data-lang="<?= $code ?>" class="btn  btn-mini lang-show-all"><i class="icon-level-down"></i>
+                                Pokaż wszystkie</a>
+                            <a data-lang="<?= $code ?>" class="btn btn-danger btn-mini lang-save"><i class="icon-save"></i>
+                                Zapisz</a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div style=";" class="lang-content-<?= $code ?>">
+                        <div class="inner">
+                            <form action="o:/language/front/save" method="post">
+                                <input type="hidden" name="lang" value="<?= $code ?>"/>
+                                <table class="table-striped">
+                                    <? $key = -1 ?>
+                                    <? foreach ($this["translation"][$code]["elements"] as $hash => $el) { ?>
+                                        <? $key++; ?>
+                                        <? if ($key % 2 == 0) { ?><tr><? } ?>
+                                        <td>
+                                            <div style="text-overflow:ellipsis; width: 250px; padding-left: 20px;">
+                                                <i class="icon-chevron-right"></i> <?= $el["orginal"] ?>
+                                            </div>
+                                        </td>
+
+                                        <td>
+
+                                            <? if (strlen($el["orginal"]) > 100 or strpos($el["orginal"],"\n") !== false) { ?>
+                                                <textarea name="trans[<?= $hash ?>]"><?= $el["translate"] ?></textarea>
+
+                                            <? } else { ?>
+                                                <input type="text" name="trans[<?= $hash ?>]" value="<?= $el["translate"] ?>" <?= ($el["translate"] == "" ? 'placeholder="brak"' : '') ?> style="margin-bottom: 2px;"/>
+                                            <? } ?>
+                                            <a href="" class="lang-translate" data-value="<?=$el["orginal"]?>" data-to="<?=$lang["code"]?>"><i class="icon-comments-alt"></i> </a>
+                                        </td>
+
+                                        <? if ($key + 1 % 2 == 0 && $key != 0) { ?></tr><? } ?>
+                                    <? } ?>
+                                    <? if ($key + 1 % 2 != 0 || $key == 0){ ?></tr><? } ?>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <? } ?>
+        </div>
+    </div>
+
+
+</div>
+<style>
+    #admin-lang-panel {
+        background-color: lightgray;
+        border-top: solid 2px rgb(180, 0, 0);
+        border-bottom: solid 2px rgb(180, 0, 0);
+        width: 100%;
+    }
+
+    td {
+        padding: 4px;
+    }
+
+    #admin-lang-panel .title {
+        cursor: pointer;
+    }
+
+    #admin-lang-panel .elements {
+        background-color: white;;
+    }
+
+    #lang-panel-tabs {
+        margin-bottom: -0px;
+    }
+
+</style>
+
+<script>
+    $(function () {
+        var panel = $("#admin-lang-panel");
+
+
+        $(".lang-save").click(function (e) {
+            e.preventDefault();
+            var lang = $(this).attr("data-lang");
+            var pane = $(".lang-content-" + lang);
+
+            pane.find("form").ajaxSubmit({
+                success: function () {
+                    pane.css({opacity: 0.5});
+                    pane.load(window.location.href + " .lang-content-" + lang + " .inner", function () {
+                        pane.css({opacity: 1});
+                    });
+                }});
+        });
+        $(".lang-translate").click(function (e) {
+            e.preventDefault();
+            var val = $(this).attr("data-value");
+            var from = "pl";
+            var to = $(this).attr("data-to");
+            var link = $(this);
+            var url = "http://3code.pl/services/translate.php";
+            var i = link.find("i");
+            i.toggleClass("icon-spin").toggleClass("icon-spinner");
+            $.ajax({
+                url: url,
+                data: {to: to, text: val, from: "pl"},
+                success: function(data){
+                    link.prev().val(data)
+                    i.toggleClass("icon-spin").toggleClass("icon-spinner");
+                },
+                dataType: "jsonp",
+                jsonp: "jsonpCallback",
+                jsonpCallback: "jsonpCallback"
+            });
+        });
+    })
+</script>
