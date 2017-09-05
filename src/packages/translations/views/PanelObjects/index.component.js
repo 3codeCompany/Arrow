@@ -127,7 +127,7 @@ export default class ArrowViewComponent extends Component {
                 </Navbar>
 
                 <Panel title="Lista dostępnych tłumaczeń" toolbar={[
-                    <div style={{display: 'inline-block'}}>
+                    <div key={0} style={{display: 'inline-block'}}>
                         <Select className={'form-control'} value={this.state.selectedObject.value} onChange={this.handleModelChange.bind(this)} options={this.props.objects}/>
                     </div>,
                     this.state.selected.length > 0 &&
@@ -140,7 +140,7 @@ export default class ArrowViewComponent extends Component {
                     <a key={3} className="btn btn-primary btn-sm" onClick={() => this.setState({isUploading: true})}>
                         <i className="fa fa-upload"></i> Załaduj plik
                     </a>
-                    
+
                 ]}>
                     <Table
                         additionalConditions={{model: this.state.selectedObject.value}}
