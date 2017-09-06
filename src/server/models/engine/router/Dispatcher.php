@@ -1,9 +1,12 @@
 <?php namespace Arrow\Models;
 
+use function array_slice;
+use function array_walk;
 use Arrow\ConfigProvider;
 use Arrow\Exception;
 use Arrow\RequestContext;
 use Arrow\Router;
+use function ucfirst;
 
 /**
  * Arrow template structure
@@ -38,10 +41,7 @@ class Dispatcher
         $equateConf = false;
 
 
-
-
         foreach ($this->configuration["path"] as $routeConfigPath => $routeConfig) {
-
 
             if (strpos($path, $routeConfigPath) === 1) {
                 $equateConf = $routeConfig;
@@ -57,7 +57,6 @@ class Dispatcher
             }
 
         }
-
 
 
         if ($equateConf !== false) {
@@ -86,6 +85,7 @@ class Dispatcher
                 }
                 $data["shortPath"] = trim(str_replace($routeConfigPath, "", $path), "/");
             } else {
+
 
                 $data["controller"] = $equateConf["__controller"];
 
@@ -117,9 +117,44 @@ class Dispatcher
                 }
 
 
-                if (isset($equateConf["__actionPrefix"]))
+                if (isset($equateConf["__actionPrefix"])) {
                     $data["shortPath"] = $equateConf["__actionPrefix"] . "/" . $data["shortPath"];
+                }
             }
+        }
+
+        $tmp = explode("/", trim($path, "/"));
+        //print $path;
+        if (count($tmp) >= 3) {
+
+            if (isset($packages[$tmp[0]]) || $tmp[0] == "app") {
+                $package = $tmp[0];
+                $controller = array_slice($tmp, 1, count($tmp) - 2);
+            } else {
+                $package = 'app';
+                $controller = array_slice($tmp, 0, count($tmp) - 1);
+            }
+            $action = end($tmp);
+            foreach ($controller as &$el) {
+                $el = ucfirst($el);
+            }
+            $controller = implode("\\", $controller);
+
+            $_tmpData = [
+                "package" => $package,
+                "controller" => ($package == "app" ? 'App\\' : "Arrow\\" . ucfirst($package) . "\\") . "Controllers\\" . $controller,
+                "action" => $action,
+                "packagePath" => $package == "app" ? "./app" : $packages[$package],
+                "path" => str_replace("/" . trim($package, "/"), "", $path)
+            ];
+
+            return [
+                "path" => $_tmpData["path"],
+                "shortPath" => $action,
+                "controller" => $_tmpData["controller"],
+                "package" => $_tmpData["package"],
+            ];
+
         }
 
 
@@ -137,12 +172,18 @@ class Dispatcher
 
         if (!$skipRewriteTest) {
             $rewriteTest = $this->findByRewrite($path);
-            if ($rewriteTest)
+            if ($rewriteTest) {
                 return $rewriteTest;
+            }
         }
 
         $pathInfo = $this->resolvePath($path);
-        $action = new Action($pathInfo["path"], $pathInfo["shortPath"], null, $pathInfo["controller"], $pathInfo["package"]);
+        $action = new Action(
+            $pathInfo["path"],
+            $pathInfo["shortPath"],
+            $pathInfo["controller"],
+            $pathInfo["package"]
+        );
 
 
         self::$actions[$path] = $action;
@@ -175,8 +216,9 @@ class Dispatcher
                 for ($i = $c - 1; $i < count($rewrite["params"]); $i++) {
                     if (is_array($rewrite["params"][$i])) {
                         $request->addParameter(key($rewrite["params"][$i]), reset($rewrite["params"][$i]));
-                    } else
+                    } else {
                         $request->addParameter($rewrite["params"][$i], null);
+                    }
                 }
 
 

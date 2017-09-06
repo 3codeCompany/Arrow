@@ -79,12 +79,17 @@ class Router extends \Arrow\Object
 
     public static function link( $path, array $params = null ){
         if( $path[0] == "?"){
-            $path = ViewManager::getCurrentView()->get()->getPath().$path;
+            $path = ViewManager::getCurrentView()->get()->getRoute().$path;
         }elseif($path[0] == "."){
 
-            $tmp = explode(DIRECTORY_SEPARATOR, ViewManager::getCurrentView()->get()->getPath());
+            $tmp = explode(
+                DIRECTORY_SEPARATOR,
+                ViewManager::getCurrentView()->get()->getRoute()
+            );
+
             $tmp[count($tmp)-1] = substr( $path, 2 );
-            unset($tmp[0]);
+
+            //unset($tmp[0]);
             $path = implode("/",$tmp);
         }
 

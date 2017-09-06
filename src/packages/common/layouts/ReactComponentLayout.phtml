@@ -8,7 +8,7 @@ if ($this->getPackage() == "app") {
 $props = json_encode(
     array_merge([
         "baseURL" => rtrim(\Arrow\Router::link("."), "/"),
-        "path" => $this->getPath(),
+        "path" => $this->getRoute(),
         "requestURI" => $_SERVER["REQUEST_URI"],
         "component" => $class
     ], $this->getVars())

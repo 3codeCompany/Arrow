@@ -49,23 +49,15 @@ class Action implements \ArrayAccess, IAction
 
     /**
      * @param $path View path
-     * @param $layout View layout
      * @param $controller
      * @param $package
      */
-    public function __construct($path, $shortPath, $layout, $controller, $package)
+    public function __construct($path, $shortPath, $controller, $package)
     {
         $this->path = str_replace("/", DIRECTORY_SEPARATOR, $path);
         $this->shortPath = str_replace("/", DIRECTORY_SEPARATOR, $shortPath);
-        /*$this->path = $path;
-        $this->shortPath = $shortPath;*/
         $this->controller = $controller;
         $this->package = $package;
-        $this->layout = $layout;
-
-/*        print "<pre>";
-        print_r($this);
-        exit();*/
 
     }
 
@@ -126,6 +118,10 @@ class Action implements \ArrayAccess, IAction
     public function getPath()
     {
         return $this->path;
+    }
+
+    public function getRoute(){
+        return $this->package.$this->path;
     }
 
     public function setLayout(AbstractLayout $layout, AbstractLayout $XHRLayout = null)

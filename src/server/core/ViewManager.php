@@ -45,7 +45,7 @@ class ViewManager
     }
 
     /**
-     * @return View
+     * @return Action
      */
     public function get()
     {
