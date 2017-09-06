@@ -2,9 +2,9 @@
 $class = str_replace(["\\", "/",], "_", $this->getPath());
 $class = trim($class, "_");
 
-if ($this->getPackage() == "app") {
-    $class = "app_" . $class;
-}
+
+$class = $this->getPackage()."_" . $class;
+
 $props = json_encode(
     array_merge([
         "baseURL" => rtrim(\Arrow\Router::link("."), "/"),
