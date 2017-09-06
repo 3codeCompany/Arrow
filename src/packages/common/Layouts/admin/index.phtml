@@ -1,0 +1,191 @@
+<!doctype html>
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+
+
+    <meta charset="utf-8">
+    <base href="<? print \Arrow\RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . \Arrow\Router::getBasePath() ?>"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title><?= $this["applicationTitle"] ?></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+    <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic" rel="stylesheet" type="text/css">
+    <!-- Needs images, font... therefore can not be part of main.css -->
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+
+    <!-- end Needs images -->
+
+    <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/panel.css">
+    <link rel="stylesheet" href="assets/engine/src/packages/common/resources/panel/css/theme-<?= $this["user"]->getSetting('admin-theme', 'blue') ?>.css">
+
+
+</head>
+<body id="app" class="app app <?= $this["user"]->getSetting('sidebar-collapse', 1) ? 'nav-collapsed-min' : '' ?>">
+
+<div id="admin-loading-indicator" style="display: none;">
+    <img src="assets/engine/src/packages/common/resources/panel/images/382.GIF" alt="">
+</div>
+<div id="admin-loading-indicator-info" style="display: none;">asdasda</div>
+
+
+<!--[if lt IE 9]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<section id="header" class="header-container">
+    <header class="top-header clearfix">
+        <!-- Logo -->
+        <div class="logo">
+            <a href="/admin">
+                <span><?= $this["applicationTitle"] ?></span>
+            </a>
+        </div>
+
+        <!-- needs to be put after logo to make it working-->
+        <div class="menu-button" toggle-off-canvas>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </div>
+
+        <div class="top-nav">
+            <ul class="nav-left list-unstyled">
+                <li>
+                    <a href="/admin" data-toggle-nav-collapsed-min
+                       class="toggle-min"
+                       id="step4"
+                    ><i class="fa fa-bars"></i></a>
+                </li>
+                <li class="dropdown hidden-xs" style="display: none;">
+                    <a href="javascript:;" class="dropdown-toggle" id="step1" data-toggle="dropdown"><i class="fa fa-cogs"></i></a>
+                    <div class="dropdown-menu with-arrow panel panel-default admin-options" ui-not-close-on-click>
+                        <div class="panel-heading"> Opcje</div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <p>Wygląd</p>
+                                <label class="ui-radio"><input name="layout" type="radio" value="boxed" ng-model="admin.layout"><span>Zwinięty</span></label>
+                                <label class="ui-radio"><input name="layout" type="radio" value="wide" ng-model="admin.layout"><span>Na całą stronę</span></label>
+                            </li>
+                            <li class="list-group-item">
+                                <p>Menu </p>
+                                <label class="ui-radio"><input name="menu" type="radio" value="vertical" ng-model="admin.menu"><span>Pionowy</span></label>
+                                <label class="ui-radio"><input name="menu" type="radio" value="horizontal" ng-model="admin.menu"><span>Poziomy</span></label>
+                            </li>
+                            <li class="list-group-item">
+                                <p>Dodatkowo</p>
+                                <label class="ui-checkbox"><input name="checkbox1" type="checkbox" value="option1" ng-model="admin.fixedHeader"><span>Osadzony nagłówek</span></label>
+                                <br>
+                                <label class="ui-checkbox"><input name="checkbox1" type="checkbox" value="option1" ng-model="admin.fixedSidebar"><span>Osadzony panel boczny</span></label>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="dropdown text-normal nav-profile">
+                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" style="padding-top: 15px;">
+
+                        <i class="fa fa-user"></i>
+                        <span class="hidden-xs">
+                        <? if ($this["user"]) { ?><?= $this["user"]->_login() ?><? } ?>
+                    </span>
+                    </a>
+                    <ul class="dropdown-menu with-arrow">
+                        <li>
+                            <a href="#v:/access/users/account">
+                                <i class="fa fa-user"></i>
+                                Profil
+                            </a>
+                        </li>
+                        <!--<li>
+                            <a href="#/tasks/tasks">
+                                <i class="fa fa-check"></i>
+                                <span data-i18n="Moje zadania"></span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#/pages/lock-screen">
+                                <i class="fa fa-lock"></i>
+                                <span data-i18n="Blokada"></span>
+                            </a>
+                        </li>-->
+                        <li>
+                            <a href="/access/auth/logout">
+                                <i class="fa fa-sign-out"></i>
+                                Wyloguj się
+                            </a>
+                        </li>
+                    </ul>
+
+                </li>
+                <li>
+                    <a href="/access/auth/logout">
+                        <i class="fa fa-sign-out"></i>
+                        Wyloguj się
+                    </a>
+                </li>
+
+
+            </ul>
+
+            <? if (isset($this["userTasksCount"])) { ?>
+                <ul class="nav-right pull-right list-unstyled">
+                    <li>
+                        <a href="#<?= \Arrow\Router::getBasePath() ?>crm/tasks/tlist" class="bg-danger" id="step3" title="Ilość zadań w których bierzesz udział">
+                            <i class="fa fa-tasks"></i>
+                            <span class="badge badge-info" style="top: 3px; right: 1px;"><?= $this["userTasksCount"] ?></span>
+                        </a>
+                    </li>
+                </ul>
+            <? } ?>
+
+        </div>
+    </header>
+</section>
+
+<div class="main-container">
+    <aside id="nav-container" class="nav-container nav-fixed">
+        import:/common/admin/navigation
+    </aside>
+
+    <section onload=" Page.onLoad() " id="content" class="content-container " style="overflow-y: scroll;" autoscroll="1"></section>
+
+</div>
+
+<script>window.appBaseUrl = '<?=\Arrow\Router::getBasePath()?>'; </script>
+
+
+<? if (!isset($_SESSION["inDev"])) {
+    $_SESSION["inDev"] = false;
+} ?>
+<? if (isset($_REQUEST["inDev"])) {
+    $_SESSION["inDev"] = $_REQUEST["inDev"];
+} ?>
+
+
+
+
+
+<? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
+    <script type="text/javascript" src="<?= $this["webpackManifest"]["js"] ?>"></script>
+<link rel="stylesheet" href="<?= $this["webpackManifest"]["css"] ?>"/>
+<? } else { ?>
+
+
+    <script src="//localhost:3000/bundle.js" crossorigin="anonymous"></script>
+
+   <script type="text/javascript">
+/*       window.onerror = function (message, url, line, column, error) {
+           console.log('tutaj');
+  console.log(message, url, line, column, error);
+}*/
+    </script>
+
+<? } ?>
+<script type="text/javascript" src="assets/require.js"></script>
+<script type="text/javascript">
+    require(["engine/src/packages/common/resources/panel/panel"]);
+</script>
+</body>
+</html>
