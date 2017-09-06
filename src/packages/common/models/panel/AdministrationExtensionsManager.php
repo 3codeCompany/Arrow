@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Common;
+namespace Arrow\Common\Models\Panel;
 use Arrow\Controls\api\common\Icons;
 use Arrow\Access\Models\AccessAPI;
 /**
