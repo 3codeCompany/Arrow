@@ -166,17 +166,22 @@ class Router extends \Arrow\Object
         }
 
         $p = parse_url(urldecode("/".ltrim($_SERVER["REQUEST_URI"], "/" )));
+        
 
         if (self::$basePath == "/")
             $action = str_replace( "index.php", "" , $p["path"]);
-        else
-            $action = str_replace([self::$basePath, "index.php"], ["", ""], $p["path"]);
+        else {
+            $len = strlen(self::$basePath);
+            if(substr($p["path"], 0, $len) == self::$basePath){
+                $action = substr($p["path"], $len );
+            }
+            //$action = str_replace([self::$basePath, "index.php"], ["", ""], $p["path"]);
+        }
 
         $action = ltrim($action, "/");
 
         if (empty($action))
             $action = "index";
-
 
 
         self::$actionName = $action;
@@ -206,6 +211,8 @@ class Router extends \Arrow\Object
 
     public function process()
     {
+
+
         $dispatcher = \Arrow\Models\Dispatcher::getDefault();
         if (empty(self::$actionName)) {
             $path = \Arrow\Controller::$project->getSetting("application.view.default.view");

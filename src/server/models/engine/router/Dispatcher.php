@@ -124,8 +124,13 @@ class Dispatcher
         }
 
         $tmp = explode("/", trim($path, "/"));
+        /*print $path;
+        print_r($tmp);
+            exit();*/
+
         //print $path;
         if (count($tmp) >= 3) {
+
 
             if (isset($packages[$tmp[0]]) || $tmp[0] == "app") {
                 $package = $tmp[0];
@@ -144,7 +149,7 @@ class Dispatcher
                 "package" => $package,
                 "controller" => ($package == "app" ? 'App\\' : "Arrow\\" . ucfirst($package) . "\\") . "Controllers\\" . $controller,
                 "action" => $action,
-                "packagePath" => $package == "app" ? "./app" : $packages[$package],
+                "packagePath" => $package == "app" ? "./app/" : $packages[$package],
                 "path" => str_replace("/" . trim($package, "/"), "", $path)
             ];
 
