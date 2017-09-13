@@ -112,7 +112,7 @@ export default class ArrowViewComponent extends Component {
             //Column.text('original', 'Orginał'),
             //Column.text('module', 'Moduł'),
 
-            Column.template('', () => <i className="fa fa-times"/>)
+            Column.template('', () => <i className="ms-Icon ms-Icon--Delete"/>)
                 .className('center darkred')
                 .onClick((row) => this.handleDelete([row]))
         ];
