@@ -29,8 +29,10 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
         $this->view = $manager->get();
 
 
-        $title = ConfigProvider::get("panel")["title"];// \Arrow\Models\Settings::getDefault()->getSetting("application.panel.title");
+        $title = ConfigProvider::get("panel")["title"];
+        $icon = ConfigProvider::get("panel")["icon"];
         $this->view->assign("applicationTitle", $title);
+        $this->view->assign("applicationIcon", $icon);
 
         $user = Auth::getDefault()->getUser();
 
