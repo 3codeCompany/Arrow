@@ -111,12 +111,13 @@ class AccessAPI
     {
 
         if (!Auth::getDefault()->isLogged()) {
-            
+
 
             if(isset($_SERVER["REQUEST_URI"]))
                 $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
 
             $login = ConfigProvider::get("templates")["login"];
+
 
             if( RequestContext::getDefault()->isXHR() )
                 exit("Access deny - please login: ".$denyInfo);

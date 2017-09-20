@@ -69,7 +69,7 @@ class AccessController extends \Arrow\Models\Controller
         //AccessAPI::checkInstallation();
     }
 
-    public function auth_login(Action $view, RequestContext $request)
+    public function login(Action $view, RequestContext $request)
     {
         $path = RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . str_replace([ARROW_DOCUMENTS_ROOT, DIRECTORY_SEPARATOR], ["", "/"], __DIR__);
         $path .= "/../../org.arrowplatform.common/layouts/admin/";
@@ -104,7 +104,7 @@ class AccessController extends \Arrow\Models\Controller
         }
     }
 
-    public function auth_loginAction(IAction $action, RequestContext $request)
+    public function loginAction(IAction $action, RequestContext $request)
     {
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
@@ -130,16 +130,13 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function auth_logout(IAction $action, RequestContext $request)
+    public function logout(IAction $action, RequestContext $request)
     {
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
         $this->back();
     }
 
-    public function dashboard_main(Action $view, RequestContext $request)
-    {
-    }
 
     public function users_account(Action $view, RequestContext $request)
     {

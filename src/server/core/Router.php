@@ -166,7 +166,7 @@ class Router extends \Arrow\Object
         }
 
         $p = parse_url(urldecode("/".ltrim($_SERVER["REQUEST_URI"], "/" )));
-        
+
 
         if (self::$basePath == "/")
             $action = str_replace( "index.php", "" , $p["path"]);

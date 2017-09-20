@@ -1,11 +1,9 @@
 <?php namespace Arrow\Models;
 
-use function array_slice;
-use function array_walk;
 use Arrow\ConfigProvider;
-use Arrow\Exception;
 use Arrow\RequestContext;
 use Arrow\Router;
+use function array_slice;
 use function ucfirst;
 
 /**
@@ -35,101 +33,16 @@ class Dispatcher
 
         }
         $path = $path[0] == "/" ? $path : "/" . $path;
-        $data = ["package" => 'app', "path" => $path, "shortPath" => $path, "controller" => 'App\\Controllers\\Controller'];
         $packages = Project::getInstance()->getPackages();
 
-        $equateConf = false;
-
-
-        foreach ($this->configuration["path"] as $routeConfigPath => $routeConfig) {
-
-            if (strpos($path, $routeConfigPath) === 1) {
-                $equateConf = $routeConfig;
-                break;
-            } elseif (strpos($routeConfigPath, "*") !== false) {
-                $pattern = "/" . str_replace("*", "(.*?)", str_replace("/", "\\/", $routeConfigPath)) . "/";
-
-                if (preg_match_all($pattern, $path, $matches)) {
-                    $equateConf = $routeConfig;
-                }
-
-
-            }
-
-        }
-
-
-        if ($equateConf !== false) {
-
-            if (is_string($equateConf)) {
-                $data["controller"] = $equateConf;
-
-                $file = self::$classPathResolver->findFile($equateConf);
-
-                //problem z symlinkami - zwracają mylącą ścieżkę dla sysstemu
-                if (strpos($file, "vendor") !== false) {
-                    $tmp = explode("vendor", $file);
-                    $file = "vendor" . $tmp[1];
-                }
-
-                $xpath = str_replace([ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["", "", DIRECTORY_SEPARATOR], dirname($file));
-
-
-                foreach ($packages as $name => $dir) {
-                    $dir = str_replace("/", DIRECTORY_SEPARATOR, $dir);
-
-                    $pos = strpos($xpath, $dir);
-                    if ($pos === 0 || $pos === 1) {
-                        $data["package"] = $name;
-                    }
-                }
-                $data["shortPath"] = trim(str_replace($routeConfigPath, "", $path), "/");
-            } else {
-
-
-                $data["controller"] = $equateConf["__controller"];
-
-                $file = self::$classPathResolver->findFile($data["controller"]);
-                if (!$file) {
-                    throw new Exception("Cant find route controller `{$data["controller"]}`");
-                }
-
-
-                //@todo zmienić ten sposob na niezalezny od composera
-                $file = "/vendor" . explode("vendor", dirname($file))[1];
-
-                $xpath = str_replace(["composer/../", "/"], ["", DIRECTORY_SEPARATOR], dirname($file));
-
-                foreach ($packages as $name => $dir) {
-                    $dir = str_replace("/", DIRECTORY_SEPARATOR, $dir);
-
-                    $pos = strpos($xpath, $dir);
-                    if ($pos === 0 || $pos === 1) {
-                        $data["package"] = $name;
-                    }
-                }
-                $data["shortPath"] = trim(str_replace($routeConfigPath, "", $path), "/");
-                if (isset($equateConf["__actionBase"])) {
-
-                    if (substr($data["shortPath"], 0, strlen($equateConf["__actionBase"])) == $equateConf["__actionBase"]) {
-                        $data["shortPath"] = substr($data["shortPath"], strlen($equateConf["__actionBase"]));
-                    }
-                }
-
-
-                if (isset($equateConf["__actionPrefix"])) {
-                    $data["shortPath"] = $equateConf["__actionPrefix"] . "/" . $data["shortPath"];
-                }
-            }
-        }
 
         $tmp = explode("/", trim($path, "/"));
-        /*print $path;
-        print_r($tmp);
-            exit();*/
 
-        //print $path;
-        if (count($tmp) >= 3) {
+        $c = count($tmp);
+        if ($c >= 2) {
+            if ($c == 2) {
+                array_unshift($tmp, 'app');
+            }
 
 
             if (isset($packages[$tmp[0]]) || $tmp[0] == "app") {
@@ -153,6 +66,7 @@ class Dispatcher
                 "path" => str_replace("/" . trim($package, "/"), "", $path)
             ];
 
+
             return [
                 "path" => $_tmpData["path"],
                 "shortPath" => $action,
@@ -163,7 +77,8 @@ class Dispatcher
         }
 
 
-        return $data;
+        throw new \Exception("Not mapped path: `{$path}` ");
+
     }
 
     private static $actions = [];
