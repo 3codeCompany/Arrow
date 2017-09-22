@@ -174,8 +174,8 @@ class ExceptionHandler implements IExceptionHandler
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
-        /*print $this->getHead().print $this->printDeveloperMessage($exception).$this->getFooter();
-        exit();*/
+        print $this->getHead().print $this->printDeveloperMessage($exception).$this->getFooter();
+        exit();
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {

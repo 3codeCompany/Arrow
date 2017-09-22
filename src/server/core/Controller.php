@@ -124,8 +124,10 @@ class Controller extends \Arrow\Object
 
     public static function redirectToTemplate($template, $vars = [] )
     {
-        $template_descriptor =  \Arrow\Models\Dispatcher::getDefault()->get($template);
-        \Arrow\Controller::redirectToView($template_descriptor, $vars);
+        header("Location: ".Router::link($template,$vars));
+        exit();
+        //$template_descriptor =  \Arrow\Models\Dispatcher::getDefault()->get($template);
+        //\Arrow\Controller::redirectToView($template_descriptor, $vars);
     }
 
     /**

@@ -318,12 +318,14 @@ class Action implements \ArrayAccess, IAction
         $appFile = "." . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views" . $name;
 
         if ($this->package != "app") {
-            if ($this->layout) {
-                $name = $this->layout->getFileName($this->shortPath);
+            if ($this->layout ) {
+                $name = $this->layout->getFileName($this->path);
             } else {
-                $name = $this->shortPath . ".phtml";
+                $name = $this->path . ".phtml";
             }
+
             $file = ARROW_DOCUMENTS_ROOT . "/" . Project::getInstance()->getPackages()[$this->package] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $name;
+
 
             if (file_exists($file) && !file_exists($appFile)) {
                 return $file;
