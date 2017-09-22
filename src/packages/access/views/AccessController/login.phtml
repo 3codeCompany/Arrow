@@ -28,7 +28,7 @@ $props = json_encode(
         "baseURL" => rtrim(\Arrow\Router::link("."), "/"),
         "path" => $this->getPath(),
         "requestURI" => $_SERVER["REQUEST_URI"],
-        "component" => 'access_auth_loginComponent'
+        "component" => 'access_AccessController_loginComponent'
     ], $this->getVars())
 );
 ?>
@@ -38,11 +38,6 @@ $props = json_encode(
 <div react-component="PanelComponentLoader" react-props="reactVariable"></div>
 
 
-<?
-$form = $this["form"];
-
-
-?>
 
 
 

@@ -69,7 +69,7 @@ class AccessController extends \Arrow\Models\Controller
         //AccessAPI::checkInstallation();
     }
 
-    public function auth_login(Action $view, RequestContext $request)
+    public function login(Action $view, RequestContext $request)
     {
         $path = RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . str_replace([ARROW_DOCUMENTS_ROOT, DIRECTORY_SEPARATOR], ["", "/"], __DIR__);
         $path .= "/../../org.arrowplatform.common/layouts/admin/";
@@ -80,28 +80,10 @@ class AccessController extends \Arrow\Models\Controller
             exit();
         }
 
-        $this->view->assign("layoutPath", $path);
-
-        $view->setLayout(new EmptyLayout(), new EmptyLayout());
-
-        User::F_ID;
-        $form = Form::_new("login")
-            ->setAction(Router::link("access/auth/loginAction"))
-            ->setNamespace("data");
-
-
-        //$form->on(Form::EVENT_SUCCESS, SerenityJS::hash("#{context.redirectTo}"));
-        $form->on(Form::EVENT_SUCCESS, SerenityJS::js("window.location.href = '/#{context.redirectTo}'; return false;"));
-
-        $view->assign("form", $form);
+        $view->setLayout(new EmptyLayout());
         $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
-
-        try {
-            AccessAPI::checkInstallation();
-        } catch (\Arrow\Exception $ex) {
-            AccessAPI::setup();
-            exit("Access API setup finish");
-        }
+        $view->assign("appPath", RequestContext::getBaseUrl());
+        $view->assign("from", $this->request["from"]);
     }
 
     public function auth_loginAction(IAction $action, RequestContext $request)

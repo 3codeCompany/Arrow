@@ -59,42 +59,11 @@ class PanelStatic extends BaseController
 
     public function list()
     {
-        $c = LanguageText::get();
+        $ctit = LanguageText::get();
         $helper = new TableListORMHelper();
 
-        $search = $helper->getInputData()["additionalConditions"]["search"];
-        if ($search) {
-            $c->addSearchCondition([LanguageText::F_ORIGINAL], "%{$search}%", Criteria::C_LIKE);
-        }
         //$helper->addDefaultOrder(Language::F_NAME);
-        $this->json($helper->getListData($c));
+        $this->json($helper->getListData($ctit));
     }
-
-
-    public function delete()
-    {
-        $elements = LanguageText::get()
-            ->_id($this->request["keys"], Criteria::C_IN)
-            ->find();
-
-        foreach ($elements as $element) {
-            $element->delete();
-        }
-
-        $this->json([true]);
-    }
-
-    public function inlineUpdate()
-    {
-        $obj = LanguageText::get()
-            ->findByKey($this->request["key"]);
-
-        $obj->setValue(LanguageText::F_VALUE, $this->request["newValue"]);
-        $obj->save();
-
-
-        $this->json([1]);
-    }
-
 
 }
