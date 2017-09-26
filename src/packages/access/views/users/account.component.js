@@ -28,18 +28,12 @@ export default class ArrowViewComponent extends Component {
 
     render() {
         let data = this.state.formData || {};
-        let groups = [];
-        for (let i in this.props.groups) {
-
-            groups.push({value: i, label: this.props.groups[i]})
-        }
 
         return (
             <div>
                 <Navbar>
-                    <span>System</span>
-                    <a onClick={() => this.props._goto(this.props.baseURL + "/list")}>Użytkownicy</a>
-                    <span>{this.props.user ? this.props.user.login : "Dodaj"}</span>
+                    <span>Użytkownicy</span>
+                    <span>{this.props.user.login}</span>
                 </Navbar>
 
 
@@ -47,18 +41,38 @@ export default class ArrowViewComponent extends Component {
                     ref="form"
                     data={data}
                     namespace={"data"}
-                    action={this.props.baseURL + "/save"}
+                    action={this.props.baseURL + "/saveAccount"}
                     onSuccess={this.handleFormSuccess.bind(this)}
                     onChange={this.handleFormChange.bind(this)}
                 >
-                    {(form) => <Row>
-                        <Panel title={"Formularz " + (this.props.user ? "edycji" : "dodania") + " użytkownika"}>
-                            <BText label="Login" {...form("login")} />
-                            <BSwitch label="Konto aktywne" inline={true} options={{0: "Nie", 1: "Tak"}}  {...form("active")} />
+                    {(form) => <Row md={[6]}>
+                        <Panel title={"Zmień swoje dane"}>
+                            <BText label="Login" {...form("login")} editable={false} />
+
 
                             <BText label="Email" type="email" name="email"  {...form("email")}/>
                             <div className="hr-line-dashed"></div>
-                            <BText label="Hasło" type="password"  {...form("password")} name="password" placeholder={data.id ? "Podaj hasło aby zmienić na nowe" : ""}/>
+                            <BText
+                                label="Stare hasło"
+                                type="password"
+                                {...form("password_old")}
+                                name="password_old"
+                                help={"Do zmiany hasła wymagane jest podanie starego hasła"}
+                            />
+                            <BText
+                                label="Nowe hasło"
+                                type="password"
+                                {...form("password_new")}
+                                name="password_new"
+                                placeholder={ "Podaj hasło aby zmienić na nowe" }
+                            />
+                            <BText
+                                label="Potwierdź nowe hasło"
+                                type="password_confirm"
+                                {...form("password_confirm")}
+                                name="password"
+                                placeholder={ "Podaj hasło aby zmienić na nowe" }
+                            />
 
                             <div className="hr-line-dashed"></div>
                             <a onClick={() => this.props._goto(this.props.baseURL + "/list")} className="btn btn-default pull-right"> Anuluj</a>
@@ -67,9 +81,7 @@ export default class ArrowViewComponent extends Component {
 
 
                         </Panel>
-                        <Panel>
-                            <BCheckboxGroup label="Grupy dostępu" name="selectedGroups"  {...form("selectedGroups")} inline={false} options={groups || []}/>
-                        </Panel>
+
                     </Row>}
                 </BForm>
 

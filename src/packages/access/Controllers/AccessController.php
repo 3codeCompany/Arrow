@@ -83,10 +83,10 @@ class AccessController extends \Arrow\Models\Controller
         $view->setLayout(new EmptyLayout());
         $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
         $view->assign("appPath", RequestContext::getBaseUrl());
-        $view->assign("from", $this->request["from"]);
+        $view->assign("from", $this->request["from"]); 
     }
 
-    public function loginAction(IAction $action, RequestContext $request)
+    public function auth_loginAction(IAction $action, RequestContext $request)
     {
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
@@ -119,6 +119,9 @@ class AccessController extends \Arrow\Models\Controller
         $this->back();
     }
 
+    public function dashboard_main(Action $view, RequestContext $request)
+    {
+    }
 
     public function users_account(Action $view, RequestContext $request)
     {
@@ -350,61 +353,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-    public function groups_getData()
-    {
-        $helper = new TableListORMHelper();
-        $this->json($helper->getListData(AccessGroup::get()->_id(4, Criteria::C_GREATER_THAN)));
-    }
 
-
-    public function groups_list()
-    {
-        $this->action->setLayout(new ReactComponentLayout());
-
-    }
-
-    public function groups_delete($view, RequestContext $request)
-    {
-        AccessGroup::get()->findByKey($request["key"])->delete();
-
-        $this->json([1]);
-    }
-
-    public function groups_edit(Action $view, RequestContext $request)
-    {
-
-        $this->action->setLayout(new ReactComponentLayout());
-
-        $group = AccessGroup::get()->findByKey($request['key']);
-        $this->action->assign("group", $group);
-
-
-    }
-
-    public function groups_save($view, RequestContext $request)
-    {
-        if ($request["key"]) {
-            AccessGroup::get()->findByKey($request["key"])->setValues($request["data"])->save();
-        } else {
-            AccessGroup::create($request["data"]);
-        }
-
-        $this->json([1]);
-    }
-
-    public function access_getData(){
-        $helper = new TableListORMHelper();
-        $criteria = AccessPoint::get();
-        $this->json($helper->getListData($criteria));
-    }
-
-    public function access_save(){
-        AccessPoint::get()
-            ->findByKey($this->request["key"])
-            ->setValues($this->request["data"])
-            ->save();
-        $this->json([1]);
-    }
 
     public function access_list(Action $view, RequestContext $request)
     {

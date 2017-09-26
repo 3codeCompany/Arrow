@@ -1,5 +1,5 @@
 <?php
-namespace Arrow\Utils;
+namespace Arrow\Utils\Models\Helpers;
 
 class StringHelper
 {
