@@ -2,7 +2,9 @@
 
 namespace Arrow\Communication\Models\Mailer;
 
+use Exception;
 use Psr\Log\LoggerInterface;
+use function var_dump;
 
 class MailerAPI extends \Arrow\Object
 {
@@ -57,18 +59,31 @@ class MailerAPI extends \Arrow\Object
 
         $emails = str_replace([";", " "], [",", ""], $emails);
 
-        $message = \Swift_Message::newInstance($topic)
-            ->setSubject($topic)
-            ->setFrom(array($from => $from_name))
-            ->setTo(is_array($emails) ? $emails : explode(",", $emails))
-            ->setBody($content, 'text/html');
+        $from = $from?$from: $settings["from_mail"];
+        $from_name = $from_name?$from_name: $settings["from_name"];
 
-        if ($attachments) {
-            foreach ($attachments as $a) {
-                $message->attach(\Swift_Attachment::fromPath($a));
+        try {
+            $message = \Swift_Message::newInstance($topic)
+                ->setSubject($topic)
+                ->setFrom(array($from => $from_name))
+                ->setTo(is_array($emails) ? $emails : explode(",", $emails))
+                ->setBody($content, 'text/html');
+
+            if ($attachments) {
+                foreach ($attachments as $a) {
+                    $message->attach(\Swift_Attachment::fromPath($a));
+                }
             }
+
+            $result = $mailer->send($message);
+        } catch (Exception $ex) {
+            print "<pre>";
+            /*print_r($settings);
+            var_dump(explode(",", $emails));
+            var_dump($emails);
+            var_dump($ex);*/
+            exit("Błąd wysyłki maila");
         }
-        $result = $mailer->send($message);
 
         if (!$result && $externalLogger) {
             $externalLogger->critical("Mail sent error: " . $logger->dump());
