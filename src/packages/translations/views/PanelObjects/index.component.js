@@ -5,7 +5,7 @@ import {Table, Column} from 'frontend/src/ctrl/Table';
 import {Modal, confirm} from 'frontend/src/ctrl/Overlays';
 import {BFile, BSelect, BSwitch} from 'frontend/src/layout/BootstrapForm';
 
-import PanelComponentLoader from 'frontend/src/lib/PanelComponentLoader';
+
 import PropTypes from 'prop-types';
 import download from 'frontend/src/lib/Downloader';
 import Comm from 'frontend/src/lib/Comm';
@@ -16,7 +16,7 @@ export default class ArrowViewComponent extends Component {
 
     static propTypes = {
         language: PropTypes.object.isRequired,
-        ...PanelComponentLoader.ComponentProps
+
     };
 
     constructor(props) {

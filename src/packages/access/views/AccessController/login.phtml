@@ -31,11 +31,16 @@ $props = json_encode(
         "component" => 'access_AccessController_loginComponent'
     ], $this->getVars())
 );
+
+$storeData = json_encode([
+        "appBaseURL" =>  \Arrow\Router::getBasePath()
+])
 ?>
 
-<script type="text/javascript">window.CONTROLS_BASE_LOCATION = '/access/auth/login';</script>
+
 <script type="text/javascript">window.reactVariable =  <?= $props ?></script>
-<div react-component="PanelComponentLoader" react-props="reactVariable"></div>
+<script type="text/javascript">window.reactBackOfficeVar =  <?= $storeData ?></script>
+<div react-component="PanelComponentLoader" id="login-to-app"} react-props="reactVariable"></div>
 
 
 

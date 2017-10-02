@@ -42,8 +42,8 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
         "component" => $class
 
     ]) ?></script>
-<div react-component="BackOfficePanel" react-props="reactBackOfficeVar"></div>
-
+<div react-component="BackOfficePanel" id="root" react-props="reactBackOfficeVar"></div>
+<div id="modal-root"></div>
 <? if (!isset($_SESSION["inDev"])) {
     $_SESSION["inDev"] = false;
 } ?>
@@ -54,7 +54,7 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
 
 <? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
     <script type="text/javascript" src="<?= $this["webpackManifest"]["js"] ?>"></script>
-    <link rel="stylesheet" href="<?= $this["webpackManifest"]["css"] ?>"/>
+<link rel="stylesheet" href="<?= $this["webpackManifest"]["css"] ?>"/>
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin="anonymous"></script>
 <? } ?>
