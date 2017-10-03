@@ -2,26 +2,22 @@
 
 namespace Arrow\Communications\Controllers\Mailer;
 
-use App\Layouts\Mailer\MailerLayout;
+
 use Arrow\Communication\Models\Mailer\MailerAPI;
+use Arrow\Communication\Models\QueueElement;
 use Arrow\ConfigProvider;
 use Arrow\Exception;
 use Arrow\Models\Action;
 use Arrow\Models\Controller;
 use Arrow\Models\Dispatcher;
-use Arrow\Models\Project;
+use Arrow\Models\Operation;
+use Arrow\Models\View;
 use Arrow\Models\ViewParser;
-use Arrow\ORM\Persistent\Criteria, Arrow\Models\View, Arrow\RequestContext, Arrow\Models\Operation;
-
-
-use Arrow\Access\Models\User;
 use Arrow\Package\CRM\Task;
 use Arrow\Package\CRM\TaskCategory;
 use Arrow\Package\CRM\TaskStatus;
-use Arrow\Shop\Models\Persistent\Order;
-use Arrow\Shop\Models\Persistent\OrderProduct;
-use Arrow\Shop\Models\Persistent\OrderShipment;
-use Arrow\Shop\Models\Persistent\ProductVariant;
+use Arrow\RequestContext;
+
 use Arrow\Translations\Models\Translations;
 use Psr\Log\LoggerInterface;
 
@@ -38,6 +34,8 @@ class MailerController extends Controller
     public $forceFrom = false;
     private $c = true;
 
+    protected $putToQueue = true;
+
 
     public function prepareContent($conf, $data)
     {
@@ -50,11 +48,12 @@ class MailerController extends Controller
         return $view->fetch(new RequestContext($data));
     }
 
-    public function send($conf, $email, $data = [], $historyObject = null, $attachements = [],  $bcc = false, LoggerInterface $logger = null)
+    public function send($conf, $email, $data = [], $historyObject = null, $attachements = [], $bcc = false, LoggerInterface $logger = null)
     {
 
 
         $mailerConf = ConfigProvider::get('communication')['emails']['default'];
+
 
         $from = $mailerConf['from'];
         if ($this->forceFrom) {
@@ -80,21 +79,32 @@ class MailerController extends Controller
 
         $title = isset($view["mailTopic"]) ? $view["mailTopic"] : Translations::translateText($conf[1]);
         $title = isset($data["mailTopic"]) ? $data["mailTopic"] : $title;
+        if ($this->putToQueue) {
+            $el = new QueueElement();
+            $el->_created(date("Y-m-d H:i:s"));
+            $el->_email($email);
+            $el->_topic($title);
+            $el->_bcc($bcc);
+            $el->_attachments(serialize($attachements));
+            $el->setContent($content);
+            $el->save();
+        } else {
 
-        try {
+            try {
 
-            MailerAPI::send($email, $content, $title, "", "", "", $attachments, $bcc, $logger);
-            if ($historyObject) {
-                History::addByObject($historyObject, $title, $email, $content);
-            }
-        } catch (\Exception $ex) {
+                MailerAPI::send($email, $content, $title, "", "", "", $attachments, $bcc, $logger);
+                if ($historyObject) {
+                    History::addByObject($historyObject, $title, $email, $content);
+                }
+            } catch (\Exception $ex) {
 
-            if ($logger) {
-                $logger->critical($ex->getMessage());
-            }
+                if ($logger) {
+                    $logger->critical($ex->getMessage());
+                }
 
-            if ($historyObject) {
-                History::addByObject($historyObject, "[error] [{$ex->getMessage()}] " . $title, $email, $ex->getMessage());
+                if ($historyObject) {
+                    History::addByObject($historyObject, "[error] [{$ex->getMessage()}] " . $title, $email, $ex->getMessage());
+                }
             }
         }
 

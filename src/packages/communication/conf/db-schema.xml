@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
-<schema class-namespace="Arrow\Communication">
-    <table name="comm_contact_form" class="Arrow\Communication\Models\ContactForm">
+<schema>
+    <table name="comm_mailer_queue" class="Arrow\Communication\Models\Mailer\QueueElement">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="date" type="TIMESTAMP" />
-        <field name="firstname" type="VARCHAR" size="255"/>
-        <field name="lastname" type="VARCHAR" size="255"/>
+        <field name="created" type="TIMESTAMP"/>
         <field name="email" type="VARCHAR" size="255"/>
-        <field name="telephone" type="VARCHAR" size="255"/>
         <field name="topic" type="VARCHAR" size="255"/>
-        <field name="content" type="LONGVARCHAR" size="65000"/>
-        <field name="response" type="INTEGER" size="1"/>
+        <field name="bcc" type="VARCHAR" size="255"/>
+        <field name="from_email" type="VARCHAR" size="255"/>
+        <field name="from_name" type="VARCHAR" size="255"/>
+        <field name="attachments" type="VARCHAR" size="555"/>
+        <field name="send" type="INTEGER" size="1"/>
+        <field name="error" type="VARCHAR" size="555"/>
+        <field name="x1" type="VARCHAR" size="555"/>
     </table>
 </schema>
