@@ -5,7 +5,7 @@ use Arrow\ORM\Extensions\TreeNode;
 use Arrow\ORM\ORM_Arrow_Media_Models_Folder;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\PersistentObject;
-use Arrow\Utils\StringHelper;
+use Arrow\Utils\Models\Helpers\StringHelper;
 
 class Folder extends ORM_Arrow_Media_Models_Folder
 {
