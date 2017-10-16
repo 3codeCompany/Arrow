@@ -360,7 +360,7 @@ class ExceptionHandler implements IExceptionHandler
             } elseif (is_array($arg)) {
                 $str .= "Array[" . count($arg) . "] {" . $this->printArguments($arg, $i) . "}";
             } elseif (is_string($arg)) {
-                $str .= substr($arg, 0, 20);
+                $str .= substr($arg, 0, 100);
             }
             //if ($key + 1 < count($args)) {
             $str .= ", ";
