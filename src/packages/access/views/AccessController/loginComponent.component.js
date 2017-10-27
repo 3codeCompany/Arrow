@@ -21,7 +21,7 @@ export default class ArrowViewComponent extends Component {
     handleSubmit() {
         let data = this.state.form;
         if (data.login == "" || data.password == "") {
-            this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
+            //this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
             return;
         }
 
@@ -32,7 +32,7 @@ export default class ArrowViewComponent extends Component {
         comm.on("success", (response) => {
             this.setState({loading: false});
             if (!response[0]) {
-                this.props._notification("Nieprawidłowy użytkownik lub hasło", "Nie udało się zalogować", {level: "error"});
+                //this.props._notification("Nieprawidłowy użytkownik lub hasło", "Nie udało się zalogować", {level: "error"});
             } else {
                 if (this.props.from) {
                     window.location.href = this.props.from;
