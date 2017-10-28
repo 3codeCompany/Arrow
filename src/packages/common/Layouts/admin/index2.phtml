@@ -41,7 +41,8 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
         "requestURI" => $_SERVER["REQUEST_URI"],
         "component" => $class
 
-    ]) ?></script>
+    ]) ?>
+</script>
 <div react-component="BackOfficePanel" id="root" react-props="reactBackOfficeVar"></div>
 <div id="modal-root"></div>
 <? if (!isset($_SESSION["inDev"])) {

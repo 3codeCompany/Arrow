@@ -30,7 +30,7 @@ class User extends ORM_Arrow_Access_Models_User implements \Arrow\Models\IUser
     public function beforeObjectCreate(PersistentObject $object)
     {
         if ($object["password"] == "") {
-            $this->setValue("password", md5(microtime() + rand(1, 100)));
+            $this->setValue("password", md5(microtime() . rand(1, 100)));
         }
         //$this->setValue(self::F_CREATED, date("Y-m-d H:i:s"));
         $this->setValue(self::F_PASSPORT_ID, self::generatePassportId());
@@ -181,7 +181,7 @@ class User extends ORM_Arrow_Access_Models_User implements \Arrow\Models\IUser
      */
     public function generatePassportId()
     {
-        return md5($this->data["login"] . time());
+        return md5((isset($this->data["login"])?$this->data["login"]: rand(100,10000))  . time());
     }
 
     /**
