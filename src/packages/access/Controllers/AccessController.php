@@ -53,6 +53,7 @@ use
     \Arrow\ORM\Persistent\Criteria,
     Arrow\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
+use function var_dump;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -86,8 +87,10 @@ class AccessController extends \Arrow\Models\Controller
         $view->assign("from", $this->request["from"]); 
     }
 
-    public function auth_loginAction(IAction $action, RequestContext $request)
+    public function loginAction(IAction $action, RequestContext $request)
     {
+
+
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
 
@@ -98,7 +101,8 @@ class AccessController extends \Arrow\Models\Controller
 
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
-        $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
+        $res = $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
+
 
 
         if (!$authHandler->isLogged()) {

@@ -51,12 +51,17 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
     $_SESSION["inDev"] = $_REQUEST["inDev"];
 } ?>
 
+<script type="text/javascript" src="<?= $this["webpackManifest"]["vendors"]["js"] ?>"></script>
+<link rel="stylesheet" href="<?= $this["webpackManifest"]["vendors"]["css"] ?>"/>
 
 <? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
-    <script type="text/javascript" src="<?= $this["webpackManifest"]["js"] ?>"></script>
-<link rel="stylesheet" href="<?= $this["webpackManifest"]["css"] ?>"/>
+    <script type="text/javascript" src="<?= $this["webpackManifest"]["admin"]["js"] ?>"></script>
+    <link rel="stylesheet" href="<?= $this["webpackManifest"]["admin"]["css"] ?>"/>
 <? } else { ?>
-    <script src="//localhost:3000/bundle.js" crossorigin ></script>
+    <script src="//localhost:3000/bundle.js" crossorigin></script>
 <? } ?>
+
+
+
 </body>
 </html>
