@@ -55,7 +55,7 @@ class Folder extends ORM_Arrow_Media_Models_Folder
 
     public function updatePath()
     {
-        $dirname = \Arrow\Utils\StringHelper::toValidFilesystemName($this->data[self::F_NAME], false);
+        $dirname = StringHelper::toValidFilesystemName($this->data[self::F_NAME], false);
         $parent = $this->getParent();
         $path = $parent->getValue("path") . "/" . $dirname;
         $dbPath = $this["path"];
