@@ -62,7 +62,7 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
         $manifest = false;
         $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
         if (file_exists($manifestFile)) {
-            $manifest = json_decode(file_get_contents($manifestFile), true)["admin"];
+            $manifest = json_decode(file_get_contents($manifestFile), true);
         }
 
         $this->view->assign("webpackManifest", $manifest);
