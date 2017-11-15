@@ -2,20 +2,71 @@
 
 namespace Arrow\Common\Layouts;
 
+use Arrow\Access\Models\Auth;
 use Arrow\Models\Action;
-use Arrow\RequestContext, Arrow\Access\Models\AccessAPI, Arrow\Access\Models\Auth, Arrow\View;
+
 use Arrow\ViewManager;
-use function str_replace;
+
 
 class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 {
+    private $breadcrumbGenerator;
+    private $view;
+
     public function createLayout(ViewManager $viewM)
     {
+
+        $this->view = $viewM->get();
         $viewM->get()->assign("path", $viewM->get()->getPath());
 
         //$view->assign("path",$view->getPath());
 
+        if (!isset($_SESSION["inDev"])) {
+            $_SESSION["inDev"] = false;
+        }
+        if (isset($_REQUEST["inDev"])) {
+            $_SESSION["inDev"] = $_REQUEST["inDev"];
+        }
 
+        $user = Auth::getDefault()->getUser();
+
+        if ($user->isInGroup("Developers")) {
+            $viewM->get()->assign("developer", true);
+        } else {
+            $viewM->get()->assign("developer", false);
+        }
+
+        $viewM->get()->assign("user", $user);
+
+        /*        try{
+                    $user[User::F_NEED_CHANGE_PASSWORD];
+                }catch (\Exception $ex){
+                    Auth::getDefault()->doLogout();
+                    header("Location: /esotiq/access-/users/account");
+                    exit();
+
+                }*/
+
+        $manifest = false;
+        $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
+        if (file_exists($manifestFile)) {
+            $manifest = json_decode(file_get_contents($manifestFile), true);
+        }
+
+        $this->view->assign("webpackManifest", $manifest);
+
+
+
+
+    }
+
+    public function setBreadcrumbGenerateor( BreadcrumbGenerator $generator ){
+        $this->breadcrumbGenerator = $generator;
+    }
+
+    public function generateBreadcrumb( ){
+        if($this->breadcrumbGenerator)
+            return $this->breadcrumbGenerator->generate( $this->view);
     }
 
     public function getLayoutFile()
@@ -28,25 +79,8 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         return $path . ".component.js";
     }
 
-    public function getFirstTemplateContent(Action $action)
+    public function getFirstTemplateContent( Action $action)
     {
-        $action = $action->getPackage() . "_" . str_replace("\\", "_", trim($action->getPath(), "\\"));
-        $code = <<<CODE
-import React, {Component} from 'react';
-
-//$action
-export default class ArrowViewComponent extends Component{
-    constructor(props){
-        super(props);
-        this.state = {};
-    }
-    render(){
-        return (
-            <div>It is  $action comp</div>
-        )
-    }
-}
-CODE;
-        return $code;
+        return "";
     }
 }

@@ -4,31 +4,17 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-use App\Models\Persistent\Category;
-use App\Models\Persistent\Property;
-use App\Models\Persistent\TransactionText;
 use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Controls\API\Components\Toolbar;
 use Arrow\Controls\API\Forms\Fields\Button;
-use Arrow\Controls\API\Forms\Fields\File;
 use Arrow\Controls\API\Forms\Fields\Files;
 use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
-use Arrow\Controls\API\Forms\Fields\Date;
-use Arrow\Controls\API\Forms\Fields\Hidden;
-use Arrow\Controls\API\Forms\Fields\Select;
-use Arrow\Controls\API\Forms\Fields\SwitchF;
-use Arrow\Controls\API\Forms\Fields\Text;
-use Arrow\Controls\API\Forms\Fields\Textarea;
-use Arrow\Controls\API\Forms\Fields\Wyswig;
-use Arrow\Controls\API\Forms\FieldsList;
-use Arrow\Controls\API\Forms\Form;
-use Arrow\Controls\API\Forms\FormBuilder;
-use Arrow\Controls\API\Table\ColumnList;
-use Arrow\Controls\API\Table\Columns\Menu;
+
 use Arrow\Controls\Helpers\FormHelper;
 use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
+use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
@@ -44,6 +30,8 @@ use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
+use Arrow\Shop\Models\Persistent\Category;
+use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
@@ -67,6 +55,10 @@ class PanelObjects extends BaseController
             Property::getClass() => "Cechy"
         ]));
 
+        $db = Project::getInstance()->getDB();
+        $t = ObjectTranslation::getTable();
+        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
+
 
     }
 
@@ -81,9 +73,9 @@ class PanelObjects extends BaseController
         $crit->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
         $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
 
-        if ($model == Property::getClass()) {
+        /*if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
-        }
+        }*/
 
         //$helper->addDefaultOrder(Language::F_NAME);
         $this->json($helper->getListData($crit));
@@ -101,7 +93,7 @@ class PanelObjects extends BaseController
         $sh = $objPHPExcel->setActiveSheetIndex(0);
 
         $criteria = ObjectTranslation::get()
-            ->_original("", Criteria::C_NOT_EQUAL)
+            ->_source("", Criteria::C_NOT_EQUAL)
             ->_lang($data["lang"]);
 
 
@@ -110,9 +102,9 @@ class PanelObjects extends BaseController
         $criteria->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
         $criteria->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
 
-        if ($model == Property::getClass()) {
+        /*if ($model == Property::getClass()) {
             $criteria->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
-        }
+        }*/
 
         if ($data["onlyEmpty"]) {
             $criteria->_value([null, ""], Criteria::C_IN);
@@ -127,13 +119,12 @@ class PanelObjects extends BaseController
         $columns = [
             "id",
             "field",
-            "orginal",
+            "source",
             "value",
-            "module",
         ];
 
         foreach ($result as $index => $r) {
-            $columns[2] = $r["field"];
+            //$columns[2] = $r["field"];
             foreach ($columns as $key => $c) {
 
                 $sh->setCellValueByColumnAndRow($key, $index, $r[$c]);
