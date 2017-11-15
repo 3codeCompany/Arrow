@@ -1,8 +1,9 @@
 <?php
 
-namespace Arrow\Communications\Controllers\Mailer;
+namespace Arrow\Communication\Controllers;
 
 
+use App\Layouts\Mailer\MailerLayout;
 use Arrow\Communication\Models\Mailer\MailerAPI;
 use Arrow\Communication\Models\QueueElement;
 use Arrow\ConfigProvider;
@@ -34,7 +35,7 @@ class MailerController extends Controller
     public $forceFrom = false;
     private $c = true;
 
-    protected $putToQueue = true;
+    protected $putToQueue = false;
 
 
     public function prepareContent($conf, $data)
@@ -92,11 +93,13 @@ class MailerController extends Controller
 
             try {
 
-                MailerAPI::send($email, $content, $title, "", "", "", $attachments, $bcc, $logger);
+                MailerAPI::send($email, $content, $title, "", "", "", $attachements, $bcc, $logger);
                 if ($historyObject) {
                     History::addByObject($historyObject, $title, $email, $content);
                 }
             } catch (\Exception $ex) {
+
+
 
                 if ($logger) {
                     $logger->critical($ex->getMessage());

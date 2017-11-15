@@ -23,7 +23,7 @@ use Arrow\ORM\ORM_Arrow_CRM_History;
 use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
-use Arrow\Common\TableDataSource;
+use Arrow\Common\Models\Wigets\Table\TableDataSource;
 
 class History extends ORM_Arrow_Common_Models_History_History {
 

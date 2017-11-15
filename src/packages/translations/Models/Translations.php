@@ -40,6 +40,8 @@ class Translations
     public static function setupLang($lang)
     {
 
+
+
         self::$currLanguage = $lang;
     }
 
@@ -113,6 +115,7 @@ class Translations
 
             return $result["value"];
         } else {
+
             foreach (self::getLangs() as $_lang => $name) {
                 if ($_lang == "pl") {
                     continue;
