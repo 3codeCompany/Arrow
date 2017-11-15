@@ -10,8 +10,12 @@
 namespace Arrow\Translations\Models;
 
 
+use function array_unique;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
+use Arrow\ORM\Persistent\DataSet;
+use function is_object;
+use function var_dump;
 
 class Translations
 {
@@ -28,7 +32,8 @@ class Translations
 
     }
 
-    public static function addClassMapping($old, $new){
+    public static function addClassMapping($old, $new)
+    {
         self::$classMapping[$new] = $old;
     }
 
@@ -79,11 +84,13 @@ class Translations
 
     public static function translateText($text, $lang = false, $addidtionalData = [])
     {
-        if (!$lang)
+        if (!$lang) {
             $lang = self::$currLanguage;
+        }
 
-        if ($lang == self::$defaultLang)
+        if ($lang == self::$defaultLang) {
             return $text;
+        }
 
 
         //Logger::get('console',new ConsoleStream())->log($text." ".$lang);
@@ -107,8 +114,9 @@ class Translations
             return $result["value"];
         } else {
             foreach (self::getLangs() as $_lang => $name) {
-                if ($_lang == "pl")
+                if ($_lang == "pl") {
                     continue;
+                }
                 LanguageText::create(array(
                     LanguageText::F_HASH => md5($text),
                     LanguageText::F_ORIGINAL => $text,
@@ -134,15 +142,19 @@ class Translations
     public static function translateObjectsList($list, $class = false, $lang = false)
     {
 
-        if (!$lang)
+
+        if (!$lang) {
             $lang = self::$currLanguage;
+        }
 
-        if ($lang == self::$defaultObjectsLang)
+        if ($lang == self::$defaultObjectsLang) {
             return $list;
+        }
 
 
-        if (empty($list))
+        if (empty($list)) {
             return $list;
+        }
 
 
         //geting first element
@@ -156,8 +168,15 @@ class Translations
             $first = reset($list);
         }
 
+        /*print_r($list);
+        print_r($first);
+        exit();*/
+
         //geting class if not set
+
         $class = $class ? $class : get_class($first);
+
+
 
         $fields = [];
         //geting fields
@@ -170,24 +189,27 @@ class Translations
         $keys = [-1];
 
         foreach ($list as $el) {
-            if ($el["id"])
+            if ($el["id"]) {
                 $keys[] = $el["id"];
+            }
         }
+        $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
-        if(isset(self::$classMapping[$class])) {
+        if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
 
         //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
-        $stm = $db->prepare("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc");
+        $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
+        $stm = $db->prepare($q);
 
 
         try {
             $stm->execute();
         } catch (\PDOException $ex) {
-            exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "')  order by value desc");
+            exit($q);
         }
         $data = array();
         while ($row = $stm->fetch(\PDO::FETCH_ASSOC)) {
@@ -195,6 +217,19 @@ class Translations
         }
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
+
+
+        /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
+            print $class."<br />";
+            print "<pre >";
+            //var_dump($data);
+            print $q;
+            print "</pre>";
+
+            //exit();
+            return $list;
+        }*/
+
 
         foreach ($list as $el) {
             if (!isset($data[$el["id"]])) {
@@ -257,24 +292,30 @@ class Translations
     public static function putEmptyObjectTranslation($obiect)
     {
 
-        if (!$obiect)
+        if (!$obiect) {
             return;
+        }
         $langFields = $obiect::getMultiLangFields();
         $class = $obiect::getClass();
 
-        if(isset(self::$classMapping[$class])) {
+        if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
 
-        foreach ($langFields as $field) {
-            ObjectTranslation::createIfNotExists([
-                ObjectTranslation::F_CLASS => $class,
-                ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
-                ObjectTranslation::F_LANG => self::$currLanguage,
-                ObjectTranslation::F_FIELD => $field,
-                ObjectTranslation::F_VALUE => "",
-                ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
-            ]);
+
+        foreach (self::getLangs() as $_lang => $name) {
+            if ($_lang != "pl") {
+                foreach ($langFields as $field) {
+                    ObjectTranslation::createIfNotExists([
+                        ObjectTranslation::F_CLASS => $class,
+                        ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
+                        ObjectTranslation::F_LANG => $_lang,
+                        ObjectTranslation::F_FIELD => $field,
+                        ObjectTranslation::F_VALUE => "",
+                        ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
+                    ]);
+                }
+            }
         }
     }
 
@@ -287,7 +328,7 @@ class Translations
         $class = get_class($object);
         $langFields = $class::getMultiLangFields();
 
-        if(isset(self::$classMapping[$class])) {
+        if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
 
@@ -296,10 +337,15 @@ class Translations
         $db->exec($query);
 
         foreach ($data as $field => $value) {
-            if (!in_array($field, $langFields))
+            if (!in_array($field, $langFields)) {
                 continue;
-            $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $object->getPKey() . "','" . $lang . "','" . addslashes($value) . "', '" . addslashes($class) . "')";
-            $db->exec($query);
+            }
+            foreach (self::getLangs() as $_lang => $name) {
+                if ($_lang != "pl") {
+                    $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $object->getPKey() . "','" . $lang . "','" . addslashes($value) . "', '" . addslashes($class) . "')";
+                    $db->exec($query);
+                }
+            }
         }
 
     }

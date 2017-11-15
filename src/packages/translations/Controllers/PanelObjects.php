@@ -4,31 +4,18 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-use App\Models\Persistent\Category;
-use App\Models\Persistent\Property;
 use App\Models\Persistent\TransactionText;
+use Arrow\CMS\Models\Persistent\Page;
 use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Controls\API\Components\Toolbar;
 use Arrow\Controls\API\Forms\Fields\Button;
-use Arrow\Controls\API\Forms\Fields\File;
 use Arrow\Controls\API\Forms\Fields\Files;
 use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
-use Arrow\Controls\API\Forms\Fields\Date;
-use Arrow\Controls\API\Forms\Fields\Hidden;
-use Arrow\Controls\API\Forms\Fields\Select;
-use Arrow\Controls\API\Forms\Fields\SwitchF;
-use Arrow\Controls\API\Forms\Fields\Text;
-use Arrow\Controls\API\Forms\Fields\Textarea;
-use Arrow\Controls\API\Forms\Fields\Wyswig;
-use Arrow\Controls\API\Forms\FieldsList;
-use Arrow\Controls\API\Forms\Form;
-use Arrow\Controls\API\Forms\FormBuilder;
-use Arrow\Controls\API\Table\ColumnList;
-use Arrow\Controls\API\Table\Columns\Menu;
 use Arrow\Controls\Helpers\FormHelper;
 use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
+use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
@@ -44,13 +31,15 @@ use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
+use Arrow\Shop\Models\Persistent\Category;
+use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
 use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
-use Arrow\Media\MediaAPI;
+use Arrow\Media\Models\MediaAPI;
 use Arrow\Controls\API\Table\Table;
 use Arrow\Router;
 
@@ -62,9 +51,14 @@ class PanelObjects extends BaseController
         //$this->action->assign('fields' , LanguageText::getFields());
         $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
 
+        $db = Project::getInstance()->getDB();
+        $t = ObjectTranslation::getTable();
+        $db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
+
         $this->action->assign("objects", FormHelper::assocToOptions([
             Category::getClass() => "Kategorie",
-            Property::getClass() => "Cechy"
+            Property::getClass() => "Cechy",
+            Page::getClass() => "Strony",
         ]));
 
 
@@ -78,12 +72,27 @@ class PanelObjects extends BaseController
         $model = $helper->getInputData()['additionalConditions']['model'];
         $tmp = explode("\\", $model);
         $class = "%" . end($tmp);
+        $crit->_field("link", Criteria::C_NOT_EQUAL);
         $crit->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
         $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
 
-        if ($model == Property::getClass()) {
-            $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
+
+        $user = Auth::getDefault()->getUser()->_login();
+        $tmp = explode("_", $user);
+        if(count($tmp) == 2){
+            $crit->_lang($tmp[1]);
         }
+
+
+        $helper->addDefaultOrder(ObjectTranslation::F_LANG);
+        $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
+        $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
+
+        /*if ($model == Property::getClass()) {
+            $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
+        }*/
+
+        //$helper->setDebug($crit->find()->getQuery());
 
         //$helper->addDefaultOrder(Language::F_NAME);
         $this->json($helper->getListData($crit));
