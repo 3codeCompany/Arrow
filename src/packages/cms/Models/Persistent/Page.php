@@ -26,7 +26,7 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObj
     public static function getMultiLangFields(){
         return [
             Page::F_NAME,
-            Page::F_LINK,
+            Page::F_FRONT_LINK,
             Page::F_CONTENT,
             PAGE::F_CONTENTS_ADDITIONAL
         ];

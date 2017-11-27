@@ -8,6 +8,7 @@ use Arrow\ORM\Persistent\Criteria, Arrow\ORM\SqlRouter;
 use Arrow\ORM\JoinCriteria;
 use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\Package\Application\Product;
+use Arrow\Utils\Models\Images\ImageTransform;
 
 
 class MediaAPI
@@ -824,15 +825,15 @@ class MediaAPI
     public static function getMini($path, $width, $height, $crop = false, $points = false)
     {
 
-        if (!file_exists($path)) {
 
+
+        if (!file_exists($path)) {
 
             $_path = str_replace(self::$basePath, self::$baseURL, $path);
 
             if (!file_exists($_path)) {
                 return $_path;
             }
-            //$path = $_path;
         }
 
         //http://static.esotiq.com/data//System/Arrow_Package_Application_Product/18724-99X.jpg
@@ -848,7 +849,7 @@ class MediaAPI
         if (!file_exists($file)) {
 
 
-            $imTransform = new \ImageTransform();
+            $imTransform = new ImageTransform();
             $imTransform->load($path);
             $imTransform->setTargetFile($file);
 

@@ -7,6 +7,7 @@ use Arrow\Common\Models\Track\Track;
 use Arrow\ORM\DB\DB;
 use Arrow\RequestContext;
 use Arrow\Router;
+use function var_dump;
 
 
 class Auth
@@ -152,8 +153,8 @@ class Auth
     {
 
         if(!$user){
-            $result = Criteria::query('\Arrow\Access\Models\User')
-                ->c("login", $login)
+            $result = User::get()
+                ->_login( $login)
                 ->find();
 
 
@@ -176,7 +177,7 @@ class Auth
 
 
         $initVal[Track::F_ACTION] = "login";
-        $initVal[Track::F_CLASS] = 'Arrow\Access\Models\User';
+        $initVal[Track::F_CLASS] = User::getClass();
         $initVal[Track::F_OBJECT_ID] = $result["id"];
         $initVal[Track::F_USER_ID] = $result["id"];
         if (isset($_SERVER["REMOTE_ADDR"]))
@@ -184,34 +185,17 @@ class Auth
         else
             $ext["IP"] = "not given";
 
-        // Sprawdzenie ilości błędnych logowań
-        $limit_bad_log = 10;
 
-        if ( false && $limit_bad_log <= (int)$result["bad_log"]) {
-            $ext["result"] = false;
-            $initVal["info"] = serialize($ext);
-            AccessManager::turnOff();
-            $track = new Track($initVal);
-            $track->save();
-            $result["bad_log"] = $result["bad_log"] + 1;
-            $result->turnOff();
-            $result->save();
-            AccessManager::turnOn();
-            $this->reason = "Konto zostało zablokowane";
-            return false;
-        }
 
 
         if (!empty($result["password"]) && (User::comparePassword($result["password"], $password) || $loginAs) && $result["active"] == "1") {
 
+
             $ext["result"] = true;
             $initVal["info"] = serialize($ext);
-            AccessManager::turnOff();
             $track = new Track($initVal);
             $track->save();
-            $result["bad_log"] = 0;
-            $result->save();
-            AccessManager::turnOn();
+
 
             if($loginAs){
                 $this->shadowUser = $this->user;
@@ -234,12 +218,10 @@ class Auth
         } else {
             $ext["result"] = false;
             $initVal["info"] = serialize($ext);
-            AccessManager::turnOff();
             $track = new Track($initVal);
             $track->save();
             $result["bad_log"] = $result["bad_log"] + 1;
             $result->save();
-            AccessManager::turnOn();
             $this->reason = "Podany login lub hasło nie zgadzają się.";
             return false;
         }

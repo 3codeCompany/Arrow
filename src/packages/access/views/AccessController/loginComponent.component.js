@@ -19,13 +19,14 @@ export default class ArrowViewComponent extends Component {
     }
 
     handleSubmit() {
+
         let data = this.state.form;
         if (data.login == "" || data.password == "") {
             //this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
             return;
         }
 
-        let comm = new Comm("/access/auth/loginAction");
+        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + "access/accessController/loginAction");
         comm.setData({data: data});
 
 
@@ -42,8 +43,9 @@ export default class ArrowViewComponent extends Component {
 
             }
         })
-        this.setState({loading: true});
+        //this.setState({loading: true});
         comm.send();
+
     }
 
     render() {
@@ -71,7 +73,7 @@ export default class ArrowViewComponent extends Component {
                                     disabled={this.state.loading}
                                     onClick={this.handleSubmit.bind(this)}
                                 >
-                                    {this.state.loading ? <i className="fa fa-spinner fa-spin"/> : null} Zaloguj się
+                                    {this.state.loading ? '...' : 'Zaloguj się'}
                                 </button>
                             </div>
                         </div>}

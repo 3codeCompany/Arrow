@@ -1,6 +1,7 @@
 <?php
 namespace Arrow\Access\Models;
 
+use Arrow\Exception;
 use Arrow\ORM\ORM_Arrow_Access_Models_User;
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
@@ -280,7 +281,11 @@ class User extends ORM_Arrow_Access_Models_User implements \Arrow\Models\IUser
     {
         if ($this->settings == null) {
             if ($this->_settings()) {
-                $this->settings = unserialize($this->_settings());
+                try {
+                    $this->settings = unserialize($this->_settings());
+                }catch (\Exception $exception){
+                    $this->settings = [];
+                }
             } else {
                 $this->settings = [];
             }
