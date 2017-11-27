@@ -44,18 +44,17 @@ class MailerAPI extends \Arrow\Object
         //require_once ARROW_LIBS_PATH.DIRECTORY_SEPARATOR."Swift".DIRECTORY_SEPARATOR."lib".DIRECTORY_SEPARATOR."swift_required.php";
         $settings = self::$specialConf;
 
-        $transport = \Swift_SmtpTransport::newInstance($settings["host"])
-            ->setPort($settings["port"])
+        $transport =  (new \Swift_SmtpTransport($settings["host"], $settings["port"]))
             ->setEncryption($settings["secure_type"])
             ->setUsername($settings["username"])
             ->setPassword($settings["password"]);
 
 
         // Create the Mailer using your created Transport
-        $mailer = \Swift_Mailer::newInstance($transport);
+        $mailer = new \Swift_Mailer($transport);
 
-        $logger = new \Swift_Plugins_Loggers_ArrayLogger();
-        $mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
+        //$logger = new \Swift_Plugins_Loggers_ArrayLogger();
+        //$mailer->registerPlugin(new \Swift_Plugins_LoggerPlugin($logger));
 
         $emails = str_replace([";", " "], [",", ""], $emails);
 
@@ -63,7 +62,7 @@ class MailerAPI extends \Arrow\Object
         $from_name = $from_name?$from_name: $settings["from_name"];
 
         try {
-            $message = \Swift_Message::newInstance($topic)
+            $message = (new \Swift_Message($topic))
                 ->setSubject($topic)
                 ->setFrom(array($from => $from_name))
                 ->setTo(is_array($emails) ? $emails : explode(",", $emails))
@@ -85,9 +84,9 @@ class MailerAPI extends \Arrow\Object
             exit("Błąd wysyłki maila");
         }
 
-        if (!$result && $externalLogger) {
+        /*if (!$result && $externalLogger) {
             $externalLogger->critical("Mail sent error: " . $logger->dump());
-        }
+        }*/
 
 
         return $result;

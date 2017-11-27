@@ -10,8 +10,12 @@
 namespace Arrow\Translations\Models;
 
 
+use function array_unique;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
+use Arrow\ORM\Persistent\DataSet;
+use function is_object;
+use function var_dump;
 
 class Translations
 {
@@ -35,6 +39,8 @@ class Translations
 
     public static function setupLang($lang)
     {
+
+
 
         self::$currLanguage = $lang;
     }
@@ -109,6 +115,7 @@ class Translations
 
             return $result["value"];
         } else {
+
             foreach (self::getLangs() as $_lang => $name) {
                 if ($_lang == "pl") {
                     continue;
@@ -163,8 +170,15 @@ class Translations
             $first = reset($list);
         }
 
+        /*print_r($list);
+        print_r($first);
+        exit();*/
+
         //geting class if not set
+
         $class = $class ? $class : get_class($first);
+
+
 
         $fields = [];
         //geting fields
@@ -181,6 +195,7 @@ class Translations
                 $keys[] = $el["id"];
             }
         }
+        $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
         if (isset(self::$classMapping[$class])) {
@@ -189,13 +204,14 @@ class Translations
 
         //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
-        $stm = $db->prepare("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc");
+        $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
+        $stm = $db->prepare($q);
 
 
         try {
             $stm->execute();
         } catch (\PDOException $ex) {
-            exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "')  order by value desc");
+            exit($q);
         }
         $data = array();
         while ($row = $stm->fetch(\PDO::FETCH_ASSOC)) {
@@ -203,6 +219,19 @@ class Translations
         }
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
+
+
+        /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
+            print $class."<br />";
+            print "<pre >";
+            //var_dump($data);
+            print $q;
+            print "</pre>";
+
+            //exit();
+            return $list;
+        }*/
+
 
         foreach ($list as $el) {
             if (!isset($data[$el["id"]])) {
@@ -275,15 +304,20 @@ class Translations
             $class = self::$classMapping[$class];
         }
 
-        foreach ($langFields as $field) {
-            ObjectTranslation::createIfNotExists([
-                ObjectTranslation::F_CLASS => $class,
-                ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
-                ObjectTranslation::F_LANG => self::$currLanguage,
-                ObjectTranslation::F_FIELD => $field,
-                ObjectTranslation::F_VALUE => "",
-                ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
-            ]);
+
+        foreach (self::getLangs() as $_lang => $name) {
+            if ($_lang != "pl") {
+                foreach ($langFields as $field) {
+                    ObjectTranslation::createIfNotExists([
+                        ObjectTranslation::F_CLASS => $class,
+                        ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
+                        ObjectTranslation::F_LANG => $_lang,
+                        ObjectTranslation::F_FIELD => $field,
+                        ObjectTranslation::F_VALUE => "",
+                        ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
+                    ]);
+                }
+            }
         }
     }
 
