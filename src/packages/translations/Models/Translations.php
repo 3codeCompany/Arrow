@@ -28,7 +28,8 @@ class Translations
 
     }
 
-    public static function addClassMapping($old, $new){
+    public static function addClassMapping($old, $new)
+    {
         self::$classMapping[$new] = $old;
     }
 
@@ -79,11 +80,13 @@ class Translations
 
     public static function translateText($text, $lang = false, $addidtionalData = [])
     {
-        if (!$lang)
+        if (!$lang) {
             $lang = self::$currLanguage;
+        }
 
-        if ($lang == self::$defaultLang)
+        if ($lang == self::$defaultLang) {
             return $text;
+        }
 
 
         //Logger::get('console',new ConsoleStream())->log($text." ".$lang);
@@ -107,8 +110,9 @@ class Translations
             return $result["value"];
         } else {
             foreach (self::getLangs() as $_lang => $name) {
-                if ($_lang == "pl")
+                if ($_lang == "pl") {
                     continue;
+                }
                 LanguageText::create(array(
                     LanguageText::F_HASH => md5($text),
                     LanguageText::F_ORIGINAL => $text,
@@ -134,15 +138,18 @@ class Translations
     public static function translateObjectsList($list, $class = false, $lang = false)
     {
 
-        if (!$lang)
+        if (!$lang) {
             $lang = self::$currLanguage;
+        }
 
-        if ($lang == self::$defaultObjectsLang)
+        if ($lang == self::$defaultObjectsLang) {
             return $list;
+        }
 
 
-        if (empty($list))
+        if (empty($list)) {
             return $list;
+        }
 
 
         //geting first element
@@ -170,12 +177,13 @@ class Translations
         $keys = [-1];
 
         foreach ($list as $el) {
-            if ($el["id"])
+            if ($el["id"]) {
                 $keys[] = $el["id"];
+            }
         }
         $db = Project::getInstance()->getDB();
 
-        if(isset(self::$classMapping[$class])) {
+        if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
 
@@ -257,12 +265,13 @@ class Translations
     public static function putEmptyObjectTranslation($obiect)
     {
 
-        if (!$obiect)
+        if (!$obiect) {
             return;
+        }
         $langFields = $obiect::getMultiLangFields();
         $class = $obiect::getClass();
 
-        if(isset(self::$classMapping[$class])) {
+        if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
 
@@ -278,28 +287,45 @@ class Translations
         }
     }
 
-    public static function saveObjectTranslation($object, $data, $lang = null)
+    public static function saveObjectTranslation(IMultilangObject $object, $data, $lang = null)
     {
 
         $lang = $lang ?? self::$currLanguage;
+
+        if ($lang == self::$defaultLang) {
+            $object->setValues($data);
+            $object->save();
+            return true;
+        }
+
         $fields = array_keys($data);
 
         $class = get_class($object);
         $langFields = $class::getMultiLangFields();
 
-        if(isset(self::$classMapping[$class])) {
+        if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
 
         $query = "delete from common_lang_objects_translaction where field in('" . implode("','", $fields) . "') and class='" . addslashes($class) . "' and lang='" . $lang . "' and id_object=" . $object->getPKey();
+
         $db = Project::getInstance()->getDB();
         $db->exec($query);
 
+        $stm = $db->prepare("insert into common_lang_objects_translaction (field, id_object,lang,value, class) values(:field,:key,:lang,:value, :class )");
+
         foreach ($data as $field => $value) {
-            if (!in_array($field, $langFields))
+            if (!in_array($field, $langFields)) {
                 continue;
-            $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $object->getPKey() . "','" . $lang . "','" . addslashes($value) . "', '" . addslashes($class) . "')";
-            $db->exec($query);
+            }
+            $stm->execute([
+                "field" => $field,
+                "key" => $object->getPKey(),
+                "lang" => $lang,
+                "value" => $value,
+                "class" => $class
+            ]);
+
         }
 
     }
