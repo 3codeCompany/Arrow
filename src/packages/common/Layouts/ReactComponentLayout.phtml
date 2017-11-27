@@ -9,7 +9,7 @@ $props = json_encode(
     array_merge([
         "baseURL" => rtrim(\Arrow\Router::link("."), "/"),
         "path" => $this->getRoute(),
-        "requestURI" => $_SERVER["REQUEST_URI"],
+        "requestURI" => "",//$_SERVER["REQUEST_URI"],
         "component" => $class
     ], $this->getVars())
 );

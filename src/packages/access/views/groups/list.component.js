@@ -25,6 +25,7 @@ export default class access_access_users_list extends Component {
     render() {
         return (
             <div>
+
                 <Navbar>
                     <span>System</span>
                     <span>Grupy dostępu</span>

@@ -57,14 +57,14 @@ export default class access_access_users_list extends Component {
                                     })
                                 ,
                                 Column.text("groups", "Grupy dostępu")
-                                    .onClick((row, column, event) => {
+                                    .onClick((row, column, event, container) => {
                                         if (event.target.tagName == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
                                             row.edited = !row.edited;
                                         }
-                                        this.forceUpdate();
+                                        container.forceUpdate();
 
                                     })
-                                    .template((val, row) => {
+                                    .template((val, row, event, container) => {
                                         let v = parseInt(val || 0);
                                         let selected = [];
                                         let selectedNames = [];
@@ -75,7 +75,7 @@ export default class access_access_users_list extends Component {
                                             }
                                         })
                                         if (row.edited) {
-                                            return <div>
+                                            return <div> {container}
                                                 <CheckboxGroup
                                                     value={selected}
                                                     options={this.props.agroups}
