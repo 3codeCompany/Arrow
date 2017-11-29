@@ -145,7 +145,6 @@ class Translations
     public static function translateObjectsList($list, $class = false, $lang = false, $debug = false)
     {
 
-
         if (!$lang) {
             $lang = self::$currLanguage;
         }
@@ -339,10 +338,17 @@ class Translations
         }
     }
 
-    public static function saveObjectTranslation($object, $data, $lang = null)
+    public static function saveObjectTranslation(IMultilangObject $object, $data, $lang = null)
     {
 
         $lang = $lang ?? self::$currLanguage;
+
+        if ($lang == self::$defaultLang) {
+            $object->setValues($data);
+            $object->save();
+            return true;
+        }
+
         $fields = array_keys($data);
 
         $class = get_class($object);
@@ -353,19 +359,24 @@ class Translations
         }
 
         $query = "delete from common_lang_objects_translaction where field in('" . implode("','", $fields) . "') and class='" . addslashes($class) . "' and lang='" . $lang . "' and id_object=" . $object->getPKey();
+
         $db = Project::getInstance()->getDB();
         $db->exec($query);
+
+        $stm = $db->prepare("insert into common_lang_objects_translaction (field, id_object,lang,value, class) values(:field,:key,:lang,:value, :class )");
 
         foreach ($data as $field => $value) {
             if (!in_array($field, $langFields)) {
                 continue;
             }
-            foreach (self::getLangs() as $_lang => $name) {
-                if ($_lang != "pl") {
-                    $query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $object->getPKey() . "','" . $lang . "','" . addslashes($value) . "', '" . addslashes($class) . "')";
-                    $db->exec($query);
-                }
-            }
+            $stm->execute([
+                "field" => $field,
+                "key" => $object->getPKey(),
+                "lang" => $lang,
+                "value" => $value,
+                "class" => $class
+            ]);
+
         }
 
     }
