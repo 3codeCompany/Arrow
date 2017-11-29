@@ -76,7 +76,7 @@ class PanelObjects extends BaseController
         $model = $helper->getInputData()['additionalConditions']['model'];
         $tmp = explode("\\", $model);
         $class = "%" . end($tmp);
-        $crit->_field("link", Criteria::C_NOT_EQUAL);
+        //$crit->_field("link", Criteria::C_NOT_EQUAL);
         $crit->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
         $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
 

@@ -142,7 +142,7 @@ class Translations
     }
 
 
-    public static function translateObjectsList($list, $class = false, $lang = false)
+    public static function translateObjectsList($list, $class = false, $lang = false, $debug = false)
     {
 
 
@@ -184,10 +184,13 @@ class Translations
         $fields = [];
         //geting fields
         if (is_array($first)) {
-            $fields = array_keys($first);
+            //$fields = array_keys($first);
+            $fields = array_intersect($class::getMultiLangFields(), $fields);
         } elseif ($first instanceof IMultilangObject) {
             $fields = array_intersect($class::getMultiLangFields(), $first->getLoadedFields());
         }
+
+
 
         $keys = [-1];
 
@@ -221,6 +224,12 @@ class Translations
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
 
+                /*if($debug){
+                    print_r($q)."<br />";
+            print_r($data);
+            exit();
+        }*/
+
 
         /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
             print $class."<br />";
@@ -244,6 +253,14 @@ class Translations
                     if ($el["id"]) {
                         $secondLoad["objects"][] = $el["id"];
                         $secondLoad["fields"][] = $field;
+                    }
+
+                }else{
+
+                    //21457
+                    if(empty($data[$el["id"]][$field])) {
+                        //$query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $el["id"] . "','" . $lang . "','" . addslashes("") . "', '" . addslashes($class) . "')";
+                        //$db->exec($query);
                     }
 
                 }
@@ -386,5 +403,16 @@ class Translations
         self::$defaultObjectsLang = $defaultObjectsLang;
     }
 
+    /**
+     * @param $arrayOfTexts array
+     * @return array
+     */
+    public static function translateTextArray($arrayOfTexts)
+    {
+        foreach($arrayOfTexts as $index => $text) {
+            $arrayOfTexts[$index] = Translations::translateText($text);
+        }
+        return $arrayOfTexts;
+    }
 
 }
