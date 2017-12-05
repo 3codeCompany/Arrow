@@ -6,7 +6,7 @@
  * Time: 11:06
  */
 
-namespace Arrow\Common\Models\Helspers;
+namespace Arrow\Common\Models\Helpers;
 
 use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\ORM\Persistent\Criteria;

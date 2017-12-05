@@ -7,7 +7,7 @@
  */
 
 
-namespace Arrow\Common\Models\Helspers;
+namespace Arrow\Common\Models\Helpers;
 
 use function array_keys;
 use Arrow\Media\Models\Element;

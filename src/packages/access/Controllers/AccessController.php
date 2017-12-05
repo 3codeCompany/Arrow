@@ -30,7 +30,7 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
-use Arrow\Controls\API\Forms\Validator;
+use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;

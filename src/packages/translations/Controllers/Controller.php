@@ -5,7 +5,7 @@ namespace Arrow\Translations\Controllers;
 
 use App\Controllers\BaseController;
 use Arrow\Common\Layouts\ReactComponentLayout;
-use Arrow\Controls\API\Forms\Validator;
+use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Translations\Models\Language;
 
