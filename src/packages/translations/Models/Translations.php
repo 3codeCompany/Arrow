@@ -201,14 +201,13 @@ class Translations
         $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
-        if (isset(self::$classMapping[$class])) {
-            $class = self::$classMapping[$class];
-        }
-
         //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
         $stm = $db->prepare($q);
+
+      /*  print_r($q);
+        exit();*/
 
 
         try {
@@ -228,6 +227,8 @@ class Translations
             print_r($data);
             exit();
         }*/
+
+
 
 
         /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
