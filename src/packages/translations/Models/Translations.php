@@ -142,7 +142,7 @@ class Translations
     }
 
 
-    public static function translateObjectsList($list, $class = false, $lang = false)
+    public static function translateObjectsList($list, $class = false, $lang = false, $debug = false)
     {
 
         if (!$lang) {
@@ -183,10 +183,13 @@ class Translations
         $fields = [];
         //geting fields
         if (is_array($first)) {
-            $fields = array_keys($first);
+            //$fields = array_keys($first);
+            $fields = array_intersect($class::getMultiLangFields(), $fields);
         } elseif ($first instanceof IMultilangObject) {
             $fields = array_intersect($class::getMultiLangFields(), $first->getLoadedFields());
         }
+
+
 
         $keys = [-1];
 
@@ -198,14 +201,13 @@ class Translations
         $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
-        if (isset(self::$classMapping[$class])) {
-            $class = self::$classMapping[$class];
-        }
-
         //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
         $stm = $db->prepare($q);
+
+      /*  print_r($q);
+        exit();*/
 
 
         try {
@@ -219,6 +221,14 @@ class Translations
         }
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
+
+                /*if($debug){
+                    print_r($q)."<br />";
+            print_r($data);
+            exit();
+        }*/
+
+
 
 
         /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
@@ -243,6 +253,14 @@ class Translations
                     if ($el["id"]) {
                         $secondLoad["objects"][] = $el["id"];
                         $secondLoad["fields"][] = $field;
+                    }
+
+                }else{
+
+                    //21457
+                    if(empty($data[$el["id"]][$field])) {
+                        //$query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $el["id"] . "','" . $lang . "','" . addslashes("") . "', '" . addslashes($class) . "')";
+                        //$db->exec($query);
                     }
 
                 }
@@ -397,5 +415,16 @@ class Translations
         self::$defaultObjectsLang = $defaultObjectsLang;
     }
 
+    /**
+     * @param $arrayOfTexts array
+     * @return array
+     */
+    public static function translateTextArray($arrayOfTexts)
+    {
+        foreach($arrayOfTexts as $index => $text) {
+            $arrayOfTexts[$index] = Translations::translateText($text);
+        }
+        return $arrayOfTexts;
+    }
 
 }
