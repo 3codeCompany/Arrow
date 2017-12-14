@@ -23,7 +23,7 @@ use Arrow\Controls\API\Forms\Form;
 use Arrow\Controls\API\Forms\FormBuilder;
 use Arrow\Controls\API\Table\ColumnList;
 use Arrow\Controls\API\Table\Columns\Menu;
-use Arrow\Controls\Helpers\TableListORMHelper;
+use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;

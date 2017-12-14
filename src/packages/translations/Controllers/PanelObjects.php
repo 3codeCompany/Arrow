@@ -12,7 +12,7 @@ use Arrow\Controls\API\Forms\Fields\Button;
 use Arrow\Controls\API\Forms\Fields\Files;
 use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
 use Arrow\Controls\Helpers\FormHelper;
-use Arrow\Controls\Helpers\TableListORMHelper;
+use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;

@@ -43,6 +43,7 @@ export default class access_access_users_list extends Component {
                         <Table
                             remoteURL={this.props.baseURL + "/getData"}
                             ref={(table) => this.table = table}
+                            rememberState={true}
                             columns={[
                                 Column.id("id", "Id"),
 

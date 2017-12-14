@@ -38,7 +38,7 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
-use Arrow\Controls\Helpers\TableListORMHelper;
+use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;

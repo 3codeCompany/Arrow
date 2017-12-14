@@ -12,6 +12,7 @@ namespace Arrow\Common\Models\Helpers;
 use function array_keys;
 use Arrow\Media\Models\Element;
 use Arrow\Media\Models\MediaAPI;
+use Arrow\Models\ExceptionHandler;
 use Arrow\ORM\Persistent\PersistentObject;
 use function basename;
 use const PHP_EOL;
@@ -44,7 +45,7 @@ class FormHelper
                 $result[$connName][] = [
                     "key" => $file["id"],
                     "name" => $file["name"],
-                    "size" => filesize($file["path"]),
+                    "size" => @filesize($file["path"]),
                     "description" => "",
                     "title" => "",
                     "type" => $isImage ? "image" : "document",
@@ -53,6 +54,7 @@ class FormHelper
                 ];
             }
         }
+
         return $result;
 
     }
@@ -67,11 +69,6 @@ class FormHelper
         }
 
         $media = MediaAPI::getMedia($object);
-
-        /*print "<table><tr>";
-        print "<td valign='top'><pre>" . print_r($filesData, 1) . "</pre></td>";
-        print "<td valign='top'><pre>" . print_r($media, 1) . "</pre></td>";
-        print "</tr></table>";*/
 
         // lookup to delete
         foreach ($media as $connName => $files) {

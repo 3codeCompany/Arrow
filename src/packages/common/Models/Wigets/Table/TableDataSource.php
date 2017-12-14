@@ -9,14 +9,42 @@
 
 namespace Arrow\Common\Models\Wigets\Table;
 
-use Arrow\Controls\API\Table\ITableDataSource;
 use Arrow\Exception;
 use Arrow\ORM\DB\DB;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\RequestContext;
 
-class TableDataSource extends Criteria implements ITableDataSource
+
+
+interface ITableDataSource
+{
+    const FILTER_EQUAL = "==";
+    const FILTER_IN = "IN";
+    const FILTER_NOT_IN = "NOT IN";
+    const FILTER_LIKE = "LIKE";
+    const FILTER_NOT_EQUAL = "!=";
+    const FILTER_NOT_LIKE = "NOT LIKE";
+    const FILTER_START_WITH = "^%";
+    const FILTER_END_WITH = "%$";
+
+    public function getRows($columns, $debug);
+
+    public function addOrder($order, $direction);
+
+    public function limit($index, $length);
+
+    public function count();
+
+    public function applyFilterSearch($field, $value, $type, $filter);
+
+    public function dataPrepared($data);
+
+}
+
+
+
+class TableDataSource extends Criteria
 {
 
     protected $afterDataPrepared = [];
