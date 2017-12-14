@@ -3,8 +3,7 @@ import React, {Component} from 'react';
 import Navbar from 'frontend/src/ctrl/Navbar';
 import {confirm} from 'frontend/src/ctrl/Overlays';
 import {Table, Column} from 'frontend/src/ctrl/Table';
-import Panel from 'frontend/src/ctrl/Panel';
-import {Row} from 'frontend/src/layout/BootstrapLayout';
+
 import Comm from 'frontend/src/lib/Comm';
 import {CheckboxGroup} from 'frontend/src/ctrl/Fields';
 
@@ -33,6 +32,7 @@ export default class access_access_users_list extends Component {
 
     render() {
         return (
+
             <div>
                 <Navbar>
                     <span>System</span>
@@ -106,14 +106,3 @@ export default class access_access_users_list extends Component {
         );
     }
 }
-
-/*    <table name="access_points_groups" class="Arrow\Access\Models\AccessPointGroup">
-        <trackers>
-            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
-            <tracker class="Arrow\Common\Models\Track\ORMObjectsArchiver"/>
-        </trackers>
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="access_points_id" type="INTEGER"/>
-        <field name="group_id" type="INTEGER" size="255"/>
-        <field name="policy" type="INTEGER"/>
-    </table>*/

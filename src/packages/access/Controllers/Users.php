@@ -185,10 +185,10 @@ class Users extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-    public function edit(Action $view, RequestContext $request)
+    public function edit()
     {
-        $view->setLayout(new ReactComponentLayout());
-        $user = User::get()->findByKey($request["key"]);
+
+        $user = User::get()->findByKey($this->request["key"]);
 
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
@@ -205,13 +205,16 @@ class Users extends \Arrow\Models\Controller
                 ->limit(0, 10)
                 ->find();
         }
-        $this->action->assign("history", $history);
-        $this->action->assign("groups", $groups);
-        $this->action->assign("user", $user);
-        $this->action->assign("selectedGroups", $selectedGroups);
+        $data = [];
+        $data["history"] = $history;
+        $data["groups"] = $groups;
+        $data["user"] = $user;
+        $data["selectedGroups"] = $selectedGroups;
+
+        $this->json($data);
 
 
-        return;
+
 
     }
 
