@@ -137,8 +137,11 @@ class FormHelper
         return $files;
     }
 
-    public static function getOrganizedFiles($single = true, $namespace = "data")
+    public static function getOrganizedFiles()
     {
+
+        if(!isset($_FILES))
+            return [];
 
         $ret = self::getFixedFilesArray();
 
