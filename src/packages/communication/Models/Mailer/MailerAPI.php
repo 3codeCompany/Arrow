@@ -67,9 +67,13 @@ class MailerAPI extends \Arrow\Object
                 ->setFrom(array($from => $from_name))
                 ->setTo(is_array($emails) ? $emails : explode(",", $emails))
                 ->setBody($content, 'text/html');
+<<<<<<< HEAD:src/packages/communication/Models/Mailer/MailerAPI.php
             if ($bcc) {
                 $message->setBcc(is_array($bcc) ? $bcc : explode(",", $bcc));
             }
+=======
+
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/communication/Models/Mailer/MailerAPI.php
             if ($attachments) {
                 foreach ($attachments as $a) {
                     $message->attach(\Swift_Attachment::fromPath($a));

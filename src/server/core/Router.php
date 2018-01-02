@@ -42,11 +42,8 @@ class Router extends \Arrow\Object
 
     private static $basePath = "";
 
-    private static $packageSeparator = ",-";
-    private static $actionsSeparator = ",";
-
     private static $actionName = null;
-    private static $actions = array();
+
 
     public static function getActionName()
     {
@@ -82,12 +79,17 @@ class Router extends \Arrow\Object
 
     public static function link( $path, array $params = null ){
         if( $path[0] == "?"){
-            $path = ViewManager::getCurrentView()->get()->getPath().$path;
+            $path = ViewManager::getCurrentView()->get()->getRoute().$path;
         }elseif($path[0] == "."){
 
-            $tmp = explode(DIRECTORY_SEPARATOR, ViewManager::getCurrentView()->get()->getPath());
+            $tmp = explode(
+                DIRECTORY_SEPARATOR,
+                ViewManager::getCurrentView()->get()->getRoute()
+            );
+
             $tmp[count($tmp)-1] = substr( $path, 2 );
-            unset($tmp[0]);
+
+            //unset($tmp[0]);
             $path = implode("/",$tmp);
         }
 
@@ -165,15 +167,22 @@ class Router extends \Arrow\Object
 
         $p = parse_url(urldecode("/".ltrim($_SERVER["REQUEST_URI"], "/" )));
 
+
         if (self::$basePath == "/")
             $action = str_replace( "index.php", "" , $p["path"]);
-        else
-            $action = str_replace([self::$basePath, "index.php"], ["", ""], $p["path"]);
+        else {
+            $len = strlen(self::$basePath);
+            if(substr($p["path"], 0, $len) == self::$basePath){
+                $action = substr($p["path"], $len );
+            }
+            //$action = str_replace([self::$basePath, "index.php"], ["", ""], $p["path"]);
+        }
 
         $action = ltrim($action, "/");
 
         if (empty($action))
             $action = "index";
+
 
         self::$actionName = $action;
     }
@@ -203,6 +212,8 @@ class Router extends \Arrow\Object
 
     public function process()
     {
+
+
         $dispatcher = \Arrow\Models\Dispatcher::getDefault();
         if (empty(self::$actionName)) {
             $path = \Arrow\Controller::$project->getSetting("application.view.default.view");
@@ -211,6 +222,8 @@ class Router extends \Arrow\Object
 
             $this->action = $dispatcher->get(self::$actionName);
         }
+
+
 
         if(!$this->action->exists()){
             $this->notFound($this->action);

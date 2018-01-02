@@ -5,8 +5,13 @@ namespace Arrow\Translations\Controllers;
 
 use App\Controllers\BaseController;
 use Arrow\Common\Layouts\ReactComponentLayout;
+<<<<<<< HEAD
 use Arrow\Controls\API\Forms\Validator;
 use Arrow\Controls\Helpers\TableListORMHelper;
+=======
+use Arrow\Common\Models\Helpers\Validator;
+use Arrow\Common\Models\Helpers\TableListORMHelper;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Translations\Models\Language;
 
 class Languages extends BaseController

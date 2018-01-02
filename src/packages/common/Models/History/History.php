@@ -41,8 +41,8 @@ class History extends ORM_Arrow_Common_Models_History_History {
 
     public static function getObjectHistoryCriteria(PersistentObject $object){
         return self::get()
-            ->c(self::F_ELEMENT_ID, $object->getPKey())
-            ->c(self::F_CLASS, $object->getClass())
+            ->c(self::F_MODEL_ID, $object->getPKey())
+            ->c(self::F_MODEL, $object->getClass())
             ;
     }
 
@@ -157,4 +157,4 @@ class History extends ORM_Arrow_Common_Models_History_History {
         return new WidgetsSet([$table,$modal]);
     }
 
-} 
+}

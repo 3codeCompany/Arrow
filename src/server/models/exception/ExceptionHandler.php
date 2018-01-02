@@ -168,17 +168,20 @@ class ExceptionHandler implements IExceptionHandler
         //zmienić aby było pobierane przez handlery
         $user = null;
 
+
         //$user = Auth::getDefault()->getUser();
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
+
         if($_SERVER["REMOTE_ADDR"]=="83.142.126.242" || $_SERVER["REMOTE_ADDR"]=="91.240.76.1" || $_SERVER["REMOTE_ADDR"]=="89.71.77.24" || $_SERVER["HTTP_HOST"] == "esolocal.com" /*dom*/){
             print $this->getHead().$this->printDeveloperMessage($exception).$this->getFooter();
         }
 
         print $this->printPublicMinimumMessage();
+
         exit();
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
@@ -364,7 +367,7 @@ class ExceptionHandler implements IExceptionHandler
             } elseif (is_array($arg)) {
                 $str .= "Array[" . count($arg) . "] {" . $this->printArguments($arg, $i) . "}";
             } elseif (is_string($arg)) {
-                $str .= substr($arg, 0, 20);
+                $str .= substr($arg, 0, 100);
             }
             //if ($key + 1 < count($args)) {
             $str .= ", ";

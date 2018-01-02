@@ -23,7 +23,11 @@
         <field name="id_object" type="integer" required="true" size="11"/>
         <field name="class" type="varchar" required="true" size="225"/>
         <field name="lang" type="char" required="true" size="2"/>
+<<<<<<< HEAD
         <field name="source" type="varchar" required="true" size="1000"/>
+=======
+        <field name="source" type="varchar" required="true" size="500"/>
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
         <field name="field" type="varchar" required="true" size="20"/>
         <field name="value" type="LONGVARCHAR" size="16777215"/>
         <index name="id_object" type="BTREE">

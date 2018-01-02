@@ -1,9 +1,10 @@
 <?php namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
-use Arrow\Exception;
 use Arrow\RequestContext;
 use Arrow\Router;
+use function array_slice;
+use function ucfirst;
 
 /**
  * Arrow template structure
@@ -35,131 +36,52 @@ class Dispatcher
 
         }
         $path = $path[0] == "/" ? $path : "/" . $path;
-        $data = ["package" => 'app', "path" => $path, "shortPath" => $path, "controller" => 'App\\Controllers\\Controller'];
         $packages = Project::getInstance()->getPackages();
 
-        $equateConf = false;
 
+        $tmp = explode("/", trim($path, "/"));
 
-        foreach ($this->configuration["path"] as $routeConfigPath => $routeConfig) {
-
-
-            if (strpos($path, $routeConfigPath) === 1) {
-                $equateConf = $routeConfig;
-                break;
-            } elseif (strpos($routeConfigPath, "*") !== false) {
-                $pattern = "/" . str_replace("*", "(.*?)", str_replace("/", "\\/", $routeConfigPath)) . "/";
-
-                if (preg_match_all($pattern, $path, $matches)) {
-                    $equateConf = $routeConfig;
-                    /*  print_r($matches);
-                      print $pattern."\n".$path.PHP_EOL;
-                  exit();*/
-                }
-
-
+        $c = count($tmp);
+        if ($c >= 2) {
+            if ($c == 2) {
+                array_unshift($tmp, 'app');
             }
 
 
-            //@todo rozwinąć routing
-            /*if(is_string($routeConfigPath) ) {
-
-
-
-            }else if ($routeConfigPath["type"] == "prefix" && strpos($path, $routeConfigPath["path"]) === 0) {
-                $equateConf = $routeConfigPath;
-                break;
-            } elseif ($routeConfigPath["type"] == "path" && strpos($path, $routeConfigPath["path"]) === 0) {
-
-                $tmp = str_replace($routeConfigPath["path"], "", $path);
-                $tmp = explode("/", $tmp);
-                $controllerName = $tmp[0];
-                $controller = str_replace("*", $controllerName, $routeConfigPath["controller"]);
-                unset($tmp[0]);
-                $path = implode("/", $tmp);
-                $equateConf = [
-                    "controller" => $controller,
-                    "path" => $path,
-                    "layout" => "",
-                    "package" => "",
-                    "base" => $routeConfigPath["base"] .  $controllerName
-                ];
-                break;
-            } elseif ($routeConfigPath["type"] == "regex" && preg_match($routeConfigPath["path"], $path)) {
-                $equateConf = $routeConfigPath;
-                break;
-            } elseif ($routeConfigPath["type"] == "equal" && $routeConfigPath["path"] == $path) {
-                $equateConf = $routeConfigPath;
-                break;
-            }*/
-        }
-
-        //print_r($equateConf);
-        //exit();
-
-        if ($equateConf !== false) {
-
-            if (is_string($equateConf)) {
-                $data["controller"] = $equateConf;
-
-                $file = self::$classPathResolver->findFile($equateConf);
-
-                //problem z symlinkami - zwracają mylącą ścieżkę dla sysstemu
-                if (strpos($file, "vendor") !== false) {
-                    $tmp = explode("vendor", $file);
-                    $file = "vendor" . $tmp[1];
-                }
-
-                $xpath = str_replace([ARROW_DOCUMENTS_ROOT, "composer/../", "/"], ["", "", DIRECTORY_SEPARATOR], dirname($file));
-
-
-                foreach ($packages as $name => $dir) {
-                    $dir = str_replace("/", DIRECTORY_SEPARATOR, $dir);
-
-                    $pos = strpos($xpath, $dir);
-                    if ($pos === 0 || $pos === 1) {
-                        $data["package"] = $name;
-                    }
-                }
-                $data["shortPath"] = trim(str_replace($routeConfigPath, "", $path), "/");
+            if (isset($packages[$tmp[0]]) || $tmp[0] == "app") {
+                $package = $tmp[0];
+                $controller = array_slice($tmp, 1, count($tmp) - 2);
             } else {
-
-                $data["controller"] = $equateConf["__controller"];
-
-                $file = self::$classPathResolver->findFile($data["controller"]);
-                if (!$file) {
-                    throw new Exception("Cant find route controller `{$data["controller"]}`");
-                }
-
-
-                //@todo zmienić ten sposob na niezalezny od composera
-                $file = "/vendor" . explode("vendor", dirname($file))[1];
-
-                $xpath = str_replace(["composer/../", "/"], ["", DIRECTORY_SEPARATOR], dirname($file));
-
-                foreach ($packages as $name => $dir) {
-                    $dir = str_replace("/", DIRECTORY_SEPARATOR, $dir);
-
-                    $pos = strpos($xpath, $dir);
-                    if ($pos === 0 || $pos === 1) {
-                        $data["package"] = $name;
-                    }
-                }
-                $data["shortPath"] = trim(str_replace($routeConfigPath, "", $path), "/");
-                if (isset($equateConf["__actionBase"])) {
-
-                    if (substr($data["shortPath"], 0, strlen($equateConf["__actionBase"])) == $equateConf["__actionBase"]) {
-                        $data["shortPath"] = substr($data["shortPath"], strlen($equateConf["__actionBase"]));
-                    }
-                }
-
-
-                if (isset($equateConf["__actionPrefix"]))
-                    $data["shortPath"] = $equateConf["__actionPrefix"] . "/" . $data["shortPath"];
+                $package = 'app';
+                $controller = array_slice($tmp, 0, count($tmp) - 1);
             }
+            $action = end($tmp);
+            foreach ($controller as &$el) {
+                $el = ucfirst($el);
+            }
+            $controller = implode("\\", $controller);
+
+            $_tmpData = [
+                "package" => $package,
+                "controller" => ($package == "app" ? 'App\\' : "Arrow\\" . ucfirst($package) . "\\") . "Controllers\\" . $controller,
+                "action" => $action,
+                "packagePath" => $package == "app" ? "./app/" : $packages[$package],
+                "path" => str_replace("/" . trim($package, "/"), "", $path)
+            ];
+
+
+            return [
+                "path" => $_tmpData["path"],
+                "shortPath" => $action,
+                "controller" => $_tmpData["controller"],
+                "package" => $_tmpData["package"],
+            ];
+
         }
 
-        return $data;
+
+        throw new \Exception("Not mapped path: `{$path}` ");
+
     }
 
     private static $actions = [];
@@ -173,12 +95,18 @@ class Dispatcher
 
         if (!$skipRewriteTest) {
             $rewriteTest = $this->findByRewrite($path);
-            if ($rewriteTest)
+            if ($rewriteTest) {
                 return $rewriteTest;
+            }
         }
 
         $pathInfo = $this->resolvePath($path);
-        $action = new Action($pathInfo["path"], $pathInfo["shortPath"], null, $pathInfo["controller"], $pathInfo["package"]);
+        $action = new Action(
+            $pathInfo["path"],
+            $pathInfo["shortPath"],
+            $pathInfo["controller"],
+            $pathInfo["package"]
+        );
 
 
         self::$actions[$path] = $action;
@@ -211,8 +139,9 @@ class Dispatcher
                 for ($i = $c - 1; $i < count($rewrite["params"]); $i++) {
                     if (is_array($rewrite["params"][$i])) {
                         $request->addParameter(key($rewrite["params"][$i]), reset($rewrite["params"][$i]));
-                    } else
+                    } else {
                         $request->addParameter($rewrite["params"][$i], null);
+                    }
                 }
 
 

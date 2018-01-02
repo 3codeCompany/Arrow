@@ -51,6 +51,7 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
     $_SESSION["inDev"] = $_REQUEST["inDev"];
 } ?>
 
+<<<<<<< HEAD
 
 <? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
     <script type="text/javascript" src="<?= $this["webpackManifest"]["js"] ?>"></script>
@@ -58,5 +59,19 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin="anonymous"></script>
 <? } ?>
+=======
+<script type="text/javascript" src="<?= $this["webpackManifest"]["vendors"]["js"] ?>"></script>
+<link rel="stylesheet" href="<?= $this["webpackManifest"]["vendors"]["css"] ?>"/>
+
+<? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
+    <script type="text/javascript" src="<?= $this["webpackManifest"]["admin"]["js"] ?>"></script>
+    <link rel="stylesheet" href="<?= $this["webpackManifest"]["admin"]["css"] ?>"/>
+<? } else { ?>
+    <script src="//localhost:3000/bundle.js" crossorigin></script>
+<? } ?>
+
+
+
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 </body>
 </html>

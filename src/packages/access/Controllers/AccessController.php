@@ -30,7 +30,7 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
-use Arrow\Controls\API\Forms\Validator;
+use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
@@ -38,12 +38,20 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
+<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
 use TableListORMHelper;
+=======
+use Arrow\Common\Models\Helpers\TableListORMHelper;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
+<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
 use Arrow\Common\Layouts\AdministrationLayout;
+=======
+use Arrow\Common\AdministrationLayout;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
 use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\Router;
@@ -53,6 +61,7 @@ use
     \Arrow\ORM\Persistent\Criteria,
     Arrow\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
+use function var_dump;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -83,11 +92,17 @@ class AccessController extends \Arrow\Models\Controller
         $view->setLayout(new EmptyLayout());
         $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
         $view->assign("appPath", RequestContext::getBaseUrl());
+<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
         $view->assign("from", $this->request["from"]); 
+=======
+        $view->assign("from", $this->request["from"]);
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
     }
 
-    public function auth_loginAction(IAction $action, RequestContext $request)
+    public function loginAction(IAction $action, RequestContext $request)
     {
+
+
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
 
@@ -98,7 +113,8 @@ class AccessController extends \Arrow\Models\Controller
 
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
-        $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
+        $res = $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
+
 
 
         if (!$authHandler->isLogged()) {
