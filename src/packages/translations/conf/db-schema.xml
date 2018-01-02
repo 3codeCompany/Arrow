@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<schema>
+    <table name="common_lang_languages" class="Arrow\Translations\Models\Language">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="active" type="integer" size="1"/>
+        <field name="code" type="VARCHAR" size="50"/>
+        <field name="name" type="VARCHAR" size="50"/>
+        <field name="currency" type="VARCHAR" size="3"/>
+        <field name="currency_value" type="DOUBLE"/>
+        <field name="currency_update_time" type="DATETIME"/>
+    </table>
+    <table name="common_lang_texts" class="Arrow\Translations\Models\LanguageText">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="hash" type="VARCHAR" size="32"/>
+        <field name="last_use" type="DATE"/>
+        <field name="lang" type="varchar" size="4" required="true"/>
+        <field name="value" type="TEXT"/>
+        <field name="original" type="TEXT"/>
+        <field name="module" type="varchar" size="75"/>
+    </table>
+    <table name="common_lang_objects_translaction" class="Arrow\Translations\Models\ObjectTranslation">
+        <field name="id" type="integer" primaryKey="true" autoIncrement="true" size="11"/>
+        <field name="id_object" type="integer" required="true" size="11"/>
+        <field name="class" type="varchar" required="true" size="225"/>
+        <field name="lang" type="char" required="true" size="2"/>
+        <field name="source" type="varchar" required="true" size="1000"/>
+        <field name="field" type="varchar" required="true" size="20"/>
+        <field name="value" type="LONGVARCHAR" size="16777215"/>
+        <index name="id_object" type="BTREE">
+            <index-field name="id_object"/>
+        </index>
+        <index name="class" type="BTREE">
+            <index-field name="class"/>
+        </index>
+        <index name="lang" type="BTREE">
+            <index-field name="lang"/>
+        </index>
+    </table>
+    <table name="common_lang_country" class="Arrow\Translations\Models\Country">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="active" type="integer" size="1"/>
+        <field name="code" type="VARCHAR" size="50"/>
+        <field name="name" type="VARCHAR" size="50"/>
+        <field name="currency" type="VARCHAR" size="3"/>
+        <field name="currency_symbol" type="VARCHAR" size="50"/>
+        <field name="language_1" type="VARCHAR" size="3"/>
+        <field name="language_2" type="VARCHAR" size="3"/>
+        <field name="free_delivery_price" type="DOUBLE"/>
+        <field name="delivery_cost" type="DOUBLE"/>
+    </table>
+</schema>

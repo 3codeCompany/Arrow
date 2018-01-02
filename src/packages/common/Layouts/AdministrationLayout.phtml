@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <? /*\Arrow\Models\Dispatcher::getDefault()->get("common::/part/header")->fetch()*/
+
+    use Arrow\Controls\API\Components\Toolbar;
+    use Arrow\Package\Application\Controller;
+    use Arrow\Package\Common\Links;
+
+    ?>
+    <?
+    /* @var $this \Arrow\Models\View */
+    /* @var $request \Arrow\RequestContext */
+    ?>
+
+    <base href="http://<? print $_SERVER["HTTP_HOST"] . "/" . \Arrow\Router::getBasePath() ?>"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="shortcut icon" href="r:common::/graphic/administration/favicon.ico"/>
+    <!--<meta http-equiv="refresh" content="2">-->
+    <title>
+        <? if ($this["applicationTitle"]) { ?>
+            <?= $this["applicationTitle"] ?>
+        <? } else { ?>
+            <b style="font-size: 22px;  color: white;">3</b>code
+        <? } ?>
+    </title>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"/>
+    <META HTTP-EQUIV="Expires" CONTENT="-1"/>
+
+
+    <script src="/assets/old/jquery/jquery-1.10.2.min.js"></script>
+    <script src="/assets/old/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script>
+        jQuery.migrateTrace = false;
+    </script>
+
+    <link rel="stylesheet" href="r:common::/bootstrap/FontAwesome/css/font-awesome.min.css"/>
+
+    <link rel="stylesheet" href="/assets/old/ytLoad/ytLoad.jquery.css"/>
+    <script src="/assets/old/ytLoad/jquery.transit.js"></script>
+    <script src="/assets/old/ytLoad/ytLoad.jquery.js"></script>
+
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
+    <link rel="stylesheet" href="/assets/old/alertify/alertify.core.css"/>
+    <link rel="stylesheet" href="/assets/old/alertify/alertify.bootstrap.css"/>
+
+
+    <!--<link rel="stylesheet" href="http://talkslab.com/metro-bootstrap/css/metro-bootstrap.css"/>-->
+
+    <!--<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>-->
+
+    <script src="/assets/old/jquery/jquery.ba-bbq.min.js"></script>
+    <script src="/assets/old/alertify/alertify.min.js"></script>
+
+    <script src="/assets/old/jquery/jquery.cookie.js"></script>
+    <script src="/assets/old/jquery/jquery.form.js"></script>
+
+
+    <script src="r:common::/bootstrap/bootstrap/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/assets/old/select2/select2.css"/>
+    <script src="/assets/old/select2/select2.min.js" type="text/javascript"></script>
+
+    <script src="/assets/old/administration.js"></script>
+
+
+    <link rel="stylesheet" href="r:common::/styles/administration.css"/>
+
+    <style>
+        .navbar-text {
+            color: #000000;
+            padding-top: 8px;
+        }
+
+        li .btn-group {
+            padding-top: 8px;;
+        }
+
+    </style>
+
+
+    <style>
+        .table {
+            margin-bottom: 0px;
+        }
+
+        .form-group {
+            margin-bottom: 8px !important;
+        }
+
+    </style>
+
+</head>
+
+<body style="overflow: hidden">
+
+<div class="row " id="top-menu" style="padding-right: 0;">
+    <a class="title" href="admin">
+        <i class="fa fa-home"></i>
+        <span>
+        <? if ($this["applicationTitle"]) { ?>
+            <?= $this["applicationTitle"] ?>
+        <? } else { ?>
+            <b style="font-size: 22px;  color: white;">3</b>code
+        <? } ?>
+        </span>
+    </a>
+    <div style="" class="top-page-nav">
+
+
+    </div>
+
+
+    <div class="pull-right" style="padding: 0;">
+        <ul class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="font-size: 14px; display: block; width: 200px; background-color: #d3d3d3; margin-top: -11px; margin-right: -10px; height: 50px; padding: 10px;">
+                <img src="https://s.ytimg.com/yts/img/avatar_32-vflI3ugzv.png " style="border-radius: 5px; border: solid 1px #808080;" alt=""/>
+
+                <?= $this["user"]->getValue("login"); ?>
+
+            </a>
+            <ul class="dropdown-menu" style="right: 0; left: inherit; width: 200px; border-radius: 0; right: -8px; top:48px; padding: 10px 0;">
+                <li><a href="v:/access/users/account"><i class="fa fa-user"></i> Twoje konto</a></li>
+                <li class="divider"></li>
+                <li><a href="o:/access/auth/logout" class="direct"><i class="fa fa-power-off"></i> Wyloguj się</a></li>
+            </ul>
+        </ul>
+    </div>
+
+    <div class="clearfix"></div>
+
+</div>
+
+<div id="main-menu-container">
+    <div id="main-menu">
+
+        <?
+        $c = Controller::getInstance();
+
+        //if (\Arrow\ViewManager::startCache('administration_top_menu', -1, md5(serialize($this["user"]->getAccessGroups()). ( isset($c->partner)&&$c->partner?$c->partner->_id():""  )) ))
+        print \Arrow\Package\Common\AdministrationExtensionsManager::generate();
+        //\Arrow\ViewManager::endCache();
+        ?>
+
+        <? if ($this['developer'] && \Arrow\Models\Project::getInstance()->packageExists('utils')) { ?>
+
+            <div>
+                <h3>
+                    Dla&nbsp;developera
+                </h3>
+                <a href="v:/utils/developer/console"> <i class="fa fa-terminal"></i> Konsola</a>
+                <a class="ico " href="v:/utils/developer/log/list"><i class="fa fa-list"></i> Log błędów</a>
+                <a href="o:/utils/developer/clear_cache"> <i class="fa fa-refresh"></i> Cache delete</a>
+                <a href="v:/common/settings/list" title="Ustawienia">
+                    <i class="fa fa-cogs"></i> Ustawienia
+                </a>
+
+                <? if (false) { ?>
+                    <div class="input-group" style="width: 190px; margin: 0 auto;">
+                        <input type="text" class="form-control" placeholder="Zaloguj się jako"/>
+                        <div class="input-group-btn">
+                            <input type="submit" value="OK" class="btn btn-default">
+                        </div>
+                    </div>
+                <? } ?>
+            </div>
+
+
+        <? } ?>
+    </div>
+    <div id="menu-indicator" style="">
+        <div>M</div>
+        <div>e</div>
+        <div>n</div>
+        <div>u</div>
+    </div>
+</div>
+
+
+<div id="schema-height-container" style="">
+    <div style="width: 965px; background-color: white;">
+        <?= $this->getLayout()->generateBreadcrumb(); ?>
+        [[include::view]]
+    </div>
+</div>
+
+
+<div id="loading-indicator">
+    <img src="r:common::/graphic/administration/ajax-main-loader.gif"/>
+</div>
+
+
+</body>
+
+</html>

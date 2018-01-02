@@ -1,0 +1,36 @@
+<div id="subMenu">
+    <h3><?
+        if (isset($request["title"]))
+            print $request["title"];
+        elseif ($this["object"]->getFriendlyName() != null)
+            print "Historia " . $this["object"]->getFriendlyName(); else
+            print "Historia obiektu";
+
+        ?></h3>
+    <a class="cancel" href="#">Zamknij</a>
+</div>
+<div>
+
+
+    <table style="width: 800px;" class="table">
+        <?$currDate = ""; ?>
+        <?foreach ($this["track"] as $entry) { ?>
+        <? list($date, $time) = explode(" ", $entry["date"]); ?>
+        <? if ($currDate != $date) { ?>
+            <tr>
+                <td colspan="5"><h2 style="font-weight: normal;"><?=$date?></h2></td>
+            </tr>
+            <? $currDate = $date; ?>
+            <? } ?>
+        <tr>
+            <td style="width: 100px;"><?=$time?></td>
+            <td style="width: 100px;"><?=$entry["action"]?></td>
+            <td style="width: 100px;"><?=$entry["User:login"]?></td>
+            <td><?=$this["processInfo"]($entry["info"])?></td>
+
+        </tr>
+        <? }?>
+    </table>
+</div>
+
+

@@ -1,0 +1,191 @@
+<?=$this["builder"]->generate();?>
+
+
+
+
+<? /** @var \Arrow\ViewManager $this
+<div id="subMenu">
+    <?= $this->getLayout()->printStandartMenu("Dodaj stronę", "Edycja strony", $this["page"]); ?>
+</div>
+<div>
+
+    <? $page = $this["page"]; ?>
+    <script type="text/javascript">
+        $(function () {
+            $(".page-type-cell input").click(function () {
+                var val = $(this).val();
+                if (val == "container" || val == "link") {
+                    window.parent.$("#page-content-tab,#page-modules-tab").hide();
+                } else {
+                    window.parent.$("#page-content-tab,#page-modules-tab").show();
+                }
+                if (val == "link") {
+                    $("#link-row").css("display", "");
+                } else {
+                    $("#link-row").css("display", "none");
+                }
+            });
+            $(".page-type-cell input[checked=checked]").click();
+            var val = $(".page-type-cell input[checked=checked]").val();
+            if (val == "container" || val == "link") {
+                setTimeout(function () {
+                    window.parent.$("#page-properties-tab").click();
+                    $("#tabs-2").show();
+                }, 200);
+            }
+
+            $(".add-module-button").button();
+        });
+    </script>
+
+
+    <form:form
+        ctrlId="data"
+        action="o:common::/data/operation"
+        >
+
+        <data:source key="$request['id']">
+            <data:model model="Arrow\CMS\Page"/>
+        </data:source>
+
+        <form:hidden namespace="0" name="model" value="Arrow\CMS\Page"/>
+        <form:hidden namespace="0" name="key" value="$this['page']['id']"/>
+        <form:hidden namespace="0" name="action" value="save"/>
+
+
+        <div class="ui-tabs">
+            <ul>
+                <li class="left" id="page-content-tab"><a href="#tabs-1">Dane podstawowe
+                    </a></li>
+                <li class="left"><a href="#tabs-5" id="page-seo-tab">
+                        SEO
+                    </a></li>
+                <li class="left"><a href="#tabs-2" id="page-properties-tab">
+                        Właściwości
+                    </a></li>
+            </ul>
+            <div id="tabs-1">
+                <div class="group">
+                    <div class="group-padding">
+                        <table style="height:40px; width: 800px;;">
+                            <tr>
+                                <td class="label">Nazwa wyświetlana</td>
+                                <td>
+                                    <form:text name="name" length="1,200" id="name" alert="Podaj nazwę [1-200 znaków]" size="50"/>
+                                </td>
+                                <td class="label">Nagłówek</td>
+                                <td>
+                                    <form:text name="header" check="0" size="60"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <form:wyswig name="content" id="pl_content" style="height: 400px; width: 800px;"/>
+                    </div>
+                </div>
+            </div>
+            <div id="tabs-2">
+                <div class="group">
+
+
+                    <div class="group-padding">
+                        <table>
+
+
+                            <tr>
+                                <td class="label">Typ</td>
+                                <td class="page-type-cell">
+                                    <form:switch name="type">
+                                        <form:option label="Strona" value="page"/>
+                                        <form:option label="Kontener" value="container"/>
+                                    </form:switch>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">Nazwa rewrite</td>
+                                <td>
+                                    <form:text name="rewrite_name" id="rewriteName" rexp="/^[^śćżźćńłęąĄŃĆŹŻŁÓóĘ #?.]+$/" check="1"
+                                               length="1,255"
+                                               alert="Podaj nazwę rewrite [od 5 do 255 znaków bez spacji , poslkich znaków i znaków specjalnych]"
+                                               size="50"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="group next">
+                    <h4>Opcje</h4>
+
+                    <div class="group-padding">
+                        <table>
+                            <tr>
+                                <td class="label">Strona jest aktywna</td>
+                                <td>
+                                    <form:switch name="active">
+                                        <form:option label="Tak" value="1"/>
+                                        <form:option label="Nie" value="0"/>
+                                    </form:switch>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">Kontener</td>
+                                <td>
+                                    <form:select name="parent_id" labelField="name" valueField="id" >
+                                        <form:option value="1" label="Główny" />
+                                        <data:source>
+                                            <data:model model="Arrow\CMS\Page"/>
+                                            <data:order field="sort"/>
+                                            <data:condition field="depth" value="0" type="!="/>
+                                        </data:source>
+                                    </form:select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">Styl strony</td>
+                                <td>
+                                    <form:text name="style" check="0" length="1,255" alert=""/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="label">Przekierowanie [tylko&nbsp;dla&nbsp;linków]</td>
+                                <td>
+                                    <form:text id="front_link" onchange="resetLink()" name="front_link" check="0" length="1,255" alert="Podaj przekierowanie" size="60" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="tabs-5">
+                <div class="group">
+                    <h4>Pozycjonowanie</h4>
+
+                    <div class="group-padding">
+                        <table>
+                            <tr class="even">
+                                <td class="label">Tytuł</td>
+                                <td>
+                                    <form:text name="title" hint="" check="0" style="width: 340px; height:30px"/>
+                                </td>
+                            </tr>
+                            <tr class="even">
+                                <td class="label">Słowa kluczowe</td>
+                                <td>
+                                    <form:textarea name="keywords" hint="" check="0" style="width: 340px; height:60px"/>
+                                </td>
+                            </tr>
+                            <tr class="even">
+                                <td class="label">Opis</td>
+                                <td>
+                                    <form:textarea name="description" hint="" check="0" style="width: 440px; height: 120px;"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+    </form:form>
+
+</div>
+
+</div>
+*/ ?>

@@ -1,0 +1,27 @@
+{
+  "name": "arrow/engine",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Artur Kmera",
+      "email": "artur.kmera@3code.pl"
+    }
+  ],
+  "require": {
+    "symfony/yaml": "^3.2"
+  },
+  "autoload": {
+    "classmap": [
+      "src/server/"
+    ],
+    "psr-4": {
+      "Arrow\\Access\\": "src/packages/access",
+      "Arrow\\CMS\\": "src/packages/cms",
+      "Arrow\\Common\\": "src/packages/common",
+      "Arrow\\Communication\\": "src/packages/communication",
+      "Arrow\\Media\\": "src/packages/media",
+      "Arrow\\Translations\\": "src/packages/translations",
+      "Arrow\\Utils\\": "src/packages/utils"
+    }
+  }
+}
