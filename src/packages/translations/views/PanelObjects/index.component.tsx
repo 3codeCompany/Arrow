@@ -65,13 +65,13 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             this.props._notification("Pomyślnie zmodyfikowano element");
             row.value = row.changedText;
             row.loading = false;
-            this.table.forceUpdate();
+            row.containerReference.forceUpdate();
         });
 
     }
 
     public handleModelChange(e) {
-        this.setState({selectedObject: this.props.objects[e.selectedIndex]}, () => this.table.load());
+        this.setState({selectedObject: this.props.objects.filter(el => el.value == e.value)[0]}, () => this.table.load());
 
     }
 
@@ -90,23 +90,30 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 .template((val, row) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
                     {row.edited === true && [
-                        <textarea  style={{width: "100%", display: "block"}} onChange={(e) => row.changedText = e.target.value} defaultValue={val} />,
+                        <textarea
+                            style={{width: "100%", display: "block"}}
+                            onChange={(e) => row.changedText = e.target.value} defaultValue={val}
+                            onClick={(e) =>{
+                                e.stopPropagation();
+                            }}
+                        />,
                         <div>
                             <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>Zapisz</a>
                             <a onClick={(e) => {
                                 e.stopPropagation();
                                 row.edited = false;
-                                this.table.forceUpdate();
+                                row.containerReference.forceUpdate();
                             }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>Anuluj</a>
                         </div>,
                     ]}
                     {!row.loading && !row.edited && <div>{val}</div>}
                 </div>)
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
-                .onClick((row) => {
+                .onClick((row, column, event, rowContainer) => {
                     row.edited = true;
+                    row.containerReference = rowContainer;
                     row.changedText = row.value;
-                    this.table.forceUpdate();
+                    rowContainer.forceUpdate();
                 })
             ,
 
@@ -152,7 +159,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         columns={this.columns}
                         remoteURL={this.props.baseURL + "/list"}
                         ref={(table) => this.table = table}
-                        selectable={true}
+                        selectable={false}
                         onSelectionChange={(selected) => this.setState({selected})}
                         rememberState={true}
                     />

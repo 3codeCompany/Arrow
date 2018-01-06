@@ -4,26 +4,18 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-use App\Models\Persistent\TransactionText;
+use App\Models\Persistent\Category;
+use App\Models\Persistent\Property;
 use Arrow\CMS\Models\Persistent\Page;
 use Arrow\Common\Layouts\ReactComponentLayout;
-use Arrow\Controls\API\Components\Toolbar;
-use Arrow\Controls\API\Forms\Fields\Button;
-use Arrow\Controls\API\Forms\Fields\Files;
-use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
-use Arrow\Controls\Helpers\FormHelper;
+use Arrow\Common\Models\Helpers\FormHelper;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
-use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
-    \Arrow\Access\Models\Auth,
-    \Arrow\ViewManager, \Arrow\RequestContext;
-use Arrow\Access\Models\AccessGroup;
+    \Arrow\Access\Models\Auth;
 use Arrow\ORM\Persistent\DataSet;
-use Arrow\Package\Application\PresentationLayout;
-use Arrow\Controls\API\Forms\BuilderSchemas\Bootstrap;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\AdministrationPopupLayout;
 use Arrow\Common\BreadcrumbGenerator;
@@ -31,17 +23,11 @@ use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
-use Arrow\Shop\Models\Persistent\Category;
-use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
-use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
-use Arrow\Media\Models\MediaAPI;
-use Arrow\Controls\API\Table\Table;
-use Arrow\Router;
 
 class PanelObjects extends BaseController
 {
@@ -53,17 +39,17 @@ class PanelObjects extends BaseController
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
-        $db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
+        //$db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
 
-        $this->action->assign("objects", FormHelper::assocToOptions([
+        $this->action->assign("objects", FormHelper::assocToOptions(array(
             Category::getClass() => "Kategorie",
             Property::getClass() => "Cechy",
             Page::getClass() => "Strony",
-        ]));
+        )));
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
-        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
+        //$db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
 
 
     }
@@ -92,9 +78,9 @@ class PanelObjects extends BaseController
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
         $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
 
-        /*if ($model == Property::getClass()) {
+        if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
-        }*/
+        }
 
         //$helper->setDebug($crit->find()->getQuery());
 
