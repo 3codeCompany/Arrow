@@ -30,7 +30,11 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
+<<<<<<< HEAD
+use Arrow\Controls\API\Forms\Validator;
+=======
 use Arrow\Common\Models\Helpers\Validator;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
@@ -38,7 +42,11 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
+<<<<<<< HEAD
+use Arrow\Controls\Helpers\TableListORMHelper;
+=======
 use Arrow\Common\Models\Helpers\TableListORMHelper;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
@@ -129,4 +137,8 @@ class Groups extends \Arrow\Models\Controller
     }
 
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b

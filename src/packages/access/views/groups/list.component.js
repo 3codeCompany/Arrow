@@ -25,7 +25,10 @@ export default class access_access_users_list extends Component {
     render() {
         return (
             <div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
                 <Navbar>
                     <span>System</span>
                     <span>Grupy dostępu</span>
@@ -55,4 +58,8 @@ export default class access_access_users_list extends Component {
             </div>
         )
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b

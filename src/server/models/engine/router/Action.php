@@ -9,11 +9,10 @@ namespace Arrow\Models;
  * Time: 12:26
  * To change this template use File | Settings | File Templates.
  */
-use ADebug;
 use Arrow\Exception;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
-use function htmlentities;
+use function var_dump;
 
 class Action implements \ArrayAccess, IAction
 {
@@ -22,9 +21,6 @@ class Action implements \ArrayAccess, IAction
     private $path;
     private $shortPath;
     private $controller;
-    /**
-     * @var AbstractLayout
-     */
     private $layout;
     private $XHRLayout;
     private $package;
@@ -100,6 +96,16 @@ class Action implements \ArrayAccess, IAction
         return RequestContext::getDefault();
     }
 
+    public function getRoute()
+    {
+        return $this->package . $this->path;
+    }
+
+    public function getVars()
+    {
+        return $this->vars;
+    }
+
     /**
      * @return Controller
      */
@@ -120,8 +126,9 @@ class Action implements \ArrayAccess, IAction
         return $this->path;
     }
 
-    public function getRoute(){
-        return $this->package.$this->path;
+    public function getRoute()
+    {
+        return $this->package . $this->path;
     }
 
     public function setLayout(AbstractLayout $layout, AbstractLayout $XHRLayout = null)
@@ -224,14 +231,11 @@ class Action implements \ArrayAccess, IAction
                     throw new Exception("Can't create action  dir: " . $parent);
                 }
             }
-            $code = $this->layout->getFirstTemplateContent($this);
+            $phpCode = "<?\n /* @var \$this \\Arrow\\Models\\View */\n/* @var \$request \\Arrow\\RequestContext */\n ?>\n\n";
 
-            if (!$code) {
-                $code = "<?\n /* @var \$this \\Arrow\\Models\\View */\n/* @var \$request \\Arrow\\RequestContext */\n ?>\n\n";
-                $code .= "View: " . $this->getPath() . "\n package: " . $this->getPackage() . "\n file: " . $file;
-            }
-
-            if (!@file_put_contents($file, $code)) {
+            if (!@file_put_contents($file,
+                $phpCode . "View: " . $this->getPath() . "\n package: " . $this->getPackage() . "\n file: " . $file)
+            ) {
                 throw new Exception("Can't create action  file: " . $file);
             }
             chmod($file, 0777);
@@ -277,10 +281,6 @@ class Action implements \ArrayAccess, IAction
 
     }
 
-    public function getVars()
-    {
-        return $this->vars;
-    }
 
     public function offsetExists($offset)
     {
@@ -289,8 +289,9 @@ class Action implements \ArrayAccess, IAction
 
     public function offsetGet($offset)
     {
-        if (!array_key_exists($offset, $this->vars)) {
-            throw new Exception(array("msg" => "Template var `{$offset}` not exists"));
+        if (!isset($this->vars[$offset])) {
+            //throw new Exception(array("msg" => "Template var `{$offset}` not exists"));
+            return "";
         }
         return $this->vars[$offset];
     }
@@ -308,24 +309,13 @@ class Action implements \ArrayAccess, IAction
 
     public function getFile()
     {
-
-        if ($this->layout) {
-            $name = $this->layout->getFileName($this->path);
-        } else {
-            $name = $this->path . ".phtml";
-        }
-
-        $appFile = "." . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views" . $name;
+        $appFile = "." . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views" . $this->path . ".phtml";
 
         if ($this->package != "app") {
-            if ($this->layout ) {
-                $name = $this->layout->getFileName($this->path);
-            } else {
-                $name = $this->path . ".phtml";
-            }
 
-            $file = ARROW_DOCUMENTS_ROOT . "/" . Project::getInstance()->getPackages()[$this->package] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $name;
 
+            $file = ARROW_DOCUMENTS_ROOT . "/" . Project::getInstance()->getPackages()[$this->package] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $this->shortPath . ".phtml";
+            //fwrite(STDOUT, $file . "\n");
 
             if (file_exists($file) && !file_exists($appFile)) {
                 return $file;

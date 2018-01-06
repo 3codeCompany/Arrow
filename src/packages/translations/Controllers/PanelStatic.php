@@ -6,8 +6,29 @@ namespace Arrow\Translations\Controllers;
 use App\Controllers\BaseController;
 use App\Models\Persistent\TransactionText;
 use Arrow\Common\Layouts\ReactComponentLayout;
+<<<<<<< HEAD
+use Arrow\Controls\API\Components\Toolbar;
+use Arrow\Controls\API\Forms\Fields\Button;
+use Arrow\Controls\API\Forms\Fields\File;
+use Arrow\Controls\API\Forms\Fields\Files;
+use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
+use Arrow\Controls\API\Forms\Fields\Date;
+use Arrow\Controls\API\Forms\Fields\Hidden;
+use Arrow\Controls\API\Forms\Fields\Select;
+use Arrow\Controls\API\Forms\Fields\SwitchF;
+use Arrow\Controls\API\Forms\Fields\Text;
+use Arrow\Controls\API\Forms\Fields\Textarea;
+use Arrow\Controls\API\Forms\Fields\Wyswig;
+use Arrow\Controls\API\Forms\FieldsList;
+use Arrow\Controls\API\Forms\Form;
+use Arrow\Controls\API\Forms\FormBuilder;
+use Arrow\Controls\API\Table\ColumnList;
+use Arrow\Controls\API\Table\Columns\Menu;
+use Arrow\Controls\Helpers\TableListORMHelper;
+=======
 
 use Arrow\Common\Models\Helpers\TableListORMHelper;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
@@ -32,7 +53,12 @@ use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
 use Arrow\Media\MediaAPI;
+<<<<<<< HEAD
+use Arrow\Controls\API\Table\Table;
+use Arrow\Router;
+=======
 
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use function file_get_contents;
 
 class PanelStatic extends BaseController
@@ -43,7 +69,11 @@ class PanelStatic extends BaseController
         $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
         $db = Project::getInstance()->getDB();
         $t = LanguageText::getTable();
+<<<<<<< HEAD
+        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+=======
         //$db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
     }
 
     public function list()

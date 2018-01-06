@@ -26,6 +26,9 @@ class Dispatcher
     public function resolvePath($path)
     {
 
+        
+
+
         if ($path[0] == ".") {
             $tmp = explode("/", Router::getActionParameter());
             $tmp[count($tmp) - 1] = substr($path, 2);
