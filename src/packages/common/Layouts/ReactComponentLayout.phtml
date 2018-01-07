@@ -30,9 +30,9 @@ if (isset($_REQUEST["__PROPS_REQUEST__"])) {
 <script>
     window.reactBackOfficeVar =  <?=json_encode([
         "appIcon" => "Mail",
-        "appTitle" => "Esotiq - raporty",
-        "appMenu" => [],
-        "appBaseURL" => "//www.esotiq.com",
+        "appTitle" => \Arrow\ConfigProvider::get("panel")["title"],
+        "appMenu" => \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData(),
+        "appBaseURL" => \Arrow\RequestContext::getBaseUrl(),
         "user" => ["login" => $this["user"]["login"]],
 
         "baseURL" => $baseURL,
