@@ -33,7 +33,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("lang", "Kod języka"),
             Column.map("lang", "Język", this.props.language),
             Column.text("value", "Wartość")
-                .template((val, row) => <div>
+                .template((val, row, ) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
                     {row.edited === true && [
                         <textarea style={{width: "100%", display: "block"}} onChange={(e) => row.changedText = e.target.value} defaultValue={val}/>,
@@ -49,10 +49,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     {!row.loading && !row.edited && <div>{val}</div>}
                 </div>)
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
-                .onClick((row) => {
+                .onClick((row, column, event, rowContainer) => {
                     row.edited = true;
                     row.changedText = row.value;
-                    this.table.forceUpdate();
+                    rowContainer.forceUpdate();
                 })
             ,
             Column.text("original", "Orginał"),
@@ -162,4 +162,5 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         );
     }
 }
+
 

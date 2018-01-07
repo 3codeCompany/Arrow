@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, {Component} from "react";
 
 import Navbar from "frontend/src/ctrl/Navbar"
@@ -7,6 +8,16 @@ import Panel from "frontend/src/ctrl/Panel"
 import {Row} from "frontend/src/layout/BootstrapLayout"
 import Comm from "frontend/src/lib/Comm";
 import {CheckboxGroup} from "frontend/src/ctrl/Fields";
+=======
+import React, {Component} from 'react';
+
+import Navbar from 'frontend/src/ctrl/Navbar';
+import {confirm} from 'frontend/src/ctrl/Overlays';
+import {Table, Column} from 'frontend/src/ctrl/Table';
+
+import Comm from 'frontend/src/lib/Comm';
+import {CheckboxGroup} from 'frontend/src/ctrl/Fields';
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 
 export default class access_access_users_list extends Component {
     constructor(props) {
@@ -16,28 +27,45 @@ export default class access_access_users_list extends Component {
 
     handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.point_object_friendly_id}" ?`).then(() => {
+<<<<<<< HEAD
             Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(`Punkt  "${row.point_object_friendly_id}" został usunięta.`)
                 this.table.load();
             })
+=======
+            Comm._post(this.props.baseURL + '/delete', {key: row.id}).then(() => {
+                this.props._notification(`Punkt  "${row.point_object_friendly_id}" został usunięta.`);
+                this.table.load();
+            });
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
         });
     }
 
 
     saveAccessPoint(row) {
+<<<<<<< HEAD
         Comm._post(this.props.baseURL + "/save", {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
             this.props._notification(`Punkt  "${row.point_object_friendly_id}" został zaktualizowany.`)
+=======
+        Comm._post(this.props.baseURL + '/save', {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
+            this.props._notification(`Punkt  "${row.point_object_friendly_id}" został zaktualizowany.`);
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
             //this.table.load();
         });
     }
 
     render() {
         return (
+<<<<<<< HEAD
+=======
+
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
             <div>
                 <Navbar>
                     <span>System</span>
                     <span>Usawienia dostępu</span>
                 </Navbar>
+<<<<<<< HEAD
                 <Row>
                     <Panel title="Lista grup dostępu systemu" >
                         <Table
@@ -57,14 +85,14 @@ export default class access_access_users_list extends Component {
                                     })
                                 ,
                                 Column.text("groups", "Grupy dostępu")
-                                    .onClick((row, column, event, container) => {
+                                    .onClick((row, column, event) => {
                                         if (event.target.tagName == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
                                             row.edited = !row.edited;
                                         }
-                                        container.forceUpdate();
+                                        this.forceUpdate();
 
                                     })
-                                    .template((val, row, event, container) => {
+                                    .template((val, row) => {
                                         let v = parseInt(val || 0);
                                         let selected = [];
                                         let selectedNames = [];
@@ -75,7 +103,7 @@ export default class access_access_users_list extends Component {
                                             }
                                         })
                                         if (row.edited) {
-                                            return <div> {container}
+                                            return <div>
                                                 <CheckboxGroup
                                                     value={selected}
                                                     options={this.props.agroups}
@@ -118,3 +146,73 @@ export default class access_access_users_list extends Component {
         <field name="group_id" type="INTEGER" size="255"/>
         <field name="policy" type="INTEGER"/>
     </table>*/
+=======
+                <div className="panel-body-margins">
+
+                    <Table
+                        remoteURL={this.props.baseURL + '/getData'}
+                        ref={(table) => this.table = table}
+                        columns={[
+                            Column.id('id', 'Id').headerTooltip('To jest bardzo bardzo ciekawe'),
+
+                            //Column.text("point_action", "Nazwa").headerTooltip("Inna sprawa"),
+                            Column.text('point_object_friendly_id', 'Nazwa'),
+
+                            Column.bool('control_enabled', 'Kontrola')
+                                .onClick((row, val, event, rowComponent) => {
+                                    row.control_enabled = row.control_enabled == '1' ? '0' : '1';
+                                    this.saveAccessPoint(row);
+-                                    rowComponent.forceUpdate();
+                                })
+                            ,
+                            Column.text('groups', 'Grupy dostępu')
+                                .onClick((row, column, event, rowComponent) => {
+                                    if (event.target.tagName == 'DIV' || event.target.tagName == 'TD' || event.target.tagName == 'I') {
+                                        row.edited = !row.edited;
+                                    }
+                                    rowComponent.forceUpdate();
+                                })
+                                .template((val, row) => {
+                                    let v = parseInt(val || 0);
+                                    let selected = [];
+                                    let selectedNames = [];
+                                    Object.entries(this.props.agroups).map(([id, name]) => {
+                                        if (v & id) {
+                                            selected.push(id);
+                                            selectedNames.push(name);
+                                        }
+                                    });
+                                    if (row.edited) {
+                                        return <div>
+                                            <CheckboxGroup
+                                                value={selected}
+                                                options={this.props.agroups}
+                                                onChange={(x) => {
+                                                    if (x.event.target.checked) {
+                                                        row.groups = v + parseInt(x.event.target.value);
+                                                    } else {
+                                                        row.groups = v - parseInt(x.event.target.value);
+                                                    }
+                                                    this.saveAccessPoint(row);
+                                                }}
+                                            />
+                                        </div>;
+                                    } else {
+
+
+                                        return <div>{selectedNames.length > 0 ? selectedNames.join(', ') : <div className={'center'}><i className="fa fa-times  lightgrey"></i></div>}</div>;
+                                    }
+                                })
+                            ,
+                            Column.template('Zobacz', () => <i className="fa fa-times"></i>)
+                                .onClick(this.handleDelete.bind(this))
+                                .className('center darkred')
+                        ]}
+                    />
+
+                </div>
+            </div>
+        );
+    }
+}
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b

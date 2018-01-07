@@ -40,7 +40,7 @@ use Arrow\Common\TableDatasource;
 use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
-use Arrow\Media\MediaAPI;
+use Arrow\Media\Models\MediaAPI;
 use Arrow\Controls\API\Table\Table;
 use Arrow\Router;
 

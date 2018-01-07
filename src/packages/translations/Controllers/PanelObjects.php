@@ -4,6 +4,7 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
+<<<<<<< HEAD
 use App\Models\Persistent\TransactionText;
 use Arrow\CMS\Models\Persistent\Page;
 use Arrow\Common\Layouts\ReactComponentLayout;
@@ -13,11 +14,21 @@ use Arrow\Controls\API\Forms\Fields\Files;
 use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
 use Arrow\Controls\Helpers\FormHelper;
 use Arrow\Controls\Helpers\TableListORMHelper;
+=======
+use App\Models\Persistent\Category;
+use App\Models\Persistent\Property;
+use App\Models\Persistent\TransactionText;
+use Arrow\CMS\Models\Persistent\Page;
+use Arrow\Common\Layouts\ReactComponentLayout;
+use Arrow\Common\Models\Helpers\FormHelper;
+use Arrow\Common\Models\Helpers\TableListORMHelper;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
+<<<<<<< HEAD
     \Arrow\Access\Models\Auth,
     \Arrow\ViewManager, \Arrow\RequestContext;
 use Arrow\Access\Models\AccessGroup;
@@ -32,6 +43,7 @@ use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
 use Arrow\Shop\Models\Persistent\Category;
+use Arrow\Shop\Models\Persistent\Product;
 use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
@@ -42,6 +54,21 @@ use Arrow\Media\ElementConnection;
 use Arrow\Media\Models\MediaAPI;
 use Arrow\Controls\API\Table\Table;
 use Arrow\Router;
+=======
+    \Arrow\Access\Models\Auth;
+use Arrow\ORM\Persistent\DataSet;
+use Arrow\Common\AdministrationLayout;
+use Arrow\Common\AdministrationPopupLayout;
+use Arrow\Common\BreadcrumbGenerator;
+use Arrow\Common\Links;
+use Arrow\Common\PopupFormBuilder;
+use Arrow\Common\TableDatasource;
+use Arrow\Translations\Models\Language;
+use Arrow\Translations\Models\LanguageText;
+use Arrow\Translations\Models\ObjectTranslation;
+use Arrow\Media\Element;
+use Arrow\Media\ElementConnection;
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 
 class PanelObjects extends BaseController
 {
@@ -55,11 +82,20 @@ class PanelObjects extends BaseController
         $t = ObjectTranslation::getTable();
         $db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
 
+<<<<<<< HEAD
         $this->action->assign("objects", FormHelper::assocToOptions([
             Category::getClass() => "Kategorie",
             Property::getClass() => "Cechy",
             Page::getClass() => "Strony",
+            Product::getClass() => "Produkty",
         ]));
+=======
+        $this->action->assign("objects", FormHelper::assocToOptions(array(
+            Category::getClass() => "Kategorie",
+            Property::getClass() => "Cechy",
+            Page::getClass() => "Strony",
+        )));
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
@@ -76,7 +112,7 @@ class PanelObjects extends BaseController
         $model = $helper->getInputData()['additionalConditions']['model'];
         $tmp = explode("\\", $model);
         $class = "%" . end($tmp);
-        $crit->_field("link", Criteria::C_NOT_EQUAL);
+        //$crit->_field("link", Criteria::C_NOT_EQUAL);
         $crit->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
         $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
 

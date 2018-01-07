@@ -81,6 +81,14 @@ export default class ArrowViewComponent extends Component {
                                     disabled={this.state.loading}
                                     onClick={this.handleSubmit.bind(this)}
                                 >
+                                    {this.state.loading ? <i className="fa fa-spinner fa-spin"/> : null} Zaloguj się
+                                </button>
+                            </div>
+=======
+                                  className="login-button"
+                                  disabled={this.state.loading}
+                                  onClick={this.handleSubmit.bind(this)}
+                                >
                                     {this.state.loading ? '...' : 'Zaloguj się'}
                                 </button>
                             </div>

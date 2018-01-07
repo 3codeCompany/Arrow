@@ -15,7 +15,9 @@ use Arrow\ORM\Extensions\TreeNode;
 use Arrow\ORM\ORM_Arrow_CMS_Models_Persistent_Page;
 use Arrow\Translations\Models\IMultilangObject;
 
-class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObject {
+class Page extends ORM_Arrow_CMS_Models_Persistent_Page
+    implements IMultilangObject
+{
     use TreeNode;
 
     const TYPE_FOLDER = "folder";
@@ -23,21 +25,30 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObj
     const TYPE_LINK = "link";
     const TYPE_INLINE_CODE = "inline_code";
 
-    public static function getMultiLangFields(){
+    public static function getMultiLangFields()
+    {
         return [
             Page::F_NAME,
-            Page::F_FRONT_LINK,
+
             Page::F_CONTENT,
             PAGE::F_CONTENTS_ADDITIONAL
         ];
     }
 
-    public function getLink(){
-        if($this->_type() == Page::TYPE_LINK)
+    public function getLink()
+    {
+        if ($this->_type() == Page::TYPE_LINK) {
             return $this->_link();
+        }
 
-        return "s,".$this->_link();
+        return "s," . $this->_link();
     }
 
 
+<<<<<<< HEAD:src/packages/cms/Models/Persistent/Page.php
+=======
+
+
+
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/cms/Models/Persistent/Page.php
 }

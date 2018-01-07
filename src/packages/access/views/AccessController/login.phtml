@@ -57,17 +57,28 @@ $storeData = json_encode([
 $manifest = false;
 $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
 if (file_exists($manifestFile)) {
+<<<<<<< HEAD
+    $manifest = json_decode(file_get_contents($manifestFile), true)["admin"];
+=======
     $manifest = json_decode(file_get_contents($manifestFile), true);
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 }
 
 
 ?>
+<<<<<<< HEAD
+
+<? if ($manifest && !$_SESSION["inDev"]) { ?>
+    <script type="text/javascript" src="<?= $manifest["js"] ?>"></script>
+<link rel="stylesheet" href="<?= $manifest["css"] ?>"/>
+=======
 <script type="text/javascript" src="<?= $manifest["vendors"]["js"] ?>"></script>
 <link rel="stylesheet" href="<?= $manifest["vendors"]["css"] ?>"/>
 
 <? if ($manifest && !$_SESSION["inDev"]) { ?>
     <script type="text/javascript" src="<?= $manifest["admin"]["js"] ?>"></script>
 <link rel="stylesheet" href="<?= $manifest["admin"]["css"] ?>"/>
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 <? } else { ?>
     <script type="text/javascript" src="//localhost:3000/bundle.js" charset="utf-8"></script>
 <? } ?>

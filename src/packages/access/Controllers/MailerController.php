@@ -28,7 +28,7 @@ use Arrow\Shop\Models\Persistent\ProductVariant;
  * @method MailerController Controller::getInstance()
  * @package Arrow\Package\Application
  */
-class MailerController extends \Arrow\Communications\Controllers\Mailer\MailerController
+class MailerController extends \Arrow\Communication\Controllers\MailerController
 {
 
     const MAIL_REGISTER = "register";
@@ -41,12 +41,12 @@ class MailerController extends \Arrow\Communications\Controllers\Mailer\MailerCo
     ];
 
 
+
     public function mail_account_register(Action $view, $request)
     {
         $view->setLayout(new MailerLayout());
 
-        $user = User::get()
-            ->findByKey($request["key"]);
+        $user = User::get()->findByKey($request["key"]);
 
         $view->assign("user", $user);
 
@@ -58,8 +58,7 @@ class MailerController extends \Arrow\Communications\Controllers\Mailer\MailerCo
     {
         $view->setLayout(new MailerLayout());
 
-        $user = User::get()
-            ->findByKey($request["key"]);
+        $user = User::get()->findByKey($request["key"]);
 
         $view->assign("user", $user);
         $view->assign("newPassword", $request["newPassword"]);

@@ -38,7 +38,11 @@ export default class ArrowViewComponent extends Component {
             <div>
                 <Navbar>
                     <span>System</span>
+<<<<<<< HEAD
+                    <a onClick={() => this.props._goto(this.props.baseURL + "/list")}>Użytkownicy</a>
+=======
                     <a onClick={() => this.props._goto( "access/users/list")}>Użytkownicy</a>
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
                     <span>{this.props.user ? this.props.user.login : "Dodaj"}</span>
                 </Navbar>
 
@@ -61,7 +65,11 @@ export default class ArrowViewComponent extends Component {
                             <BText label="Hasło" type="password"  {...form("password")} name="password" placeholder={data.id ? "Podaj hasło aby zmienić na nowe" : ""}/>
 
                             <div className="hr-line-dashed"></div>
+<<<<<<< HEAD
+                            <a onClick={() => this.props._goto(this.props.baseURL + "/list")} className="btn btn-default pull-right"> Anuluj</a>
+=======
                             <a onClick={() => this.props._goto( "access/users/list")} className="btn btn-default pull-right"> Anuluj</a>
+>>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
                             <button type="submit" className="btn btn-primary pull-right "> Zapisz</button>
                             <div className="clearfix"></div>
 
