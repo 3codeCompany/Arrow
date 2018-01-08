@@ -54,11 +54,7 @@ if (isset($_REQUEST["__PROPS_REQUEST__"])) {
 
 
 
-<<<<<<< HEAD
-<? if (  ($this["webpackManifest"] && !$_SESSION["inDev"])) { ?>
-=======
 <? if ($this["webpackManifest"] && !$_SESSION["inDev"]) { ?>
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
     <script type="text/javascript" src="<?= $this["webpackManifest"]["admin"]["js"] ?>"></script>
     <link rel="stylesheet" href="<?= $this["webpackManifest"]["admin"]["css"] ?>"/>
 <? } else { ?>

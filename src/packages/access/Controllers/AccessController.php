@@ -38,20 +38,12 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
-<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
-use TableListORMHelper;
-=======
 use Arrow\Common\Models\Helpers\TableListORMHelper;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
 use Arrow\Common\Layouts\AdministrationLayout;
-=======
-use Arrow\Common\AdministrationLayout;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
 use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\Router;

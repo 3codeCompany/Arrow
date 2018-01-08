@@ -14,11 +14,7 @@
         <td style="padding: 10px; text-align: center; background-color: lightgrey"><?=$this["user"]["login"]?></td>
     </tr>
     <tr>
-<<<<<<< HEAD
         <td style="width: 200px;"><?=$t('Link aktywacyjny')?></td>
-=======
-        <td style="width: 200px;">-|Link aktywacyjny|-</td>
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
         <?$link = "http://".(isset($_SERVER["HTTP_HOST"])?$_SERVER["HTTP_HOST"]:"")."/shop/account/activate?pass=".$this["user"]->_passportId()?>
         <td style="padding: 10px; text-align: left; font-size: 13px; background-color: lightgrey"><a href="<?=$link?>"><?=$link?></a></td>
     </tr>

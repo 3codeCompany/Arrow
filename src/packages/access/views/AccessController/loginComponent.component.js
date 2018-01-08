@@ -71,7 +71,6 @@ export default class ArrowViewComponent extends Component {
                                     <input type="password" name={'password'} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={'Twoje hasło'}/>
                                 </div>
 
-
                             </div>
 
                             <div className="button">
@@ -80,14 +79,6 @@ export default class ArrowViewComponent extends Component {
                                     className="login-button"
                                     disabled={this.state.loading}
                                     onClick={this.handleSubmit.bind(this)}
-                                >
-                                    {this.state.loading ? <i className="fa fa-spinner fa-spin"/> : null} Zaloguj się
-                                </button>
-                            </div>
-=======
-                                  className="login-button"
-                                  disabled={this.state.loading}
-                                  onClick={this.handleSubmit.bind(this)}
                                 >
                                     {this.state.loading ? '...' : 'Zaloguj się'}
                                 </button>
