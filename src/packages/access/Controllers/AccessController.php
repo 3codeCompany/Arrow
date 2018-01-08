@@ -38,20 +38,12 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
-<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
-use TableListORMHelper;
-=======
 use Arrow\Common\Models\Helpers\TableListORMHelper;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
 use Arrow\Common\Layouts\AdministrationLayout;
-=======
-use Arrow\Common\AdministrationLayout;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
 use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\Router;
@@ -91,17 +83,15 @@ class AccessController extends \Arrow\Models\Controller
 
         $view->setLayout(new EmptyLayout());
         $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
+        $view->assign("loginBackground", ConfigProvider::get("panel")["loginBackground"]);
         $view->assign("appPath", RequestContext::getBaseUrl());
-<<<<<<< HEAD:src/packages/access/Controllers/AccessController.php
-        $view->assign("from", $this->request["from"]); 
-=======
         $view->assign("from", $this->request["from"]);
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/access/Controllers/AccessController.php
     }
 
-    public function loginAction(IAction $action, RequestContext $request)
+    public function loginAction()
     {
 
+        $request = $this->request;
 
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
@@ -114,7 +104,6 @@ class AccessController extends \Arrow\Models\Controller
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
         $res = $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
-
 
 
         if (!$authHandler->isLogged()) {
@@ -368,7 +357,6 @@ class AccessController extends \Arrow\Models\Controller
 
         $this->json([1]);
     }
-
 
 
     public function access_list(Action $view, RequestContext $request)

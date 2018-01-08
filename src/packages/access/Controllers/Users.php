@@ -30,11 +30,7 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
-<<<<<<< HEAD
-use Arrow\Controls\API\Forms\Validator;
-=======
 use Arrow\Common\Models\Helpers\Validator;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
@@ -42,11 +38,7 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
-<<<<<<< HEAD
-use Arrow\Controls\Helpers\TableListORMHelper;
-=======
 use Arrow\Common\Models\Helpers\TableListORMHelper;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
@@ -193,17 +185,10 @@ class Users extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-<<<<<<< HEAD
-    public function edit(Action $view, RequestContext $request)
-    {
-        $view->setLayout(new ReactComponentLayout());
-        $user = User::get()->findByKey($request["key"]);
-=======
     public function edit()
     {
 
         $user = User::get()->findByKey($this->request["key"]);
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
@@ -215,22 +200,13 @@ class Users extends \Arrow\Models\Controller
                 ->findAsFieldArray('group_id');
 
 
-            $history = History::getObjectHistoryCriteria($user)
+            /*$history = History::getObjectHistoryCriteria($user)
                 ->order("id", "desc")
                 ->limit(0, 10)
-                ->find();
+                ->find();*/
         }
-<<<<<<< HEAD
-        $this->action->assign("history", $history);
-        $this->action->assign("groups", $groups);
-        $this->action->assign("user", $user);
-        $this->action->assign("selectedGroups", $selectedGroups);
-
-
-        return;
-=======
         $data = [];
-        $data["history"] = $history;
+        //$data["history"] = $history;
         $data["groups"] = $groups;
         $data["user"] = $user;
         $data["selectedGroups"] = $selectedGroups;
@@ -239,7 +215,6 @@ class Users extends \Arrow\Models\Controller
 
 
 
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
 
     }
 
@@ -282,8 +257,4 @@ class Users extends \Arrow\Models\Controller
     }
 
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b

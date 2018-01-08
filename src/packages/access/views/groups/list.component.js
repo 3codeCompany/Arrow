@@ -25,10 +25,7 @@ export default class access_access_users_list extends Component {
     render() {
         return (
             <div>
-<<<<<<< HEAD
-=======
 
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
                 <Navbar>
                     <span>System</span>
                     <span>Grupy dostępu</span>
@@ -46,7 +43,7 @@ export default class access_access_users_list extends Component {
                                 Column.id("id", "Id"),
                                 Column.text("name", "Nazwa"),
                                 Column.template("Zobacz", () => <i className="fa fa-search"></i>)
-                                    .onClick((row) => this.props._goto( this.props.baseURL + "/edit", {key: row.id}))
+                                    .onClick((row) => this.props._goto(this.props.baseURL + "/edit", {key: row.id}))
                                     .className("center darkgreen"),
                                 Column.template("Zobacz", () => <i className="fa fa-times"></i>)
                                     .onClick(this.handleDelete.bind(this))
@@ -58,8 +55,6 @@ export default class access_access_users_list extends Component {
             </div>
         )
     }
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b
+

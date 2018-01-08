@@ -14,12 +14,8 @@ use function array_unique;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
-use function array_unique;
-=======
 use function is_object;
 use function var_dump;
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
 
 class Translations
 {
@@ -45,10 +41,7 @@ class Translations
     {
 
 
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
-=======
 
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
         self::$currLanguage = $lang;
     }
 
@@ -186,10 +179,7 @@ class Translations
         $class = $class ? $class : get_class($first);
 
 
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
-=======
 
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
         $fields = [];
         //geting fields
         if (is_array($first)) {
@@ -200,10 +190,7 @@ class Translations
         }
 
 
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
-=======
 
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
         $keys = [-1];
 
         foreach ($list as $el) {
@@ -214,7 +201,6 @@ class Translations
         $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
         if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
         }
@@ -223,15 +209,6 @@ class Translations
 
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
         $stm = $db->prepare($q);
-=======
-        //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
-
-        $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
-        $stm = $db->prepare($q);
-
-      /*  print_r($q);
-        exit();*/
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
 
 
         try {
@@ -246,21 +223,11 @@ class Translations
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
 
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
         /*if($debug){
             print_r($q)."<br />";
     print_r($data);
     exit();
 }*/
-=======
-                /*if($debug){
-                    print_r($q)."<br />";
-            print_r($data);
-            exit();
-        }*/
-
-
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
 
 
         /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
@@ -287,17 +254,10 @@ class Translations
                         $secondLoad["fields"][] = $field;
                     }
 
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
                 } else {
 
                     //21457
                     if (empty($data[$el["id"]][$field])) {
-=======
-                }else{
-
-                    //21457
-                    if(empty($data[$el["id"]][$field])) {
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
                         //$query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $el["id"] . "','" . $lang . "','" . addslashes("") . "', '" . addslashes($class) . "')";
                         //$db->exec($query);
                     }
@@ -473,11 +433,7 @@ class Translations
      */
     public static function translateTextArray($arrayOfTexts)
     {
-<<<<<<< HEAD:src/packages/translations/Models/Translations.php
         foreach ($arrayOfTexts as $index => $text) {
-=======
-        foreach($arrayOfTexts as $index => $text) {
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/translations/Models/Translations.php
             $arrayOfTexts[$index] = Translations::translateText($text);
         }
         return $arrayOfTexts;

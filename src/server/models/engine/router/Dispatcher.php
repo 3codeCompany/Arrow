@@ -70,6 +70,15 @@ class Dispatcher
             ];
 
 
+            /*print "<pre>";
+            print_r([
+                "path" => $_tmpData["path"],
+                "shortPath" => $action,
+                "controller" => $_tmpData["controller"],
+                "package" => $_tmpData["package"],
+            ]);
+            exit();*/
+
             return [
                 "path" => $_tmpData["path"],
                 "shortPath" => $action,

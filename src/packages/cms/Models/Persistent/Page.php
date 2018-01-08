@@ -45,10 +45,4 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page
     }
 
 
-<<<<<<< HEAD:src/packages/cms/Models/Persistent/Page.php
-=======
-
-
-
->>>>>>> 48b53524a967b453047c1ed0b071d6c459a0526b:src/packages/cms/Models/Persistent/Page.php
 }
