@@ -186,17 +186,17 @@ class ImageTransform{
 					fclose($fp);
 					// -- here ends the code related to transparency handling
 					// creates an image from file
-					$sourceImageIdentifier = @imagecreatefromgif($this->sourceFile);
+					$sourceImageIdentifier = @\imagecreatefromgif($this->sourceFile);
 					break;
 					// if jpg
 				case 2:
 					// creates an image from file
-					$sourceImageIdentifier = @imagecreatefromjpeg($this->sourceFile);
+					$sourceImageIdentifier = @\imagecreatefromjpeg($this->sourceFile);
 					break;
 					// if png
 				case 3:
 					// creates an image from file
-					$sourceImageIdentifier = @imagecreatefrompng($this->sourceFile);
+					$sourceImageIdentifier = @\imagecreatefrompng($this->sourceFile);
 					break;
 				default:
 					// if file has an unsupported extension

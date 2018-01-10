@@ -199,13 +199,13 @@ class Users extends \Arrow\Models\Controller
                 ->findAsFieldArray('group_id');
 
 
-            /*$history = History::getObjectHistoryCriteria($user)
+            $history = History::getObjectHistoryCriteria($user)
                 ->order("id", "desc")
                 ->limit(0, 10)
-                ->find();*/
+                ->find();
         }
         $data = [];
-        //$data["history"] = $history;
+        $data["history"] = $history;
         $data["groups"] = $groups;
         $data["user"] = $user;
         $data["selectedGroups"] = $selectedGroups;

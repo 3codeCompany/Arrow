@@ -33,9 +33,6 @@ class Dispatcher
     public function resolvePath($path)
     {
 
-        
-
-
         if ($path[0] == ".") {
             $tmp = explode("/", Router::getActionParameter());
             $tmp[count($tmp) - 1] = substr($path, 2);
@@ -76,15 +73,6 @@ class Dispatcher
                 "path" => str_replace("/" . trim($package, "/"), "", $path)
             ];
 
-
-            /*print "<pre>";
-            print_r([
-                "path" => $_tmpData["path"],
-                "shortPath" => $action,
-                "controller" => $_tmpData["controller"],
-                "package" => $_tmpData["package"],
-            ]);
-            exit();*/
 
             return [
                 "path" => $_tmpData["path"],

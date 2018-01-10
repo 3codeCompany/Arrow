@@ -94,17 +94,8 @@ class History extends ORM_Arrow_Common_Models_History_History {
 
 
         if($handle instanceof PersistentObject){
-            if($handle->getClass() == "Arrow\Shop\Models\Persistent\Order"){
-                $ds->c(self::F_ELEMENT_ID, $handle->getPKey())
-                    ->startGroup()
-                    ->c(self::F_CLASS, $handle->getClass())
-                    ->_or()
-                    ->c(self::F_CLASS, "App\Models\Shop\Order")
-                    ->endGroup();
-            }else{
-                $ds->c(self::F_ELEMENT_ID, $handle->getPKey())
-                    ->c(self::F_CLASS, $handle->getClass());
-            }
+            $ds->c(self::F_ELEMENT_ID, $handle->getPKey())
+                ->c(self::F_CLASS, $handle->getClass());
         }else{
             $ds->c(self::F_HASH, $handle);
         }
