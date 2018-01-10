@@ -43,7 +43,7 @@ export default class access_access_users_list extends Component {
                                 Column.id("id", "Id"),
                                 Column.text("name", "Nazwa"),
                                 Column.template("Zobacz", () => <i className="fa fa-search"></i>)
-                                    .onClick((row) => this.props._goto( this.props.baseURL + "/edit", {key: row.id}))
+                                    .onClick((row) => this.props._goto(this.props.baseURL + "/edit", {key: row.id}))
                                     .className("center darkgreen"),
                                 Column.template("Zobacz", () => <i className="fa fa-times"></i>)
                                     .onClick(this.handleDelete.bind(this))
@@ -55,4 +55,6 @@ export default class access_access_users_list extends Component {
             </div>
         )
     }
+
 }
+

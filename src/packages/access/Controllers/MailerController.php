@@ -41,12 +41,12 @@ class MailerController extends \Arrow\Communication\Controllers\MailerController
     ];
 
 
+
     public function mail_account_register(Action $view, $request)
     {
         $view->setLayout(new MailerLayout());
 
-        $user = User::get()
-            ->findByKey($request["key"]);
+        $user = User::get()->findByKey($request["key"]);
 
         $view->assign("user", $user);
 
@@ -58,8 +58,7 @@ class MailerController extends \Arrow\Communication\Controllers\MailerController
     {
         $view->setLayout(new MailerLayout());
 
-        $user = User::get()
-            ->findByKey($request["key"]);
+        $user = User::get()->findByKey($request["key"]);
 
         $view->assign("user", $user);
         $view->assign("newPassword", $request["newPassword"]);

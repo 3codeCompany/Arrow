@@ -205,6 +205,7 @@ class Router extends \Arrow\Object
 
 
     public function notFound(IAction $action){
+
         $action->getController()->notFound($action, RequestContext::getDefault());
         exit();
     }

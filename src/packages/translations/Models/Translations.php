@@ -201,13 +201,14 @@ class Translations
         $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
+        if (isset(self::$classMapping[$class])) {
+            $class = self::$classMapping[$class];
+        }
+
         //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','", $fields) . "') order by value desc";
         $stm = $db->prepare($q);
-
-      /*  print_r($q);
-        exit();*/
 
 
         try {
@@ -222,13 +223,11 @@ class Translations
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
 
-                /*if($debug){
-                    print_r($q)."<br />";
-            print_r($data);
-            exit();
-        }*/
-
-
+        /*if($debug){
+            print_r($q)."<br />";
+    print_r($data);
+    exit();
+}*/
 
 
         /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
@@ -255,10 +254,10 @@ class Translations
                         $secondLoad["fields"][] = $field;
                     }
 
-                }else{
+                } else {
 
                     //21457
-                    if(empty($data[$el["id"]][$field])) {
+                    if (empty($data[$el["id"]][$field])) {
                         //$query = "insert into common_lang_objects_translaction (field, id_object,lang,value, class) values('" . $field . "','" . $el["id"] . "','" . $lang . "','" . addslashes("") . "', '" . addslashes($class) . "')";
                         //$db->exec($query);
                     }
@@ -280,6 +279,19 @@ class Translations
                 if (!isset($data[$row["id_object"]][$row["field"]]) || empty($data[$row["id_object"]][$row["field"]])) {
                     $data[$row["id_object"]][$row["field"]] = $row["value"];
                 }
+            }
+        }
+
+        if (false && $debug) {
+            if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242") {
+                print $lang . "<br />";
+                print_r($q)."<br />";
+                print "<pre>";
+
+                print_r($data);
+                print "</pre>";
+                print $class;
+
             }
         }
 
@@ -421,7 +433,7 @@ class Translations
      */
     public static function translateTextArray($arrayOfTexts)
     {
-        foreach($arrayOfTexts as $index => $text) {
+        foreach ($arrayOfTexts as $index => $text) {
             $arrayOfTexts[$index] = Translations::translateText($text);
         }
         return $arrayOfTexts;

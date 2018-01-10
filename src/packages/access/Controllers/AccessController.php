@@ -43,7 +43,7 @@ use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-use Arrow\Common\AdministrationLayout;
+use Arrow\Common\Layouts\AdministrationLayout;
 use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\Router;
@@ -83,13 +83,15 @@ class AccessController extends \Arrow\Models\Controller
 
         $view->setLayout(new EmptyLayout());
         $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
+        $view->assign("loginBackground", ConfigProvider::get("panel")["loginBackground"]);
         $view->assign("appPath", RequestContext::getBaseUrl());
         $view->assign("from", $this->request["from"]);
     }
 
-    public function loginAction(IAction $action, RequestContext $request)
+    public function loginAction()
     {
 
+        $request = $this->request;
 
         $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
@@ -102,7 +104,6 @@ class AccessController extends \Arrow\Models\Controller
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
         $res = $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
-
 
 
         if (!$authHandler->isLogged()) {
@@ -356,7 +357,6 @@ class AccessController extends \Arrow\Models\Controller
 
         $this->json([1]);
     }
-
 
 
     public function access_list(Action $view, RequestContext $request)
