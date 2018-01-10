@@ -8,7 +8,12 @@
     }
   ],
   "require": {
-    "symfony/yaml": "^3.2"
+    "symfony/yaml": "^3.2",
+    "symfony/routing": "^3.4",
+    "symfony/config": "^3.4",
+    "doctrine/annotations": "^1.6",
+    "symfony/http-foundation": "^3.4",
+    "symfony/cache": "^3.4"
   },
   "autoload": {
     "classmap": [

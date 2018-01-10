@@ -3,16 +3,15 @@
 namespace Arrow\Access\Controllers;
 
 
-use function array_reduce;
-use Arrow\Access\Models\AccessAPI;
 use Arrow\Access\Models\AccessGroup;
-use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
-use Arrow\Common\Layouts\ReactComponentLayout;
+use Arrow\Common\AdministrationLayout;
+use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Common\Models\History\History;
-use Arrow\ConfigProvider;
+use Arrow\Common\Models\Wigets\Table\TableDataSource;
+use Arrow\Common\Track;
 use Arrow\Controls\api\common\AjaxLink;
 use Arrow\Controls\api\common\BreadcrumbElement;
 use Arrow\Controls\api\common\ContextMenu;
@@ -30,37 +29,28 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
-use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
 use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
+use Arrow\Controls\API\Table\Table;
 use Arrow\Controls\api\WidgetsSet;
-use Arrow\Common\Models\Helpers\TableListORMHelper;
-use Arrow\Models\IAction;
-use Arrow\Models\Project;
+use Arrow\Models\Action;
+use Arrow\Models\Operation;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-use Arrow\Common\AdministrationLayout;
-use Arrow\Common\Layouts\EmptyLayout;
-use Arrow\Common\Models\Wigets\Table\TableDataSource;
-use Arrow\Router;
-use Arrow\Controls\API\Table\Table;
-use
-    \Arrow\RequestContext,
-    \Arrow\ORM\Persistent\Criteria,
-    Arrow\Common\Track,
-    Arrow\Models\Operation, Arrow\Models\Action;
+use Arrow\RequestContext;
+use Symfony\Component\Routing\Annotation\Route;
+use function array_reduce;
 use function strlen;
 
 /**
- * Created by JetBrains PhpStorm.
- * User: artur
- * Date: 04.09.12
- * Time: 14:20
- * To change this template use File | Settings | File Templates.
+ * Class Users
+ * @package Arrow\Access\Controllers
+ * @Route("/x1")
  */
 class Users extends \Arrow\Models\Controller
 {
@@ -171,10 +161,19 @@ class Users extends \Arrow\Models\Controller
         $this->json($response);
     }
 
+    /**
+     * @param Action $view
+     * @param RequestContext $request
+     * @throws \Arrow\ORM\Exception
+     * @Route("/x2")
+     */
     public function list(Action $view, RequestContext $request)
     {
-        $this->action->setLayout(new ReactComponentLayout());
-        $this->action->assign("accessGroups", AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true));
+
+
+        $this->json([
+            "accessGroups" => AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true)
+        ]);
 
     }
 
@@ -212,8 +211,6 @@ class Users extends \Arrow\Models\Controller
         $data["selectedGroups"] = $selectedGroups;
 
         $this->json($data);
-
-
 
 
     }

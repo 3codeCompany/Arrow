@@ -28,7 +28,7 @@ use Arrow\Shop\Models\Persistent\ProductVariant;
  * @method MailerController Controller::getInstance()
  * @package Arrow\Package\Application
  */
-class MailerController extends \Arrow\Communications\Controllers\Mailer\MailerController
+class MailerController extends \Arrow\Communication\Controllers\MailerController
 {
 
     const MAIL_REGISTER = "register";
