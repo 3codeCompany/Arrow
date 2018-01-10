@@ -16,7 +16,6 @@
         <field name="seo_page_text" type="VARCHAR" size="1255"/>
         <field name="content" type="TEXT"/>
         <field name="contents_additional" type="TEXT"/>
-        <field name="country" type="varchar" size="3"/>
     </table>
 
 
@@ -28,7 +27,6 @@
         <field name="lang" type="VARCHAR" size="5"/>
         <field name="place" type="VARCHAR" size="155"/>
         <field name="title" type="VARCHAR" size="500"/>
-        <field name="subtitle" type="VARCHAR" size="500"/>
         <field name="link" type="VARCHAR" size="155"/>
         <field name="start" type="DATE"/>
         <field name="stop" type="DATE"/>

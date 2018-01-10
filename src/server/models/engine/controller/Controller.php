@@ -152,8 +152,6 @@ abstract class Controller implements IController
 
         $user = Auth::getDefault()->getUser();
 
-
-
         if($user && $user->isInGroup(AccessAPI::GROUP_DEVELOPERS)){
 
             $name = str_replace(DIRECTORY_SEPARATOR, "_",trim( $action->getShortPath(), "/"));

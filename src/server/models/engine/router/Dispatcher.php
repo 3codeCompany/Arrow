@@ -1,8 +1,15 @@
 <?php namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
-use Arrow\RequestContext;
 use Arrow\Router;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use const PHP_EOL;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use const ARROW_APPLICATION_PATH;
+use const ARROW_DOCUMENTS_ROOT;
 use function array_slice;
 use function ucfirst;
 
@@ -25,9 +32,6 @@ class Dispatcher
 
     public function resolvePath($path)
     {
-
-        
-
 
         if ($path[0] == ".") {
             $tmp = explode("/", Router::getActionParameter());
@@ -70,15 +74,6 @@ class Dispatcher
             ];
 
 
-            /*print "<pre>";
-            print_r([
-                "path" => $_tmpData["path"],
-                "shortPath" => $action,
-                "controller" => $_tmpData["controller"],
-                "package" => $_tmpData["package"],
-            ]);
-            exit();*/
-
             return [
                 "path" => $_tmpData["path"],
                 "shortPath" => $action,
@@ -95,21 +90,81 @@ class Dispatcher
 
     private static $actions = [];
 
-    public function get($path, $skipRewriteTest = false)
+
+    private function symfonyRouter($path)
+    {
+        $sourceFolders = [];
+        $loader = require ARROW_DOCUMENTS_ROOT . "/vendor/autoload.php";
+
+
+        $packages = Project::getInstance()->getPackages();
+
+        $sourceFolders[] = ARROW_APPLICATION_PATH . '/Controllers';
+        foreach ($packages as $name => $dir) {
+            $sourceFolders[] = ARROW_DOCUMENTS_ROOT . "/" . $dir . "/Controllers";
+        }
+
+
+        AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
+
+        $routeLoader = new AnnotationsRouteLoader(new AnnotationReader());
+        $loader = new AnnotationsDirectoriesLoader(new FileLocator($sourceFolders), $routeLoader);
+        $request = Request::createFromGlobals();
+        $context = new \Symfony\Component\Routing\RequestContext();
+        $context->fromRequest($request);
+
+        $router = new \Symfony\Component\Routing\Router(
+            $loader,
+            $sourceFolders,
+            [], //array('cache_dir' => ARROW_CACHE_PATH . "/symfony"),
+            $context
+        );
+
+        try {
+            $result = $router->match($request->getPathInfo()); //'/prefix/cars/index/parametr'
+
+            $col = $router->getRouteCollection();
+            /*print "<pre>";
+            foreach($col as $route){
+                print $route->getPath().PHP_EOL;
+                print_r($route->getDefaults());
+
+            }*/
+
+
+            return [
+                "path" => $request->getPathInfo(),
+                "shortPath" => $result["_method"],
+                "controller" => $result["_controller"],
+                "package" => $result["_package"],
+            ];
+
+        } catch (ResourceNotFoundException $ex) {
+
+
+
+
+            /*print "<pre>";
+            print $request->getPathInfo() . PHP_EOL;
+            print_r($router->getRouteCollection());
+            exit();*/
+            return false;
+            //print_r($ex);
+            //print "<h1>{$ex->getMessage()}</h1>";
+        }
+    }
+
+    public function get($path)
     {
 
-        if (isset(self::$actions[$path])) {
-            return self::$actions[$path];
-        }
+        $pathInfo = $this->symfonyRouter($path);
 
-        if (!$skipRewriteTest) {
-            $rewriteTest = $this->findByRewrite($path);
-            if ($rewriteTest) {
-                return $rewriteTest;
+        if ($pathInfo == false) {
+            if (isset(self::$actions[$path])) {
+                return self::$actions[$path];
             }
+            $pathInfo = $this->resolvePath($path);
         }
-
-        $pathInfo = $this->resolvePath($path);
         $action = new Action(
             $pathInfo["path"],
             $pathInfo["shortPath"],
@@ -119,46 +174,6 @@ class Dispatcher
 
 
         self::$actions[$path] = $action;
-
-
-        return $action;
-    }
-
-    public function findByRewrite($path)
-    {
-        $action = null;
-
-
-        foreach ($this->configuration["rewrite"] as $_rewrite => $rewrite) {
-
-
-            if (preg_match_all("/" . $_rewrite . "/", $path, $regs, PREG_SET_ORDER)) {
-
-                $request = RequestContext::getDefault();;
-                $c = count($regs[0]);
-
-                if (!is_array($rewrite)) {
-                    $action = $this->get($rewrite, true);
-                    break;
-                }
-
-                for ($i = 1; $i < $c; $i++) {
-                    $request->addParameter($rewrite["params"][$i - 1], $regs[0][$i]);
-                }
-                for ($i = $c - 1; $i < count($rewrite["params"]); $i++) {
-                    if (is_array($rewrite["params"][$i])) {
-                        $request->addParameter(key($rewrite["params"][$i]), reset($rewrite["params"][$i]));
-                    } else {
-                        $request->addParameter($rewrite["params"][$i], null);
-                    }
-                }
-
-
-                $action = $this->get($rewrite["path"], true);
-
-                break;
-            }
-        }
 
 
         return $action;

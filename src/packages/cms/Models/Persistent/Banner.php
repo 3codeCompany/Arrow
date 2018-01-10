@@ -10,9 +10,9 @@ namespace Arrow\CMS\Models\Persistent;
 
 
 use Arrow\ORM\ORM_Arrow_CMS_Models_Persistent_Banner;
+use Arrow\ORM\ORM_Arrow_CMS_Persistent_Banner;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Extensions\Sortable;
-use Arrow\ORM\Persistent\PersistentFactory;
 
 class Banner extends ORM_Arrow_CMS_Models_Persistent_Banner {
     use Sortable;

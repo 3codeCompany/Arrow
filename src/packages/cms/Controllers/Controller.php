@@ -1,35 +1,10 @@
 <?php
 
-namespace Arrow\CMS;
+namespace Arrow\CMS\Controllers;
 
 
 use App\Controllers\BaseController;
-use Arrow\Controls\API\Components\Toolbar;
-use Arrow\Controls\API\Forms\Fields\Button;
-use Arrow\Controls\API\Forms\Fields\File;
-use Arrow\Controls\API\Forms\Fields\Files;
-use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
-use Arrow\Controls\API\Forms\Fields\Date;
-use Arrow\Controls\API\Forms\Fields\Hidden;
-use Arrow\Controls\API\Forms\Fields\Select;
-use Arrow\Controls\API\Forms\Fields\SwitchF;
-use Arrow\Controls\API\Forms\Fields\Text;
-use Arrow\Controls\API\Forms\Fields\Textarea;
-use Arrow\Controls\API\Forms\Fields\Wyswig;
-use Arrow\Controls\API\Forms\FieldsList;
-use Arrow\Controls\API\Forms\Form;
-use Arrow\Controls\API\Forms\FormBuilder;
-use Arrow\Controls\API\Table\ColumnList;
-use Arrow\Controls\API\Table\Columns\Menu;
-use Arrow\Models\Dispatcher;
-use Arrow\Models\Operation;
-use Arrow\Models\View;
-use Arrow\ORM\Persistent\Criteria,
-    \Arrow\Access\Models\Auth,
-    \Arrow\ViewManager, \Arrow\RequestContext;
-use Arrow\Access\Models\AccessGroup;
-use Arrow\Package\Application\PresentationLayout;
-use Arrow\Controls\API\Forms\BuilderSchemas\Bootstrap;
+use Arrow\Access\Models\Auth;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\AdministrationPopupLayout;
 use Arrow\Common\BreadcrumbGenerator;
@@ -37,12 +12,19 @@ use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
-use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
-use Arrow\Media\Models\MediaAPI;
-use Arrow\Controls\API\Table\Table;
+use Arrow\Media\MediaAPI;
+use Arrow\Models\Dispatcher;
+use Arrow\Models\Operation;
+use Arrow\Models\View;
+use Arrow\ORM\Persistent\Criteria;
+use Arrow\Package\Application\PresentationLayout;
+use Arrow\RequestContext;
 use Arrow\Router;
+use Arrow\Translations\Models\Translations;
+
+;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -51,41 +33,9 @@ use Arrow\Router;
  * Time: 14:20
  * To change this template use File | Settings | File Templates.
  */
-
 class Controller extends BaseController
 {
 
-    private $br = array(
-        "__defaults" => array(
-            "list" => "Lista",
-            // "edit" => "id(Dodaj|[->getName])"
-            "edit" => "Edycja"
-        ),
-        "strict" => array(
-            "/news" => "Aktualności",
-        )
-    );
-
-
-    public function eventRunAfterAction(Action $view, RequestContext $request)
-    {
-        parent::eventRunAfterAction($view, $request);
-
-
-        $breadcrumb = new BreadcrumbGenerator($this->br["strict"], $this->br["__defaults"]);
-
-        $layout = $view->getLayout();
-
-        if ($layout instanceof AdministrationLayout || $layout instanceof AdministrationPopupLayout)
-            $layout->setBreadcrumbGenerateor($breadcrumb);
-
-        $view->assign("seoTitle", $this->seoTitle);
-        $view->assign("seoDescription", $this->seoDescription);
-
-        $view->assign("editState", false);
-
-
-    }
 
 
     public function cmsPageRequest($path, RequestContext $request)
@@ -147,7 +97,6 @@ class Controller extends BaseController
     {
         $page = Criteria::query(Page::getClass())
             ->c(Page::F_REWRITE_NAME, $request["path"])
-
             ->findFirst();
 
         Translations::translateObject($page);
@@ -231,7 +180,6 @@ class Controller extends BaseController
 
         $list = FieldsList::create()
             ->tab("Dane i ustawienia", "edit")
-
             ->section("Dane", "edit")
             ->row()
             ->addField("Nazwa", Text::_new("name"))
@@ -239,24 +187,19 @@ class Controller extends BaseController
             ->rowEnd()
             ->addField("Aktywna", SwitchF::_bool("active"))
             ->sectionEnd()
-
             ->section("Położenie i typ", "cogs")
             ->addField("Kontener nadrzędny", Select::_tree("parent_id", Page::get()->order("sort")->find(true), 1))
             ->addField("Typ", SwitchF::_new("type", array("page" => "Strona", "container" => "Kontener"), "container"))
             ->sectionEnd()
-
             ->section("SEO", "bar-chart")
             ->addField("Tytuł strony", Text::_new("title"))
             ->addField("Słowa kluczowe", Text::_new("keywords"))
             ->addField("Opis", Textarea::_new("description"))
             ->sectionEnd()
-
             ->tabEnd()
-
             ->tab("Treści", "book")
             ->addField("Nagłówek", Text::_new("header", $page ? $page["name"] : 'Wprowadź nagłówek'))
             ->addField(null, Wyswig::_new("content")->setWidth(900)->setHeight(500))
-
             ->tabEnd();
 
 
@@ -325,8 +268,9 @@ class Controller extends BaseController
 
     public function switch_page_switchEditionState(IAction $action, RequestContext $request)
     {
-        if (!isset($_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"]))
+        if (!isset($_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"])) {
             $_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"] = false;
+        }
 
         $_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"] = !$_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"];
     }
@@ -417,26 +361,26 @@ class Controller extends BaseController
     {
         $view->setLayout(new AdministrationLayout(), new EmptyLayout());
         $columns = (new ColumnList)
-            ->simple("id","id")
-            ->simple("date","Data")
-            ->simple("title","Tytuł")
+            ->simple("id", "id")
+            ->simple("date", "Data")
+            ->simple("title", "Tytuł")
             ->add(
                 Menu::_new("Opcje")
                     ->add(Links::edit())
                     ->add()
                     ->add(Links::delete(News::getClass()))
             );
-        $ds = TableDatasource::fromClass( News::getClass());
-        $ds->c("type",$request["type"]?$request["type"]:2);
-        $ds->c("partner_id",1);
-        $ds->c("language",[ "all", $request["lang"]?$request["lang"]:"pl" ], Criteria::C_IN);
+        $ds = TableDatasource::fromClass(News::getClass());
+        $ds->c("type", $request["type"] ? $request["type"] : 2);
+        $ds->c("partner_id", 1);
+        $ds->c("language", ["all", $request["lang"] ? $request["lang"] : "pl"], Criteria::C_IN);
 
-        $table = Table::create("news", $ds , $columns)
-            ->setToolbar(Toolbar::_new("",[Links::add()]));
+        $table = Table::create("news", $ds, $columns)
+            ->setToolbar(Toolbar::_new("", [Links::add()]));
 
 
-        if( $table->getState(Table::STATE_GLOBAL_SEARCH)){
-            $ds->addSearchCondition(["id","title","date"],"%".$table->getState(Table::STATE_GLOBAL_SEARCH)."%");
+        if ($table->getState(Table::STATE_GLOBAL_SEARCH)) {
+            $ds->addSearchCondition(["id", "title", "date"], "%" . $table->getState(Table::STATE_GLOBAL_SEARCH) . "%");
         }
 
         $view->assign("table", $table);
@@ -460,30 +404,25 @@ class Controller extends BaseController
             });
 
 
-
         $type = SwitchF::_new("type", array(1 => "Wydarzenie", 2 => "Aktualność", 3 => "Newsletter"), 1)
             ->setNamespace("data")
             ->setJSOnChange("Serenity.get(this).refresh()");
 
         $fields = FieldsList::create()
-
             ->section("Dane podstawowe", "edit")
-                ->addField("Typ", $type, ["cols" =>10])
-                ->addField("Nazwa", Text::_new("title"))
-                ->addField("Link", Text::_new("link"),[ "display" => $form->getFieldValue($type)==1|| !$form->getFieldValue($type)])
-                ->row()
-                ->addField("Data", Date::_new("date", "Podaj datę"))
-                ->addField("Data zakończenia (opcjonalnie)", Date::_new("date2", "Podaj datę"), [ "display" =>$form->getFieldValue($type)==1 || !$form->getFieldValue($type)])
-                ->rowEnd()
-                ->addField("Aktywny", SwitchF::_bool("active", 1))
-                ->addField("Język", SwitchF::_new("language", array("all" => "Wszystkie", "pl" => "Polski", "en" => "Angielski"), "all"),["cols" =>10])
-                //->addField(null,Hidden::_new("partner_id",1))
-                //->addField("Plik", File::_new("files") )
-                ->addField("Treść krótka", Textarea::_new("content_short")->setBig())
-                ->addField("Treść", Textarea::_new("content")->setBig())
-
-
-            ;
+            ->addField("Typ", $type, ["cols" => 10])
+            ->addField("Nazwa", Text::_new("title"))
+            ->addField("Link", Text::_new("link"), ["display" => $form->getFieldValue($type) == 1 || !$form->getFieldValue($type)])
+            ->row()
+            ->addField("Data", Date::_new("date", "Podaj datę"))
+            ->addField("Data zakończenia (opcjonalnie)", Date::_new("date2", "Podaj datę"), ["display" => $form->getFieldValue($type) == 1 || !$form->getFieldValue($type)])
+            ->rowEnd()
+            ->addField("Aktywny", SwitchF::_bool("active", 1))
+            ->addField("Język", SwitchF::_new("language", array("all" => "Wszystkie", "pl" => "Polski", "en" => "Angielski"), "all"), ["cols" => 10])
+            //->addField(null,Hidden::_new("partner_id",1))
+            //->addField("Plik", File::_new("files") )
+            ->addField("Treść krótka", Textarea::_new("content_short")->setBig())
+            ->addField("Treść", Textarea::_new("content")->setBig());
 
         $view->assign("builder", PopupFormBuilder::_new($form, $fields, News::getClass(), $news)->setTitles("Dodaj wydarzenie", "Edytuj wydarzenie"));
 
@@ -493,7 +432,9 @@ class Controller extends BaseController
     {
         $data = $request["data"];
         unset($data["files"]);
-        if (empty($data["date2"])) unset($data["date2"]);
+        if (empty($data["date2"])) {
+            unset($data["date2"]);
+        }
         if ($data["id"]) {
             $news = Criteria::query(News::getClass())->findByKey($data["id"]);
             $news->setValues($data);

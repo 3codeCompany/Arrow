@@ -20,7 +20,6 @@ export default class ArrowViewComponent extends Component {
 
     handleSubmit() {
 
-
         let data = this.state.form;
         /* if (data.login == "" || data.password == "") {
              //this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
@@ -49,20 +48,18 @@ export default class ArrowViewComponent extends Component {
         //this.setState({loading: true});
         comm.send();
 
-
     }
 
     render() {
         let s = this.state;
         return <div className="login-view">
 
-            <div className="login-background" style={{backgroundImage: `url('${this.props.loginBackground}')`}}>
+            <div className="login-background">
 
                 <div className="login-form-container">
                     <div className="title"> {this.props.applicationTitle}</div>
                     <BForm>
                         {() => <div>
-
                             <div>
                                 <div className="input">
                                     <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={'login'} placeholder="Twój login"/>
@@ -75,10 +72,9 @@ export default class ArrowViewComponent extends Component {
 
                             <div className="button">
                                 <button
-
-                                    className="login-button"
-                                    disabled={this.state.loading}
-                                    onClick={this.handleSubmit.bind(this)}
+                                  className="login-button"
+                                  disabled={this.state.loading}
+                                  onClick={this.handleSubmit.bind(this)}
                                 >
                                     {this.state.loading ? '...' : 'Zaloguj się'}
                                 </button>
@@ -86,7 +82,6 @@ export default class ArrowViewComponent extends Component {
                             <div style={{height: 20, paddingTop: 10}}>
                                 {this.state.error}
                             </div>
-
                         </div>}
                     </BForm>
                 </div>

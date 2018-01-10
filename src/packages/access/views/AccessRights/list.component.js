@@ -1,13 +1,11 @@
-import React, {Component} from "react";
+import React, {Component} from 'react';
 
-import Navbar from "frontend/src/ctrl/Navbar"
-import {confirm} from "frontend/src/ctrl/Overlays"
-import {Table, Column} from "frontend/src/ctrl/Table"
-import Panel from "frontend/src/ctrl/Panel"
-import {Row} from "frontend/src/layout/BootstrapLayout"
-import Comm from "frontend/src/lib/Comm";
-import {CheckboxGroup} from "frontend/src/ctrl/Fields";
+import Navbar from 'frontend/src/ctrl/Navbar';
+import {confirm} from 'frontend/src/ctrl/Overlays';
+import {Table, Column} from 'frontend/src/ctrl/Table';
 
+import Comm from 'frontend/src/lib/Comm';
+import {CheckboxGroup} from 'frontend/src/ctrl/Fields';
 
 export default class access_access_users_list extends Component {
     constructor(props) {
@@ -17,21 +15,17 @@ export default class access_access_users_list extends Component {
 
     handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.point_object_friendly_id}" ?`).then(() => {
-
             Comm._post(this.props.baseURL + '/delete', {key: row.id}).then(() => {
                 this.props._notification(`Punkt  "${row.point_object_friendly_id}" został usunięta.`);
                 this.table.load();
             });
-
         });
     }
 
 
     saveAccessPoint(row) {
-
         Comm._post(this.props.baseURL + '/save', {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
             this.props._notification(`Punkt  "${row.point_object_friendly_id}" został zaktualizowany.`);
-
             //this.table.load();
         });
     }
@@ -44,7 +38,6 @@ export default class access_access_users_list extends Component {
                     <span>System</span>
                     <span>Usawienia dostępu</span>
                 </Navbar>
-
                 <div className="panel-body-margins">
 
                     <Table
@@ -60,7 +53,7 @@ export default class access_access_users_list extends Component {
                                 .onClick((row, val, event, rowComponent) => {
                                     row.control_enabled = row.control_enabled == '1' ? '0' : '1';
                                     this.saveAccessPoint(row);
-                                    -rowComponent.forceUpdate();
+-                                    rowComponent.forceUpdate();
                                 })
                             ,
                             Column.text('groups', 'Grupy dostępu')
