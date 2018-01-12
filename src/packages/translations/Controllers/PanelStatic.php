@@ -43,7 +43,7 @@ class PanelStatic extends BaseController
         $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
         $db = Project::getInstance()->getDB();
         $t = LanguageText::getTable();
-        //$db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+        //$db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
     }
 
     public function list()
