@@ -12,8 +12,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
-    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
-
 
 </head>
 <body id="app" class="back-office-body">
@@ -29,19 +27,20 @@ $menu = \Arrow\Common\Models\Panel\AdministrationExtensionsManager::getData();
 ?>
 
 
-<script type="text/javascript">window.reactBackOfficeVar =  <?= json_encode([
+<script type="text/javascript">
+    window.reactBackOfficeVar =  <?= json_encode([
         "appIcon" => $this["applicationIcon"],
         "appTitle" => $this["applicationTitle"],
         "appMenu" => $menu,
         "appBaseURL" => \Arrow\Router::getBasePath(),
         "user" => ["login" => $this["user"]["login"]],
-
         "baseURL" => rtrim(\Arrow\Router::link("."), "/"),
         "path" => $this->getRoute(),
         "requestURI" => $_SERVER["REQUEST_URI"],
-        "component" => $class
-
-    ]) ?></script>
+        "component" => $class,
+        "packages" => \Arrow\Models\Project::getInstance()->getPackages()
+    ]) ?>
+</script>
 <div react-component="BackOfficePanel" id="root" react-props="reactBackOfficeVar"></div>
 <div id="modal-root"></div>
 <? if (!isset($_SESSION["inDev"])) {

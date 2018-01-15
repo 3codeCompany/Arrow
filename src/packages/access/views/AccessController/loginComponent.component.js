@@ -54,7 +54,7 @@ export default class ArrowViewComponent extends Component {
         let s = this.state;
         return <div className="login-view">
 
-            <div className="login-background">
+            <div className="login-background" style={{ backgroundImage: `url( ${this.props.backgroundImage} )` }}>
 
                 <div className="login-form-container">
                     <div className="title"> {this.props.applicationTitle}</div>
@@ -72,9 +72,9 @@ export default class ArrowViewComponent extends Component {
 
                             <div className="button">
                                 <button
-                                  className="login-button"
-                                  disabled={this.state.loading}
-                                  onClick={this.handleSubmit.bind(this)}
+                                    className="login-button"
+                                    disabled={this.state.loading}
+                                    onClick={this.handleSubmit.bind(this)}
                                 >
                                     {this.state.loading ? '...' : 'Zaloguj się'}
                                 </button>

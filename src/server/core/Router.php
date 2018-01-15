@@ -1,8 +1,11 @@
 <?php
+
 namespace Arrow;
+
 use Arrow\Models\Action;
 use Arrow\Models\Dispatcher;
-use Arrow\Models\IAction;
+use Symfony\Component\HttpFoundation\Request;
+
 
 /**
  * Router
@@ -12,7 +15,7 @@ use Arrow\Models\IAction;
  * @author   Artur Kmera <artur.kmera@arrowplatform.org>
  * @todo     Rozwinoc o ciastka i pliki, dodac wykrywanie typu wywołania
  */
-class Router extends \Arrow\Object
+class Router
 {
 
     public static $INDEX_FILE = ""; //"index.php";
@@ -50,7 +53,8 @@ class Router extends \Arrow\Object
         return self::$actionName;
     }
 
-    public function getAction(){
+    public function getAction()
+    {
         return Dispatcher::getDefault()->get(self::getActionName());
     }
 
@@ -77,26 +81,27 @@ class Router extends \Arrow\Object
         return self::getBasePath() . ltrim($obj->getPath(), "/");
     }
 
-    public static function link( $path, array $params = null ){
-        if( $path[0] == "?"){
-            $path = ViewManager::getCurrentView()->get()->getRoute().$path;
-        }elseif($path[0] == "."){
+    public static function link($path, array $params = null)
+    {
+        if ($path[0] == "?") {
+            $path = ViewManager::getCurrentView()->get()->getRoute() . $path;
+        } elseif ($path[0] == ".") {
 
             $tmp = explode(
                 DIRECTORY_SEPARATOR,
                 ViewManager::getCurrentView()->get()->getRoute()
             );
 
-            $tmp[count($tmp)-1] = substr( $path, 2 );
+            $tmp[count($tmp) - 1] = substr($path, 2);
 
             //unset($tmp[0]);
-            $path = implode("/",$tmp);
+            $path = implode("/", $tmp);
         }
 
-        $url = str_replace("//","/",self::$basePath.$path);
+        $url = str_replace("//", "/", self::$basePath . $path);
 
-        if($params){
-            $url.="?". \http_build_query( $params );
+        if ($params) {
+            $url .= "?" . \http_build_query($params);
         }
 
         return $url;
@@ -122,7 +127,6 @@ class Router extends \Arrow\Object
         }
 
 
-
         //self::$basePath = substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_NAME'], "/")+1);
 
         $p = parse_url(urldecode($url));
@@ -137,13 +141,11 @@ class Router extends \Arrow\Object
         $action = ltrim($action, "/");
 
 
-
         return $action;
     }
 
     /**
      * @param $actionParameter
-     * @return \Arrow\Models\IAction[]
      * @throws Exception|\Exception
      */
     public static function resolveActions($actionParameter)
@@ -165,23 +167,24 @@ class Router extends \Arrow\Object
             return null;
         }
 
-        $p = parse_url(urldecode("/".ltrim($_SERVER["REQUEST_URI"], "/" )));
+        $p = parse_url(urldecode("/" . ltrim($_SERVER["REQUEST_URI"], "/")));
 
 
-        if (self::$basePath == "/")
-            $action = str_replace( "index.php", "" , $p["path"]);
-        else {
+        if (self::$basePath == "/") {
+            $action = str_replace("index.php", "", $p["path"]);
+        } else {
             $len = strlen(self::$basePath);
-            if(substr($p["path"], 0, $len) == self::$basePath){
-                $action = substr($p["path"], $len );
+            if (substr($p["path"], 0, $len) == self::$basePath) {
+                $action = substr($p["path"], $len);
             }
             //$action = str_replace([self::$basePath, "index.php"], ["", ""], $p["path"]);
         }
 
         $action = ltrim($action, "/");
 
-        if (empty($action))
+        if (empty($action)) {
             $action = "index";
+        }
 
 
         self::$actionName = $action;
@@ -189,7 +192,9 @@ class Router extends \Arrow\Object
 
     public static function getBasePath()
     {
-        return self::$basePath;
+        $request = Request::createFromGlobals();
+
+        return $request->getBasePath();
     }
 
 
@@ -204,7 +209,8 @@ class Router extends \Arrow\Object
     }
 
 
-    public function notFound(IAction $action){
+    public function notFound(Action $action)
+    {
         $action->getController()->notFound($action, RequestContext::getDefault());
         exit();
     }
@@ -223,8 +229,7 @@ class Router extends \Arrow\Object
         }
 
 
-
-        if(!$this->action->exists()){
+        if (!$this->action->exists()) {
             $this->notFound($this->action);
             return;
         }

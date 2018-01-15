@@ -15,7 +15,7 @@ use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
 use function htmlentities;
 
-class Action implements \ArrayAccess, IAction
+class Action implements \ArrayAccess
 {
 
 

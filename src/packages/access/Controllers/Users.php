@@ -165,7 +165,6 @@ class Users extends \Arrow\Models\Controller
      * @param Action $view
      * @param RequestContext $request
      * @throws \Arrow\ORM\Exception
-     * @Route("/x2")
      */
     public function list(Action $view, RequestContext $request)
     {

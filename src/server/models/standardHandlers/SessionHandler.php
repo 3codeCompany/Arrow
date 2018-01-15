@@ -40,7 +40,6 @@ class SessionHandler implements ISessionHandler
     private function __construct()
     {
 
-
         if(Controller::isInCLIMode())
             return;
         $this->db = Project::getInstance()->getDB();
@@ -66,9 +65,6 @@ class SessionHandler implements ISessionHandler
 
         session_name(self::$sessionCookieName);
         session_set_cookie_params(time() + $time, "/");
-
-
-
 
         if (isset($_REQUEST["sessionId"])) {
             session_id($_REQUEST["sessionId"]);

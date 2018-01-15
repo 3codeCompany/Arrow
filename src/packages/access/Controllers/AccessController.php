@@ -83,11 +83,12 @@ class AccessController extends \Arrow\Models\Controller
 
         $view->setLayout(new EmptyLayout());
         $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
+        $view->assign("backgroundImage", ConfigProvider::get("panel")["loginBackground"]);
         $view->assign("appPath", RequestContext::getBaseUrl());
         $view->assign("from", $this->request["from"]);
     }
 
-    public function loginAction(IAction $action, RequestContext $request)
+    public function loginAction( $action, RequestContext $request)
     {
 
 
@@ -116,7 +117,7 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function logout(IAction $action, RequestContext $request)
+    public function logout( $action, RequestContext $request)
     {
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
@@ -191,7 +192,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json();
     }
 
-    public function auth_change_password(IAction $action, RequestContext $request)
+    public function auth_change_password( $action, RequestContext $request)
     {
         $user = Auth::getDefault()->getUser();
 
@@ -425,7 +426,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-    public function changePointGroup(IAction $action, RequestContext $request)
+    public function changePointGroup( $action, RequestContext $request)
     {
         //$tmp = explode(",",$request["groups"]);
 
@@ -442,7 +443,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([true]);
     }
 
-    public function auth_loginAs(IAction $action, RequestContext $request)
+    public function auth_loginAs( $action, RequestContext $request)
     {
 
         $auth = Auth::getDefault();

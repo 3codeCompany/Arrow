@@ -6,7 +6,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use function var_dump;
 
-class MailerAPI extends \Arrow\Object
+class MailerAPI
 {
 
     private static $mailLib = null;

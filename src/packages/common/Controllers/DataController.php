@@ -7,7 +7,6 @@ use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
 use Arrow\Media\MediaAPI;
 use Arrow\Models\Dispatcher;
-use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,

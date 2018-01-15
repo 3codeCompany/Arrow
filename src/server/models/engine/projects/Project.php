@@ -72,8 +72,6 @@ class Project
      */
     private $defaultDbConnection;
 
-    private $accesManager;
-
 
     private static $instance;
 
@@ -91,11 +89,14 @@ class Project
 
     public function __construct()
     {
+
+
         self::$instance = $this;
 
         $this->configuration = ConfigProvider::get();
 
         if ($this->configuration) {
+
             $this->id = $this->configuration["name"];
 
             date_default_timezone_set($this->configuration["timezone"]);
@@ -104,7 +105,7 @@ class Project
 
             $this->getHandler(self::IErrorHandler);
             $this->getHandler(self::IExceptionHandler);
-            //$this->getHandler(self::ISessionHandler);
+            $this->getHandler(self::ISessionHandler);
             $this->getHandler(self::IAuthHandler);
             $this->accesManager = $this->getHandler(self::IAccessHandler);
 
@@ -189,6 +190,7 @@ class Project
             $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
         } catch (\Exception $ex) {
             //todo Rozwiązać inaczej :]
+            print $dbConf['dsn']."<br />";
             exit("DB connection problem " . $ex->getMessage());
         }
         $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

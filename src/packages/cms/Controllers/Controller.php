@@ -135,114 +135,12 @@ class Controller extends BaseController
         return false;
     }
 
-    public function common_404(Action $view, RequestContext $request, $package)
-    {
-        $view->setLayout(new PresentationLayout());
-    }
-
-    public function common_editToolbar(Action $view, RequestContext $request)
-    {
-        $page = Criteria::query(Page::getClass())
-            ->findByKey($request["page"]);
-
-        MediaAPI::prepareMedia(array($page));
-
-        $view->setLayout(new EmptyLayout());
-        $requestedView = Router::getDefault()->get()->getPath();
-        $view->assign("requested", $request["requested"]);
-        $view->assign("page", $page);
 
 
-        $editState = isset($_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"]) ? $_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"] : false;
-        $view->assign("editState", $editState);
-
-    }
-
-    public function page_save_element(IAction $action, RequestContext $request)
-    {
-        list($class, $id, $field) = explode("|", $request["elementID"]);
-        $value = $request["value"];
-
-        $obj = Criteria::query($class)->findByKey($id);
-        $obj->setValue($field, $value);
-        $obj->save();
-        return $obj->getPKey();
-    }
-
-    public function pages_edit(Action $view, RequestContext $request, $package)
-    {
-        $view->setLayout(new AdministrationPopupLayout());
-        $page = Criteria::query(Page::getClass())->findByKey($request["id"]);
-        $view->assign("page", $page);
-
-        $form = Form::_new("add", $page)
-            ->setRequired(array("name", "rewrite_name"));
-
-        $list = FieldsList::create()
-            ->tab("Dane i ustawienia", "edit")
-            ->section("Dane", "edit")
-            ->row()
-            ->addField("Nazwa", Text::_new("name"))
-            ->addField("Nazwa rewrite", Text::_new("rewrite_name"))
-            ->rowEnd()
-            ->addField("Aktywna", SwitchF::_bool("active"))
-            ->sectionEnd()
-            ->section("Położenie i typ", "cogs")
-            ->addField("Kontener nadrzędny", Select::_tree("parent_id", Page::get()->order("sort")->find(true), 1))
-            ->addField("Typ", SwitchF::_new("type", array("page" => "Strona", "container" => "Kontener"), "container"))
-            ->sectionEnd()
-            ->section("SEO", "bar-chart")
-            ->addField("Tytuł strony", Text::_new("title"))
-            ->addField("Słowa kluczowe", Text::_new("keywords"))
-            ->addField("Opis", Textarea::_new("description"))
-            ->sectionEnd()
-            ->tabEnd()
-            ->tab("Treści", "book")
-            ->addField("Nagłówek", Text::_new("header", $page ? $page["name"] : 'Wprowadź nagłówek'))
-            ->addField(null, Wyswig::_new("content")->setWidth(900)->setHeight(500))
-            ->tabEnd();
 
 
-        $builder = PopupFormBuilder::_new($form, $list, Page::getClass(), $page)
-            ->setTitles("Dodaj stronę", "Edytuj stronę");
-        $view->assign("builder", $builder);
-    }
-
-    public function galleries_list(Action $view, RequestContext $request)
-    {
-        $view->setLayout(new AdministrationLayout());
-
-    }
-
-    public function galleries_edit(Action $view, RequestContext $request)
-    {
-        $view->setLayout(new AdministrationPopupLayout());
-        $gallery = Criteria::query(Gallery::getClass())->findByKey($request["id"]);
-        $view->assign("gallery", $gallery);
-    }
 
 
-    public function plugins_gallery(Action $view, RequestContext $request)
-    {
-        $view->setLayout(new PresentationLayout());
-        $gallery = Criteria::query(Gallery::getClass())->findByKey($request["id"]);
-        MediaAPI::prepareMedia(array($gallery));
-
-        $view->assign("canEdit", $this->canEdit($view));
-
-        $view->assign("gallery", $gallery);
-    }
-
-    public function gallery_create(IAction $action, RequestContext $request)
-    {
-        $gal = new Gallery(array("name" => $request["name"], Gallery::F_PAGE_ID => $request["page"]));
-        $gal->save();
-    }
-
-    public function gallery_remove(IAction $action, RequestContext $request)
-    {
-        Criteria::query(Gallery::getClass())->findByKey($request["key"])->delete();
-    }
 
     public function createPage(Operation $op, RequestContext $request)
     {
@@ -266,72 +164,10 @@ class Controller extends BaseController
 
     }
 
-    public function switch_page_switchEditionState(IAction $action, RequestContext $request)
-    {
-        if (!isset($_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"])) {
-            $_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"] = false;
-        }
-
-        $_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"] = !$_SESSION["org.arrowplatform.package.cms"]["front.page.edition.state"];
-    }
 
 
-    public function operations_addFileToPage(IAction $action, RequestContext $request)
-    {
-
-        //Element::createFromFile(false, )
-
-        $demo_mode = true;
-        $upload_dir = './data/uploads/';
-        $allowed_ext = array('jpg', 'jpeg', 'png', 'gif');
-
-        if (strtolower($_SERVER['REQUEST_METHOD']) != 'post') {
-            exit_status('Error! Wrong HTTP method!');
-        }
-
-        if (array_key_exists('pic', $_FILES) && $_FILES['pic']['error'] == 0) {
-
-            $pic = $_FILES['pic'];
-
-            if (!in_array(get_extension($pic['name']), $allowed_ext)) {
-                exit_status('Only ' . implode(',', $allowed_ext) . ' files are allowed!');
-            }
-
-            if ($demo_mode) {
-
-                // File uploads are ignored. We only log them.
-
-                $line = implode('		', array(date('r'), $_SERVER['REMOTE_ADDR'], $pic['size'], $pic['name']));
-                //file_put_contents('log.txt', $line.PHP_EOL, FILE_APPEND);
-
-                exit_status('Uploads are ignored in demo mode.');
-            }
-
-            // Move the uploaded file from the temporary
-            // directory to the uploads folder:
-
-            if (move_uploaded_file($pic['tmp_name'], $upload_dir . $pic['name'])) {
-                exit_status('File was uploaded successfuly!');
-            }
-
-        }
-
-        exit_status('Something went wrong with your upload!');
-
-    }
 
 
-    public function pages_modules_list(Action $view, RequestContext $request, $package)
-    {
-    }
-
-    public function pages_modules_edit(Action $view, RequestContext $request, $package)
-    {
-    }
-
-    public function front_page(Action $view, RequestContext $request, $package)
-    {
-    }
 
     public function pages_add(Action $view, RequestContext $request, $package)
     {
@@ -428,7 +264,7 @@ class Controller extends BaseController
 
     }
 
-    public function news_save(IAction $action, RequestContext $request)
+    public function news_save( $action, RequestContext $request)
     {
         $data = $request["data"];
         unset($data["files"]);

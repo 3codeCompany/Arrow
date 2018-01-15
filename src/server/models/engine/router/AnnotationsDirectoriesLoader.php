@@ -8,6 +8,7 @@
 
 namespace Arrow\Models;
 
+use function file_exists;
 use Symfony\Component\Routing\Loader\AnnotationDirectoryLoader;
 use Symfony\Component\Routing\RouteCollection;
 use const ARROW_DOCUMENTS_ROOT;
@@ -24,7 +25,10 @@ class AnnotationsDirectoriesLoader extends AnnotationDirectoryLoader
             $collection = new RouteCollection();
             foreach ($path as $_path) {
                 //print $_path."<br />";
-                $collection->addCollection(parent::load( $_path, $type));
+                //if Controller dir exist in package
+                if(file_exists($_path)) {
+                    $collection->addCollection(parent::load($_path, $type));
+                }
             }
 
             return $collection;

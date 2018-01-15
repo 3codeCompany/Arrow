@@ -2,9 +2,16 @@
 
 use Arrow\ConfigProvider;
 use Arrow\Router;
+use const ARROW_CACHE_PATH;
+use const ARROW_DEV_MODE;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use function file_exists;
+use function file_put_contents;
+use function json_encode;
 use const PHP_EOL;
+use function str_replace;
+use function strtolower;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -22,13 +29,6 @@ use function ucfirst;
  */
 class Dispatcher
 {
-
-    private static $classPathResolver;
-
-    public static function setClassPathResolver($resolver)
-    {
-        self::$classPathResolver = $resolver;
-    }
 
     public function resolvePath($path)
     {
@@ -94,7 +94,7 @@ class Dispatcher
     private function symfonyRouter($path)
     {
         $sourceFolders = [];
-        $loader = require ARROW_DOCUMENTS_ROOT . "/vendor/autoload.php";
+        $autoload = require ARROW_DOCUMENTS_ROOT . "/vendor/autoload.php";
 
 
         $packages = Project::getInstance()->getPackages();
@@ -105,7 +105,7 @@ class Dispatcher
         }
 
 
-        AnnotationRegistry::registerLoader(array($loader, 'loadClass'));
+        AnnotationRegistry::registerLoader(array($autoload, 'loadClass'));
 
         $routeLoader = new AnnotationsRouteLoader(new AnnotationReader());
         $loader = new AnnotationsDirectoriesLoader(new FileLocator($sourceFolders), $routeLoader);
@@ -116,20 +116,38 @@ class Dispatcher
         $router = new \Symfony\Component\Routing\Router(
             $loader,
             $sourceFolders,
-            [], //array('cache_dir' => ARROW_CACHE_PATH . "/symfony"),
+            (ARROW_DEV_MODE ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
             $context
         );
 
+        $file = ARROW_CACHE_PATH . "/symfony/route.json";
+        if (ARROW_DEV_MODE || !file_exists($file)) {
+            $col = $router->getRouteCollection();
+            $jsCache = [];
+
+            foreach ($col as $route) {
+                $defaults = $route->getDefaults();
+                $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
+                $controllerExploded = explode("\\Controllers\\", $defaults["_controller"]);
+
+
+                $defaults["_debug"] = [
+                    "file" => str_replace(ARROW_DOCUMENTS_ROOT, "", $tmp->getFileName()),
+                    "line" => $tmp->getStartLine(),
+                    "template" =>
+                        ($defaults["_package"] == "app" ? "/app" : "/" . $packages[$defaults["_package"]]) .
+                        "/views/" . str_replace("\\", "/", strtolower($controllerExploded[1])) .
+                        "/" . $defaults["_method"]
+
+                ];
+                $jsCache[$route->getPath()] = $defaults;
+            }
+
+            file_put_contents($file, json_encode($jsCache));
+        }
+
         try {
             $result = $router->match($request->getPathInfo()); //'/prefix/cars/index/parametr'
-
-            $col = $router->getRouteCollection();
-            /*print "<pre>";
-            foreach($col as $route){
-                print $route->getPath().PHP_EOL;
-                print_r($route->getDefaults());
-
-            }*/
 
 
             return [
@@ -140,8 +158,6 @@ class Dispatcher
             ];
 
         } catch (ResourceNotFoundException $ex) {
-
-
 
 
             /*print "<pre>";
@@ -165,6 +181,7 @@ class Dispatcher
             }
             $pathInfo = $this->resolvePath($path);
         }
+
         $action = new Action(
             $pathInfo["path"],
             $pathInfo["shortPath"],

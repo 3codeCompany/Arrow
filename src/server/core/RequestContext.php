@@ -8,7 +8,7 @@ namespace Arrow;
  * @author   Artur Kmera <artur.kmera@arrowplatform.org>
  * @todo     Rozwinoc o ciastka i pliki, dodac wykrywanie typu wywołania
  */
-class RequestContext extends \Arrow\Object implements \ArrayAccess
+class RequestContext  implements \ArrayAccess
 {
 
     /**

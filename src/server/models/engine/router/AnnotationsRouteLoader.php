@@ -22,6 +22,8 @@ class AnnotationsRouteLoader extends AnnotationClassLoader
         $annot
     ) {
 
+        //print "cos<br />";
+
         $className = $class->getName();
 
         $exploded = explode("\\", $className);
@@ -34,8 +36,6 @@ class AnnotationsRouteLoader extends AnnotationClassLoader
 
 
         $route->setDefaults([
-
-
             "_controller" => $className,
             "_method" => $method->getName(),
             "_package" => $package,

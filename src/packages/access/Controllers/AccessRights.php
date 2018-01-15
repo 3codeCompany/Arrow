@@ -108,7 +108,7 @@ class AccessRights extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-    public function changePointGroup(IAction $action, RequestContext $request)
+    public function changePointGroup( $action, RequestContext $request)
     {
         //$tmp = explode(",",$request["groups"]);
 
@@ -125,7 +125,7 @@ class AccessRights extends \Arrow\Models\Controller
         $this->json([true]);
     }
 
-    public function auth_loginAs(IAction $action, RequestContext $request)
+    public function auth_loginAs( $action, RequestContext $request)
     {
 
         $auth = Auth::getDefault();
