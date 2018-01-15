@@ -76,7 +76,7 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
     public function getFileName($path)
     {
-        return $path . ".component.js";
+        return $path . ".component.tsx";
     }
 
     public function getFirstTemplateContent( Action $action)
