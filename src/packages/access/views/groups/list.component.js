@@ -2,10 +2,12 @@ import React, {Component} from "react";
 
 import Navbar from "frontend/src/ctrl/Navbar"
 import {confirm} from "frontend/src/ctrl/Overlays"
-import {Table, Column} from "frontend/src/ctrl/Table"
+import {Column, Table} from "frontend/src/ctrl/Table"
 import Panel from "frontend/src/ctrl/Panel"
+import {Icon} from "frontend/src/ctrl/Icon"
 import {Row} from "frontend/src/layout/BootstrapLayout"
 import Comm from "frontend/src/lib/Comm";
+
 
 export default class access_access_users_list extends Component {
     constructor(props) {
@@ -42,10 +44,10 @@ export default class access_access_users_list extends Component {
                             columns={[
                                 Column.id("id", "Id"),
                                 Column.text("name", "Nazwa"),
-                                Column.template("Zobacz", () => <i className="fa fa-search"></i>)
-                                    .onClick((row) => this.props._goto( this.props.baseURL + "/edit", {key: row.id}))
+                                Column.template("Zobacz", () => <Icon name={"Edit"}/>)
+                                    .onClick((row) => this.props._goto(this.props.baseURL + "/edit", {key: row.id}))
                                     .className("center darkgreen"),
-                                Column.template("Zobacz", () => <i className="fa fa-times"></i>)
+                                Column.template("", () => <Icon name={"Delete"}/>)
                                     .onClick(this.handleDelete.bind(this))
                                     .className("center darkred")
                             ]}

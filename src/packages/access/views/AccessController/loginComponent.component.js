@@ -26,7 +26,7 @@ export default class ArrowViewComponent extends Component {
              return;
          }*/
 
-        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + 'access/accessController/loginAction');
+        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + '/access/accessController/loginAction');
         comm.setData({data: data});
 
 
@@ -40,7 +40,7 @@ export default class ArrowViewComponent extends Component {
             if (this.props.redirectTo) {
                 window.location.href = this.props.redirectTo;
             } else {
-                window.location.href = this.props.appPath + 'admin';
+                window.location.href = this.props.appPath + '/admin';
             }
 
 
@@ -60,6 +60,7 @@ export default class ArrowViewComponent extends Component {
                     <div className="title"> {this.props.applicationTitle}</div>
                     <BForm>
                         {() => <div>
+
                             <div>
                                 <div className="input">
                                     <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={'login'} placeholder="Twój login"/>

@@ -163,7 +163,7 @@ class Dispatcher
             /*print "<pre>";
             print $request->getPathInfo() . PHP_EOL;
             print_r($router->getRouteCollection());
-            exit();*/
+            exit()*/;
             return false;
             //print_r($ex);
             //print "<h1>{$ex->getMessage()}</h1>";
