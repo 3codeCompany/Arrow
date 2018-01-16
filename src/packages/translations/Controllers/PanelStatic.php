@@ -14,7 +14,7 @@ use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
-    \Arrow\ViewManager, \Arrow\RequestContext;
+     \Arrow\RequestContext;
 use Arrow\Access\Models\AccessGroup;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\PresentationLayout;

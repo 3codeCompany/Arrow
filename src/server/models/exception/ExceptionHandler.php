@@ -93,7 +93,7 @@ class ExceptionHandler implements IExceptionHandler
             }
         }
 
-        $currView = \Arrow\ViewManager::getCurrentView();
+        $currView = false;
         if ($currView) {
             $str .= "<div style='margin-top: 20px;'><b>Current template:</b>  " . $currView->get()->getPackage() . "::" . $currView->get()->getPath() . "</div>";
         }
