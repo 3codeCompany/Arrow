@@ -13,18 +13,11 @@ use Arrow\ViewManager;
  */
 abstract class AbstractLayout
 {
-    abstract public function createLayout(ViewManager $manager);
+    abstract public function setTemplate(string $template);
 
-    abstract public function getLayoutFile();
+    abstract public function setData(array $data);
 
-    public function getFileName($path)
-    {
-        return $path . ".phtml";
-    }
+    abstract public function generate();
 
-    public function getFirstTemplateContent(Action $action)
-    {
-        return false;
-    }
 
 }

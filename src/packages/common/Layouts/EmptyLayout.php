@@ -1,43 +1,45 @@
 <?php
+
 namespace Arrow\Common\Layouts;
 
 use
-Arrow\ORM\Persistent\Criteria,
-Arrow\Access\Models\Auth,
-AccessManager,
-\Arrow\RequestContext,
-\Arrow\Access\Models\AccessAPI,
-Arrow\ViewManager;
+    Arrow\ORM\Persistent\Criteria,
+    Arrow\Access\Models\Auth,
+    AccessManager,
+    \Arrow\RequestContext,
+    \Arrow\Access\Models\AccessAPI,
+    Arrow\ViewManager;
 use Arrow\Router;
+use function ob_end_clean;
+use function ob_get_contents;
+use function ob_start;
 
-class EmptyLayout extends \Arrow\Models\AbstractLayout{
+class EmptyLayout extends \Arrow\Models\AbstractLayout
+{
 
+    private $template;
 
-    public function createLayout(ViewManager $manager)
+    public function setTemplate(string $template)
     {
-        if(!isset($this->view["user"]))
-            $manager->get()->assign("user", \Arrow\Access\Models\Auth::getDefault()->getUser());
+        $this->template = $template;
+    }
 
-        $this->view = $manager->get();
+    public function setData(array $data)
+    {
+        $this->data = $data;
+    }
+
+    public function generate()
+    {
+        ob_start();
+        include __DIR__."/EmptyLayout.phtml";
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        return $content;
 
     }
 
-     public function getLayoutFile()
-    {
-        $packages = \Arrow\Controller::$project->getPackages();
-        return __DIR__."/EmptyLayout.phtml";
-    }
-
-
-    public function getAccessConf()
-    {
-        return array(
-            "loginTemplate" => "access::auth/login"
-            //"loginAddress" => "logowanie"
-        );
-    }
-
-    //todo zmienic na standard
 
 }
 

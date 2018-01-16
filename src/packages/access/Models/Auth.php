@@ -123,8 +123,8 @@ class Auth
     }
 
     private function destroyRememberCookie(){
-        unset($_COOKIE[self::$rememberCookieName]);
-        return setcookie(self::$rememberCookieName, NULL, -1, Router::getBasePath());
+        //unset($_COOKIE[self::$rememberCookieName]);
+        //return setcookie(self::$rememberCookieName, NULL, -1, Router::getDefault()->getBasePath());
     }
 
 

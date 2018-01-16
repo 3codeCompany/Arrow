@@ -9,37 +9,31 @@ namespace Arrow\Models;
  * Time: 12:26
  * To change this template use File | Settings | File Templates.
  */
-use ADebug;
 use Arrow\Exception;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
 use function htmlentities;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Route;
+use function var_dump;
 
-class Action implements \ArrayAccess
+class Action
 {
 
 
     private $path;
-    private $shortPath;
+    private $method;
     private $controller;
     /**
      * @var AbstractLayout
      */
     private $layout;
-    private $XHRLayout;
+
     private $package;
-    private $generator;
+    private $routeParameters;
 
+    private $request;
 
-    /**
-     * @var ViewParser[]
-     */
-    private $parsers = array();
-    /**
-     * @var IParsersProvider[]
-     */
-    private $parserProviders = array();
-    private $compilationId = "";
 
     /**
      * //todo make private
@@ -47,66 +41,56 @@ class Action implements \ArrayAccess
      */
     public $vars = array();
 
-    /**
-     * @param $path View path
-     * @param $controller
-     * @param $package
-     */
-    public function __construct($path, $shortPath, $controller, $package)
+
+    public function __construct($package, $controller, $method, $path, $routeParameters)
     {
-        $this->path = str_replace("/", DIRECTORY_SEPARATOR, $path);
-        $this->shortPath = str_replace("/", DIRECTORY_SEPARATOR, $shortPath);
+        $this->path = $path;
+        $this->method = $method;
         $this->controller = $controller;
         $this->package = $package;
+        $this->routeParameters = $routeParameters;
 
     }
 
-    public function exists()
+    public function fetch(Request $request)
     {
 
-        $action = trim(str_replace(DIRECTORY_SEPARATOR, "_", $this->getShortPath()), "_");
+        /**
+         * Access check
+         */
+        $method = $this->method;
+        $instance = new $this->controller($request, $this);
 
+        if (!$this->isAccessible()) {
+            AccessAPI::accessDenyProcedure($this->path . " " . $this->package);
+        }
 
-        return method_exists($this->getController(), $action);
+        //$instance->view = $view;
+        $instance->eventRunBeforeAction($this, $request);
+        $return = $instance->$method($request);
+
+        if ($return) {
+            $return->send();
+        }
     }
 
-
-    /**
-     * @param string $compilationId
-     */
-    public function setCompilationId($compilationId)
+    public function getTemplatePath()
     {
-        $this->compilationId = $compilationId;
-        return $this;
+        return self::generateTemplatePath($this->routeParameters);
     }
 
-    /**
-     * @return string
-     */
-    public function getCompilationId()
+    public static function generateTemplatePath($defaults)
     {
-        return $this->compilationId;
-    }
-
-
-    public function fetch(RequestContext $request = null)
-    {
-        $viewManager = new \Arrow\ViewManager($this);
-        return $viewManager->display($request);
+        $packages = Project::getInstance()->getPackages();
+        $controllerExploded = explode("\\Controllers\\", $defaults["_controller"]);
+        return ($defaults["_package"] == "app" ? "/app" : "/" . $packages[$defaults["_package"]]) .
+            "/views/" . str_replace("\\", "/", strtolower($controllerExploded[1])) .
+            "/" . $defaults["_method"];
     }
 
     public function getRequest()
     {
         return RequestContext::getDefault();
-    }
-
-    /**
-     * @return Controller
-     */
-    public function getController()
-    {
-        $c = $this->controller;
-        return $c::getInstance();
     }
 
 
@@ -120,20 +104,9 @@ class Action implements \ArrayAccess
         return $this->path;
     }
 
-    public function getRoute(){
-        return $this->package.$this->path;
-    }
-
-    public function setLayout(AbstractLayout $layout, AbstractLayout $XHRLayout = null)
+    public function getRoute()
     {
-        $this->layout = $layout;
-        $this->XHRLayout = $XHRLayout;
-    }
-
-    public function getLayout()
-    {
-        $rq = RequestContext::getDefault();
-        return $rq->isXHR() && $this->XHRLayout ? $this->XHRLayout : $this->layout;
+        return $this->package . $this->path;
     }
 
 
@@ -152,188 +125,5 @@ class Action implements \ArrayAccess
         $this->vars[$var] = $value;
     }
 
-    public function addParser(ViewParser $parser)
-    {
-        $this->parsers[] = $parser;
-    }
-
-    public function addParserProvider(IParsersProvider $provider)
-    {
-        $this->parserProviders[] = $provider;
-    }
-
-    /**
-     * @return \Arrow\Models\ViewParser[]
-     */
-    public function getParsers()
-    {
-        return $this->parsers;
-    }
-
-
-    //todo disable path in argument
-    //todo eliminate request from templates
-    public function _require($path, $request = null)
-    {
-
-        ob_start();
-        require($path);
-        $content = ob_get_contents();
-        ob_clean();
-
-        return $content;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getShortPath()
-    {
-        return $this->shortPath;
-    }
-
-    /**
-     * @param mixed $generator
-     */
-    public function setGenerator($generator)
-    {
-        $this->generator = $generator;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getGenerator()
-    {
-        return $this->generator;
-    }
-
-
-    //todo uporzadkowac
-    public function includeView()
-    {
-        $file = $this->getFile();
-
-        if (file_exists($file)) {
-            return file_get_contents($file);
-        } else {
-            $parent = dirname($file);
-            if (!file_exists($parent)) {
-                if (!@mkdir($parent, 0777, true)) {
-                    throw new Exception("Can't create action  dir: " . $parent);
-                }
-            }
-            $code = $this->layout->getFirstTemplateContent($this);
-
-            if (!$code) {
-                $code = "<?\n /* @var \$this \\Arrow\\Models\\View */\n/* @var \$request \\Arrow\\RequestContext */\n ?>\n\n";
-                $code .= "View: " . $this->getPath() . "\n package: " . $this->getPackage() . "\n file: " . $file;
-            }
-
-            if (!@file_put_contents($file, $code)) {
-                throw new Exception("Can't create action  file: " . $file);
-            }
-            chmod($file, 0777);
-        }
-
-        return file_get_contents($file);
-    }
-
-    public function generate($file = false)
-    {
-
-        $this->addParserProvider(new StandardParsersProvider());
-
-        $controller = $this->getController();
-        $controller->viewBeforeCompileEvent($this);
-        if ($this->getLayout()) {
-            $layoutSource = file_get_contents($this->getLayout()->getLayoutFile());
-            $str = str_replace("[[include::view]]", $this->includeView(), $layoutSource);
-        } else {
-            $str = $this->includeView();
-        }
-
-
-        foreach ($this->parserProviders as $provider) {
-            foreach ($provider->getParsers() as $parser) {
-                $str = preg_replace_callback($parser->getRegularExpression(), $parser->getCallback(), $str);
-            }
-        }
-
-        if ($this->parsers) {
-            foreach ($this->parsers as $parser) {
-                $str = preg_replace_callback($parser->getRegularExpression(), $parser->getCallback(), $str);
-            }
-        }
-
-        $controller->viewAfterCompileEvent($this);
-
-        if ($file) {
-            file_put_contents($file, $str);
-        } else {
-            return $str;
-        }
-
-    }
-
-    public function getVars()
-    {
-        return $this->vars;
-    }
-
-    public function offsetExists($offset)
-    {
-        return isset($this->vars[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        if (!array_key_exists($offset, $this->vars)) {
-            throw new Exception(array("msg" => "Template var `{$offset}` not exists"));
-        }
-        return $this->vars[$offset];
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        throw new \Arrow\Exception(array("msg" => "Setting values of View not supported"));
-    }
-
-    public function offsetUnset($offset)
-    {
-        throw new \Arrow\Exception(array("msg" => "Unsetting values of View not supported"));
-    }
-
-
-    public function getFile()
-    {
-
-        if ($this->layout) {
-            $name = $this->layout->getFileName($this->path);
-        } else {
-            $name = $this->path . ".phtml";
-        }
-
-        $appFile = "." . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "views" . $name;
-
-        if ($this->package != "app") {
-            if ($this->layout ) {
-                $name = $this->layout->getFileName($this->path);
-            } else {
-                $name = $this->path . ".phtml";
-            }
-
-            $file = ARROW_DOCUMENTS_ROOT . "/" . Project::getInstance()->getPackages()[$this->package] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . $name;
-
-
-            if (file_exists($file) && !file_exists($appFile)) {
-                return $file;
-            }
-        }
-
-        return $appFile;
-
-    }
 
 }

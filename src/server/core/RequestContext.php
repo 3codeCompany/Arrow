@@ -282,7 +282,7 @@ class RequestContext  implements \ArrayAccess
     }
 
     public static function getBaseUrl(){
-        return RequestContext::getProtocol().$_SERVER["HTTP_HOST"].Router::getBasePath();
+        return RequestContext::getProtocol().$_SERVER["HTTP_HOST"].Router::getDefault()->getBasePath();
     }
 
     public static function getCurrentUrl() {

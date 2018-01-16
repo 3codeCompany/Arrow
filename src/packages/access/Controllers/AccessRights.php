@@ -64,10 +64,6 @@ use
 class AccessRights extends \Arrow\Models\Controller
 {
 
-    public function __construct()
-    {
-        //AccessAPI::checkInstallation();
-    }
 
 
     public function getData()

@@ -3,7 +3,14 @@
 namespace Arrow;
 
 use Arrow\Models\Action;
-use Arrow\Models\Dispatcher;
+use Arrow\Models\AnnotationsDirectoriesLoader;
+use Arrow\Models\AnnotationsRouteLoader;
+
+use Arrow\Models\Project;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
+use const PHP_EOL;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -18,8 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 class Router
 {
 
-    public static $INDEX_FILE = ""; //"index.php";
-
 
     /**
      * Template to display
@@ -27,14 +32,6 @@ class Router
      * @var Action
      */
     private $action;
-
-    /**
-     * Call type
-     *
-     * @var integer
-     */
-    private $callType;
-
 
     /**
      * Router instance
@@ -45,17 +42,15 @@ class Router
 
     private static $basePath = "";
 
-    private static $actionName = null;
 
+    private $symfonyRouter = null;
 
-    public static function getActionName()
-    {
-        return self::$actionName;
-    }
+    private $request = null;
+
 
     public function getAction()
     {
-        return Dispatcher::getDefault()->get(self::getActionName());
+        return $this->symfonyRouter($this->request->getPathInfo());
     }
 
     /**
@@ -74,138 +69,65 @@ class Router
     public function __construct(RequestContext $request)
     {
 
-    }
+        $this->request = Request::createFromGlobals();
 
-    public static function generateLinkFromObject($obj)
-    {
-        return self::getBasePath() . ltrim($obj->getPath(), "/");
-    }
-
-    public static function link($path, array $params = null)
-    {
-        if ($path[0] == "?") {
-            $path = ViewManager::getCurrentView()->get()->getRoute() . $path;
-        } elseif ($path[0] == ".") {
-
-            $tmp = explode(
-                DIRECTORY_SEPARATOR,
-                ViewManager::getCurrentView()->get()->getRoute()
-            );
-
-            $tmp[count($tmp) - 1] = substr($path, 2);
-
-            //unset($tmp[0]);
-            $path = implode("/", $tmp);
-        }
-
-        $url = str_replace("//", "/", self::$basePath . $path);
-
-        if ($params) {
-            $url .= "?" . \http_build_query($params);
-        }
-
-        return $url;
+        $sourceFolders = [];
+        $autoload = require ARROW_DOCUMENTS_ROOT . "/vendor/autoload.php";
 
 
-        //return (self::$basePath=="/"?"":self::$basePath).$path;
-    }
+        $packages = Project::getInstance()->getPackages();
 
-    public static function generateLink($type, $path)
-    {
-        return self::link($path);
-    }
-
-    public static function getActionParameter($url = false)
-    {
-
-        if ($url == false) {
-            if (isset ($_SERVER["REQUEST_URI"])) {
-                $url = $_SERVER["REQUEST_URI"];
-            } else {
-                return null;
-            }
+        $sourceFolders[] = ARROW_APPLICATION_PATH . '/Controllers';
+        foreach ($packages as $name => $dir) {
+            $sourceFolders[] = ARROW_DOCUMENTS_ROOT . "/" . $dir . "/Controllers";
         }
 
 
-        //self::$basePath = substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_NAME'], "/")+1);
+        AnnotationRegistry::registerLoader(array($autoload, 'loadClass'));
 
-        $p = parse_url(urldecode($url));
-        $action = $p["path"];
-        $action = str_replace(array("index.php", self::$packageSeparator), array("", "::"), $action);
-        if (self::$basePath != "/") {
-            $action = str_replace(array(self::$basePath), array(""), $action);
-        } else {
-            $action = substr($action, 1);
-        }
-
-        $action = ltrim($action, "/");
-
-
-        return $action;
-    }
-
-    /**
-     * @param $actionParameter
-     * @throws Exception|\Exception
-     */
-    public static function resolveActions($actionParameter)
-    {
-        return \Arrow\Models\Dispatcher::getDefault()->get($actionParameter);
-    }
-
-    public static function setupAction()
-    {
-
-        if (Controller::isInCLIMode()) {
-            self::$basePath = "";
-        } else {
-            self::$basePath = substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_NAME'], "/") + 1);
-        }
-
-
-        if (!isset($_SERVER["REQUEST_URI"])) {
-            return null;
-        }
-
-        $p = parse_url(urldecode("/" . ltrim($_SERVER["REQUEST_URI"], "/")));
-
-
-        if (self::$basePath == "/") {
-            $action = str_replace("index.php", "", $p["path"]);
-        } else {
-            $len = strlen(self::$basePath);
-            if (substr($p["path"], 0, $len) == self::$basePath) {
-                $action = substr($p["path"], $len);
-            }
-            //$action = str_replace([self::$basePath, "index.php"], ["", ""], $p["path"]);
-        }
-
-        $action = ltrim($action, "/");
-
-        if (empty($action)) {
-            $action = "index";
-        }
-
-
-        self::$actionName = $action;
-    }
-
-    public static function getBasePath()
-    {
+        $routeLoader = new AnnotationsRouteLoader(new AnnotationReader());
+        $loader = new AnnotationsDirectoriesLoader(new FileLocator($sourceFolders), $routeLoader);
         $request = Request::createFromGlobals();
+        $context = new \Symfony\Component\Routing\RequestContext();
+        $context->fromRequest($request);
 
-        return $request->getBasePath();
+        $router = new \Symfony\Component\Routing\Router(
+            $loader,
+            $sourceFolders,
+            (ARROW_DEV_MODE ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
+            $context
+        );
+
+        $file = ARROW_CACHE_PATH . "/symfony/route.json";
+        if (ARROW_DEV_MODE || !file_exists($file)) {
+            $col = $router->getRouteCollection();
+            $jsCache = [];
+
+            foreach ($col as $route) {
+                $defaults = $route->getDefaults();
+                $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
+                $defaults["_debug"] = [
+                    "file" => str_replace(ARROW_DOCUMENTS_ROOT, "", $tmp->getFileName()),
+                    "line" => $tmp->getStartLine(),
+                    "template" => Action::generateTemplatePath($defaults)
+
+
+                ];
+                $jsCache[$route->getPath()] = $defaults;
+            }
+
+            file_put_contents($file, json_encode($jsCache));
+        }
+
+        $this->symfonyRouter = $router;
+
+
     }
 
 
-    /**
-     * Return requested template
-     *
-     * @return \Arrow\Models\View
-     */
-    public function get()
+    public function getBasePath()
     {
-        return $this->action;
+        return $this->request->getBasePath();
     }
 
 
@@ -215,26 +137,42 @@ class Router
         exit();
     }
 
-    public function process()
+    private function symfonyRouter($path)
     {
 
+        try {
+            $result = $this->symfonyRouter->match($this->request->getPathInfo()); //'/prefix/cars/index/parametr'
 
-        $dispatcher = \Arrow\Models\Dispatcher::getDefault();
-        if (empty(self::$actionName)) {
-            $path = \Arrow\Controller::$project->getSetting("application.view.default.view");
-            $this->action = $dispatcher->get($path);
-        } else {
+            return new Action(
+                $result["_package"],
+                $result["_controller"],
+                $result["_method"],
+                $this->request->getPathInfo(),
+                $result
+            );
 
-            $this->action = $dispatcher->get(self::$actionName);
+        } catch (ResourceNotFoundException $ex) {
+
+            /*print "<pre>";
+            print $request->getPathInfo() . PHP_EOL;
+            print_r($router->getRouteCollection());
+            exit()*/;
+            return false;
+            //print_r($ex);
+            //print "<h1>{$ex->getMessage()}</h1>";
         }
+    }
 
+    public function process()
+    {
+        $this->action = $this->symfonyRouter($this->request->getPathInfo());
 
-        if (!$this->action->exists()) {
+        if (!$this->action) {
             $this->notFound($this->action);
             return;
         }
 
-        echo $this->action->fetch();
+        echo $this->action->fetch($this->request);
 
     }
 

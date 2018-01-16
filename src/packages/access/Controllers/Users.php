@@ -55,11 +55,6 @@ use function strlen;
 class Users extends \Arrow\Models\Controller
 {
 
-    public function __construct()
-    {
-        //AccessAPI::checkInstallation();
-    }
-
 
     public function account()
     {

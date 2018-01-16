@@ -1,9 +1,11 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {BForm} from 'frontend/src/layout/BootstrapForm';
 import Comm from 'frontend/src/lib/Comm';
 
+declare var window: any;
 
-export default class ArrowViewComponent extends Component {
+export default class ArrowViewComponent extends React.Component<any, any> {
+    form: BForm;
 
     constructor(props) {
         super(props);
@@ -26,7 +28,7 @@ export default class ArrowViewComponent extends Component {
              return;
          }*/
 
-        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + '/access/accessController/loginAction');
+        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + '/access/loginAction');
         comm.setData({data: data});
 
 
@@ -54,7 +56,7 @@ export default class ArrowViewComponent extends Component {
         let s = this.state;
         return <div className="login-view">
 
-            <div className="login-background" style={{ backgroundImage: `url( ${this.props.backgroundImage} )` }}>
+            <div className="login-background" style={{backgroundImage: `url( ${this.props.backgroundImage} )`}}>
 
                 <div className="login-form-container">
                     <div className="title"> {this.props.applicationTitle}</div>

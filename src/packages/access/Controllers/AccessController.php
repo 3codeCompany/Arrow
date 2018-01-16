@@ -53,46 +53,43 @@ use
     \Arrow\ORM\Persistent\Criteria,
     Arrow\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use function var_dump;
 
-/**
- * Created by JetBrains PhpStorm.
- * User: artur
- * Date: 04.09.12
- * Time: 14:20
- * To change this template use File | Settings | File Templates.
- */
+
 class AccessController extends \Arrow\Models\Controller
 {
 
-    public function __construct()
+
+    /**
+     * @param Action $view
+     * @param RequestContext $request
+     * @Route("/login")
+     */
+    public function login()
     {
-        //AccessAPI::checkInstallation();
+        $request = Request::createFromGlobals();
+
+        $data = [
+            "applicationTitle" => ConfigProvider::get("panel")["title"],
+            "backgroundImage" => ConfigProvider::get("panel")["loginBackground"],
+            "appPath" => RequestContext::getBaseUrl(),
+            "from" => $request->get("from"),
+        ];
+
+        $this->render(new EmptyLayout(), $data);
+
     }
 
-    public function login(Action $view, RequestContext $request)
-    {
-        $path = RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . str_replace([ARROW_DOCUMENTS_ROOT, DIRECTORY_SEPARATOR], ["", "/"], __DIR__);
-        $path .= "/../../org.arrowplatform.common/layouts/admin/";
-
-
-        if (Auth::getDefault()->isLogged()) {
-            header("Location: " . (RequestContext::getBaseUrl()) . "admin");
-            exit();
-        }
-
-        $view->setLayout(new EmptyLayout());
-        $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
-        $view->assign("backgroundImage", ConfigProvider::get("panel")["loginBackground"]);
-        $view->assign("appPath", RequestContext::getBaseUrl());
-        $view->assign("from", $this->request["from"]);
-    }
-
-    public function loginAction( $action, RequestContext $request)
+    /**
+     * @Route("/loginAction")
+     */
+    public function loginAction()
     {
 
-
-        $validator = Validator::create($request["data"])
+        $data = $this->request->get("data");
+        $validator = Validator::create($data)
             ->required(["login", "password"]);
 
         if (!$validator->check()) {
@@ -102,8 +99,7 @@ class AccessController extends \Arrow\Models\Controller
 
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
-        $res = $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
-
+        $res = $authHandler->doLogin($data["login"], $data["password"]);
 
 
         if (!$authHandler->isLogged()) {
@@ -111,13 +107,12 @@ class AccessController extends \Arrow\Models\Controller
             $this->json($validator->response());
         }
 
-
-        $this->json(["redirectTo" => trim($request["from"] ? $request["from"] : Router::getBasePath() . "/admin", "/")]);
+        $this->json(["redirectTo" => trim($this->request->get("from", Router::getDefault()->getBasePath() . "/admin", "/"))]);
 
 
     }
 
-    public function logout( $action, RequestContext $request)
+    public function logout($action, RequestContext $request)
     {
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
@@ -192,7 +187,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json();
     }
 
-    public function auth_change_password( $action, RequestContext $request)
+    public function auth_change_password($action, RequestContext $request)
     {
         $user = Auth::getDefault()->getUser();
 
@@ -359,7 +354,6 @@ class AccessController extends \Arrow\Models\Controller
     }
 
 
-
     public function access_list(Action $view, RequestContext $request)
     {
 
@@ -426,7 +420,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([1]);
     }
 
-    public function changePointGroup( $action, RequestContext $request)
+    public function changePointGroup($action, RequestContext $request)
     {
         //$tmp = explode(",",$request["groups"]);
 
@@ -443,7 +437,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json([true]);
     }
 
-    public function auth_loginAs( $action, RequestContext $request)
+    public function auth_loginAs($action, RequestContext $request)
     {
 
         $auth = Auth::getDefault();

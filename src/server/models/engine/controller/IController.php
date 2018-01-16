@@ -1,6 +1,9 @@
 <?php
+
 namespace Arrow\Models;
+
 use Arrow\RequestContext;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Created by JetBrains PhpStorm.
@@ -11,9 +14,10 @@ use Arrow\RequestContext;
  */
 interface IController
 {
-    public static function getInstance();
-    public function eventRunBeforeAction(Action $view );
-    public function eventRunAfterAction(Action $view );
-    public function notFound(Action $action = null, RequestContext $request  = null);
 
+    public function __construct(Request $requestContext, Action $action);
+
+    public function eventRunBeforeAction(Action $action);
+
+    public function notFound(Action $action = null, RequestContext $request = null);
 }
