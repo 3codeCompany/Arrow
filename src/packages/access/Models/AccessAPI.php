@@ -7,6 +7,7 @@ use Arrow\RequestContext;
 use Arrow\Router;
 use Arrow\ViewManager, Arrow\Controller, Arrow\Models\Action;
 use Arrow\Models\Project;
+use function htmlspecialchars;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
@@ -121,13 +122,12 @@ class AccessAPI
                 $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
             }
 
-            $login = ConfigProvider::get("templates")["login"];
-
 
             if (RequestContext::getDefault()->isXHR()) {
                 exit("Access deny - please login: " . $denyInfo);
             } else {
-                $response = new RedirectResponse($login . "?from=" . isset($_SESSION) ? $_SESSION["arrow"]["access"]["requestedUrl"] : "");
+                $login = ConfigProvider::get("redirects")["login"];
+                $response = new RedirectResponse($login . ("?from=" . isset($_SESSION) ? $_SESSION["arrow"]["access"]["requestedUrl"] : ""));
                 $response->send();
 
             }

@@ -1,3 +1,12 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <title><?= $this->data["config"]["title"] ?></title>
+    <link href="<?=$this->data["config"]["favicon"]?>" rel="icon" type="image/x-icon"/>
+</head>
+<body>
 <?
 $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
 $path = $request->getPathInfo();
@@ -60,8 +69,11 @@ if (isset($_REQUEST["__PROPS_REQUEST__"])) {
 
 <? if ($data["webpackManifest"] && !$_SESSION["inDev"]) { ?>
     <script type="text/javascript" src="<?= $data["webpackManifest"]["admin"]["js"] ?>"></script>
-    <link rel="stylesheet" href="<?= $data["webpackManifest"]["admin"]["css"] ?>"/>
+<link rel="stylesheet" href="<?= $data["webpackManifest"]["admin"]["css"] ?>"/>
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin></script>
 <? } ?>
 
+
+</body>
+</html>

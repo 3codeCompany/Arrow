@@ -2,6 +2,7 @@
 
 namespace Arrow;
 
+use App\Models\Services;
 use Arrow\Models\Action;
 use Arrow\Models\AnnotationsDirectoriesLoader;
 use Arrow\Models\AnnotationsRouteLoader;
@@ -11,6 +12,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use const PHP_EOL;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -45,7 +47,18 @@ class Router
 
     private $symfonyRouter = null;
 
-    private $request = null;
+    /**
+     * @var ContainerBuilder
+     */
+    private $serviceContainer;
+
+    /**
+     * @param mixed $serviceContainer
+     */
+    public function setServiceContainer($serviceContainer): void
+    {
+        $this->serviceContainer = $serviceContainer;
+    }
 
 
     public function getAction()
@@ -82,7 +95,6 @@ class Router
             $sourceFolders[] = ARROW_DOCUMENTS_ROOT . "/" . $dir . "/Controllers";
         }
 
-
         AnnotationRegistry::registerLoader(array($autoload, 'loadClass'));
 
         $routeLoader = new AnnotationsRouteLoader(new AnnotationReader());
@@ -98,6 +110,7 @@ class Router
             $context
         );
 
+
         $file = ARROW_CACHE_PATH . "/symfony/route.json";
         if (ARROW_DEV_MODE || !file_exists($file)) {
             $col = $router->getRouteCollection();
@@ -105,23 +118,19 @@ class Router
 
             foreach ($col as $route) {
                 $defaults = $route->getDefaults();
+
                 $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
                 $defaults["_debug"] = [
                     "file" => str_replace(ARROW_DOCUMENTS_ROOT, "", $tmp->getFileName()),
                     "line" => $tmp->getStartLine(),
                     "template" => Action::generateTemplatePath($defaults)
-
-
                 ];
                 $jsCache[$route->getPath()] = $defaults;
             }
 
             file_put_contents($file, json_encode($jsCache));
         }
-
         $this->symfonyRouter = $router;
-
-
     }
 
 
@@ -139,6 +148,9 @@ class Router
 
     private function symfonyRouter($path)
     {
+//        $this->serviceContainer->get("PhpConsole\Handler")->debug($this->symfonyRouter->getRouteCollection());
+
+        //$this->serviceContainer->get("PhpConsole\Handler")->debug($this->serviceContainer->getAliases());
 
         try {
             $result = $this->symfonyRouter->match($this->request->getPathInfo()); //'/prefix/cars/index/parametr'
@@ -165,7 +177,11 @@ class Router
 
     public function process()
     {
+
+
         $this->action = $this->symfonyRouter($this->request->getPathInfo());
+
+        $this->action->setServiceContainer($this->serviceContainer);
 
         if (!$this->action) {
             $this->notFound($this->action);

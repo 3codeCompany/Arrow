@@ -13,7 +13,14 @@ use Arrow\Exception;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
 use function htmlentities;
+use function is_array;
+use function ob_end_flush;
+use function ob_start;
+use ReflectionClass;
+use ReflectionMethod;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use function var_dump;
 
@@ -41,6 +48,8 @@ class Action
      */
     public $vars = array();
 
+    private $serviceContainer;
+
 
     public function __construct($package, $controller, $method, $path, $routeParameters)
     {
@@ -52,26 +61,122 @@ class Action
 
     }
 
+    /**
+     * @return mixed
+     */
+    public function getServiceContainer()
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param mixed $services
+     */
+    public function setServiceContainer($serviceContainer): void
+    {
+        $this->serviceContainer = $serviceContainer;
+    }
+
+    private function resolveClassDependancy(ReflectionClass $dependancyClass)
+    {
+        $dependancyClassName = $dependancyClass->getName();
+        // see service container for exact implementation
+        if ($this->serviceContainer->has($dependancyClassName)) {
+            return $this->serviceContainer->get($dependancyClassName);
+        }
+        // try to match by interfaces
+        $interfaces = $dependancyClass->getInterfaces();
+        foreach ($interfaces as $interface) {
+            $resolvedService = $this->resolveClassDependancy($interface);
+            if (null !== $resolvedService) {
+                return $resolvedService;
+            }
+        }
+        // fallback to parent class
+        if ($parentClass = $dependancyClass->getParentClass()) {
+            return $this->resolveClassDependancy($parentClass);
+        }
+    }
+
     public function fetch(Request $request)
     {
 
         /**
          * Access check
          */
-        $method = $this->method;
-        $instance = new $this->controller($request, $this);
-
         if (!$this->isAccessible()) {
             AccessAPI::accessDenyProcedure($this->path . " " . $this->package);
         }
 
-        //$instance->view = $view;
-        $instance->eventRunBeforeAction($this, $request);
-        $return = $instance->$method($request);
 
-        if ($return) {
-            $return->send();
+        //dependency injection
+        $reflector = new ReflectionClass($this->controller);
+        $methodArguments = $reflector->getMethod($this->method)->getParameters();
+
+        $constructor = $reflector->getConstructor();
+        $constructorArguments = [];
+        if ($constructor) {
+            $constructorArguments = $reflector->getConstructor()->getParameters();
         }
+
+        $toResolve = ["constructor" => $constructorArguments, "method" => $methodArguments];
+        $preparedArgs = [];
+        $injectResult = [];
+        foreach ($toResolve as $key => $arguments) {
+            $argumentClassHint = [];
+            foreach ($arguments as $argumentIndex => $argument) {
+                $classHint = $argument->getClass();
+                if ($classHint) {
+                    $argumentClassHint[$argumentIndex] = $classHint;
+                } else {
+                    $argumentClassHint[$argumentIndex] = false;
+                }
+            }
+
+            $preparedArgs[$key] = [];
+            foreach ($argumentClassHint as $index => $hint) {
+                if ($hint) {
+                    $preparedArgs[$key][$index] = $this->resolveClassDependancy($hint);
+                } else {
+                    if ($key != "constructor") {
+                        $name = $methodArguments[$index]->getName();
+
+                        if (isset($this->routeParameters[$name])) {
+                            $preparedArgs[$key][$index] = $this->routeParameters[$name];
+                        } else {
+                            $preparedArgs[$key][$index] = $methodArguments[$index]->getDefaultValue();
+                        }
+                    }
+                }
+            }
+        }
+
+        $instance = new $this->controller(...$preparedArgs["constructor"]);
+
+        $instance->eventRunBeforeAction($this, $request);
+        $return = $instance->{$this->method}(...$preparedArgs["method"]);
+
+
+        if ($return !== null) {
+
+            if (is_array($return)) {
+                (new JsonResponse($return))->send();
+
+            } elseif ($return instanceof AbstractLayout) {
+
+                $response = new Response(
+                    $return->render(),
+                    Response::HTTP_OK,
+                    array('content-type' => 'text/html')
+                );
+
+                $response->send();
+            } else {
+                $return->send();
+            }
+
+        }
+
     }
 
     public function getTemplatePath()

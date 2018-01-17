@@ -4,6 +4,7 @@ namespace Arrow\Common\Layouts;
 
 use function array_merge;
 use Arrow\Access\Models\Auth;
+use Arrow\ConfigProvider;
 use Arrow\Models\Action;
 
 use Arrow\ViewManager;
@@ -13,29 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
 class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 {
 
-
-    private $template;
-
-    public function setTemplate(string $template)
+    public function render()
     {
-        $this->template = $template;
-    }
-
-    public function setData(array $data)
-    {
-        $this->data = $data;
-    }
-
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function generate()
-    {
-
-        $this->data  = array_merge($this->data, $this->prepareData());
-
+        $this->data = array_merge($this->data, $this->prepareData());
         ob_start();
         include __DIR__ . "/ReactComponentLayout.phtml";
         $content = ob_get_contents();
@@ -48,7 +29,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
     public function prepareData()
     {
-
         $data = [];
 
         if (!isset($_SESSION["inDev"])) {
@@ -68,6 +48,9 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
         $data["user"] = $user;
 
+        $data["config"] = ConfigProvider::get("panel");
+
+
         $manifest = false;
         $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
         if (file_exists($manifestFile)) {
@@ -78,8 +61,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
         return $data;
 
-
     }
-
 
 }

@@ -1,5 +1,7 @@
 <?php
+
 namespace Arrow;
+
 /**
  * Controller
  *
@@ -8,6 +10,7 @@ namespace Arrow;
  * @license  GNU GPL
  * @author Artur Kmera <artur.kmera@arrowplatform.org>
  */
+use App\Models\Services;
 use Arrow\Models\Action;
 
 class Controller
@@ -31,21 +34,16 @@ class Controller
 
     }
 
-    public static function processCall(){
+    public static function processCall()
+    {
 
         //paths for server only
+        $services = (new Services())->buildContainer();
+        $router = Router::getDefault();
+        $router->setServiceContainer($services);
 
-
-        $rq = RequestContext::getDefault();
-        Router::getDefault($rq);
-
-        if (Controller::isInCLIMode()) {
-            print "Arrowplatform CLI mode. Application '" . ARROW_APPLICATION_PATH . "' " . PHP_EOL;
-            \Arrow\Models\ConsoleCommands::process();
-        } else {
-            \Arrow\Router::getDefault()->process();
-            \Arrow\Controller::end();
-        }
+        $router->process();
+        \Arrow\Controller::end();
 
     }
 
@@ -58,19 +56,23 @@ class Controller
         return self::$project;
     }
 
-    public static function getRunConfiguration(){
-        if(self::isInCLIMode())
+    public static function getRunConfiguration()
+    {
+        if (self::isInCLIMode()) {
             return "_console";
+        }
         $host = $_SERVER["HTTP_HOST"];
-        if(strpos($host,"www.") === 0)
-            $host = str_replace( "www.", "", $host );
+        if (strpos($host, "www.") === 0) {
+            $host = str_replace("www.", "", $host);
+        }
 
         return $host;
     }
 
 
-    public static function isInCLIMode(){
-        if(self::$isInCLIMode === null){
+    public static function isInCLIMode()
+    {
+        if (self::$isInCLIMode === null) {
             self::$isInCLIMode = (substr(php_sapi_name(), 0, 3) == 'cli');
         }
         return self::$isInCLIMode;

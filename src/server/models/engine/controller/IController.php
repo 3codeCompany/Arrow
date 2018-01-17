@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 interface IController
 {
 
-    public function __construct(Request $requestContext, Action $action);
+
 
     public function eventRunBeforeAction(Action $action);
 

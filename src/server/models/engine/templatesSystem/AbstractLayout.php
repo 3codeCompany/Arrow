@@ -13,11 +13,55 @@ use Arrow\ViewManager;
  */
 abstract class AbstractLayout
 {
-    abstract public function setTemplate(string $template);
 
-    abstract public function setData(array $data);
+    /**
+     * @var array
+     */
+    protected $data = [];
+    /**
+     * @var string
+     */
+    protected $template;
 
-    abstract public function generate();
+    public function __construct(string $template, array $data = [])
+    {
+        $this->template = $template;
+        $this->data = $data;
+    }
+
+    public function setTemplate(string $template)
+    {
+        $this->template = $template;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data): void
+    {
+        $this->data = $data;
+    }
+
+
+    abstract public function render();
 
 
 }

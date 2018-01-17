@@ -28,36 +28,6 @@ use Symfony\Component\HttpFoundation\Response;
 abstract class Controller implements IController
 {
 
-    /*
-     * @var RequestContext
-     */
-    protected $request;
-    /*
-     * @var Action
-     */
-    protected $action;
-
-    public function __construct(Request $requestContext, Action $action)
-    {
-        $this->request = $requestContext;
-        $this->action = $action;
-
-    }
-
-    final protected function back()
-    {
-
-        if (RequestContext::getDefault()->isXHR()) {
-            return $this->json([true]);
-        }
-
-        if (isset($_SERVER["HTTP_REFERER"])) {
-            header("Location: " . $_SERVER["HTTP_REFERER"]);
-        } else {
-            header("Location: " . Router::getBasePath());
-        }
-        exit();
-    }
 
     final protected function getUser()
     {
@@ -130,32 +100,6 @@ abstract class Controller implements IController
         }
         exit("");
 
-    }
-
-
-    public function __call($name, $arguments)
-    {
-
-
-        if (isset($arguments[0]) && $arguments[0] instanceof \Arrow\Models\Action) {
-            /** @var VievD $viewD */
-            $viewD = $this->action;
-            //$result = $this->notFound($viewD);
-            if (true || $result !== self::CAUGHT_NOT_FOUND) {
-                throw new \Arrow\Exception(
-                    array(
-                        "msg" => "Undefined controller action  '$name' in controller " . get_class($this),
-                        "view" => $viewD->getPath(),
-                        "package" => $viewD->getPackage(),
-                        "actionCode" => "public function $name( View \$view, RequestContext \$request ){}"
-                    ));
-            }
-        } else {
-            throw new \Arrow\Exception(
-                array(
-                    "msg" => "Undefined controller method '$name' in controller " . get_class($this),
-                ));
-        }
     }
 
 
