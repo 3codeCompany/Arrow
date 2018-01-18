@@ -3,15 +3,18 @@
 namespace Arrow\Access\Controllers;
 
 
-use function array_reduce;
-use Arrow\Access\Models\AccessAPI;
 use Arrow\Access\Models\AccessGroup;
 use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
+use Arrow\Common\AdministrationLayout;
+use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Layouts\ReactComponentLayout;
+use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Common\Models\History\History;
+use Arrow\Common\Models\Wigets\Table\TableDataSource;
+use Arrow\Common\Track;
 use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\AjaxLink;
 use Arrow\Controls\api\common\BreadcrumbElement;
@@ -30,32 +33,26 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
-use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
 use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
+use Arrow\Controls\API\Table\Table;
 use Arrow\Controls\api\WidgetsSet;
-use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\Models\Action;
 use Arrow\Models\IAction;
+use Arrow\Models\Operation;
 use Arrow\Models\Project;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-use Arrow\Common\AdministrationLayout;
-use Arrow\Common\Layouts\EmptyLayout;
-use Arrow\Common\Models\Wigets\Table\TableDataSource;
+use Arrow\RequestContext;
 use Arrow\Router;
-use Arrow\Controls\API\Table\Table;
-use
-    \Arrow\RequestContext,
-    \Arrow\ORM\Persistent\Criteria,
-    Arrow\Common\Track,
-    Arrow\Models\Operation, Arrow\Models\Action;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use function var_dump;
+use function array_reduce;
 
 
 class AccessController extends \Arrow\Models\Controller
@@ -78,7 +75,7 @@ class AccessController extends \Arrow\Models\Controller
             "from" => $request->get("from"),
         ];
 
-        $this->render(new EmptyLayout(), $data);
+        return new EmptyLayout(null, $data);
 
     }
 

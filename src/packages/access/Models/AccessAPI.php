@@ -2,13 +2,15 @@
 namespace Arrow\Access\Models;
 
 use Arrow\ConfigProvider;
+use Arrow\Controller;
+use Arrow\Models\Action;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\RequestContext;
-use Arrow\Router;
-use Arrow\ViewManager, Arrow\Controller, Arrow\Models\Action;
-use Arrow\Models\Project;
-use function htmlspecialchars;
+use Arrow\ViewManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use function htmlentities;
+use function var_dump;
 
 
 class AccessAPI
@@ -123,12 +125,35 @@ class AccessAPI
             }
 
 
-            if (RequestContext::getDefault()->isXHR()) {
-                exit("Access deny - please login: " . $denyInfo);
+            $request = Request::createFromGlobals();
+            //if xhr or post query
+            if ($request->isXmlHttpRequest()) {
+                (new JsonResponse(["accessDeny" => $denyInfo]))->send();
+                exit();
+            } elseif ($request->request->count() != 0) {
+                exit("Access deny - please login" . $denyInfo);
             } else {
                 $login = ConfigProvider::get("redirects")["login"];
-                $response = new RedirectResponse($login . ("?from=" . isset($_SESSION) ? $_SESSION["arrow"]["access"]["requestedUrl"] : ""));
+
+
+                print "<pre>";
+                $from = $request->getPathInfo();
+
+                var_dump($from);
+                exit();
+
+                $response = new RedirectResponse($login . "?" . http_build_query(["from" => $request->getRequestUri() . "?" . $request->getRequestUri()]));
+                $response->prepare($request);
+
+
+                print htmlentities(print_r($response, 1));
+
+                exit($login);
+
+
                 $response->send();
+
+                exit();
 
             }
 

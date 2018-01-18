@@ -28,11 +28,15 @@ export default class ArrowViewComponent extends React.Component<any, any> {
              return;
          }*/
 
-        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + '/access/loginAction');
+        console.log(window.reactBackOfficeVar.appBaseURL);
+        let comm = new Comm(window.location.protocol + "//" + window.location.host + window.reactBackOfficeVar.appBaseURL + '/access/loginAction');
         comm.setData({data: data});
 
 
         this.setState({loading: true, error: ''});
+        comm.on(Comm.EVENTS.ERROR, (response) => {
+            this.setState({loading: false});
+        });
         comm.on(Comm.EVENTS.VALIDATION_ERRORS, (response) => {
             this.setState({loading: false});
             this.setState({error: 'Nieprawidłowy użytkownik lub hasło'});

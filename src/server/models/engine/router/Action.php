@@ -9,20 +9,14 @@ namespace Arrow\Models;
  * Time: 12:26
  * To change this template use File | Settings | File Templates.
  */
-use Arrow\Exception;
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
-use function htmlentities;
-use function is_array;
-use function ob_end_flush;
-use function ob_start;
 use ReflectionClass;
-use ReflectionMethod;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Route;
-use function var_dump;
+use const ARROW_DOCUMENTS_ROOT;
+use function is_array;
 
 class Action
 {
@@ -156,13 +150,17 @@ class Action
         $instance->eventRunBeforeAction($this, $request);
         $return = $instance->{$this->method}(...$preparedArgs["method"]);
 
-
         if ($return !== null) {
 
             if (is_array($return)) {
                 (new JsonResponse($return))->send();
 
             } elseif ($return instanceof AbstractLayout) {
+
+                if ($return->getTemplate() == null) {
+                    $template = self::generateTemplatePath($this->routeParameters);
+                    $return->setTemplate(ARROW_DOCUMENTS_ROOT . $template . ".phtml");
+                }
 
                 $response = new Response(
                     $return->render(),
