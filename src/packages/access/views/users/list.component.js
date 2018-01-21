@@ -6,6 +6,7 @@ import {Column, Table} from 'frontend/src/ctrl/Table';
 import {Row} from 'frontend/src/layout/BootstrapLayout';
 import Comm from 'frontend/src/lib/Comm';
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
+import {Icon} from "frontend/src/ctrl/Icon"
 
 export default class access_access_users_list extends Component {
     constructor(props) {
@@ -59,10 +60,10 @@ export default class access_access_users_list extends Component {
                                 }
                             }),
 
-                            Column.template("Zobacz", () => <div><i className="fa fa-search"></i></div>)
-                              .onClick((row) => this.props._goto("access/users/edit", {key: row.id}))
+                            Column.template("Zobacz", () => <div><Icon name={"Edit"} /> </div>)
+                              .onClick((row) => this.props._goto("/access/users/edit", {key: row.id}))
                               .className("center darkgreen"),
-                            Column.template("Zobacz", () => <i className="fa fa-times"></i>)
+                            Column.template("", () => <Icon name={"Delete"} /> )
                               .onClick(this.handleDelete.bind(this))
                               .className("center darkred")
                         ]}

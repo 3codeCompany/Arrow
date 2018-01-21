@@ -4,6 +4,7 @@ import Navbar from 'frontend/src/ctrl/Navbar';
 import {BForm, BText, BTextarea} from 'frontend/src/layout/BootstrapForm';
 import Panel from 'frontend/src/ctrl/Panel';
 import {Row} from 'frontend/src/layout/BootstrapLayout';
+import {Icon} from "frontend/src/ctrl/Icon"
 
 export default class ArrowViewComponent extends Component {
     constructor(props) {

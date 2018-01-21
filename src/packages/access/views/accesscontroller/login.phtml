@@ -22,28 +22,25 @@
 <body>
 
 <?php
-
+$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
 $props = json_encode(
     array_merge([
-        "baseURL" => rtrim(\Arrow\Router::link("."), "/"),
-        "path" => $this->getPath(),
-        "requestURI" => $_SERVER["REQUEST_URI"],
+        "baseURL" => $request->getBasePath(),
+        "path" => $request->getPathInfo(),
+        "requestURI" => $request->getRequestUri(),
         "component" => 'access_AccessController_loginComponent'
-    ], $this->getVars())
+    ], $this->data)
 );
 
 $storeData = json_encode([
-        "appBaseURL" =>  \Arrow\Router::getBasePath()
+    "appBaseURL" => $request->getBasePath()
 ])
 ?>
 
 
 <script type="text/javascript">window.reactVariable =  <?= $props ?></script>
 <script type="text/javascript">window.reactBackOfficeVar =  <?= $storeData ?></script>
-<div react-component="PanelComponentLoader" id="login-to-app"} react-props="reactVariable"></div>
-
-
-
+<div react-component="PanelComponentLoader" id="login-to-app" } react-props="reactVariable"></div>
 
 
 <? if (!isset($_SESSION["inDev"])) {
@@ -69,7 +66,7 @@ if (file_exists($manifestFile)) {
     <script type="text/javascript" src="<?= $manifest["admin"]["js"] ?>"></script>
 <link rel="stylesheet" href="<?= $manifest["admin"]["css"] ?>"/>
 <? } else { ?>
-    <script type="text/javascript" src="//localhost:3000/bundle.js" charset="utf-8"></script>
+    <script type="text/javascript" src="//localhost:3000/bundle.js" crossorigin="anonymous" charset="utf-8"></script>
 <? } ?>
 
 

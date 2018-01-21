@@ -14,7 +14,7 @@ use Arrow\Models\Action;
 use Arrow\Models\Operation;
 use Arrow\ORM\Persistent\Criteria,
 \Arrow\Access\Models\Auth,
-\Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\View;
+ \Arrow\RequestContext, Arrow\Models\View;
 use Arrow\Router;
 
 /**

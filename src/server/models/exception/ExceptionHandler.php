@@ -93,7 +93,7 @@ class ExceptionHandler implements IExceptionHandler
             }
         }
 
-        $currView = \Arrow\ViewManager::getCurrentView();
+        $currView = false;
         if ($currView) {
             $str .= "<div style='margin-top: 20px;'><b>Current template:</b>  " . $currView->get()->getPackage() . "::" . $currView->get()->getPath() . "</div>";
         }
@@ -246,7 +246,7 @@ class ExceptionHandler implements IExceptionHandler
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
-            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Router::getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
+            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Router::getDefault()->getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
             "\n" . $message .
             "\n" . $file . ":" . $line
 

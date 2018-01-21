@@ -2,24 +2,34 @@
 
 namespace Arrow\Common\Layouts;
 
+use function array_merge;
 use Arrow\Access\Models\Auth;
+use Arrow\ConfigProvider;
 use Arrow\Models\Action;
 
 use Arrow\ViewManager;
+use Symfony\Component\HttpFoundation\Request;
 
 
 class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 {
-    private $breadcrumbGenerator;
-    private $view;
 
-    public function createLayout(ViewManager $viewM)
+    public function render()
     {
+        $this->data = array_merge($this->data, $this->prepareData());
+        ob_start();
+        include __DIR__ . "/ReactComponentLayout.phtml";
+        $content = ob_get_contents();
+        ob_end_clean();
 
-        $this->view = $viewM->get();
-        $viewM->get()->assign("path", $viewM->get()->getPath());
+        return $content;
 
-        //$view->assign("path",$view->getPath());
+    }
+
+
+    public function prepareData()
+    {
+        $data = [];
 
         if (!isset($_SESSION["inDev"])) {
             $_SESSION["inDev"] = false;
@@ -31,21 +41,15 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $user = Auth::getDefault()->getUser();
 
         if ($user->isInGroup("Developers")) {
-            $viewM->get()->assign("developer", true);
+            $data["developer"] = true;
         } else {
-            $viewM->get()->assign("developer", false);
+            $data["developer"] = false;
         }
 
-        $viewM->get()->assign("user", $user);
+        $data["user"] = $user;
 
-        /*        try{
-                    $user[User::F_NEED_CHANGE_PASSWORD];
-                }catch (\Exception $ex){
-                    Auth::getDefault()->doLogout();
-                    header("Location: /esotiq/access-/users/account");
-                    exit();
+        $data["config"] = ConfigProvider::get("panel");
 
-                }*/
 
         $manifest = false;
         $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
@@ -53,34 +57,10 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
             $manifest = json_decode(file_get_contents($manifestFile), true);
         }
 
-        $this->view->assign("webpackManifest", $manifest);
+        $data["webpackManifest"] = $manifest;
 
-
-
+        return $data;
 
     }
 
-    public function setBreadcrumbGenerateor( BreadcrumbGenerator $generator ){
-        $this->breadcrumbGenerator = $generator;
-    }
-
-    public function generateBreadcrumb( ){
-        if($this->breadcrumbGenerator)
-            return $this->breadcrumbGenerator->generate( $this->view);
-    }
-
-    public function getLayoutFile()
-    {
-        return __DIR__ . "/ReactComponentLayout.phtml";
-    }
-
-    public function getFileName($path)
-    {
-        return $path . ".component.tsx";
-    }
-
-    public function getFirstTemplateContent( Action $action)
-    {
-        return "";
-    }
 }

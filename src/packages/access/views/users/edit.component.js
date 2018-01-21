@@ -4,6 +4,7 @@ import Navbar from "frontend/src/ctrl/Navbar"
 import {BForm, BText, BSwitch, BCheckboxGroup,} from "frontend/src/layout/BootstrapForm"
 import Panel from "frontend/src/ctrl/Panel"
 import {Row} from "frontend/src/layout/BootstrapLayout"
+import {Icon} from "frontend/src/ctrl/Icon"
 
 export default class ArrowViewComponent extends Component {
     constructor(props) {
@@ -38,7 +39,7 @@ export default class ArrowViewComponent extends Component {
             <div>
                 <Navbar>
                     <span>System</span>
-                    <a onClick={() => this.props._goto( "access/users/list")}>Użytkownicy</a>
+                    <a onClick={() => this.props._goto( "/access/users/list")}>Użytkownicy</a>
                     <span>{this.props.user ? this.props.user.login : "Dodaj"}</span>
                 </Navbar>
 
@@ -61,7 +62,7 @@ export default class ArrowViewComponent extends Component {
                             <BText label="Hasło" type="password"  {...form("password")} name="password" placeholder={data.id ? "Podaj hasło aby zmienić na nowe" : ""}/>
 
                             <div className="hr-line-dashed"></div>
-                            <a onClick={() => this.props._goto( "access/users/list")} className="btn btn-default pull-right"> Anuluj</a>
+                            <a onClick={() => this.props._goto( "/access/users/list")} className="btn btn-default pull-right"> Anuluj</a>
                             <button type="submit" className="btn btn-primary pull-right "> Zapisz</button>
                             <div className="clearfix"></div>
 

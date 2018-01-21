@@ -2,11 +2,15 @@
 namespace Arrow\Access\Models;
 
 use Arrow\ConfigProvider;
+use Arrow\Controller;
+use Arrow\Models\Action;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\RequestContext;
-use Arrow\Router;
-use Arrow\ViewManager, Arrow\Controller, Arrow\Models\Action;
-use Arrow\Models\Project;
+use Arrow\ViewManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use function htmlentities;
+use function var_dump;
 
 
 class AccessAPI
@@ -42,14 +46,16 @@ class AccessAPI
     {
 
 
-        if(Controller::isInCLIMode())
+        if (Controller::isInCLIMode()) {
             return true;
+        }
 
         //@todo wywalic obsluge bazy danych do handlera póki co ten if musi wystarczyc
-        if(!class_exists('Arrow\ORM\Persistent\Criteria' ))
+        if (!class_exists('Arrow\ORM\Persistent\Criteria')) {
             return true;
+        }
 
-        $pointObjectFriendlyId = str_replace("\\","/", $pointObjectFriendlyId);
+        $pointObjectFriendlyId = str_replace("\\", "/", $pointObjectFriendlyId);
 
         $point = Criteria::query('Arrow\Access\Models\AccessPoint')
             ->c("point_type", $pointType)
@@ -76,8 +82,9 @@ class AccessAPI
                 $accessSum = $user->getAccessGroupsSum();
                 $pointGroups = (int)$point[AccessPoint::F_GROUPS];
 
-                if(  $pointGroups & 1 == 1  )
+                if ($pointGroups & 1 == 1) {
                     return true;
+                }
 
                 if (
                     !(
@@ -93,7 +100,7 @@ class AccessAPI
                         ||
                         $pointGroups == 0
                     )
-                ){
+                ) {
 
                     return false;
                 }
@@ -113,23 +120,48 @@ class AccessAPI
         if (!Auth::getDefault()->isLogged()) {
 
 
-            if(isset($_SERVER["REQUEST_URI"]))
+            if (isset($_SERVER["REQUEST_URI"])) {
                 $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
+            }
 
-            $login = ConfigProvider::get("templates")["login"];
+
+            $request = Request::createFromGlobals();
+            //if xhr or post query
+            if ($request->isXmlHttpRequest()) {
+                (new JsonResponse(["accessDeny" => $denyInfo]))->send();
+                exit();
+            } elseif ($request->request->count() != 0) {
+                exit("Access deny - please login" . $denyInfo);
+            } else {
+                $login = ConfigProvider::get("redirects")["login"];
 
 
-            if( RequestContext::getDefault()->isXHR() )
-                exit("Access deny - please login: ".$denyInfo);
-            else{
-                Controller::redirectToTemplate($login, [ "from" => isset($_SESSION)?$_SESSION["arrow"]["access"]["requestedUrl"]:"" ] );
+                print "<pre>";
+                $from = $request->getPathInfo();
+
+                var_dump($from);
+                exit();
+
+                $response = new RedirectResponse($login . "?" . http_build_query(["from" => $request->getRequestUri() . "?" . $request->getRequestUri()]));
+                $response->prepare($request);
+
+
+                print htmlentities(print_r($response, 1));
+
+                exit($login);
+
+
+                $response->send();
+
+                exit();
+
             }
 
             exit();
 
         } else {
             $logoutLink = \Arrow\Router::link('access/auth/logout');
-            exit("Access deny <a href=\"$logoutLink\">logout</a> ".$denyInfo);
+            exit("Access deny <a href=\"$logoutLink\">logout</a> " . $denyInfo);
         }
     }
 
@@ -141,8 +173,8 @@ class AccessAPI
     public static function checkInstallation()
     {
         $groups = array(
-            self::GROUP_EVERYONE_KEY       => self::GROUP_EVERYONE,
-            self::GROUP_DEVELOPERS_KEY     => self::GROUP_DEVELOPERS,
+            self::GROUP_EVERYONE_KEY => self::GROUP_EVERYONE,
+            self::GROUP_DEVELOPERS_KEY => self::GROUP_DEVELOPERS,
             self::GROUP_ADMINISTRATORS_KEY => self::GROUP_ADMINISTRATORS,
         );
         foreach ($groups as $key => $name) {
@@ -171,8 +203,8 @@ class AccessAPI
 
         try {
             $groups = array(
-                self::GROUP_EVERYONE_KEY       => self::GROUP_EVERYONE,
-                self::GROUP_DEVELOPERS_KEY     => self::GROUP_DEVELOPERS,
+                self::GROUP_EVERYONE_KEY => self::GROUP_EVERYONE,
+                self::GROUP_DEVELOPERS_KEY => self::GROUP_DEVELOPERS,
                 self::GROUP_ADMINISTRATORS_KEY => self::GROUP_ADMINISTRATORS,
             );
 
@@ -185,9 +217,9 @@ class AccessAPI
 
                 if ($test == 0) {
                     $group = new AccessGroup(array(
-                                                  AccessGroup::F_ID   => $key,
-                                                  AccessGroup::F_NAME => $name
-                                             ));
+                        AccessGroup::F_ID => $key,
+                        AccessGroup::F_NAME => $name
+                    ));
                     \Arrow\ORM\PersistentFactory::save($group, true, true);
                 }
             }
@@ -196,19 +228,19 @@ class AccessAPI
             $users = Criteria::query(User::getClass())->count();
             if ($users == 0) {
                 $user = new User(array(
-                                      User::F_LOGIN    => self::USER_INITIAL_DEVELOPER_LOGIN,
-                                      User::F_PASSWORD => self::USER_INITIAL_DEVELOPER_PASSWORD,
-                                      User::F_ACTIVE   => 1
-                                 ));
+                    User::F_LOGIN => self::USER_INITIAL_DEVELOPER_LOGIN,
+                    User::F_PASSWORD => self::USER_INITIAL_DEVELOPER_PASSWORD,
+                    User::F_ACTIVE => 1
+                ));
                 $user->save();
                 $user->setGroups(array(self::GROUP_DEVELOPERS_KEY));
             }
 
             $pointData = array(
-                AccessPoint::F_POINT_TYPE               => "view",
-                AccessPoint::F_POINT_ACTION             => "show",
+                AccessPoint::F_POINT_TYPE => "view",
+                AccessPoint::F_POINT_ACTION => "show",
                 AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => "/auth/login",
-                AccessPoint::F_CONTROL_ENABLED          => 0
+                AccessPoint::F_CONTROL_ENABLED => 0
             );
 
             AccessPoint::createIfNotExists($pointData);
@@ -216,11 +248,11 @@ class AccessAPI
 
             //todo !obowiązkowo przenieść w bardziej siutable miejsce
             $pointData = array(
-                AccessPoint::F_POINT_NAMESPACE          => "application",
-                AccessPoint::F_POINT_TYPE               => "view",
-                AccessPoint::F_POINT_ACTION             => "show",
+                AccessPoint::F_POINT_NAMESPACE => "application",
+                AccessPoint::F_POINT_TYPE => "view",
+                AccessPoint::F_POINT_ACTION => "show",
                 AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => "/index",
-                AccessPoint::F_CONTROL_ENABLED          => 0
+                AccessPoint::F_CONTROL_ENABLED => 0
             );
 
             AccessPoint::createIfNotExists($pointData);
@@ -233,7 +265,6 @@ class AccessAPI
         }
 
     }
-
 
 
 }

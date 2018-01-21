@@ -1,9 +1,11 @@
-import React, {Component} from 'react';
+import * as React from 'react';
 import {BForm} from 'frontend/src/layout/BootstrapForm';
 import Comm from 'frontend/src/lib/Comm';
 
+declare var window: any;
 
-export default class ArrowViewComponent extends Component {
+export default class ArrowViewComponent extends React.Component<any, any> {
+    form: BForm;
 
     constructor(props) {
         super(props);
@@ -26,11 +28,15 @@ export default class ArrowViewComponent extends Component {
              return;
          }*/
 
-        let comm = new Comm(window.reactBackOfficeVar.appBaseURL + 'access/accessController/loginAction');
+        console.log(window.reactBackOfficeVar.appBaseURL);
+        let comm = new Comm(window.location.protocol + "//" + window.location.host + window.reactBackOfficeVar.appBaseURL + '/access/loginAction');
         comm.setData({data: data});
 
 
         this.setState({loading: true, error: ''});
+        comm.on(Comm.EVENTS.ERROR, (response) => {
+            this.setState({loading: false});
+        });
         comm.on(Comm.EVENTS.VALIDATION_ERRORS, (response) => {
             this.setState({loading: false});
             this.setState({error: 'Nieprawidłowy użytkownik lub hasło'});
@@ -40,7 +46,7 @@ export default class ArrowViewComponent extends Component {
             if (this.props.redirectTo) {
                 window.location.href = this.props.redirectTo;
             } else {
-                window.location.href = this.props.appPath + 'admin';
+                window.location.href = this.props.appPath + '/admin';
             }
 
 
@@ -54,12 +60,13 @@ export default class ArrowViewComponent extends Component {
         let s = this.state;
         return <div className="login-view">
 
-            <div className="login-background" style={{ backgroundImage: `url( ${this.props.backgroundImage} )` }}>
+            <div className="login-background" style={{backgroundImage: `url( ${this.props.backgroundImage} )`}}>
 
                 <div className="login-form-container">
                     <div className="title"> {this.props.applicationTitle}</div>
                     <BForm>
                         {() => <div>
+
                             <div>
                                 <div className="input">
                                     <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={'login'} placeholder="Twój login"/>
