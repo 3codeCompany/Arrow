@@ -82,10 +82,10 @@ class AccessController extends \Arrow\Models\Controller
     /**
      * @Route("/loginAction")
      */
-    public function loginAction()
+    public function loginAction(Request $request)
     {
 
-        $data = $this->request->get("data");
+        $data = $request->get("data");
         $validator = Validator::create($data)
             ->required(["login", "password"]);
 
@@ -104,7 +104,9 @@ class AccessController extends \Arrow\Models\Controller
             $this->json($validator->response());
         }
 
-        $this->json(["redirectTo" => trim($this->request->get("from", Router::getDefault()->getBasePath() . "/admin", "/"))]);
+        return [
+            "redirectTo" => trim($request->get("from", Router::getDefault()->getBasePath() . "/admin", "/"))
+        ];
 
 
     }

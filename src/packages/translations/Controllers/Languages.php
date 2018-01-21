@@ -8,35 +8,54 @@ use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Translations\Models\Language;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class Languages
+ * @package Arrow\Translations\Controllers
+ * @route("/languages")
+ */
 class Languages extends BaseController
 {
 
+    /**
+     * @Route("/index")
+     */
     function index()
     {
-        $this->action->setLayout(new ReactComponentLayout());
+        return [];
     }
 
+    /**
+     * @Route("/list")
+     */
     public function list()
     {
         $ctit = Language::get();
         $helper = new TableListORMHelper();
 
         $helper->addDefaultOrder(Language::F_NAME);
-        $this->json($helper->getListData($ctit));
+        return $helper->getListData($ctit);
     }
 
-    public function get()
+    /**
+     * @Route("/get")
+     */
+    public function get(Request $request)
     {
         $data = Language::get()
-            ->findByKey($this->request["key"]);
-        $this->json($data);
+            ->findByKey($request->get("key"));
+        return $data;
     }
 
+    /**
+     * @Route("/save")
+     */
+    public function save(Request $request)
+    {
 
-    public function save(){
-
-        $data = $this->request['data'];
+        $data = $request->get('data');
         $validator = Validator::create($data)
             ->required(['name', 'code']);
 
@@ -52,14 +71,18 @@ class Languages extends BaseController
         }
         $obj->save();
 
-        $this->json([$obj->_id()]);
+        return [$obj->_id()];
     }
 
-    public function delete(){
+    /**
+     * @Route("/delete")
+     */
+    public function delete(Request $request)
+    {
         $data = Language::get()
-            ->findByKey($this->request["key"]);
+            ->findByKey($request->get("key"));
         $data->delete();
-        $this->json([true]);
+        return [true];
     }
 
 }

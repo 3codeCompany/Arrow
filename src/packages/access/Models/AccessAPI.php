@@ -23,19 +23,6 @@ class AccessAPI
     const GROUP_ADMINISTRATORS = "Administrators";
     const GROUP_ADMINISTRATORS_KEY = 4;
 
-    const USER_INITIAL_DEVELOPER_LOGIN = "dev";
-    const USER_INITIAL_DEVELOPER_PASSWORD = "321dev";
-
-
-    private static $accessPointStandardProperties
-        = array(
-            AccessPoint::F_POINT_TYPE,
-            AccessPoint::F_POINT_ACTION,
-            AccessPoint::F_POINT_OBJECT_FRIENDLY_ID,
-            AccessPoint::F_ADDITIONAL_INFO,
-            AccessPoint::F_CONTROL_ENABLED
-        );
-
 
     public static function checkAccessToView(Action $view)
     {
@@ -136,19 +123,16 @@ class AccessAPI
                 $login = ConfigProvider::get("redirects")["login"];
 
 
-                print "<pre>";
-                $from = $request->getPathInfo();
 
-                var_dump($from);
-                exit();
 
-                $response = new RedirectResponse($login . "?" . http_build_query(["from" => $request->getRequestUri() . "?" . $request->getRequestUri()]));
+
+                $redirect = $request->getBasePath().$login;
+                if($request->getPathInfo() != $login){
+                    $redirect .=  "?" . http_build_query(["from" => $request->getPathInfo() . "?" . $request->getRequestUri()]);
+                }
+
+                $response = new RedirectResponse( $redirect );
                 $response->prepare($request);
-
-
-                print htmlentities(print_r($response, 1));
-
-                exit($login);
 
 
                 $response->send();

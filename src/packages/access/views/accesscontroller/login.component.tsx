@@ -28,7 +28,6 @@ export default class ArrowViewComponent extends React.Component<any, any> {
              return;
          }*/
 
-        console.log(window.reactBackOfficeVar.appBaseURL);
         let comm = new Comm(window.location.protocol + "//" + window.location.host + window.reactBackOfficeVar.appBaseURL + '/access/loginAction');
         comm.setData({data: data});
 

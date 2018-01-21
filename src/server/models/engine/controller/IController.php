@@ -2,7 +2,6 @@
 
 namespace Arrow\Models;
 
-use Arrow\RequestContext;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,5 +18,5 @@ interface IController
 
     public function eventRunBeforeAction(Action $action);
 
-    public function notFound(Action $action = null, RequestContext $request = null);
+    //public function notFound(Action $action = null, Request $request = null);
 }

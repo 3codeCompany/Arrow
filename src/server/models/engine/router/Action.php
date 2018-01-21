@@ -11,12 +11,16 @@ namespace Arrow\Models;
  */
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
+use Exception;
 use ReflectionClass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\AutowiringFailedException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use const ARROW_DOCUMENTS_ROOT;
 use function is_array;
+use function var_dump;
 
 class Action
 {
@@ -36,12 +40,11 @@ class Action
     private $request;
 
 
-    /**
-     * //todo make private
-     * @var array
-     */
-    public $vars = array();
 
+
+    /**
+     * @var ContainerBuilder
+     */
     private $serviceContainer;
 
 
@@ -71,15 +74,18 @@ class Action
         $this->serviceContainer = $serviceContainer;
     }
 
-    private function resolveClassDependancy(ReflectionClass $dependancyClass)
+    private function resolveClassDependancy(ReflectionClass $dependencyClass)
     {
-        $dependancyClassName = $dependancyClass->getName();
+
+        $dependencyClassName = $dependencyClass->getName();
+
         // see service container for exact implementation
-        if ($this->serviceContainer->has($dependancyClassName)) {
-            return $this->serviceContainer->get($dependancyClassName);
+        if ($this->serviceContainer->has($dependencyClassName)) {
+            return $this->serviceContainer->get($dependencyClassName);
         }
+
         // try to match by interfaces
-        $interfaces = $dependancyClass->getInterfaces();
+        $interfaces = $dependencyClass->getInterfaces();
         foreach ($interfaces as $interface) {
             $resolvedService = $this->resolveClassDependancy($interface);
             if (null !== $resolvedService) {
@@ -87,7 +93,7 @@ class Action
             }
         }
         // fallback to parent class
-        if ($parentClass = $dependancyClass->getParentClass()) {
+        if ($parentClass = $dependencyClass->getParentClass()) {
             return $this->resolveClassDependancy($parentClass);
         }
     }
@@ -115,7 +121,7 @@ class Action
 
         $toResolve = ["constructor" => $constructorArguments, "method" => $methodArguments];
         $preparedArgs = [];
-        $injectResult = [];
+
         foreach ($toResolve as $key => $arguments) {
             $argumentClassHint = [];
             foreach ($arguments as $argumentIndex => $argument) {
@@ -130,7 +136,15 @@ class Action
             $preparedArgs[$key] = [];
             foreach ($argumentClassHint as $index => $hint) {
                 if ($hint) {
-                    $preparedArgs[$key][$index] = $this->resolveClassDependancy($hint);
+
+                    $injection = $this->resolveClassDependancy($hint);
+                    if($injection === null){
+                        throw new AutowiringFailedException($hint->getName(), "Service '{$hint->getName()}' not found [ Controller: {$this->controller}::{$this->method}] ");
+                    }else{
+                        $preparedArgs[$key][$index] = $injection;
+                    }
+
+
                 } else {
                     if ($key != "constructor") {
                         $name = $methodArguments[$index]->getName();
@@ -148,6 +162,8 @@ class Action
         $instance = new $this->controller(...$preparedArgs["constructor"]);
 
         $instance->eventRunBeforeAction($this, $request);
+
+
         $return = $instance->{$this->method}(...$preparedArgs["method"]);
 
         if ($return !== null) {
@@ -223,10 +239,7 @@ class Action
         return AccessAPI::checkAccess("view", "show", $this->getPath(), "");
     }
 
-    public function assign($var, $value)
-    {
-        $this->vars[$var] = $value;
-    }
+
 
 
 }

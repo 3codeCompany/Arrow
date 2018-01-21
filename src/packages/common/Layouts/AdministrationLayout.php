@@ -1,63 +1,35 @@
 <?php
 
 namespace Arrow\Common\Layouts;
-
 use Arrow\ConfigProvider;
-use Arrow\Controls\api\common\HTMLNode;
-use Arrow\Controls\api\common\Icons;
-use Arrow\Controls\api\WidgetsSet;
-use Arrow\Models\Project;
-use
-    Arrow\ORM\Persistent\Criteria,
-    Arrow\Access\Models\Auth,
-    \Arrow\RequestContext,
-    \Arrow\Access\Models\AccessAPI, \Arrow\Access\Models\User,
-    Arrow\ViewManager;
+use Arrow\Access\Models\Auth;
 use Arrow\ORM\Table;
-use Arrow\Router;
+
 use const ARROW_DOCUMENTS_ROOT;
 
 class AdministrationLayout extends \Arrow\Models\AbstractLayout
 {
 
 
-    private $view;
-
-    public function createLayout(ViewManager $manager)
+    public function prepareData()
     {
 
-        $this->view = $manager->get();
+        $config = ConfigProvider::get("panel");
 
-
-        $title = ConfigProvider::get("panel")["title"];
-        $this->view->assign("applicationTitle", $title);
-        $title = ConfigProvider::get("panel")["icon"];
-        $this->view->assign("applicationIcon", $title);
+        $data = [
+            "applicationTitle" => $config["title"],
+            "applicationIcon" => $config["icon"]
+        ];
 
         $user = Auth::getDefault()->getUser();
 
         if ($user && $user->isInGroup("Developers")) {
-            $this->view->assign("developer", true);
+            $data["developer"] = true;
         } else {
-            $this->view->assign("developer", false);
+            $data["developer"] = false;
         }
 
-
-        if (!isset($this->view["user"])) {
-            $this->view->assign("user", $user);
-        }
-
-
-        if ($user[User::F_NEED_CHANGE_PASSWORD] && $this->view->getPath() != "/users/account") {
-
-            $v = \Arrow\Models\Dispatcher::getDefault()->get("access::/users/account");
-
-            if (\Arrow\Router::getDefault()->get() != $v) {
-                \Arrow\Controller::redirectToView($v);
-                exit();
-            }
-        }
-
+        $data["user"] = $user;
 
         $manifest = false;
         $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
@@ -65,18 +37,24 @@ class AdministrationLayout extends \Arrow\Models\AbstractLayout
             $manifest = json_decode(file_get_contents($manifestFile), true);
         }
 
-        $this->view->assign("webpackManifest", $manifest);
+        $data["webpackManifest"] = $manifest;
 
+        return $data;
 
     }
 
 
-    public function getLayoutFile()
+    public function render()
     {
+        $this->data = array_merge($this->data, $this->prepareData());
+        ob_start();
+        include __DIR__ . "/admin/index2.phtml";
+        $content = ob_get_contents();
+        ob_end_clean();
 
-        return __DIR__ . "/admin/index2.phtml";
+        return $content;
+
     }
-
 
 }
 

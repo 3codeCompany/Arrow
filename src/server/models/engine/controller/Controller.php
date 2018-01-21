@@ -69,38 +69,4 @@ abstract class Controller implements IController
     }
 
 
-    public function notFound(Action $action = null, RequestContext $request = null)
-    {
-
-        $user = Auth::getDefault()->getUser();
-
-        if ($user && $user->isInGroup(AccessAPI::GROUP_DEVELOPERS)) {
-
-            $name = str_replace(DIRECTORY_SEPARATOR, "_", trim($action->getShortPath(), "/"));
-            throw new \Arrow\Exception(
-                array(
-                    "msg" => "Undefined controller action  '$name' in controller " . get_class($this),
-                    "view" => $action->getPath(),
-                    "package" => $action->getPackage(),
-                    "controler" => get_class($this),
-                    "actionCode" => "public function $name(){}"
-                ));
-
-
-            exit();
-        }
-
-
-        header("HTTP/1.0 404 Not Found");
-        print "<h1>404 Not found</h1>";
-
-        print "Contact with administrator ";
-        if ($action) {
-            print "[ {$action->getPath()} ]";
-        }
-        exit("");
-
-    }
-
-
 }

@@ -28,32 +28,49 @@ use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class PanelObjects
+ * @package Arrow\Translations\Controllers
+ * @Route("/objects")
+ */
 class PanelObjects extends BaseController
 {
+
+    /**
+     * @Route("/index")
+     */
     public function index()
     {
-        $this->action->setLayout(new ReactComponentLayout());
+
         //$this->action->assign('fields' , LanguageText::getFields());
-        $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
+
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
         //$db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
 
-        $this->action->assign("objects", FormHelper::assocToOptions(array(
-            Category::getClass() => "Kategorie",
-            Property::getClass() => "Cechy",
-            Page::getClass() => "Strony",
-        )));
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
         //$db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
 
 
+        return [
+            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
+            "objects" => FormHelper::assocToOptions(array(
+                Category::getClass() => "Kategorie",
+                Property::getClass() => "Cechy",
+                Page::getClass() => "Strony",
+            ))
+        ];
     }
 
+    /**
+     * @Route("/list")
+     */
     public function list()
     {
 
@@ -69,7 +86,7 @@ class PanelObjects extends BaseController
 
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
-        if(count($tmp) == 2){
+        if (count($tmp) == 2) {
             $crit->_lang($tmp[1]);
         }
 
@@ -88,10 +105,13 @@ class PanelObjects extends BaseController
         $this->json($helper->getListData($crit));
     }
 
-    public function downloadLangFile()
+    /**
+     * @Route("/downloadLangFile")
+     */
+    public function downloadLangFile(Request $request)
     {
 
-        $data = json_decode($this->request["payload"], true);
+        $data = json_decode($request->get("payload"), true);
         $model = $data["model"];
 
 
@@ -159,29 +179,35 @@ class PanelObjects extends BaseController
 
     }
 
-    public function delete()
+    /**
+     * @Route("/delete")
+     */
+    public function delete(Request $request)
     {
         $elements = ObjectTranslation::get()
-            ->_id($this->request["keys"], Criteria::C_IN)
+            ->_id($request->get("keys"), Criteria::C_IN)
             ->find();
 
         foreach ($elements as $element) {
             $element->delete();
         }
 
-        $this->json([true]);
+        return [true];
     }
 
-    public function inlineUpdate()
+    /**
+     * @Route("/inlineUpdate")
+     */
+    public function inlineUpdate(Request $request)
     {
         $obj = ObjectTranslation::get()
-            ->findByKey($this->request["key"]);
+            ->findByKey($request->get("key"));
 
-        $obj->setValue(LanguageText::F_VALUE, $this->request["newValue"]);
+        $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
         $obj->save();
 
 
-        $this->json([1]);
+        return [1];
     }
 
 }
