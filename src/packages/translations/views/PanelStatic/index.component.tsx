@@ -26,6 +26,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         this.state = {
             langToDownload: false,
             search: "",
+            isUploading: false
         };
 
         this.columns = [
@@ -36,18 +37,24 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 .template((val, row, ) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
                     {row.edited === true && [
-                        <textarea style={{width: "100%", display: "block"}} onChange={(e) => row.changedText = e.target.value} defaultValue={val}/>,
+                        <textarea
+                            style={{width: "100%", display: "block"}}
+                            onChange={(e) => row.changedText = e.target.value} defaultValue={val}
+                            autoFocus={true}
+                            onClick={(e) => e.stopPropagation}
+                        />,
                         <div>
+
                             <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>Zapisz</a>
                             <a onClick={(e) => {
                                 e.stopPropagation();
                                 row.edited = false;
-                                this.table.forceUpdate();
+                                row.container.forceUpdate();
                             }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>Anuluj</a>
                         </div>,
                     ]}
                     {!row.loading && !row.edited && <div>{val}</div>}
-                </div>)
+                </div>})
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
                 .onClick((row, column, event, rowContainer) => {
                     row.edited = true;
@@ -69,12 +76,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         e.stopPropagation();
         row.loading = true;
         row.edited = false;
-        this.table.forceUpdate();
+        row.container.forceUpdate();
         Comm._post(this.props.baseURL + "/inlineUpdate", {key: row.id, newValue: row.changedText}).then(() => {
             this.props._notification("Pomyślnie zmodyfikowano element");
             row.value = row.changedText;
             row.loading = false;
-            this.table.forceUpdate();
+            this.table.load();
         });
 
     }
