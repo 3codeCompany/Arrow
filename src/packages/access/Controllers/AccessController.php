@@ -111,16 +111,22 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function logout($action, RequestContext $request)
+    /**
+     * @param $action
+     * @param RequestContext $request
+     * @Route("/logout")
+     */
+    public function logout()
     {
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
-        $this->back();
+        if(isset($_SERVER['HTTP_REFERER'])) {
+            header('Location: ' . $_SERVER['HTTP_REFERER']);
+            exit();
+        }
     }
 
-    public function dashboard_main(Action $view, RequestContext $request)
-    {
-    }
+
 
     public function users_account(Action $view, RequestContext $request)
     {
@@ -317,7 +323,7 @@ class AccessController extends \Arrow\Models\Controller
     public function users_save()
     {
 
-        $data = $this->request["data"];
+        $data = $request->get("data");
 
         $validator = Validator::create($data)
             ->required(["login", "email", "active"])
@@ -413,7 +419,7 @@ class AccessController extends \Arrow\Models\Controller
 
     public function access_changePointControl()
     {
-        $obj = AccessPoint::get()->findByKey($this->request["id"]);
+        $obj = AccessPoint::get()->findByKey($request->get("id"));
         $obj[AccessPoint::F_CONTROL_ENABLED] = $obj[AccessPoint::F_CONTROL_ENABLED] ? 0 : 1;
         $obj->save();
         $this->json([1]);

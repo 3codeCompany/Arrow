@@ -24,7 +24,6 @@ class Project
 
     const IErrorHandler = "errorHandler";
     const ISessionHandler = "sessionHandler";
-    const IAuthHandler = "authHandler";
     const IAccessHandler = "accessHandler";
     const IExceptionHandler = "exceptionHandler";
     const IRemoteResponseHandler = "remoteResponseHandler";
@@ -106,8 +105,7 @@ class Project
             $this->getHandler(self::IErrorHandler);
             $this->getHandler(self::IExceptionHandler);
             $this->getHandler(self::ISessionHandler);
-            $this->getHandler(self::IAuthHandler);
-            $this->accesManager = $this->getHandler(self::IAccessHandler);
+
 
         }
 
@@ -164,15 +162,7 @@ class Project
     }
 
 
-    /**
-     * Returns access manager
-     *
-     * @return AccessManager
-     */
-    public function getAccessManager()
-    {
-        return $this->accesManager;
-    }
+
 
 
     /**

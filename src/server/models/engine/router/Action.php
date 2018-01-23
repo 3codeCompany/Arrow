@@ -105,7 +105,7 @@ class Action
          * Access check
          */
         if (!$this->isAccessible()) {
-            AccessAPI::accessDenyProcedure($this->path . " " . $this->package);
+            AccessAPI::accessDenyProcedure($this->getPath());
         }
 
 
@@ -161,7 +161,9 @@ class Action
 
         $instance = new $this->controller(...$preparedArgs["constructor"]);
 
-        $instance->eventRunBeforeAction($this, $request);
+        if($instance instanceof Controller) {
+            $instance->eventRunBeforeAction($this, $request);
+        }
 
 
         $return = $instance->{$this->method}(...$preparedArgs["method"]);

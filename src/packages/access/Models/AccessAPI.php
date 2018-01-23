@@ -62,10 +62,11 @@ class AccessAPI
 
         if ($point["control_enabled"]) {
 
-            if (!Auth::getDefault()->isLogged()) {
+            $authService = Auth::getDefault();
+            if (!$authService->isLogged()) {
                 return false;
             } else {
-                $user = Auth::getDefault()->getUser();
+                $user = $authService->getUser();
                 $accessSum = $user->getAccessGroupsSum();
                 $pointGroups = (int)$point[AccessPoint::F_GROUPS];
 
@@ -118,7 +119,7 @@ class AccessAPI
                 (new JsonResponse(["accessDeny" => $denyInfo]))->send();
                 exit();
             } elseif ($request->request->count() != 0) {
-                exit("Access deny - please login" . $denyInfo);
+                exit("Access deny to: `" . $denyInfo."`");
             } else {
                 $login = ConfigProvider::get("redirects")["login"];
 
@@ -144,8 +145,8 @@ class AccessAPI
             exit();
 
         } else {
-            $logoutLink = \Arrow\Router::link('access/auth/logout');
-            exit("Access deny <a href=\"$logoutLink\">logout</a> " . $denyInfo);
+            //$logoutLink = \Arrow\Router::link('access/auth/logout');
+            exit("Access deny to: `" . $denyInfo."`");
         }
     }
 

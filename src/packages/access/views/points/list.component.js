@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import Navbar from 'frontend/src/ctrl/Navbar';
 import {confirm} from 'frontend/src/ctrl/Overlays';
 import {Table, Column} from 'frontend/src/ctrl/Table';
+import {Icon} from 'frontend/src/ctrl/Icon';
 
 import Comm from 'frontend/src/lib/Comm';
 import {CheckboxGroup} from 'frontend/src/ctrl/Fields';
@@ -91,11 +92,11 @@ export default class access_access_users_list extends Component {
                                     } else {
 
 
-                                        return <div>{selectedNames.length > 0 ? selectedNames.join(', ') : <div className={'center'}><i className="fa fa-times  lightgrey"></i></div>}</div>;
+                                        return <div>{selectedNames.length > 0 ? selectedNames.join(', ') : <div className={'left'} style={{color: 'lightgrey'}}><Icon name={"ChromeClose"}/></div>}</div>;
                                     }
                                 })
                             ,
-                            Column.template('Zobacz', () => <i className="fa fa-times"></i>)
+                            Column.template('Usuń', () => <Icon name={"Delete"} />)
                                 .onClick(this.handleDelete.bind(this))
                                 .className('center darkred')
                         ]}

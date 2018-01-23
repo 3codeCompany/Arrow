@@ -14,6 +14,7 @@ use const PHP_EOL;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Route;
 
 
 /**
@@ -74,19 +75,17 @@ class Router
     public static function getDefault()
     {
         if (self::$oInstance == null) {
-            self::$oInstance = new Router(RequestContext::getDefault());
+            self::$oInstance = new Router();
         }
         return self::$oInstance;
     }
 
-    public function __construct(RequestContext $request)
+    public function __construct()
     {
 
         $this->request = Request::createFromGlobals();
 
         $sourceFolders = [];
-        $autoload = require ARROW_DOCUMENTS_ROOT . "/vendor/autoload.php";
-
 
         $packages = Project::getInstance()->getPackages();
 
@@ -95,13 +94,13 @@ class Router
             $sourceFolders[] = ARROW_DOCUMENTS_ROOT . "/" . $dir . "/Controllers";
         }
 
-        AnnotationRegistry::registerLoader(array($autoload, 'loadClass'));
+        AnnotationRegistry::registerLoader('class_exists');
 
         $routeLoader = new AnnotationsRouteLoader(new AnnotationReader());
         $loader = new AnnotationsDirectoriesLoader(new FileLocator($sourceFolders), $routeLoader);
-        $request = Request::createFromGlobals();
+
         $context = new \Symfony\Component\Routing\RequestContext();
-        $context->fromRequest($request);
+        $context->fromRequest($this->request);
 
         $router = new \Symfony\Component\Routing\Router(
             $loader,
@@ -148,9 +147,7 @@ class Router
 
     private function symfonyRouter($path)
     {
-//        $this->serviceContainer->get("PhpConsole\Handler")->debug($this->symfonyRouter->getRouteCollection());
 
-        //$this->serviceContainer->get("PhpConsole\Handler")->debug($this->serviceContainer->getAliases());
 
         try {
             $result = $this->symfonyRouter->match($this->request->getPathInfo()); //'/prefix/cars/index/parametr'
@@ -159,7 +156,7 @@ class Router
                 $result["_package"],
                 $result["_controller"],
                 $result["_method"],
-                $this->request->getPathInfo(),
+                $path,
                 $result
             );
 
@@ -175,11 +172,14 @@ class Router
         }
     }
 
-    public function process()
+    public function process(Request $request = null)
     {
 
+        if (!$request) {
+            $request = $this->request;
+        }
 
-        $this->action = $this->symfonyRouter($this->request->getPathInfo());
+        $this->action = $this->symfonyRouter($request->getPathInfo());
 
         $this->action->setServiceContainer($this->serviceContainer);
 

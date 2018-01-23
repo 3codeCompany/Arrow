@@ -53,19 +53,33 @@ use
     \Arrow\ORM\Persistent\Criteria,
     Arrow\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Created by JetBrains PhpStorm.
- * User: artur
- * Date: 04.09.12
- * Time: 14:20
- * To change this template use File | Settings | File Templates.
+ * Class AccessRights
+ * @package Arrow\Access\Controllers
+ * @Route("/points")
  */
-class AccessRights extends \Arrow\Models\Controller
+class Points extends \Arrow\Models\Controller
 {
 
+    /**
+     * @Route("/list")
+     */
+    public function list()
+    {
+        $groups = AccessGroup::get()
+            ->_id(4, Criteria::C_GREATER_THAN)
+            ->findAsFieldArray(AccessGroup::F_NAME, true);
+        return ["agroups" => $groups];
+
+    }
 
 
+    /**
+     * @Route("/getData")
+     */
     public function getData()
     {
         $helper = new TableListORMHelper();
@@ -73,55 +87,54 @@ class AccessRights extends \Arrow\Models\Controller
         $this->json($helper->getListData($criteria));
     }
 
-    public function save()
+    /**
+     * @Route("/save")
+     */
+    public function save(Request $request)
     {
         AccessPoint::get()
-            ->findByKey($this->request["key"])
-            ->setValues($this->request["data"])
+            ->findByKey($request->get("key"))
+            ->setValues($request->get("data"))
             ->save();
         $this->json([1]);
     }
 
-    public function list(Action $view, RequestContext $request)
+
+    /**
+     * @Route("/changePointControl")
+     */
+    public function changePointControl(Request $request)
     {
-
-        $this->action->setLayout(new ReactComponentLayout());
-        $groups = AccessGroup::get()
-            ->_id(4, Criteria::C_GREATER_THAN)
-            ->findAsFieldArray(AccessGroup::F_NAME, true);
-        $view->assign("agroups", $groups);
-
-        return;
-
-
-    }
-
-    public function access_changePointControl()
-    {
-        $obj = AccessPoint::get()->findByKey($this->request["id"]);
+        $obj = AccessPoint::get()->findByKey($request->get("id"));
         $obj[AccessPoint::F_CONTROL_ENABLED] = $obj[AccessPoint::F_CONTROL_ENABLED] ? 0 : 1;
         $obj->save();
-        $this->json([1]);
+        return [1];
     }
 
-    public function changePointGroup( $action, RequestContext $request)
+    /**
+     * @Route("/changePointGroup")
+     */
+    public function changePointGroup(Request $request)
     {
         //$tmp = explode(",",$request["groups"]);
 
-        $point = Criteria::query(AccessPoint::getClass())->findByKey($request["accessPoint"]);
+        $point = Criteria::query(AccessPoint::getClass())->findByKey(
+            $request->get("accessPoint")
+        );
         if ($request["groups"]) {
             $sum = array_sum($request["groups"]);
             $point["groups"] = $sum;
         } else {
             $point["groups"] = 0;
         }
-
-
         $point->save();
-        $this->json([true]);
+        return [true];
     }
 
-    public function auth_loginAs( $action, RequestContext $request)
+    /**
+     * @Route("/getData")
+     */
+    public function auth_loginAs($action, RequestContext $request)
     {
 
         $auth = Auth::getDefault();

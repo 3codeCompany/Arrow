@@ -53,76 +53,68 @@ use
     \Arrow\ORM\Persistent\Criteria,
     Arrow\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Created by JetBrains PhpStorm.
- * User: artur
- * Date: 04.09.12
- * Time: 14:20
- * To change this template use File | Settings | File Templates.
+ * @Route("/groups")
  */
 class Groups extends \Arrow\Models\Controller
 {
 
 
-
-
+    /**
+     * @Route("/getData")
+     */
     public function getData()
     {
         $helper = new TableListORMHelper();
         $this->json($helper->getListData(AccessGroup::get()->_id(4, Criteria::C_GREATER_THAN)));
     }
 
-
+    /**
+     * @Route("/list")
+     */
     public function list()
     {
-        $this->action->setLayout(new ReactComponentLayout());
+        return [];
+    }
+
+    /**
+     * @Route("/delete")
+     */
+    public function delete(Request $request)
+    {
+        AccessGroup::get()->findByKey($request->get("key"))->delete();
+
+        return [];
+    }
+
+    /**
+     * @Route("/edit")
+     */
+    public function edit(Request $request)
+    {
+        $group = AccessGroup::get()->findByKey($request->get('key'));
+
+        return [
+            "group" => $group
+        ];
 
     }
 
-    public function delete($view, RequestContext $request)
+    /**
+     * @Route("/save")
+     */
+    public function save(Request $request)
     {
-        AccessGroup::get()->findByKey($request["key"])->delete();
-
-        $this->json([1]);
-    }
-
-    public function edit(Action $view, RequestContext $request)
-    {
-
-        $this->action->setLayout(new ReactComponentLayout());
-
-        $group = AccessGroup::get()->findByKey($request['key']);
-        $this->action->assign("group", $group);
-
-
-    }
-
-    public function save($view, RequestContext $request)
-    {
-        if ($request["key"]) {
-            AccessGroup::get()->findByKey($request["key"])->setValues($request["data"])->save();
+        if ($request->get("key")) {
+            AccessGroup::get()->findByKey($request->get("key"))->setValues($request->get("data"))->save();
         } else {
-            AccessGroup::create($request["data"]);
+            AccessGroup::create($request->get("data"));
         }
 
-        $this->json([1]);
-    }
-
-    public function access_getData()
-    {
-        $helper = new TableListORMHelper();
-        $criteria = AccessPoint::get();
-        $this->json($helper->getListData($criteria));
-    }
-
-    public function access_save()
-    {
-        AccessPoint::get()
-            ->findByKey($this->request["key"])
-            ->setValues($this->request["data"])
-            ->save();
-        $this->json([1]);
+        return [1];
     }
 
 

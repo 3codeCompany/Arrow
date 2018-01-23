@@ -43,6 +43,7 @@ use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
 use Arrow\RequestContext;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use function array_reduce;
 use function strlen;
@@ -50,7 +51,7 @@ use function strlen;
 /**
  * Class Users
  * @package Arrow\Access\Controllers
- * @Route("/x1")
+ * @Route("/users")
  */
 class Users extends \Arrow\Models\Controller
 {
@@ -70,12 +71,12 @@ class Users extends \Arrow\Models\Controller
         ]);
     }
 
-    public function saveAccount()
+    public function saveAccount(Request $request)
     {
 
         $user = Auth::getDefault()->getUser();
 
-        $d = $this->request["data"];
+        $d = $request->get("data");
         $validator = Validator::create($d)
             ->required(["email"])
             ->email(["email"]);
@@ -111,6 +112,9 @@ class Users extends \Arrow\Models\Controller
     }
 
 
+    /**
+     * @Route("/getData")
+     */
     public function getData()
     {
         $data = json_decode(file_get_contents('php://input'), true);
@@ -157,31 +161,32 @@ class Users extends \Arrow\Models\Controller
     }
 
     /**
-     * @param Action $view
-     * @param RequestContext $request
-     * @throws \Arrow\ORM\Exception
+     * @Route("/list")
      */
-    public function list(Action $view, RequestContext $request)
+    public function list()
     {
-
-
-        $this->json([
+        return [
             "accessGroups" => AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true)
-        ]);
-
+        ];
     }
 
-    public function delete($view, RequestContext $request)
+    /**
+     * @Route("/delete")
+     */
+    public function delete(Request $request)
     {
         $user = User::get()->findByKey($request["key"]);
         $user->delete();
         $this->json([1]);
     }
 
-    public function edit()
+    /**
+     * @Route("/edit")
+     */
+    public function edit(Request $request)
     {
 
-        $user = User::get()->findByKey($this->request["key"]);
+        $user = User::get()->findByKey($request->get("key"));
 
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
@@ -209,10 +214,13 @@ class Users extends \Arrow\Models\Controller
 
     }
 
-    public function save()
+    /**
+     * @Route("/save")
+     */
+    public function save(Request $request)
     {
 
-        $data = $this->request["data"];
+        $data = $request->get("data");
 
         $validator = Validator::create($data)
             ->required(["login", "email", "active"])
