@@ -5,7 +5,7 @@ use Arrow\Access\Models\Auth;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
 
-class ExceptionHandler implements IExceptionHandler
+class ExceptionHandler
 {
     const DISPLAY = "display";
     const REDIRECT = "redirect";
@@ -174,7 +174,7 @@ class ExceptionHandler implements IExceptionHandler
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
-        print $this->getHead().print $this->printDeveloperMessage($exception).$this->getFooter();
+        print $this->getHead().$this->printDeveloperMessage($exception).$this->getFooter();
         exit();
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();

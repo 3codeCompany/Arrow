@@ -1,7 +1,5 @@
 <?php
 namespace Arrow\Models;
-use Arrow\Models\Logger\ConsoleStream;
-use Arrow\Models\Logger\Logger;
 
 /**
  * ErrorHandler - onvert error to exception
@@ -9,7 +7,7 @@ use Arrow\Models\Logger\Logger;
  * @package ErrorHandler
  * @author 3code group
  */
-class ErrorHandler implements IErrorHandler
+class ErrorHandler
 {
 
     /**

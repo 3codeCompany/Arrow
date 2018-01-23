@@ -2,7 +2,7 @@
 
 use Arrow\Controller;
 
-class SessionHandler implements ISessionHandler
+class SessionHandler
 {
     /**
      * Object instance keeper
