@@ -31,13 +31,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
     {
         $data = [];
 
-        if (!isset($_SESSION["inDev"])) {
-            $_SESSION["inDev"] = false;
-        }
-        if (isset($_REQUEST["inDev"])) {
-            $_SESSION["inDev"] = $_REQUEST["inDev"];
-        }
-
         $user = Auth::getDefault()->getUser();
 
         if ($user->isInGroup("Developers")) {

@@ -2,19 +2,19 @@
 
 namespace Arrow;
 
-use App\Models\Services;
+use Arrow\Models\AbstractLayout;
 use Arrow\Models\Action;
 use Arrow\Models\AnnotationsDirectoriesLoader;
 use Arrow\Models\AnnotationsRouteLoader;
-
 use Arrow\Models\Project;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use const PHP_EOL;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Route;
+use Symfony\Component\HttpFoundation\Response;
+use function var_dump;
 
 
 /**
@@ -149,27 +149,17 @@ class Router
     {
 
 
-        try {
-            $result = $this->symfonyRouter->match($this->request->getPathInfo()); //'/prefix/cars/index/parametr'
+        $result = $this->symfonyRouter->match($path); //'/prefix/cars/index/parametr'
 
-            return new Action(
-                $result["_package"],
-                $result["_controller"],
-                $result["_method"],
-                $path,
-                $result
-            );
+        return new Action(
+            $result["_package"],
+            $result["_controller"],
+            $result["_method"],
+            $path,
+            $result
+        );
 
-        } catch (ResourceNotFoundException $ex) {
 
-            /*print "<pre>";
-            print $request->getPathInfo() . PHP_EOL;
-            print_r($router->getRouteCollection());
-            exit()*/;
-            return false;
-            //print_r($ex);
-            //print "<h1>{$ex->getMessage()}</h1>";
-        }
     }
 
     public function process(Request $request = null)
@@ -188,8 +178,41 @@ class Router
             return;
         }
 
-        echo $this->action->fetch($this->request);
+        $return = $this->action->fetch($this->request);
 
+        if ($return !== null) {
+
+            if (is_array($return)) {
+                (new JsonResponse($return))->send();
+
+            } elseif ($return instanceof AbstractLayout) {
+
+                if ($return->getTemplate() == null) {
+                    $template = Action::generateTemplatePath($this->action->routeParameters);
+                    $return->setTemplate(ARROW_DOCUMENTS_ROOT . $template . ".phtml");
+                }
+
+                $response = new Response(
+                    $return->render(),
+                    Response::HTTP_OK,
+                    array('content-type' => 'text/html')
+                );
+
+                $response->send();
+            } else {
+                $return->send();
+            }
+
+        }
+
+    }
+
+    public function execute($path)
+    {
+        $action = $this->symfonyRouter($path);
+        $action->setServiceContainer($this->serviceContainer);
+
+        return $action->fetch($this->request, true);
     }
 
 }

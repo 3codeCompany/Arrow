@@ -34,6 +34,8 @@ abstract class Controller implements IController
         return Auth::getDefault()->getUser();
     }
 
+
+
     final protected function render(AbstractLayout $layout, $data = [])
     {
 

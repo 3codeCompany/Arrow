@@ -35,9 +35,11 @@ class Action
     private $layout;
 
     private $package;
-    private $routeParameters;
+    public $routeParameters;
 
     private $request;
+
+
 
 
 
@@ -98,7 +100,7 @@ class Action
         }
     }
 
-    public function fetch(Request $request)
+    public function fetch(Request $request )
     {
 
         /**
@@ -166,32 +168,10 @@ class Action
         }
 
 
-        $return = $instance->{$this->method}(...$preparedArgs["method"]);
 
-        if ($return !== null) {
+        return $instance->{$this->method}(...$preparedArgs["method"]);
 
-            if (is_array($return)) {
-                (new JsonResponse($return))->send();
 
-            } elseif ($return instanceof AbstractLayout) {
-
-                if ($return->getTemplate() == null) {
-                    $template = self::generateTemplatePath($this->routeParameters);
-                    $return->setTemplate(ARROW_DOCUMENTS_ROOT . $template . ".phtml");
-                }
-
-                $response = new Response(
-                    $return->render(),
-                    Response::HTTP_OK,
-                    array('content-type' => 'text/html')
-                );
-
-                $response->send();
-            } else {
-                $return->send();
-            }
-
-        }
 
     }
 
