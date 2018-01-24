@@ -332,7 +332,8 @@ class Translations
                         ObjectTranslation::F_LANG => $_lang,
                         ObjectTranslation::F_FIELD => $field,
                         ObjectTranslation::F_VALUE => "",
-                        ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
+                        "source" => ""
+                        //ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
                     ]);
                 }
             }
