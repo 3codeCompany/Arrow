@@ -7,6 +7,7 @@ use Arrow\Exception;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Arrow project class
@@ -85,6 +86,26 @@ class Project
         return self::$instance;
     }
 
+
+        /**
+     * @var Container
+     */
+    private $serviceContainer;
+
+    /**
+     * @param mixed $serviceContainer
+     */
+    public function setServiceContainer($serviceContainer): void
+    {
+        $this->serviceContainer = $serviceContainer;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(){
+        return $this->serviceContainer;
+    }
 
     public function __construct()
     {

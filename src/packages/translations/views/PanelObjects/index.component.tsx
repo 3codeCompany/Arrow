@@ -1,13 +1,11 @@
 import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
-import Panel from "frontend/src/ctrl/Panel";
-import {Table, Column, ColumnHelper} from "frontend/src/ctrl/Table";
+import {Table, Column} from "frontend/src/ctrl/Table";
 import {Modal, confirm} from "frontend/src/ctrl/Overlays";
 import {BFile, BSelect, BSwitch} from "frontend/src/layout/BootstrapForm";
 
 import download from "frontend/src/lib/Downloader";
 import Comm from "frontend/src/lib/Comm";
-import {Row} from "frontend/src/layout/BootstrapLayout";
 import {Select} from "frontend/src/ctrl/Fields";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Icon} from "frontend/src/ctrl/Icon";
@@ -20,7 +18,7 @@ interface IProps extends IArrowViewComponentProps {
 
 export default class ArrowViewComponent extends React.Component<IProps, any> {
     private table: any;
-    private columns: ColumnHelper[];
+    private columns: Column[];
 
     constructor(props) {
         super(props);
@@ -120,7 +118,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             //Column.text('original', 'Orginał'),
             //Column.text('module', 'Moduł'),
 
-            Column.template("", () => <i className="ms-Icon ms-Icon--Delete"/>)
+            Column.template("", () => <Icon name={"Dalete"} />)
                 .className("center darkred")
                 .onClick((row) => this.handleDelete([row])),
         ];

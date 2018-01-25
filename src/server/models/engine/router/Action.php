@@ -11,6 +11,7 @@ namespace Arrow\Models;
  */
 use Arrow\Access\Models\AccessAPI;
 use Arrow\RequestContext;
+use Arrow\Router;
 use Exception;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -218,7 +219,7 @@ class Action
 
     public function isAccessible()
     {
-        return AccessAPI::checkAccess("view", "show", $this->getPath(), "");
+        return AccessAPI::checkAccess("view", "show", $this->routeParameters["_routePath"], "");
     }
 
 

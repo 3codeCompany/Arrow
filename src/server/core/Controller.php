@@ -30,18 +30,15 @@ class Controller
         //Router::setupAction();
         ConfigProvider::init();
 
-        self::$project = new \Arrow\Models\Project(ARROW_APPLICATION_PATH);
+        self::$project = new \Arrow\Models\Project;
+        self::$project->setServiceContainer((new Services())->buildContainer());
 
     }
 
     public static function processCall()
     {
-
         //paths for server only
-        $services = (new Services())->buildContainer();
         $router = Router::getDefault();
-        $router->setServiceContainer($services);
-
         $router->process();
         \Arrow\Controller::end();
 

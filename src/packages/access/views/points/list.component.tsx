@@ -1,37 +1,38 @@
-import React, {Component} from 'react';
+import * as React from "react";
 
-import Navbar from 'frontend/src/ctrl/Navbar';
-import {confirm} from 'frontend/src/ctrl/Overlays';
-import {Table, Column} from 'frontend/src/ctrl/Table';
-import {Icon} from 'frontend/src/ctrl/Icon';
+import Navbar from "frontend/src/ctrl/Navbar";
+import {confirm} from "frontend/src/ctrl/Overlays";
+import {Table, Column} from "frontend/src/ctrl/Table";
+import {Icon} from "frontend/src/ctrl/Icon";
 
-import Comm from 'frontend/src/lib/Comm';
-import {CheckboxGroup} from 'frontend/src/ctrl/Fields';
+import Comm from "frontend/src/lib/Comm";
+import {CheckboxGroup} from "frontend/src/ctrl/Fields";
 
-export default class access_access_users_list extends Component {
+export default class  extends React.Component<any, any> {
+    table: any;
+
     constructor(props) {
         super(props);
         this.state = {};
     }
 
-    handleDelete(row, event) {
+    public handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.point_object_friendly_id}" ?`).then(() => {
-            Comm._post(this.props.baseURL + '/delete', {key: row.id}).then(() => {
+            Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(`Punkt  "${row.point_object_friendly_id}" został usunięta.`);
                 this.table.load();
             });
         });
     }
 
-
-    saveAccessPoint(row) {
-        Comm._post(this.props.baseURL + '/save', {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
+    public saveAccessPoint(row) {
+        Comm._post(this.props.baseURL + "/save", {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
             this.props._notification(`Punkt  "${row.point_object_friendly_id}" został zaktualizowany.`);
             //this.table.load();
         });
     }
 
-    render() {
+    public render() {
         return (
 
             <div>
@@ -42,32 +43,31 @@ export default class access_access_users_list extends Component {
                 <div className="panel-body-margins">
 
                     <Table
-                        remoteURL={this.props.baseURL + '/getData'}
+                        remoteURL={this.props.baseURL + "/getData"}
                         ref={(table) => this.table = table}
                         columns={[
-                            Column.id('id', 'Id').headerTooltip('To jest bardzo bardzo ciekawe'),
+                            Column.id("id", "Id").headerTooltip("To jest bardzo bardzo ciekawe"),
 
-                            //Column.text("point_action", "Nazwa").headerTooltip("Inna sprawa"),
-                            Column.text('point_object_friendly_id', 'Nazwa'),
+                            Column.text("point_object_friendly_id", "Nazwa"),
 
-                            Column.bool('control_enabled', 'Kontrola')
+                            Column.bool("control_enabled", "Kontrola")
                                 .onClick((row, val, event, rowComponent) => {
-                                    row.control_enabled = row.control_enabled == '1' ? '0' : '1';
+                                    row.control_enabled = row.control_enabled == "1" ? "0" : "1";
                                     this.saveAccessPoint(row);
--                                    rowComponent.forceUpdate();
+                                    -rowComponent.forceUpdate();
                                 })
                             ,
-                            Column.text('groups', 'Grupy dostępu')
+                            Column.text("groups", "Grupy dostępu")
                                 .onClick((row, column, event, rowComponent) => {
-                                    if (event.target.tagName == 'DIV' || event.target.tagName == 'TD' || event.target.tagName == 'I') {
+                                    if (event.target.tag == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
                                         row.edited = !row.edited;
                                     }
                                     rowComponent.forceUpdate();
                                 })
                                 .template((val, row) => {
-                                    let v = parseInt(val || 0);
-                                    let selected = [];
-                                    let selectedNames = [];
+                                    const v = parseInt(val || 0);
+                                    const selected = [];
+                                    const selectedNames = [];
                                     Object.entries(this.props.agroups).map(([id, name]) => {
                                         if (v & id) {
                                             selected.push(id);
@@ -91,14 +91,13 @@ export default class access_access_users_list extends Component {
                                         </div>;
                                     } else {
 
-
-                                        return <div>{selectedNames.length > 0 ? selectedNames.join(', ') : <div className={'left'} style={{color: 'lightgrey'}}><Icon name={"ChromeClose"}/></div>}</div>;
+                                        return <div>{selectedNames.length > 0 ? selectedNames.join(", ") : <div className={"left"} style={{color: "lightgrey"}}><Icon name={"ChromeClose"}/></div>}</div>;
                                     }
                                 })
                             ,
-                            Column.template('Usuń', () => <Icon name={"Delete"} />)
+                            Column.template("Usuń", () => <Icon name={"Delete"}/>)
                                 .onClick(this.handleDelete.bind(this))
-                                .className('center darkred')
+                                .className("center darkred"),
                         ]}
                     />
 

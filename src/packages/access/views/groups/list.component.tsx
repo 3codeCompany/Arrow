@@ -1,30 +1,31 @@
-import React, {Component} from "react";
+import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar"
-import {confirm} from "frontend/src/ctrl/Overlays"
-import {Column, Table} from "frontend/src/ctrl/Table"
-import Panel from "frontend/src/ctrl/Panel"
-import {Icon} from "frontend/src/ctrl/Icon"
-import {Row} from "frontend/src/layout/BootstrapLayout"
+import Navbar from "frontend/src/ctrl/Navbar";
+import {confirm} from "frontend/src/ctrl/Overlays";
+import {Column, Table} from "frontend/src/ctrl/Table";
+import Panel from "frontend/src/ctrl/Panel";
+import {Icon} from "frontend/src/ctrl/Icon";
+import {Row} from "frontend/src/layout/BootstrapLayout";
 import Comm from "frontend/src/lib/Comm";
 
+export default class  extends React.Component<any, any> {
+    public table: Table;
 
-export default class access_access_users_list extends Component {
     constructor(props) {
         super(props);
         this.state = {};
     }
 
-    handleDelete(row, event) {
+    public handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.name}" ?`).then(() => {
             Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
-                this.props._notification(`Grupa  "${row.name}" została usunięta.`)
+                this.props._notification(`Grupa  "${row.name}" została usunięta.`);
                 this.table.load();
-            })
+            });
         });
     }
 
-    render() {
+    public render() {
         return (
             <div>
 
@@ -35,7 +36,7 @@ export default class access_access_users_list extends Component {
                 <Row>
                     <Panel title="Lista grup dostępu systemu"
                            toolbar={[
-                               <a href={"#" + this.props.baseURL + "/edit"} className="btn btn-sm btn-primary"><i className="fa fa-plus"></i>Dodaj</a>
+                               <a key="f1" href={"#" + this.props.baseURL + "/edit"} className="btn btn-sm btn-primary"><i className="fa fa-plus"/>Dodaj</a>,
                            ]}
                     >
                         <Table
@@ -49,12 +50,12 @@ export default class access_access_users_list extends Component {
                                     .className("center darkgreen"),
                                 Column.template("", () => <Icon name={"Delete"}/>)
                                     .onClick(this.handleDelete.bind(this))
-                                    .className("center darkred")
+                                    .className("center darkred"),
                             ]}
                         />
                     </Panel>
                 </Row>
             </div>
-        )
+        );
     }
 }

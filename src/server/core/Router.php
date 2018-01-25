@@ -48,18 +48,6 @@ class Router
 
     private $symfonyRouter = null;
 
-    /**
-     * @var ContainerBuilder
-     */
-    private $serviceContainer;
-
-    /**
-     * @param mixed $serviceContainer
-     */
-    public function setServiceContainer($serviceContainer): void
-    {
-        $this->serviceContainer = $serviceContainer;
-    }
 
 
     public function getAction()
@@ -171,7 +159,7 @@ class Router
 
         $this->action = $this->symfonyRouter($request->getPathInfo());
 
-        $this->action->setServiceContainer($this->serviceContainer);
+        $this->action->setServiceContainer(Project::getInstance()->getContainer());
 
         if (!$this->action) {
             $this->notFound($this->action);
@@ -210,7 +198,7 @@ class Router
     public function execute($path)
     {
         $action = $this->symfonyRouter($path);
-        $action->setServiceContainer($this->serviceContainer);
+        $action->setServiceContainer(Project::getInstance()->getContainer());
 
         return $action->fetch($this->request, true);
     }

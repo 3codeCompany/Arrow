@@ -39,6 +39,7 @@ class AnnotationsRouteLoader extends AnnotationClassLoader
             "_controller" => $className,
             "_method" => $method->getName(),
             "_package" => $package,
+            "_routePath" => $route->getPath()
         ]);
 
 

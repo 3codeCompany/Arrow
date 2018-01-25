@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import * as React from "react";
 
 import Navbar from 'frontend/src/ctrl/Navbar';
 import {BForm, BText, BTextarea} from 'frontend/src/layout/BootstrapForm';
@@ -6,7 +6,7 @@ import Panel from 'frontend/src/ctrl/Panel';
 import {Row} from 'frontend/src/layout/BootstrapLayout';
 import {Icon} from "frontend/src/ctrl/Icon"
 
-export default class ArrowViewComponent extends Component {
+export default class  extends React.Component<any, any> {
     constructor(props) {
         super(props);
         this.state = {

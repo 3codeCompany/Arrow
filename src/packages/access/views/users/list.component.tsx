@@ -1,29 +1,31 @@
-import React, {Component} from 'react';
+import * as React from "react";
 
-import Navbar from 'frontend/src/ctrl/Navbar';
-import {confirm} from 'frontend/src/ctrl/Overlays';
-import {Column, Table} from 'frontend/src/ctrl/Table';
-import {Row} from 'frontend/src/layout/BootstrapLayout';
-import Comm from 'frontend/src/lib/Comm';
+import Navbar from "frontend/src/ctrl/Navbar";
+import {confirm} from "frontend/src/ctrl/Overlays";
+import {Column, Table} from "frontend/src/ctrl/Table";
+import {Row} from "frontend/src/layout/BootstrapLayout";
+import Comm from "frontend/src/lib/Comm";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {Icon} from "frontend/src/ctrl/Icon"
+import {Icon} from "frontend/src/ctrl/Icon";
 
-export default class access_access_users_list extends Component {
+export default class  extends React.Component<any, any> {
+    public table: Table;
+
     constructor(props) {
         super(props);
         this.state = {};
     }
 
-    handleDelete(row, event) {
+    public handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.login}" ?`).then(() => {
-            Comm._post(this.props.baseURL + '/delete', {key: row.id}).then(() => {
+            Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(`Urzytkownik  "${row.login}" został usunięty.`);
                 this.table.load();
             });
         });
     }
 
-    render() {
+    public render() {
         return (
           <div>
               <CommandBar
@@ -32,8 +34,8 @@ export default class access_access_users_list extends Component {
                     {
                         key: "f1", icon: "Add", label: "Dodaj", onClick: () => {
                             this.props._goto("access/users/edit");
-                        }
-                    }
+                        },
+                    },
 
                 ]}
 
@@ -54,9 +56,9 @@ export default class access_access_users_list extends Component {
                             Column.email("email", "Email"),
                             Column.template("Grupy dostępu", (val, row) => {
                                 if (row.groups.length > 0) {
-                                    return <div><i className="fa fa-lock"></i> {row.groups.join(", ")}</div>;
+                                    return <div><i className="fa fa-lock" /> {row.groups.join(", ")}</div>;
                                 } else {
-                                    return <div className="lightgrey center"><i className="fa fa-times"></i></div>;
+                                    return <div className="lightgrey center"><i className="fa fa-times" /></div>;
                                 }
                             }),
 
@@ -65,7 +67,7 @@ export default class access_access_users_list extends Component {
                               .className("center darkgreen"),
                             Column.template("", () => <Icon name={"Delete"} /> )
                               .onClick(this.handleDelete.bind(this))
-                              .className("center darkred")
+                              .className("center darkred"),
                         ]}
                       />
                   </div>
