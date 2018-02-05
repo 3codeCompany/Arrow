@@ -51,7 +51,7 @@ class ConfigProvider
                 self::$conf = array_merge_recursive (self::$conf, $data);
             }*/
 
-            $runConfig = Controller::getRunConfiguration();
+            $runConfig = Kernel::getRunConfiguration();
 
             if (isset(self::$conf["project"]["run-config"][$runConfig])) {
                 foreach (self::$conf["project"]["run-config"][$runConfig] as $index => $value) {

@@ -10,6 +10,7 @@ use Arrow\Models\Project;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,7 @@ use function var_dump;
 class Router
 {
 
+    use ContainerAwareTrait;
 
     /**
      * Template to display
@@ -43,35 +45,32 @@ class Router
      */
     private static $oInstance = null;
 
-    private static $basePath = "";
-
-
     private $symfonyRouter = null;
 
-
-
-    public function getAction()
-    {
-        return $this->symfonyRouter($this->request->getPathInfo());
-    }
+    private $request;
 
     /**
      * Singleton
      *
      * @return Router
      */
-    public static function getDefault()
+    public static function getDefault($serviceContainer = null)
     {
         if (self::$oInstance == null) {
-            self::$oInstance = new Router();
+            self::$oInstance = new Router($serviceContainer);
+
         }
         return self::$oInstance;
     }
 
-    public function __construct()
+    public function __construct($container)
     {
+        $this->container = $container;
 
-        $this->request = Request::createFromGlobals();
+        $this->request = $this->container->get(Request::class);
+
+        /** @var StateProvider $regenerate */
+        $regenerate = $this->container->get(StateProvider::class)->get(StateProvider::ARROW_DEV_MODE);
 
         $sourceFolders = [];
 
@@ -93,13 +92,13 @@ class Router
         $router = new \Symfony\Component\Routing\Router(
             $loader,
             $sourceFolders,
-            (ARROW_DEV_MODE ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
+            ($regenerate ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
             $context
         );
 
 
         $file = ARROW_CACHE_PATH . "/symfony/route.json";
-        if (ARROW_DEV_MODE || !file_exists($file)) {
+        if ($regenerate || !file_exists($file)) {
             $col = $router->getRouteCollection();
             $jsCache = [];
 
@@ -125,6 +124,16 @@ class Router
     {
         return $this->request->getBasePath();
     }
+
+    /**
+     * @return null|\Symfony\Component\Routing\Router
+     */
+    public function getSymfonyRouter(): ?\Symfony\Component\Routing\Router
+    {
+        return $this->symfonyRouter;
+    }
+
+
 
 
     public function notFound(Action $action)
@@ -159,7 +168,7 @@ class Router
 
         $this->action = $this->symfonyRouter($request->getPathInfo());
 
-        $this->action->setServiceContainer(Project::getInstance()->getContainer());
+        $this->action->setServiceContainer($this->container);
 
         if (!$this->action) {
             $this->notFound($this->action);

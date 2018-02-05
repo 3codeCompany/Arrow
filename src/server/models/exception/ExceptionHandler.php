@@ -98,11 +98,11 @@ class ExceptionHandler
             $str .= "<div style='margin-top: 20px;'><b>Current template:</b>  " . $currView->get()->getPackage() . "::" . $currView->get()->getPath() . "</div>";
         }
 
-        $runConf = \Arrow\Controller::getRunConfiguration();
+        $runConf = \Arrow\Kernel::getRunConfiguration();
         //$str .= "<div style='margin-top: 20px;'><a href='http://localhost:8091/?message={$exception->getFile()}:{$exception->getLine()}' target='_blank' >Go to error</a></div>";
 
         $str .= "<div style='margin-top: 20px;'><b>File:</b> " . $exception->getFile() . ":" . $exception->getLine() . "</div>";
-        $str .= "<div style='margin-top: 20px;'><b>Run configuration:</b> " . \Arrow\Controller::getRunConfiguration() . "</div>";
+        $str .= "<div style='margin-top: 20px;'><b>Run configuration:</b> " . \Arrow\Kernel::getRunConfiguration() . "</div>";
 
         $str .= "<div style='margin-top: 20px;'>" . $this->printRequest() . "</div>";
         $str .= "<div style='margin-top: 20px;'>" . $this->stackTrace($exception) . "</div>";
@@ -140,7 +140,7 @@ class ExceptionHandler
     {
         $this->log($exception);
 
-        $cli = \Arrow\Controller::isInCLIMode();
+        $cli = \Arrow\Kernel::isInCLIMode();
 
         if ($this->clearOutput && !$cli) {
             while (ob_get_level()) {

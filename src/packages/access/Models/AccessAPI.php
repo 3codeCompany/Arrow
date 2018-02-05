@@ -2,7 +2,7 @@
 namespace Arrow\Access\Models;
 
 use Arrow\ConfigProvider;
-use Arrow\Controller;
+use Arrow\Kernel;
 use Arrow\Models\Action;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ViewManager;
@@ -33,7 +33,7 @@ class AccessAPI
     {
 
 
-        if (Controller::isInCLIMode()) {
+        if (Kernel::isInCLIMode()) {
             return true;
         }
 

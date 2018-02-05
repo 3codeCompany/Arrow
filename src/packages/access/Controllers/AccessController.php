@@ -25,6 +25,7 @@ use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
 use Arrow\RequestContext;
 use Arrow\Router;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use function array_reduce;
@@ -39,18 +40,18 @@ class AccessController extends \Arrow\Models\Controller
      * @param RequestContext $request
      * @Route("/login")
      */
-    public function login()
+    public function login(Request $request)
     {
-        $request = Request::createFromGlobals();
 
         $data = [
-            "applicationTitle" => ConfigProvider::get("panel")["title"],
             "backgroundImage" => ConfigProvider::get("panel")["loginBackground"],
-            "appPath" => RequestContext::getBaseUrl(),
             "from" => $request->get("from"),
         ];
 
-        return new EmptyLayout(null, $data);
+        $layout = new ReactComponentLayout(null, $data);
+
+        $layout->setOnlyBody(true);
+        return $layout;
 
     }
 
@@ -91,16 +92,14 @@ class AccessController extends \Arrow\Models\Controller
      * @param RequestContext $request
      * @Route("/logout")
      */
-    public function logout()
+    public function logout(Auth $auth)
     {
-        $authHandler = Auth::getDefault();
-        $authHandler->doLogout();
-        if(isset($_SERVER['HTTP_REFERER'])) {
-            header('Location: ' . $_SERVER['HTTP_REFERER']);
-            exit();
+        $auth->doLogout();
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            return RedirectResponse::create($_SERVER['HTTP_REFERER']);
         }
+        return [true];
     }
-
 
 
     public function users_account(Action $view, RequestContext $request)

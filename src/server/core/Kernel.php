@@ -12,9 +12,11 @@ namespace Arrow;
  */
 use App\Models\Services;
 use Arrow\Models\Action;
+use Arrow\Models\Project;
 
-class Controller
+class Kernel
 {
+
 
     /**
      * Current project
@@ -30,17 +32,18 @@ class Controller
         //Router::setupAction();
         ConfigProvider::init();
 
-        self::$project = new \Arrow\Models\Project;
-        self::$project->setServiceContainer((new Services())->buildContainer());
+        self::$project = new \Arrow\Models\Project((new Services())->buildContainer());
+        //self::$project->setServiceContainer();
 
     }
+
 
     public static function processCall()
     {
         //paths for server only
-        $router = Router::getDefault();
+        $router = Router::getDefault(self::$project->getContainer());
         $router->process();
-        \Arrow\Controller::end();
+        \Arrow\Kernel::end();
 
     }
 

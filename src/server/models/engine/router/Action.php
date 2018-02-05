@@ -30,20 +30,11 @@ class Action
     private $path;
     private $method;
     private $controller;
-    /**
-     * @var AbstractLayout
-     */
-    private $layout;
 
     private $package;
     public $routeParameters;
 
     private $request;
-
-
-
-
-
 
     /**
      * @var ContainerBuilder
@@ -101,7 +92,7 @@ class Action
         }
     }
 
-    public function fetch(Request $request )
+    public function fetch(Request $request)
     {
 
         /**
@@ -110,7 +101,6 @@ class Action
         if (!$this->isAccessible()) {
             AccessAPI::accessDenyProcedure($this->getPath());
         }
-
 
         //dependency injection
         $reflector = new ReflectionClass($this->controller);
@@ -141,9 +131,9 @@ class Action
                 if ($hint) {
 
                     $injection = $this->resolveClassDependancy($hint);
-                    if($injection === null){
+                    if ($injection === null) {
                         throw new AutowiringFailedException($hint->getName(), "Service '{$hint->getName()}' not found [ Controller: {$this->controller}::{$this->method}] ");
-                    }else{
+                    } else {
                         $preparedArgs[$key][$index] = $injection;
                     }
 
@@ -164,15 +154,11 @@ class Action
 
         $instance = new $this->controller(...$preparedArgs["constructor"]);
 
-        if($instance instanceof Controller) {
+        if ($instance instanceof Controller) {
             $instance->eventRunBeforeAction($this, $request);
         }
 
-
-
         return $instance->{$this->method}(...$preparedArgs["method"]);
-
-
 
     }
 
@@ -221,8 +207,6 @@ class Action
     {
         return AccessAPI::checkAccess("view", "show", $this->routeParameters["_routePath"], "");
     }
-
-
 
 
 }

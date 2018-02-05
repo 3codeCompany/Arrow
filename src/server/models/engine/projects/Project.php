@@ -27,17 +27,6 @@ class Project
     const ISessionHandler = "sessionHandler";
     const IAccessHandler = "accessHandler";
     const IExceptionHandler = "exceptionHandler";
-    const IRemoteResponseHandler = "remoteResponseHandler";
-
-
-    const CACHE_REFRESH_CONF = 1;
-    const CACHE_REFRESH_TEMPLATES = 2;
-    const CACHE_REFRESH_STATIC = 4;
-    const CACHE_REFRESH_TEMPLATES_FORCE = 10; //8+2 ( normal template refresh )
-
-
-    public static $cacheFlag = 0;
-
 
     public static $forceDisplayErrors = 1;
 
@@ -47,14 +36,6 @@ class Project
      * @var array
      */
     private $configuration;
-
-
-    /**
-     * Project id
-     *
-     * @var string
-     */
-    private $id;
 
 
     /**
@@ -107,10 +88,10 @@ class Project
         return $this->serviceContainer;
     }
 
-    public function __construct()
+    public function __construct($serviceContainer)
     {
 
-
+        $this->serviceContainer = $serviceContainer;
         self::$instance = $this;
 
         $this->configuration = ConfigProvider::get();
@@ -188,6 +169,7 @@ class Project
 
     /**
      * @return Object
+     *
      */
     public function setUpDB($name = false)
     {

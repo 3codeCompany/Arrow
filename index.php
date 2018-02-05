@@ -10,6 +10,6 @@ require_once "vendor/autoload.php";
 define( "ARROW_APPLICATION_PATH", realpath(__DIR__) );
 define("ARROW_CACHE_PATH", ARROW_APPLICATION_PATH . "/data/cache");
 define("ARROW_LOG_PATH", ARROW_APPLICATION_PATH . "/data/logs");
-\Arrow\Controller::init();
+\Arrow\Kernel::init();
 
-\Arrow\Controller::processCall();
+\Arrow\Kernel::processCall();

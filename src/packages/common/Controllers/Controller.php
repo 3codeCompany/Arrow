@@ -88,7 +88,7 @@ class Controller extends \Arrow\Models\Controller
             ->on(Form::EVENT_SUCCESS, "SerenityCommon.info('Zapisano ustawienia')");
 
         $config = \Arrow\Models\Settings::getDefault()->getConfiguration();
-        $packages = \Arrow\Controller::$project->getPackages();
+        $packages = \Arrow\Kernel::$project->getPackages();
 
         $lay = LayoutBuilder::create()
             ->insert(Toolbar::_new("Ustawienia",[$form->getSubmit()->addCSSClass("btn-link")->prepend(Icons::icon(Icons::CHECK_CIRCLE)." ")]))
@@ -148,7 +148,7 @@ class Controller extends \Arrow\Models\Controller
             }
         }
 
-        \Arrow\Controller::$project->clearCache();
+        \Arrow\Kernel::$project->clearCache();
         $this->json([true]);
 
     }

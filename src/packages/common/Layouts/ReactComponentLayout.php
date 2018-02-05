@@ -7,15 +7,34 @@ use Arrow\Access\Models\Auth;
 use Arrow\ConfigProvider;
 use Arrow\Models\Action;
 
+use Arrow\Models\Project;
+use Arrow\StateProvider;
 use Arrow\ViewManager;
+use function file_get_contents;
+use function json_encode;
 use Symfony\Component\HttpFoundation\Request;
+use function var_dump;
 
 
 class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 {
 
+    private $onlyBody = false;
+
+    public function setOnlyBody($onlyBody)
+    {
+        $this->onlyBody = $onlyBody;
+    }
+
     public function render()
     {
+        /** @var Request $request */
+        $request = Project::getInstance()->getContainer()->get(Request::class);
+        if ($request->isXmlHttpRequest()) {
+            return json_encode($this->data);
+        }
+
+
         $this->data = array_merge($this->data, $this->prepareData());
         ob_start();
         include __DIR__ . "/ReactComponentLayout.phtml";
@@ -31,26 +50,14 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
     {
         $data = [];
 
-        $user = Auth::getDefault()->getUser();
-
-        if ($user->isInGroup("Developers")) {
-            $data["developer"] = true;
-        } else {
-            $data["developer"] = false;
-        }
-
-        $data["user"] = $user;
-
+        $data["user"] = Auth::getDefault()->getUser();
         $data["config"] = ConfigProvider::get("panel");
+        $data["compilationHash"] = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-pl.txt");
+        $data["config"] = ConfigProvider::get("panel");
+        $data["onlyBody"] = $this->onlyBody;
 
+        $data[StateProvider::ARROW_DEV_MODE_FRONT] = Project::getInstance()->getContainer()->get(StateProvider::class)->get(StateProvider::ARROW_DEV_MODE_FRONT);
 
-        $manifest = false;
-        $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
-        if (file_exists($manifestFile)) {
-            $manifest = json_decode(file_get_contents($manifestFile), true);
-        }
-
-        $data["webpackManifest"] = $manifest;
 
         return $data;
 

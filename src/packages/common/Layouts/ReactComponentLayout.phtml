@@ -4,72 +4,39 @@
     <meta name="viewport" content="width=device-width">
     <meta charset="utf-8">
     <title><?= $this->data["config"]["title"] ?></title>
-    <link href="<?=$this->data["config"]["favicon"]?>" rel="icon" type="image/x-icon"/>
+    <link href="<?= $this->data["config"]["favicon"] ?>" rel="icon" type="image/x-icon"/>
 </head>
 <body>
 <?
-$request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-$path = $request->getPathInfo();
-
-$baseURL = explode("/", $path);
-array_pop($baseURL);
-$baseURL = implode("/", $baseURL);
-
-
-$class = str_replace(["\\", "/",], "_", $path);
-$class = trim($class, "_");
-
-
-$class = "app_" . $class;
-
+/** @var \Symfony\Component\HttpFoundation\Request $request */
+$request = \Arrow\Models\Project::getInstance()->getContainer()->get(\Symfony\Component\HttpFoundation\Request::class);
 $data = $this->getData();
-
-$props = json_encode(
-    array_merge([
-        "baseURL" => $baseURL,
-        "path" => $path,
-        "requestURI" => $_SERVER["REQUEST_URI"],
-        "component" => $class
-    ], $data)
-);
-
-if (isset($_REQUEST["__PROPS_REQUEST__"])) {
-    header('Content-Type: application/json');
-    echo $props;
-    exit();
-}
 
 ?>
 
 <script>
     window.reactBackOfficeVar =  <?=json_encode([
-        "appIcon" => "Mail",
-        "appTitle" => "",
-        "appMenu" => \App\Models\Common\AdministrationExtensionPoint::getElements(),
-        "appBaseURL" => $request->getBasePath(),
-        "user" => ["login" => $data["user"]["login"]],
-
-        "baseURL" => $baseURL,
-        "path" => $path, //$this->package.$path,
-        "requestURI" => $_SERVER["REQUEST_URI"],
-        "component" => $class
-
-    ]) ?>;
-    window.CONTROLS_BASE_LOCATION = '<?=addslashes($path)?>';
-    window.reactVariable =  <?= $props ?>
+        "basePath" => $request->getBasePath(),
+        "inputProps" => $data,
+        "panel" => [
+            "icon" => $data["config"]["icon"],
+            "title" => $data["config"]["title"],
+            "menu" => \App\Models\Common\AdministrationExtensionPoint::getElements(),
+            "onlyBody" => $data["onlyBody"],
+            "user" => [
+                "login" => $data["user"]["login"]
+            ],
+        ],
+    ], JSON_PRETTY_PRINT) ?>;
 </script>
 
 <div id="root"></div>
-
 <div id="modal-root"></div>
 
-<script type="text/javascript" src="<?= $data["webpackManifest"]["vendors"]["js"] ?>"></script>
-<link rel="stylesheet" href="<?= $data["webpackManifest"]["vendors"]["css"] ?>"/>
 
-
-<? if ($data["webpackManifest"] && !$_SESSION["inDev"]) { ?>
-    <script type="text/javascript" src="<?= $data["webpackManifest"]["admin"]["js"] ?>"></script>
-<link rel="stylesheet" href="<?= $data["webpackManifest"]["admin"]["css"] ?>"/>
+<? if (!$data[Arrow\StateProvider::ARROW_DEV_MODE_FRONT]) { ?>
+    <script type="text/javascript" src="<?= $request->getBasePath() ?>/assets/dist/bundle-pl-0-<?= $data["compilationHash"] ?>.min.js"></script>
+<link rel="stylesheet" href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["compilationHash"] ?>.css"/>
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin></script>
 <? } ?>

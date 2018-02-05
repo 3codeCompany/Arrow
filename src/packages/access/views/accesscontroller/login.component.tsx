@@ -1,62 +1,77 @@
-import * as React from 'react';
-import {BForm} from 'frontend/src/layout/BootstrapForm';
-import Comm from 'frontend/src/lib/Comm';
+import * as React from "react";
+import {BForm} from "frontend/src/layout/BootstrapForm";
+import Comm from "frontend/src/lib/Comm";
+import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 
 declare var window: any;
 
-export default class ArrowViewComponent extends React.Component<any, any> {
-    form: BForm;
+interface IViewProps extends IArrowViewComponentProps {
+    redirectTo: string;
+}
+
+export default class ArrowViewComponent extends React.Component<IViewProps, any> {
+    public form: BForm;
 
     constructor(props) {
         super(props);
         this.state = {
             form: {
-                login: '',
-                password: '',
-                error: ''
+                login: "",
+                password: "",
+                error: "",
             },
-            loading: false
+            loading: false,
         };
 
     }
 
-    handleSubmit() {
+    public handleSubmit() {
+        const data = this.state.form;
+        if (data.login == "" || data.password == "") {
+            this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
+            return;
+        }
 
-        let data = this.state.form;
-        /* if (data.login == "" || data.password == "") {
-             //this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
-             return;
-         }*/
+        this.props._startLoadingIndicator();
 
-        let comm = new Comm(window.location.protocol + "//" + window.location.host + window.reactBackOfficeVar.appBaseURL + '/access/loginAction');
-        comm.setData({data: data});
+        const comm = new Comm(this.props._baseURL + "/loginAction");
+        comm.setData({data});
 
-
-        this.setState({loading: true, error: ''});
+        this.setState({loading: true, error: ""});
         comm.on(Comm.EVENTS.ERROR, (response) => {
             this.setState({loading: false});
         });
         comm.on(Comm.EVENTS.VALIDATION_ERRORS, (response) => {
             this.setState({loading: false});
-            this.setState({error: 'Nieprawidłowy użytkownik lub hasło'});
+            this.setState({error: "Nieprawidłowy użytkownik lub hasło"});
         });
         comm.on(Comm.EVENTS.SUCCESS, (response) => {
-            this.setState({loading: false, error: ''});
-            if (this.props.redirectTo) {
-                window.location.href = this.props.redirectTo;
+            this.setState({loading: false, error: ""});
+            /*this.props._goto(
+                this.props._basePath + "/admin/dashboard",
+                {},
+                () => {
+                    alert("here 111");
+                    this.props._setPanelOption("onlyBody", false);
+                },
+            );*/
+            if (this.props.redirectTo && false) {
+                //window.location.href = this.props.redirectTo;
             } else {
-                window.location.href = this.props.appPath + '/admin';
+                window.location.href = this.props._basePath + "/admin/dashboard";
             }
 
-
         });
-        //this.setState({loading: true});
+        comm.on(Comm.EVENTS.FINISH, () => {
+            this.props._stopLoadingIndicator();
+        });
         comm.send();
 
     }
 
-    render() {
-        let s = this.state;
+    public render() {
+        const s = this.state;
+
         return <div className="login-view">
 
             <div className="login-background" style={{backgroundImage: `url( ${this.props.backgroundImage} )`}}>
@@ -68,10 +83,10 @@ export default class ArrowViewComponent extends React.Component<any, any> {
 
                             <div>
                                 <div className="input">
-                                    <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={'login'} placeholder="Twój login"/>
+                                    <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={"login"} placeholder="Twój login"/>
                                 </div>
                                 <div className="input">
-                                    <input type="password" name={'password'} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={'Twoje hasło'}/>
+                                    <input type="password" name={"password"} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={"Twoje hasło"}/>
                                 </div>
 
                             </div>
@@ -82,7 +97,7 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                                     disabled={this.state.loading}
                                     onClick={this.handleSubmit.bind(this)}
                                 >
-                                    {this.state.loading ? '...' : 'Zaloguj się'}
+                                    {this.state.loading ? "..." : "Zaloguj się"}
                                 </button>
                             </div>
                             <div style={{height: 20, paddingTop: 10}}>
@@ -93,7 +108,6 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                 </div>
             </div>
         </div>;
-
 
     }
 

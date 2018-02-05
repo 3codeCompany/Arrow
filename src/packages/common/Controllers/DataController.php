@@ -512,7 +512,7 @@ class DataController extends \Arrow\Models\Controller
             fclose($fd);
             exit;
         } else {
-            \Arrow\Controller::getDefault()->rollBackRequest();
+            \Arrow\Kernel::getDefault()->rollBackRequest();
         }
     }
 

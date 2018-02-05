@@ -1,6 +1,6 @@
 <?php namespace Arrow\Models;
 
-use Arrow\Controller;
+use Arrow\Kernel;
 
 class SessionHandler
 {
@@ -40,7 +40,7 @@ class SessionHandler
     private function __construct()
     {
 
-        if(Controller::isInCLIMode())
+        if(Kernel::isInCLIMode())
             return;
         $this->db = Project::getInstance()->getDB();
 
