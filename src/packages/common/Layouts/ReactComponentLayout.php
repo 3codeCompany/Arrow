@@ -48,7 +48,8 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
         $data["user"] = Auth::getDefault()->getUser();
         $data["config"] = ConfigProvider::get("panel");
-        $data["compilationHash"] = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-pl.txt");
+        git status
+
         $data["config"] = ConfigProvider::get("panel");
         $data["onlyBody"] = $this->onlyBody;
 
