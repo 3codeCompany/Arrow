@@ -48,7 +48,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
         $data["user"] = Auth::getDefault()->getUser();
         $data["config"] = ConfigProvider::get("panel");
-        git status
 
         $data["config"] = ConfigProvider::get("panel");
         $data["onlyBody"] = $this->onlyBody;
