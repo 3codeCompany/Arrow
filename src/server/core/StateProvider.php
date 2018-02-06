@@ -34,6 +34,7 @@ class StateProvider
     {
         if (isset($_SESSION["state"][$name])) {
             $input = $this->request->get($name);
+            //print "$name tutaj ".$input;
             if ($input !== null) {
                 $_SESSION["state"][$name] = $input;
             }

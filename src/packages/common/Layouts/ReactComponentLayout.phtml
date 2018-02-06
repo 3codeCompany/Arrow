@@ -33,13 +33,13 @@ $data = $this->getData();
 <div id="root"></div>
 <div id="modal-root"></div>
 
-
 <? if (!$data[Arrow\StateProvider::ARROW_DEV_MODE_FRONT]) { ?>
-    <script type="text/javascript" src="<?= $request->getBasePath() ?>/assets/dist/bundle-pl-0-<?= $data["compilationHash"] ?>.min.js"></script>
-<link rel="stylesheet" href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["compilationHash"] ?>.css"/>
+    <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["jsCompilationData"][0] ?>"></script>
+    <link rel="stylesheet" href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["jsCompilationData"][1] ?>.css"/>
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin></script>
 <? } ?>
+
 
 
 </body>

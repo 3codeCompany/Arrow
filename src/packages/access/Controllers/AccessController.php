@@ -4,7 +4,6 @@ namespace Arrow\Access\Controllers;
 
 
 use Arrow\Access\Models\AccessGroup;
-use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
@@ -104,58 +103,7 @@ class AccessController extends \Arrow\Models\Controller
 
     public function users_account(Action $view, RequestContext $request)
     {
-        $view->setLayout(new AdministrationLayout(), new EmptyLayout());
-        /** @var User $user */
-        $user = Auth::getDefault()->getUser();
-
-        $ds = TableDataSource::fromClass(Track::getClass())
-            ->c(Track::F_CLASS, User::getClass())
-            ->c(Track::F_OBJECT_ID, $user["id"])
-            ->c(Track::F_ACTION, "login")
-            ->limit(0, 10);
-        //->order("id", Criteria::O_DESC);
-
-        $cols = ColumnList::create()
-            ->addColumn(Simple::_new(Track::F_DATE));
-        $table = Table::create("lastLogin", $ds, $cols);
-
-
-        $l = LayoutBuilder::create()
-            ->panel("Twoje konto", Icons::USER);
-
-
-        $form = Form::_new("editAccount", $user)
-            ->setAction(Router::link("./accountSave"))
-            ->on(Form::EVENT_SUCCESS, "alert('Zapisano');")
-            ->setNamespace("data");
-
-        $l
-            ->tabSet()
-            ->tab("Dane konta")
-            ->form($form)
-            ->formText("Login", $user->_login())
-            /*->row()
-            ->formField("Dział", Text::_new(User::F_EMAIL, "Dział"),[LayoutBuilder::CONF_COLUMNS => 4])
-            ->formField("Stanowisko", Text::_new(User::F_EMAIL, "Email"),[LayoutBuilder::CONF_COLUMNS => 4])
-            ->rowEnd()*/
-            ->formField("Email", Text::_new(User::F_EMAIL, "Email"), [LayoutBuilder::CONF_COLUMNS => 4])
-            //->formField("Tel. stacjonarny", Text::_new(User::F_EMAIL, "Tel. stacjonarny"),[LayoutBuilder::CONF_COLUMNS => 3])
-            //->formField("Tel. komórkowy", Text::_new(User::F_EMAIL, "Tel. komórkowy"),[LayoutBuilder::CONF_COLUMNS => 3])
-
-            ->formField("Zmień hasło", Text::_new(User::F_PASSWORD, "Zostaw puste jeśli nie zmieniasz")->setValue(""), [LayoutBuilder::CONF_COLUMNS => 4])
-            ->row()
-            ->label("Avatar")
-            ->col2(MultiFile::_new("photo", $user))
-            ->rowEnd()
-            ->add($form->getSubmit(), ["offset" => 2])
-            ->separator()
-            ->formEnd()
-            ->tabEnd()
-            //->tab("Ostatnie logowania")
-            ->tabSetEnd();
-
-
-        $view->setGenerator(AdministrationLayout::page($l));
+        return [];
     }
 
     public function users_accountSave($op, RequestContext $request)
@@ -333,107 +281,24 @@ class AccessController extends \Arrow\Models\Controller
     }
 
 
-    public function access_list(Action $view, RequestContext $request)
+    /**
+     * @param Request $request
+     * @param Auth $auth
+     * @return array
+     * @throws \Arrow\Exception
+     * @throws \Arrow\ORM\Exception
+     * @Route("/loginAs/{key}")
+     */
+    public function loginAs($key, Request $request, Auth $auth)
     {
-
-        $this->action->setLayout(new ReactComponentLayout());
-        $groups = AccessGroup::get()
-            ->_id(4, Criteria::C_GREATER_THAN)
-            ->findAsFieldArray(AccessGroup::F_NAME, true);
-        $view->assign("agroups", $groups);
-
-        return;
-
-        $view->setLayout(new AdministrationLayout(), new EmptyLayout());
-        $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray(AccessGroup::F_NAME, true);
-        $view->assign("agroups", $groups);
-
-        $view->setLayout(new AdministrationLayout(), new EmptyLayout());
-
-
-        $ds = TableDataSource::fromClass(AccessPoint::getClass());
-        //$ds->setGlobalSearchFields(["point_object_friendly_id"]);
-
-
-        $list = ColumnList::create()
-            ->addColumn(Simple::_new("id", "id"))
-            ->addColumn(Simple::_new("point_type", "Typ"))
-            ->addColumn(Simple::_new("point_action", "Action"))
-            ->addColumn(Simple::_new("point_object_friendly_id", "Friendly id"))
-            ->addColumn(Editable::_boolswitch("control_enabled", "Control", Router::link("./changePointControl"), ["id"]))
-            ->addColumn(Template::_new(function ($context) use ($groups) {
-                print '<select multiple="multiple" class="span5 group-select" context="' . $context["id"] . ' >';
-                foreach ($groups as $id => $name) {
-                    if (!in_array($id, array(2, 4))) {
-                        print  '<option' . ($id & $context["groups"] ? 'selected="selected"' : '') . ' value="' . $id . '">' . $name . '</option>';
-                    }
-                }
-                print  "</select>";
-
-            }));
-        $table = new Table("access", $ds, $list);
-        $table->prependWidged(FiltersPresenter::create([$table]));
-        $l = LayoutBuilder::create();
-
-        $l->insert(Toolbar::_new([
-            Breadcrumb::create([
-                "System",
-                BreadcrumbElement::create("Udzielone dostępy")->setActive(1)
-            ])
-        ]));
-
-        $table->addDataColumn(["groups"]);
-        $l->add($table);
-
-
-        $view->assign("generator", AdministrationLayout::page(new WidgetsSet([$l])));
-
-
-    }
-
-    public function access_changePointControl()
-    {
-        $obj = AccessPoint::get()->findByKey($request->get("id"));
-        $obj[AccessPoint::F_CONTROL_ENABLED] = $obj[AccessPoint::F_CONTROL_ENABLED] ? 0 : 1;
-        $obj->save();
-        $this->json([1]);
-    }
-
-    public function changePointGroup($action, RequestContext $request)
-    {
-        //$tmp = explode(",",$request["groups"]);
-
-        $point = Criteria::query(AccessPoint::getClass())->findByKey($request["accessPoint"]);
-        if ($request["groups"]) {
-            $sum = array_sum($request["groups"]);
-            $point["groups"] = $sum;
-        } else {
-            $point["groups"] = 0;
-        }
-
-
-        $point->save();
-        $this->json([true]);
-    }
-
-    public function auth_loginAs($action, RequestContext $request)
-    {
-
-        $auth = Auth::getDefault();
-        if (empty($request["loginToLoginAs"]) && empty($request["id"])) {
+        if ($key) {
             $auth->restoreShadowUser();
-        } elseif ($request["id"]) {
-            $user = User::get()->findByKey($request["id"]);
+        } else {
+            $user = User::get()->findByKey($key);
             $auth->doLogin($user["login"], false, true);
-        } else {
-            $auth->doLogin($request["loginToLoginAs"], false, true);
         }
+        return [true];
 
-        if (RequestContext::getDefault()->isXHR()) {
-            $this->json([true]);
-        } else {
-            $this->back();
-        }
     }
 
     public function dashboard_currentlyLogged(Action $view, RequestContext $request)

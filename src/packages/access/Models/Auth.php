@@ -146,7 +146,11 @@ class Auth
      * @param String $login
      * @param String $password
      *
+     * @param bool $loginAs
+     * @param bool $user
      * @return boolean
+     * @throws Exception
+     * @throws \Arrow\ORM\Exception
      */
 
     public function doLogin($login, $password, $loginAs = false, $user = false)
@@ -173,8 +177,6 @@ class Auth
         }else{
             $result = $user;
         }
-
-
 
         $initVal[Track::F_ACTION] = "login";
         $initVal[Track::F_CLASS] = User::getClass();
@@ -226,13 +228,6 @@ class Auth
             return false;
         }
 
-    }
-
-    public function refreshUserData(){
-        $this->user = $result = Criteria::query('\Arrow\Access\Models\User')
-            ->c("id", $this->user->getPKey())
-            ->findFirst();
-        $_SESSION["auth"]["user"] = serialize($this->user);
     }
 
     /**

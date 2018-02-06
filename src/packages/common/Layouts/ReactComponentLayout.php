@@ -2,18 +2,15 @@
 
 namespace Arrow\Common\Layouts;
 
-use function array_merge;
 use Arrow\Access\Models\Auth;
 use Arrow\ConfigProvider;
-use Arrow\Models\Action;
-
 use Arrow\Models\Project;
 use Arrow\StateProvider;
 use Arrow\ViewManager;
+use Symfony\Component\HttpFoundation\Request;
+use function array_merge;
 use function file_get_contents;
 use function json_encode;
-use Symfony\Component\HttpFoundation\Request;
-use function var_dump;
 
 
 class ReactComponentLayout extends \Arrow\Models\AbstractLayout
@@ -33,7 +30,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         if ($request->isXmlHttpRequest()) {
             return json_encode($this->data);
         }
-
 
         $this->data = array_merge($this->data, $this->prepareData());
         ob_start();
@@ -55,6 +51,10 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $data["compilationHash"] = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-pl.txt");
         $data["config"] = ConfigProvider::get("panel");
         $data["onlyBody"] = $this->onlyBody;
+
+
+        $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-pl.txt");
+        $data["jsCompilationData"] = explode("|", $tmp);
 
         $data[StateProvider::ARROW_DEV_MODE_FRONT] = Project::getInstance()->getContainer()->get(StateProvider::class)->get(StateProvider::ARROW_DEV_MODE_FRONT);
 

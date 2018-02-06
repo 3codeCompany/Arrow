@@ -34,7 +34,7 @@ class DeveloperTools extends \Arrow\Models\Controller
     public function index()
     {
         $this->json([
-            "ARROW_DEV_MODE" => ARROW_DEV_MODE,
+            "ARROW_DEV_MODE" => false,
             "routes" => json_decode(file_get_contents(ARROW_CACHE_PATH . "/symfony/route.json"))
         ]);
     }
