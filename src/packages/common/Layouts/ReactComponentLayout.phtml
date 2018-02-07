@@ -7,12 +7,13 @@
     <link href="<?= $this->data["config"]["favicon"] ?>" rel="icon" type="image/x-icon"/>
 </head>
 <body>
+
 <?
 /** @var \Symfony\Component\HttpFoundation\Request $request */
 $request = \Arrow\Models\Project::getInstance()->getContainer()->get(\Symfony\Component\HttpFoundation\Request::class);
 $data = $this->getData();
-
 ?>
+
 
 <script>
     window.reactBackOfficeVar =  <?=json_encode([
@@ -35,11 +36,10 @@ $data = $this->getData();
 
 <? if (!$data[Arrow\StateProvider::ARROW_DEV_MODE_FRONT]) { ?>
     <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["jsCompilationData"][0] ?>"></script>
-    <link rel="stylesheet" href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["jsCompilationData"][1] ?>.css"/>
+<link rel="stylesheet" href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["jsCompilationData"][1] ?>.css"/>
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin></script>
 <? } ?>
-
 
 
 </body>

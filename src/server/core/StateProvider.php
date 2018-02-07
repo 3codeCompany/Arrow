@@ -53,6 +53,7 @@ class StateProvider
     public function set($name, $value)
     {
         $this->state[$name] = $value;
+        $_SESSION["state"][$name] = $value;
     }
 
 

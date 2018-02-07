@@ -8,10 +8,16 @@
 
 namespace Arrow\Utils\Controllers;
 
+use Arrow\ORM\Persistent\Criteria;
+use Arrow\Translations\Models\LanguageText;
 use const ARROW_CACHE_PATH;
 use const ARROW_DEV_MODE;
+use const ARROW_DOCUMENTS_ROOT;
 use function file_get_contents;
+use function file_put_contents;
 use function json_decode;
+use function json_encode;
+use const JSON_PRETTY_PRINT;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Routing\Annotation\Route;
@@ -72,6 +78,24 @@ class DeveloperTools extends \Arrow\Models\Controller
     {
         $_SESSION["ARROW_DEV_MODE"] = !ARROW_DEV_MODE;
         $this->json([$_SESSION["ARROW_DEV_MODE"]]);
+    }
+
+    /**
+     * @Route("/dumpLangFiles")
+     */
+    public function dumpLangFiles()
+    {
+        $lang = "en";
+        $text = LanguageText::get()
+            ->_lang($lang)
+            ->_value("", Criteria::C_NOT_EQUAL)
+            ->findAsFieldArray(LanguageText::F_VALUE, LanguageText::F_ORIGINAL);
+
+        $text["language"] = "en";
+
+        file_put_contents(ARROW_DOCUMENTS_ROOT . "/build/js/lang/{$lang}.json", json_encode($text, JSON_PRETTY_PRINT));
+
+        return [];
     }
 
 

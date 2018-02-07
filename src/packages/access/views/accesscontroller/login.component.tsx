@@ -2,11 +2,13 @@ import * as React from "react";
 import {BForm} from "frontend/src/layout/BootstrapForm";
 import Comm from "frontend/src/lib/Comm";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-
+declare var LANGUAGE: string;
 declare var window: any;
 
 interface IViewProps extends IArrowViewComponentProps {
     redirectTo: string;
+    backgroundImage: string;
+    applicationTitle: string;
 }
 
 export default class ArrowViewComponent extends React.Component<IViewProps, any> {
@@ -25,7 +27,13 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
     }
 
-    public handleSubmit() {
+    public handleLangChange = (lang) => {
+        Comm._get( "/admin/changeLang/" + lang).then(() => {
+            window.location.reload();
+        });
+    }
+
+    public handleSubmit = () => {
         const data = this.state.form;
         if (data.login == "" || data.password == "") {
             this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
@@ -74,6 +82,12 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
         return <div className="login-view">
 
+            <div className="lang-select">
+                {["PL", "EN"].map((el) =>
+                    <a key={el} className={el.toLowerCase() == LANGUAGE ? "active" : ""} onClick={() => this.handleLangChange(el)}>{el}</a>,
+                )}
+            </div>
+
             <div className="login-background" style={{backgroundImage: `url( ${this.props.backgroundImage} )`}}>
 
                 <div className="login-form-container">
@@ -83,10 +97,10 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
                             <div>
                                 <div className="input">
-                                    <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={"login"} placeholder="Twój login"/>
+                                    <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={"login"} placeholder={__("Podaj swój login")}/>
                                 </div>
                                 <div className="input">
-                                    <input type="password" name={"password"} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={"Twoje hasło"}/>
+                                    <input type="password" name={"password"} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={__("Podaj hasło")}/>
                                 </div>
 
                             </div>
@@ -95,9 +109,9 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                 <button
                                     className="login-button"
                                     disabled={this.state.loading}
-                                    onClick={this.handleSubmit.bind(this)}
+                                    onClick={this.handleSubmit}
                                 >
-                                    {this.state.loading ? "..." : "Zaloguj się"}
+                                    {this.state.loading ? "..." : __("zaloguj się")}
                                 </button>
                             </div>
                             <div style={{height: 20, paddingTop: 10}}>

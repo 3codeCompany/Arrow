@@ -1,4 +1,3 @@
-declare var EventSource: any;
 import Navbar from "frontend/src/ctrl/Navbar";
 import Panel from "frontend/src/ctrl/Panel";
 
@@ -10,37 +9,45 @@ import Comm from "frontend/src/lib/Comm";
 import {Row} from "frontend/src/layout/BootstrapLayout";
 import {Copyable} from "frontend/src/ctrl/Copyable";
 import Icon from "frontend/src/ctrl/Icon";
-
+import * as path from "path";
 
 interface IProps extends IArrowViewComponentProps {
-    ARROW_DEV_MODE: string,
-    routes: any
+    ARROW_DEV_MODE: string;
+    routes: any;
 }
 
 export default class ArrowViewComponent extends React.Component<IProps, any> {
 
-    handleCacheRemove() {
+    public handleCacheRemove = () => {
 
-        Comm._post(this.props.baseURL + "/cache/remove").then(() => {
+        Comm._post(this.props._baseURL + "/cache/remove").then(() => {
             this.props._notification("Cache", "Deleted");
-        })
+        });
 
     }
-    handleDevStateChange(){
-        Comm._post(this.props.baseURL + "/changeDevState").then(() => {
+
+    public handleDevStateChange = () => {
+        Comm._post(this.props._baseURL + "/changeDevState").then(() => {
             this.props._notification("Dev state", "Changed");
             this.props._reloadProps();
-        })
+        });
+    }
+
+    public handleDumpLangFiles = () => {
+        Comm._post(this.props._baseURL + "/dumpLangFiles").then(() => {
+            this.props._notification("Dump language files", "Done");
+        });
     }
 
     public render() {
-        let {ARROW_DEV_MODE, routes} = this.props;
+        const {ARROW_DEV_MODE, routes} = this.props;
         return (
             <div>
                 <CommandBar
                     isSearchBoxVisible={false}
                     items={[
-                        {key: "f1", label: "Usuń cache", icon: "Delete", onClick: this.handleCacheRemove.bind(this)},
+                        {key: "f1", label: "Usuń cache", icon: "Delete", onClick: this.handleCacheRemove},
+                        {key: "f2", label: "Stwórz pliki językowe", icon: "Flag", onClick: this.handleDumpLangFiles},
                     ]}
                 />
 
@@ -55,7 +62,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                 <Row md={[2, 3]} noGutters={false}>
                                     <BSwitch label={"ARROW_DEV_MODE"} options={{false: "No", true: "Yes"}} value={ARROW_DEV_MODE} editable={false}/>
                                     <BContainer label={" "}>
-                                        <a className={"btn "} onClick={this.handleDevStateChange.bind(this)}><Icon name={"Switch"} /> Switch</a>
+                                        <a className={"btn "} onClick={this.handleDevStateChange}><Icon name={"Switch"}/> Switch</a>
                                     </BContainer>
                                 </Row>
                             </>}
@@ -72,15 +79,13 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {Object.entries(routes).map(([path, data]) => <tr key={path}>
-                                    <td>{path}</td>
+                                {Object.entries(routes).map(([filePath, data]: any) => <tr key={filePath + data._debug.line}>
+                                    <td>{filePath}</td>
                                     <td>{data._controller}</td>
                                     <td>{data._method}</td>
                                     <td>{data._debug.line}</td>
                                     <td style={{textAlign: "center"}}>
-                                        <Copyable
-                                            toCopy={data._debug.file + ":" + data._debug.line}>
-                                        </Copyable>
+                                        <Copyable toCopy={data._debug.file + ":" + data._debug.line}/>
                                     </td>
                                 </tr>)}
                                 </tbody>
@@ -92,4 +97,5 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             </div>
         );
     }
+
 }

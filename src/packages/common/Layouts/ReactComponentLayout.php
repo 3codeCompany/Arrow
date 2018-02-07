@@ -6,6 +6,7 @@ use Arrow\Access\Models\Auth;
 use Arrow\ConfigProvider;
 use Arrow\Models\Project;
 use Arrow\StateProvider;
+use Arrow\Translations\Models\Translations;
 use Arrow\ViewManager;
 use Symfony\Component\HttpFoundation\Request;
 use function array_merge;
@@ -53,10 +54,14 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $data["onlyBody"] = $this->onlyBody;
 
 
-        $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-pl.txt");
+        $state = Project::getInstance()->getContainer()->get(StateProvider::class);
+
+        $data["language"] = $state->get("language");
+
+        $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
         $data["jsCompilationData"] = explode("|", $tmp);
 
-        $data[StateProvider::ARROW_DEV_MODE_FRONT] = Project::getInstance()->getContainer()->get(StateProvider::class)->get(StateProvider::ARROW_DEV_MODE_FRONT);
+        $data[StateProvider::ARROW_DEV_MODE_FRONT] = $state->get(StateProvider::ARROW_DEV_MODE_FRONT);
 
 
         return $data;
