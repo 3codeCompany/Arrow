@@ -4,6 +4,7 @@
 use Arrow\Access\Models\Auth;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
+use Symfony\Component\HttpFoundation\Request;
 
 class ExceptionHandler
 {
@@ -246,7 +247,7 @@ class ExceptionHandler
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
-            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Router::getDefault()->getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
+            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Request::createFromGlobals()->getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
             "\n" . $message .
             "\n" . $file . ":" . $line
 
