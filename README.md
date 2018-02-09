@@ -1,4 +1,4 @@
-# Esotiq
+
 
 1. Instalacja
     * App
@@ -6,10 +6,12 @@
         ```
         git clone ..........
         ```
+    
     * Composer
         ```
         composer install
         ```
+    
     * Front
         ```
         yarn install
