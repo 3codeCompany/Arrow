@@ -33,7 +33,7 @@ export default class  extends React.Component<any, any> {
           <div>
               <Navbar>
                   <span>System</span>
-                  <a onClick={() => this.props._goto( this.props.baseURL + '/list')}>Grupy dostępu</a>
+                  <a onClick={() => this.props._goto( this.props._baseURL + '/list')}>Grupy dostępu</a>
                   <span>{this.props.group ? this.props.group.name : 'Dodaj'}</span>
               </Navbar>
 
@@ -42,7 +42,7 @@ export default class  extends React.Component<any, any> {
                 ref="form"
                 data={data}
                 namespace={'data'}
-                action={this.props.baseURL + '/save'}
+                action={this.props._baseURL + '/save'}
                 onSuccess={this.handleFormSuccess.bind(this)}
                 onChange={this.handleFormChange.bind(this)}
               >
@@ -52,7 +52,7 @@ export default class  extends React.Component<any, any> {
                           <BTextarea label="Opis" {...form('description')} />
 
                           <div className="hr-line-dashed"></div>
-                          <a onClick={() => this.props._goto(this.props.baseURL + '/list')} className="btn btn-default pull-right"> Anuluj</a>
+                          <a onClick={() => this.props._goto(this.props._baseURL + '/list')} className="btn btn-default pull-right"> Anuluj</a>
                           <button type="submit" className="btn btn-primary pull-right "> Zapisz</button>
                           <div className="clearfix"></div>
 

@@ -53,15 +53,12 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $data["config"] = ConfigProvider::get("panel");
         $data["onlyBody"] = $this->onlyBody;
 
-
-        $state = Project::getInstance()->getContainer()->get(StateProvider::class);
-
-        $data["language"] = $state->get("language");
+        $data["language"] = "pl";
 
         $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
         $data["jsCompilationData"] = explode("|", $tmp);
 
-        $data[StateProvider::ARROW_DEV_MODE_FRONT] = $state->get(StateProvider::ARROW_DEV_MODE_FRONT);
+        $data["ARROW_DEV_MODE_FRONT"] = (bool) $_ENV["APP_DEBUG_WEBPACK_DEV_SERVER"] ?? false;
 
 
         return $data;

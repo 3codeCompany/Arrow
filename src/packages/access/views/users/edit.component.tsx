@@ -48,7 +48,7 @@ export default class  extends React.Component<any, any> {
                     ref={(el) => this.form = el}
                     data={data}
                     namespace={"data"}
-                    action={this.props.baseURL + "/save"}
+                    action={this.props._baseURL + "/save"}
                     onSuccess={this.handleFormSuccess.bind(this)}
                     onChange={this.handleFormChange.bind(this)}
                 >

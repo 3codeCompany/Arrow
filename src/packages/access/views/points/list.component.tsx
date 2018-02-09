@@ -18,7 +18,7 @@ export default class  extends React.Component<any, any> {
 
     public handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.point_object_friendly_id}" ?`).then(() => {
-            Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
+            Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(`Punkt  "${row.point_object_friendly_id}" został usunięta.`);
                 this.table.load();
             });
@@ -26,7 +26,7 @@ export default class  extends React.Component<any, any> {
     }
 
     public saveAccessPoint(row) {
-        Comm._post(this.props.baseURL + "/save", {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
+        Comm._post(this.props._baseURL + "/save", {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
             this.props._notification(`Punkt  "${row.point_object_friendly_id}" został zaktualizowany.`);
             //this.table.load();
         });
@@ -43,7 +43,7 @@ export default class  extends React.Component<any, any> {
                 <div className="panel-body-margins">
 
                     <Table
-                        remoteURL={this.props.baseURL + "/getData"}
+                        remoteURL={this.props._baseURL + "/getData"}
                         ref={(table) => this.table = table}
                         columns={[
                             Column.id("id", "Id").headerTooltip("To jest bardzo bardzo ciekawe"),

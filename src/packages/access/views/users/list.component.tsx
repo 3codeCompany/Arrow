@@ -18,7 +18,7 @@ export default class  extends React.Component<any, any> {
 
     public handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.login}" ?`).then(() => {
-            Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
+            Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(`Urzytkownik  "${row.login}" został usunięty.`);
                 this.table.load();
             });
@@ -47,7 +47,7 @@ export default class  extends React.Component<any, any> {
               <Row>
                   <div className="panel-body-margins">
                       <Table
-                        remoteURL={this.props.baseURL + "/getData"}
+                        remoteURL={this.props._baseURL + "/getData"}
                         ref={(table) => this.table = table}
                         columns={[
                             Column.id("id", "Id"),

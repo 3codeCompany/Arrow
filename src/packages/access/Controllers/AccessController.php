@@ -35,8 +35,8 @@ class AccessController extends \Arrow\Models\Controller
 
 
     /**
-     * @param Action $view
-     * @param RequestContext $request
+     * @param Request $request
+     * @return ReactComponentLayout
      * @Route("/login")
      */
     public function login(Request $request)

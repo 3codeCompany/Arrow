@@ -4,9 +4,8 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-use App\Models\Persistent\Category;
-use App\Models\Persistent\Property;
-use Arrow\CMS\Models\Persistent\Page;
+
+use App\Models\Persistent\Product;
 use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Common\Models\Helpers\FormHelper;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
@@ -23,6 +22,8 @@ use Arrow\Common\BreadcrumbGenerator;
 use Arrow\Common\Links;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
+use Arrow\Shop\Models\Persistent\Category;
+use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
@@ -63,7 +64,8 @@ class PanelObjects extends BaseController
             "objects" => FormHelper::assocToOptions(array(
                 Category::getClass() => "Kategorie",
                 Property::getClass() => "Cechy",
-                Page::getClass() => "Strony",
+                \Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
+
             ))
         ];
     }
@@ -81,7 +83,7 @@ class PanelObjects extends BaseController
         $class = "%" . end($tmp);
         //$crit->_field("link", Criteria::C_NOT_EQUAL);
         $crit->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
-        $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
+        $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E");//$model::getMultilangFields()
 
 
         $user = Auth::getDefault()->getUser()->_login();
@@ -95,9 +97,9 @@ class PanelObjects extends BaseController
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
         $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
 
-        if ($model == Property::getClass()) {
+        /*if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
-        }
+        }*/
 
         //$helper->setDebug($crit->find()->getQuery());
 

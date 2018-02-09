@@ -70,7 +70,7 @@ class Router
         $this->request = $this->container->get(Request::class);
 
         /** @var StateProvider $regenerate */
-        $regenerate = $this->container->get(StateProvider::class)->get(StateProvider::ARROW_DEV_MODE);
+        $regenerate = (bool) $_ENV["APP_DEBUG_LIVE_ROUTING_SCAN"] ?? false;
 
         $sourceFolders = [];
 
@@ -78,7 +78,7 @@ class Router
 
         $sourceFolders[] = ARROW_APPLICATION_PATH . '/Controllers';
         foreach ($packages as $name => $dir) {
-            $sourceFolders[] = ARROW_DOCUMENTS_ROOT . "/" . $dir . "/Controllers";
+            $sourceFolders[] = ARROW_PROJECT . "/" . $dir . "/Controllers";
         }
 
         AnnotationRegistry::registerLoader('class_exists');

@@ -4,6 +4,7 @@ namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Exception;
+use Arrow\Kernel;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
@@ -104,6 +105,10 @@ class Project
 
             require_once ARROW_APPLICATION_PATH . "/bootstrap.php";
 
+            /*if(!Kernel::isInCLIMode()) {
+                $this->getHandler(self::IErrorHandler);
+                $this->getHandler(self::IExceptionHandler);
+            }*/
             $this->getHandler(self::IErrorHandler);
             $this->getHandler(self::IExceptionHandler);
             $this->getHandler(self::ISessionHandler);

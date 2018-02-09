@@ -30,7 +30,7 @@ class ConfigProvider
 
     public static function init()
     {
-        $configFile = ARROW_APPLICATION_PATH."/conf/project.yaml";
+        $configFile = ARROW_APPLICATION_PATH . "/conf/project.yaml";
         self::$cacheFile = ARROW_CACHE_PATH . "/cached-conf.php";
 
 
@@ -41,7 +41,14 @@ class ConfigProvider
             self::$conf = unserialize(file_get_contents(self::$cacheFile));
             self::$cacheMkTime = filemtime(self::$cacheFile);
         } else {
-            self::$conf = Yaml::parse(file_get_contents($configFile));
+            $content = file_get_contents($configFile);
+
+            $content = preg_replace_callback("/%env\((.+?)\)%/", function ($regs) {
+                return $_ENV[$regs[1]];
+            }, $content);
+
+
+            self::$conf = Yaml::parse($content);
 
             /*foreach (Project::getInstance()->getPackages() as $package) {
                 if (!file_exists($package["dir"] . "/conf/project.yaml")) {
@@ -55,10 +62,11 @@ class ConfigProvider
 
             if (isset(self::$conf["project"]["run-config"][$runConfig])) {
                 foreach (self::$conf["project"]["run-config"][$runConfig] as $index => $value) {
-                    if(is_array($value))
+                    if (is_array($value)) {
                         self::$conf["project"][$index] = array_replace_recursive(self::$conf["project"][$index], $value);
-                    else
+                    } else {
                         self::$conf["project"][$index] = $value;
+                    }
 
                 }
             }
@@ -107,7 +115,7 @@ class ConfigProvider
         foreach ($array as $key => $value) {
             $new_key = $prefix . (empty($prefix) ? '' : '/') . $key;
 
-            if (is_array($value) && strpos( key(($value)), $arrayPrefix ) === false ) {
+            if (is_array($value) && strpos(key(($value)), $arrayPrefix) === false) {
                 $result = array_merge($result, self::arrayFlat($value, $new_key));
             } else {
                 $result[$new_key] = $value;

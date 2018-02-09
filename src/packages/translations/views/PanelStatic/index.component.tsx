@@ -82,7 +82,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         row.loading = true;
         row.edited = false;
         row.container.forceUpdate();
-        Comm._post(this.props.baseURL + "/inlineUpdate", {key: row.id, newValue: row.changedText}).then(() => {
+        Comm._post(this.props._baseURL + "/inlineUpdate", {key: row.id, newValue: row.changedText}).then(() => {
             this.props._notification("Pomyślnie zmodyfikowano element");
             row.value = row.changedText;
             row.loading = false;
@@ -93,7 +93,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
     public handleDelete(row) {
         confirm(`Czy na pewno usunąć "${row.name}"?`).then(() => {
-            Comm._post(this.props.baseURL + "/Language/delete", {key: row.id}).then(() => {
+            Comm._post(this.props._baseURL + "/Language/delete", {key: row.id}).then(() => {
                 this.props._notification(`Pomyślnie usunięto "${row.name}"`);
                 this.table.load();
             });
@@ -126,7 +126,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 <div className="panel-body-margins">
                     <Table
                         columns={this.columns}
-                        remoteURL={this.props.baseURL + "/list"}
+                        remoteURL={this.props._baseURL + "/list"}
                         ref={(table) => this.table = table}
                         additionalConditions={{search: this.state.search}}
                     />

@@ -18,7 +18,7 @@ export default class  extends React.Component<any, any> {
 
     public handleDelete(row, event) {
         confirm(`Czy na pewno usunąć "${row.name}" ?`).then(() => {
-            Comm._post(this.props.baseURL + "/delete", {key: row.id}).then(() => {
+            Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(`Grupa  "${row.name}" została usunięta.`);
                 this.table.load();
             });
@@ -36,17 +36,17 @@ export default class  extends React.Component<any, any> {
                 <Row>
                     <Panel title="Lista grup dostępu systemu"
                            toolbar={[
-                               <a key="f1" href={"#" + this.props.baseURL + "/edit"} className="btn btn-sm btn-primary"><i className="fa fa-plus"/>Dodaj</a>,
+                               <a key="f1" href={"#" + this.props._baseURL + "/edit"} className="btn btn-sm btn-primary"><i className="fa fa-plus"/>Dodaj</a>,
                            ]}
                     >
                         <Table
-                            remoteURL={this.props.baseURL + "/getData"}
+                            remoteURL={this.props._baseURL + "/getData"}
                             ref={(table) => this.table = table}
                             columns={[
                                 Column.id("id", "Id"),
                                 Column.text("name", "Nazwa"),
                                 Column.template("Zobacz", () => <Icon name={"Edit"}/>)
-                                    .onClick((row) => this.props._goto(this.props.baseURL + "/edit", {key: row.id}))
+                                    .onClick((row) => this.props._goto(this.props._baseURL + "/edit", {key: row.id}))
                                     .className("center darkgreen"),
                                 Column.template("", () => <Icon name={"Delete"}/>)
                                     .onClick(this.handleDelete.bind(this))

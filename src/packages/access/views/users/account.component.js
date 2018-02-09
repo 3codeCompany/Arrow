@@ -41,7 +41,7 @@ export default class ArrowViewComponent extends Component {
                     ref="form"
                     data={data}
                     namespace={"data"}
-                    action={this.props.baseURL + "/saveAccount"}
+                    action={this.props._baseURL + "/saveAccount"}
                     onSuccess={this.handleFormSuccess.bind(this)}
                     onChange={this.handleFormChange.bind(this)}
                 >
@@ -75,7 +75,7 @@ export default class ArrowViewComponent extends Component {
                             />
 
                             <div className="hr-line-dashed"></div>
-                            <a onClick={() => this.props._goto(this.props.baseURL + "/list")} className="btn btn-default pull-right"> Anuluj</a>
+                            <a onClick={() => this.props._goto(this.props._baseURL + "/list")} className="btn btn-default pull-right"> Anuluj</a>
                             <button type="submit" className="btn btn-primary pull-right "> Zapisz</button>
                             <div className="clearfix"></div>
 
