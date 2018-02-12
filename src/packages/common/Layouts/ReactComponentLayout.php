@@ -69,7 +69,7 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
             $data["allowedElements"] = ["menu" => [], "dashboard" => []];
         }
 
-        $data["language"] = $session->get("language", "plyarn");
+        $data["language"] = $session->get("language", "pl");
 
         $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
         $data["jsCompilationData"] = explode("|", $tmp);
