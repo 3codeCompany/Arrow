@@ -51,6 +51,7 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $data = [];
         /** @var Auth $auth */
         $auth = Kernel::getProject()->getContainer()->get(Auth::class);
+
         /** @var Session $session */
         $session = Kernel::getProject()->getContainer()->get(Session::class);
 

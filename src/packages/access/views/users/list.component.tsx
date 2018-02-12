@@ -33,7 +33,7 @@ export default class  extends React.Component<any, any> {
                 items={[
                     {
                         key: "f1", icon: "Add", label: "Dodaj", onClick: () => {
-                            this.props._goto("access/users/edit");
+                            this.props._goto("/access/users/edit");
                         },
                     },
 

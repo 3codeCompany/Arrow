@@ -175,7 +175,7 @@ class Users extends \Arrow\Models\Controller
      */
     public function delete(Request $request)
     {
-        $user = User::get()->findByKey($request["key"]);
+        $user = User::get()->findByKey($request->get("key"));
         $user->delete();
         $this->json([1]);
     }
@@ -209,7 +209,7 @@ class Users extends \Arrow\Models\Controller
         $data["user"] = $user;
         $data["selectedGroups"] = $selectedGroups;
 
-        $this->json($data);
+        return $data;
 
 
     }
