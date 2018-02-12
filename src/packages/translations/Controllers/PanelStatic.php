@@ -54,7 +54,8 @@ class PanelStatic extends BaseController
         //$db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
 
         return [
-            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE)
+            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
+            "test" => "Nasz test"
         ];
     }
 
@@ -81,7 +82,8 @@ class PanelStatic extends BaseController
 
         //$data["debug"] = $c->find()->getQuery();
         //$helper->addDefaultOrder(Language::F_NAME);
-        $this->json($data);
+
+        return $data;
     }
 
     /**
