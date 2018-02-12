@@ -70,7 +70,7 @@ class Router
         $this->request = $this->container->get(Request::class);
 
         /** @var StateProvider $regenerate */
-        $regenerate = (bool) $_ENV["APP_DEBUG_LIVE_ROUTING_SCAN"] ?? false;
+        $regenerate = (bool)\getenv("APP_DEBUG_LIVE_ROUTING_SCAN");
 
         $sourceFolders = [];
 
@@ -132,8 +132,6 @@ class Router
     {
         return $this->symfonyRouter;
     }
-
-
 
 
     public function notFound(Action $action)

@@ -3,8 +3,8 @@
 <head>
     <meta name="viewport" content="width=device-width">
     <meta charset="utf-8">
-    <title><?= $this->data["config"]["title"] ?></title>
-    <link href="<?= $this->data["config"]["favicon"] ?>" rel="icon" type="image/x-icon"/>
+    <title><?= $this->data["layout"]["config"]["title"] ?></title>
+    <link href="<?= $this->data["layout"]["config"]["favicon"] ?>" rel="icon" type="image/x-icon"/>
 </head>
 <body>
 
@@ -12,20 +12,23 @@
 /** @var \Symfony\Component\HttpFoundation\Request $request */
 $request = \Arrow\Models\Project::getInstance()->getContainer()->get(\Symfony\Component\HttpFoundation\Request::class);
 $data = $this->getData();
+$input = $data;
+unset($input["layout"])
 ?>
 
 
 <script>
     window.reactBackOfficeVar =  <?=json_encode([
         "basePath" => $request->getBasePath(),
-        "inputProps" => $data,
+        "inputProps" => $input,
         "panel" => [
-            "icon" => $data["config"]["icon"],
-            "title" => $data["config"]["title"],
-            "menu" => \App\Models\Common\AdministrationExtensionPoint::getElements(),
-            "onlyBody" => $data["onlyBody"],
+            "icon" => $data["layout"]["config"]["icon"],
+            "title" => $data["layout"]["config"]["title"],
+            "menu" => $data["layout"]["allowedElements"]["menu"],
+            "dashboard" => $data["layout"]["allowedElements"]["dashboard"],
+            "onlyBody" => $data["layout"]["onlyBody"],
             "user" => [
-                "login" => $data["user"]["login"]
+                "login" => $data["layout"]["user"]["login"]
             ],
         ],
     ], JSON_PRETTY_PRINT) ?>;
@@ -34,10 +37,10 @@ $data = $this->getData();
 <div id="root"></div>
 <div id="modal-root"></div>
 
-<? if (!$data["ARROW_DEV_MODE_FRONT"]) { ?>
-    <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["jsCompilationData"][0] ?>"></script>
+<? if (!$data["layout"]["ARROW_DEV_MODE_FRONT"]) { ?>
+    <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["layout"]["jsCompilationData"][0] ?>"></script>
 <link rel="stylesheet"
-      href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["jsCompilationData"][1] ?>.css"/>
+      href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["layout"]["jsCompilationData"][1] ?>.css"/>
 <? } else { ?>
     <script src="//localhost:3000/bundle.js" crossorigin></script>
 <? } ?>

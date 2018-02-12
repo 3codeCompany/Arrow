@@ -242,44 +242,6 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-    public function users_save()
-    {
-
-        $data = $request->get("data");
-
-        $validator = Validator::create($data)
-            ->required(["login", "email", "active"])
-            ->email("email");
-
-
-        if (!isset($data["id"])) {
-            $validator->required(["password"]);
-        }
-
-        if (!$validator->check()) {
-            $this->json($validator->response());
-        }
-
-        $accessGroups = isset($data["selectedGroups"]) ? $data["selectedGroups"] : [];
-        unset($data["selectedGroups"]);
-
-        if (isset($data["id"])) {
-            $user = User::get()
-                ->findByKey($data["id"]);
-            $user
-                ->setValues($data)
-                ->save();
-
-        } else {
-            $user = User::create($data);
-
-
-        }
-        $user->setGroups($accessGroups);
-
-        $this->json([1]);
-    }
-
 
     /**
      * @param Request $request
@@ -291,41 +253,18 @@ class AccessController extends \Arrow\Models\Controller
      */
     public function loginAs($key, Request $request, Auth $auth)
     {
-        if ($key) {
+        /*if ($key) {
             $auth->restoreShadowUser();
         } else {
-            $user = User::get()->findByKey($key);
-            $auth->doLogin($user["login"], false, true);
-        }
+
+        }*/
+        $user = User::get()->findByKey($key);
+        $auth->doLogin($user["login"], false, true);
+
         return [true];
 
     }
 
-    public function dashboard_currentlyLogged(Action $view, RequestContext $request)
-    {
-        $view->setLayout(new EmptyLayout());
-
-        $span = new \DateTime();
-        $span->sub(new \DateInterval("PT30M"));
-        $spanFormatted = $span->format("Y-m-d H:i:s");
-
-        $db = Project::getInstance()->getDB();
-
-        $query = "select s.*,u.login from access_sessions s left join access_user u on(s.user_id=u.id) where last>'{$spanFormatted}'  order by last desc";
-        $result = Project::getInstance()->getDB()->query($query);
-        $view->assign("list", $result);
-
-
-        $query = "select count(*) from access_sessions s where last>'{$spanFormatted}' and user_id is NULL";
-        $result = $db->query($query)->fetchColumn();
-        $view->assign("countNotLogged", $result);
-
-        $query = "select count(*) from access_sessions s where last>'{$spanFormatted}' and user_id is not NULL";
-        $result = $db->query($query)->fetchColumn();
-        $view->assign("countLogged", $result);
-
-
-    }
 
     public function getUsers()
     {

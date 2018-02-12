@@ -8,21 +8,18 @@
 
 namespace Arrow\Utils\Controllers;
 
+use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\Translations\Models\LanguageText;
-use const ARROW_CACHE_PATH;
-use const ARROW_DEV_MODE;
-use const ARROW_DOCUMENTS_ROOT;
+
 use function file_get_contents;
 use function file_put_contents;
 use function json_decode;
 use function json_encode;
-use const JSON_PRETTY_PRINT;
+
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Routing\Annotation\Route;
-use function var_dump;
-
 
 /**
  * Class DeveloperTools
@@ -83,7 +80,7 @@ class DeveloperTools extends \Arrow\Models\Controller
     /**
      * @Route("/dumpLangFiles")
      */
-    public function dumpLangFiles()
+    public function dumpLangFiles(Project $project)
     {
         $lang = "en";
         $text = LanguageText::get()

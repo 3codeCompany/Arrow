@@ -46,6 +46,8 @@ class Kernel
 
     public static function processCall()
     {
+
+
         //paths for server only
         $router = Router::getDefault(self::$project->getContainer());
         $router->process();

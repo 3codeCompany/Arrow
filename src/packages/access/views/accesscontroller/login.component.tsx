@@ -36,7 +36,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
     public handleSubmit = () => {
         const data = this.state.form;
         if (data.login == "" || data.password == "") {
-            this.props._notification("Wypełnij wszystkie pola", "Nie udało się zalogować", {level: "error"});
+            this.props._notification( __("Wypełnij wszystkie pola"), __("Nie udało się zalogować"), {level: "error"});
             return;
         }
 
@@ -51,7 +51,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
         });
         comm.on(Comm.EVENTS.VALIDATION_ERRORS, (response) => {
             this.setState({loading: false});
-            this.setState({error: "Nieprawidłowy użytkownik lub hasło"});
+            this.setState({error: __("Nieprawidłowy użytkownik lub hasło")});
         });
         comm.on(Comm.EVENTS.SUCCESS, (response) => {
             this.setState({loading: false, error: ""});
@@ -81,7 +81,6 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
         const s = this.state;
 
         return <div className="login-view">
-
             <div className="lang-select">
                 {["PL", "EN"].map((el) =>
                     <a key={el} className={el.toLowerCase() == LANGUAGE ? "active" : ""} onClick={() => this.handleLangChange(el)}>{el}</a>,

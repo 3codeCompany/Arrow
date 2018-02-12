@@ -5,6 +5,7 @@ use Arrow\ConfigProvider;
 use Arrow\Kernel;
 use Arrow\Models\Action;
 use Arrow\ORM\Persistent\Criteria;
+use Arrow\ORM\Persistent\DataSet;
 use Arrow\ViewManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,9 +25,61 @@ class AccessAPI
     const GROUP_ADMINISTRATORS_KEY = 4;
 
 
-    public static function checkAccessToView(Action $view)
+    public static function checkAccessToPoints(array $points): array
     {
-        return AccessAPI::checkAccess("view", $view->getPackage(), "show", $view->getPath(), "");
+        /** @var Auth $auth */
+        $auth = Kernel::getProject()->getContainer()->get(Auth::class);
+        $accessSum = $auth->getUser()->getAccessGroupsSum();
+
+        $locatedPoints = AccessPoint::get()
+            ->c("point_object_friendly_id", $points, Criteria::C_IN)
+            ->find(true, AccessPoint::F_POINT_OBJECT_FRIENDLY_ID)
+        ;
+
+        $tmp = [];
+
+        foreach ($points as $el) {
+            if (isset($locatedPoints[$el])) {
+                if ($locatedPoints[$el]->_controlEnabled() == "0") {
+                    $tmp[$el] = true;
+                } else {
+                    $tmp[$el] = self::checkAccessDataHelper($accessSum, (int)$locatedPoints[$el]->_groups());
+                }
+
+            } else {
+                $tmp[$el] = false;
+            }
+
+        }
+        return $tmp;
+    }
+
+
+    private static function checkAccessDataHelper(int $authorizedElementGroups, int $accessElementGroups): bool
+    {
+        if ($accessElementGroups & 1 == 1) {
+            return true;
+        }
+
+        if (
+            !(
+                ($authorizedElementGroups & AccessAPI::GROUP_ADMINISTRATORS_KEY) == AccessAPI::GROUP_ADMINISTRATORS_KEY
+                ||
+                ($authorizedElementGroups & AccessAPI::GROUP_DEVELOPERS_KEY) == AccessAPI::GROUP_DEVELOPERS_KEY
+            )
+            &&
+            (
+                !(
+                    $accessElementGroups & $authorizedElementGroups
+                )
+                ||
+                $accessElementGroups == 0
+            )
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     public static function checkAccess($pointType, $pointAction, $pointObjectFriendlyId, $pointObject = null, $additionalInfo = "")
@@ -44,7 +97,7 @@ class AccessAPI
 
         $pointObjectFriendlyId = str_replace("\\", "/", $pointObjectFriendlyId);
 
-        $point = Criteria::query('Arrow\Access\Models\AccessPoint')
+        $point = AccessPoint::get()
             ->c("point_type", $pointType)
             ->c("point_action", $pointAction)
             ->c("point_object_friendly_id", $pointObjectFriendlyId)
@@ -97,11 +150,6 @@ class AccessAPI
         return true;
     }
 
-    public static function accessPoint($pointType, $pointAction, $pointObjectFriendlyId, $pointObject = null, $additionalInfo = "")
-    {
-        $access = self::checkAccess($pointType, $pointAction, $pointObjectFriendlyId, $pointObject, $additionalInfo);
-    }
-
     public static function accessDenyProcedure($denyInfo = "")
     {
 
@@ -119,20 +167,17 @@ class AccessAPI
                 (new JsonResponse(["accessDeny" => $denyInfo]))->send();
                 exit();
             } elseif ($request->request->count() != 0) {
-                exit("Access deny to: `" . $denyInfo."`");
+                exit("Access deny to: `" . $denyInfo . "`");
             } else {
                 $login = ConfigProvider::get("redirects")["login"];
 
 
-
-
-
-                $redirect = $request->getBasePath().$login;
-                if($request->getPathInfo() != $login){
-                    $redirect .=  "?" . http_build_query(["from" => $request->getPathInfo() . "?" . $request->getRequestUri()]);
+                $redirect = $request->getBasePath() . $login;
+                if ($request->getPathInfo() != $login) {
+                    $redirect .= "?" . http_build_query(["from" => $request->getPathInfo() . "?" . $request->getRequestUri()]);
                 }
 
-                $response = new RedirectResponse( $redirect );
+                $response = new RedirectResponse($redirect);
                 $response->prepare($request);
 
 
@@ -146,109 +191,8 @@ class AccessAPI
 
         } else {
             //$logoutLink = \Arrow\Router::link('access/auth/logout');
-            exit("Access deny to: `" . $denyInfo."`");
+            exit("Access deny to: `" . $denyInfo . "`");
         }
-    }
-
-    public function getAccessMatrix()
-    {
-
-    }
-
-    public static function checkInstallation()
-    {
-        $groups = array(
-            self::GROUP_EVERYONE_KEY => self::GROUP_EVERYONE,
-            self::GROUP_DEVELOPERS_KEY => self::GROUP_DEVELOPERS,
-            self::GROUP_ADMINISTRATORS_KEY => self::GROUP_ADMINISTRATORS,
-        );
-        foreach ($groups as $key => $name) {
-            $test = Criteria::query(AccessGroup::getClass())
-                ->c(AccessGroup::F_ID, $key)
-                ->c(AccessGroup::F_NAME, $name)
-                ->count();
-            if ($test == 0) {
-                throw new \Arrow\Exception(new \Arrow\Models\ExceptionContent(
-                    "Access group '$name' not exists"
-                ));
-            }
-        }
-
-        $users = Criteria::query(User::getClass())->count();
-        if ($users == 0) {
-            throw new \Arrow\Exception(new \Arrow\Models\ExceptionContent(
-                "Empty users list"
-            ));
-        }
-
-    }
-
-    public static function setup()
-    {
-
-        try {
-            $groups = array(
-                self::GROUP_EVERYONE_KEY => self::GROUP_EVERYONE,
-                self::GROUP_DEVELOPERS_KEY => self::GROUP_DEVELOPERS,
-                self::GROUP_ADMINISTRATORS_KEY => self::GROUP_ADMINISTRATORS,
-            );
-
-
-            foreach ($groups as $key => $name) {
-                $test = Criteria::query(AccessGroup::getClass())
-                    ->c(AccessGroup::F_ID, $key)
-                    ->c(AccessGroup::F_NAME, $name)
-                    ->count();
-
-                if ($test == 0) {
-                    $group = new AccessGroup(array(
-                        AccessGroup::F_ID => $key,
-                        AccessGroup::F_NAME => $name
-                    ));
-                    \Arrow\ORM\PersistentFactory::save($group, true, true);
-                }
-            }
-
-
-            $users = Criteria::query(User::getClass())->count();
-            if ($users == 0) {
-                $user = new User(array(
-                    User::F_LOGIN => self::USER_INITIAL_DEVELOPER_LOGIN,
-                    User::F_PASSWORD => self::USER_INITIAL_DEVELOPER_PASSWORD,
-                    User::F_ACTIVE => 1
-                ));
-                $user->save();
-                $user->setGroups(array(self::GROUP_DEVELOPERS_KEY));
-            }
-
-            $pointData = array(
-                AccessPoint::F_POINT_TYPE => "view",
-                AccessPoint::F_POINT_ACTION => "show",
-                AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => "/auth/login",
-                AccessPoint::F_CONTROL_ENABLED => 0
-            );
-
-            AccessPoint::createIfNotExists($pointData);
-
-
-            //todo !obowiązkowo przenieść w bardziej siutable miejsce
-            $pointData = array(
-                AccessPoint::F_POINT_NAMESPACE => "application",
-                AccessPoint::F_POINT_TYPE => "view",
-                AccessPoint::F_POINT_ACTION => "show",
-                AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => "/index",
-                AccessPoint::F_CONTROL_ENABLED => 0
-            );
-
-            AccessPoint::createIfNotExists($pointData);
-
-
-        } catch (\Arrow\Exception $ex) {
-            throw new \Arrow\Exception(new \Arrow\Models\ExceptionContent(
-                "Can't setup `access` package"
-            ), 0, $ex);
-        }
-
     }
 
 
