@@ -72,6 +72,7 @@ class Router
         /** @var StateProvider $regenerate */
         $regenerate = (bool)\getenv("APP_DEBUG_LIVE_ROUTING_SCAN");
 
+
         $sourceFolders = [];
 
         $packages = Project::getInstance()->getPackages();
