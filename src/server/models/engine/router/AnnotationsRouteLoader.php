@@ -41,7 +41,7 @@ class AnnotationsRouteLoader extends AnnotationClassLoader
         if ($exploded[0] != "App") {
             $package = strtolower($exploded[1]);
             $route->setPath($package . $route->getPath());
-            $classRoute = $package . $classRoute;
+            $classRoute = "/".$package . $classRoute;
         }
 
         $route->setDefaults([
