@@ -85,6 +85,7 @@ class Element extends ORM_Arrow_Media_Models_Element
 
 
         if(!file_exists(MediaAPI::getBasePath().$folderPath)){
+            //exit(MediaAPI::getBasePath().$folderPath);
             mkdir(MediaAPI::getBasePath().$folderPath,0777,true);
         }
 
