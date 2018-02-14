@@ -3,15 +3,11 @@ namespace Arrow\Access\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Kernel;
-use Arrow\Models\Action;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\ORM\Persistent\DataSet;
 use Arrow\ViewManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use function htmlentities;
-use function var_dump;
 
 
 class AccessAPI
@@ -33,8 +29,7 @@ class AccessAPI
 
         $locatedPoints = AccessPoint::get()
             ->c("point_object_friendly_id", $points, Criteria::C_IN)
-            ->find(true, AccessPoint::F_POINT_OBJECT_FRIENDLY_ID)
-        ;
+            ->find(true, AccessPoint::F_POINT_OBJECT_FRIENDLY_ID);
 
         $tmp = [];
 
@@ -47,6 +42,14 @@ class AccessAPI
                 }
 
             } else {
+                $point = new AccessPoint([
+                    AccessPoint::F_POINT_TYPE => 'route',
+                    AccessPoint::F_POINT_ACTION => '',
+                    AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => $el,
+                    AccessPoint::F_ADDITIONAL_INFO => '',
+                    AccessPoint::F_CONTROL_ENABLED => 1
+                ]);
+                $point->save();
                 $tmp[$el] = false;
             }
 
@@ -76,6 +79,7 @@ class AccessAPI
                 $accessElementGroups == 0
             )
         ) {
+
             return false;
         }
 

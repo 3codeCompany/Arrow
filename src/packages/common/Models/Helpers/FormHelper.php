@@ -160,7 +160,7 @@ class FormHelper
         return $files;
     }
 
-    public static function getOrganizedFiles()
+    public static function getOrganizedFiles($namespace = false)
     {
 
         if (!isset($_FILES)) {
@@ -168,6 +168,17 @@ class FormHelper
         }
 
         $ret = self::getFixedFilesArray();
+        if ($namespace) {
+            $tmp = explode(".", $namespace);
+            foreach ($tmp as $el) {
+                if (isset($ret[$el])) {
+                    $ret = $ret[$el];
+                }else{
+                    return [];
+                }
+            }
+        }
+
 
 
         return $ret;

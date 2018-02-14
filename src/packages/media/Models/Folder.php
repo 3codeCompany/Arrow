@@ -48,7 +48,7 @@ class Folder extends ORM_Arrow_Media_Models_Folder
     public function getValue($field)
     {
         if ($field == self::F_PATH && $this->data[self::F_PARENT_ID] == 0) {
-            return ARROW_UPLOADS_PATH;
+            return "" ;
         }
         return parent::getValue($field);
     }

@@ -37,7 +37,10 @@ abstract class AdministrationExtensionPoint
         }
 
 
+
+
         $accessData = AccessAPI::checkAccessToPoints($routes);
+
 
         foreach ($elements as $key => $element) {
             foreach ($element["elements"] as $subElementKey => &$subElement) {
@@ -54,6 +57,8 @@ abstract class AdministrationExtensionPoint
                 $elements[$key]["elements"] = array_reverse(array_reverse($elements[$key]["elements"]));
             }
         }
+
+
 
 
         return [
