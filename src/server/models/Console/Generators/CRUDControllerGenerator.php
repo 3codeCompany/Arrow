@@ -95,9 +95,9 @@ class CRUDControllerGenerator
         //destroy
     }
 
-    protected function annotationGeneratorRoute(string $route): string
+    protected function annotationGeneratorRoute(string $route, string $reqirments = null): string
     {
-        return '@Route( "' . $route . '" )';
+        return '@Route( "' . $route . '" ' . ($reqirments ? ', requirements={ ' . $reqirments . ' }' : '') . ' )';
     }
 
     protected function methodGeneratorIndex()
@@ -136,7 +136,7 @@ return [
         ';
 
         $method
-            ->addComment($this->annotationGeneratorRoute("/{key}"))
+            ->addComment($this->annotationGeneratorRoute("/{key}", '"key" = "\d+"'))
             ->setBody($body);
 
         $method
@@ -203,7 +203,7 @@ return [
         ';
 
         $method
-            ->addComment($this->annotationGeneratorRoute("/{key}/edit"))
+            ->addComment($this->annotationGeneratorRoute("/{key}/edit", '"key" = "\d+"'))
             ->setBody($body);
 
         $method
@@ -215,7 +215,7 @@ return [
     protected function methodGeneratorUpdate()
     {
         $method = $this->genClass->addMethod("update")
-            ->addComment($this->annotationGeneratorRoute("/{key}/update"));
+            ->addComment($this->annotationGeneratorRoute("/{key}/update", '"key" = "\d+"'));
 
         $method
             ->addParameter("key")
@@ -271,7 +271,7 @@ return [
         ';
 
         $method
-            ->addComment($this->annotationGeneratorRoute("/{key}/destroy"))
+            ->addComment($this->annotationGeneratorRoute("/{key}/destroy", '"key" = "\d+"'))
             ->setBody($body);
 
         $method
