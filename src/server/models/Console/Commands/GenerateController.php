@@ -39,6 +39,12 @@ class GenerateController extends Command
 
         $controller = $input->getArgument('name');
         $model = $input->getArgument('model');
+
+        if(!class_exists($model)){
+            $output->writeln("Model not found");
+            return;
+        }
+
         $prefix = "";
 
         //ask in interactive mode
