@@ -40,7 +40,7 @@ class GenerateController extends Command
         $controller = $input->getArgument('name');
         $model = $input->getArgument('model');
 
-        if(!class_exists($model)){
+        if($model && !class_exists($model)){
             $output->writeln("Model not found");
             return;
         }

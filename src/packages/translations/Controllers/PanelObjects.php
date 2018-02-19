@@ -62,7 +62,7 @@ class PanelObjects extends BaseController
             "objects" => FormHelper::assocToOptions(array(
                 Category::getClass() => "Kategorie",
                 Property::getClass() => "Cechy",
-                \Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
+                //\Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
 
             ))
         ];

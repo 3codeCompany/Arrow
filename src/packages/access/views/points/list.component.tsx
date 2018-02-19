@@ -2,7 +2,7 @@ import * as React from "react";
 
 import Navbar from "frontend/src/ctrl/Navbar";
 import {confirm} from "frontend/src/ctrl/Overlays";
-import {Table, Column} from "frontend/src/ctrl/Table";
+import {Column, Table} from "frontend/src/ctrl/Table";
 import {Icon} from "frontend/src/ctrl/Icon";
 
 import Comm from "frontend/src/lib/Comm";
@@ -51,17 +51,15 @@ export default class  extends React.Component<any, any> {
                             Column.text("point_object_friendly_id", "Nazwa"),
 
                             Column.bool("control_enabled", "Kontrola")
-                                .onClick((row, val, event, rowComponent) => {
+                                .onClick((row, val, rowComponent) => {
                                     row.control_enabled = row.control_enabled == "1" ? "0" : "1";
                                     this.saveAccessPoint(row);
-                                    -rowComponent.forceUpdate();
+                                    rowComponent.forceUpdate();
                                 })
                             ,
                             Column.text("groups", "Grupy dostępu")
-                                .onClick((row, column, event, rowComponent) => {
-                                    if (event.target.tag == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
-                                        row.edited = !row.edited;
-                                    }
+                                .onClick((row, column, rowComponent) => {
+                                    row.edited = !row.edited;
                                     rowComponent.forceUpdate();
                                 })
                                 .template((val, row) => {
