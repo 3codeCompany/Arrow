@@ -41,7 +41,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         });
     }
 
-    public handleUpload() {
+    public handleUpload(files) {
+        
         alert("Import w trakcie przygotowania");
     }
 

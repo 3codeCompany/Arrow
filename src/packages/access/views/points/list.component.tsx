@@ -2,7 +2,7 @@ import * as React from "react";
 
 import Navbar from "frontend/src/ctrl/Navbar";
 import {confirm} from "frontend/src/ctrl/Overlays";
-import {Table, Column} from "frontend/src/ctrl/Table";
+import {Column, Table} from "frontend/src/ctrl/Table";
 import {Icon} from "frontend/src/ctrl/Icon";
 
 import Comm from "frontend/src/lib/Comm";
@@ -45,6 +45,7 @@ export default class  extends React.Component<any, any> {
                     <Table
                         remoteURL={this.props._baseURL + "/getData"}
                         ref={(table) => this.table = table}
+                        rememberState={true}
                         columns={[
                             Column.id("id", "Id").headerTooltip("To jest bardzo bardzo ciekawe"),
 
@@ -54,22 +55,22 @@ export default class  extends React.Component<any, any> {
                                 .onClick((row, val, event, rowComponent) => {
                                     row.control_enabled = row.control_enabled == "1" ? "0" : "1";
                                     this.saveAccessPoint(row);
-                                    -rowComponent.forceUpdate();
+                                    rowComponent.forceUpdate();
                                 })
                             ,
                             Column.text("groups", "Grupy dostępu")
                                 .onClick((row, column, event, rowComponent) => {
-                                    if (event.target.tag == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
+                                    if (event.target.tagName == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
                                         row.edited = !row.edited;
                                     }
                                     rowComponent.forceUpdate();
                                 })
-                                .template((val, row) => {
-                                    const v = parseInt(val || 0);
+                                .template((val: any, row) => {
+                                    const v: number = parseInt(val || 0, 10);
                                     const selected = [];
                                     const selectedNames = [];
                                     Object.entries(this.props.agroups).map(([id, name]) => {
-                                        if (v & id) {
+                                        if (v & id as any) {
                                             selected.push(id);
                                             selectedNames.push(name);
                                         }
@@ -81,9 +82,9 @@ export default class  extends React.Component<any, any> {
                                                 options={this.props.agroups}
                                                 onChange={(x) => {
                                                     if (x.event.target.checked) {
-                                                        row.groups = v + parseInt(x.event.target.value);
+                                                        row.groups = v + parseInt(x.event.target.value, 10);
                                                     } else {
-                                                        row.groups = v - parseInt(x.event.target.value);
+                                                        row.groups = v - parseInt(x.event.target.value, 10);
                                                     }
                                                     this.saveAccessPoint(row);
                                                 }}
