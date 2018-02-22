@@ -11,6 +11,7 @@ namespace Arrow\Models;
 
 use Arrow\Models\Commands\ClearCache;
 use Arrow\Models\Commands\DebugRoute;
+use Arrow\Models\Commands\GenerateController;
 use Symfony\Component\Console\Application;
 
 class Console
@@ -23,6 +24,7 @@ class Console
         $application = new Application();
         $application->add(new DebugRoute());
         $application->add(new ClearCache());
+        $application->add(new GenerateController());
 
         $application->run();
     }

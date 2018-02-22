@@ -22,7 +22,7 @@ class DebugRoute extends Command
         $this
             ->setName('debug:router')
             ->setDescription('List of routing paths.')
-            ->addArgument("filter", InputArgument::OPTIONAL, "Route list filter (strpos)");;
+            ->addArgument("filter", InputArgument::OPTIONAL, "Route list filter (strpos)");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

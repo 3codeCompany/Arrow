@@ -13,8 +13,6 @@ use Arrow\Exception;
 use Arrow\ORM\DB\DB;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
-use Arrow\RequestContext;
-
 
 
 interface ITableDataSource
@@ -43,7 +41,6 @@ interface ITableDataSource
 }
 
 
-
 class TableDataSource extends Criteria
 {
 
@@ -67,25 +64,27 @@ class TableDataSource extends Criteria
     {
         $criteria->setColumns([]);
 
-        foreach ($data["columns"] as $col) {
-            if (isset($col["field"]) && $col["field"]) {
-                $criteria->addColumn($col["field"]);
+        if (isset($data["columns"])) {
+            foreach ($data["columns"] as $col) {
+                if (isset($col["field"]) && $col["field"]) {
+                    $criteria->addColumn($col["field"]);
 
-            } elseif (isset($col["columns"])) {
-                foreach ($col["columns"] as $col) {
-                    if ($col["field"]) {
-                        $criteria->addColumn($col["field"]);
+                } elseif (isset($col["columns"])) {
+                    foreach ($col["columns"] as $col) {
+                        if ($col["field"]) {
+                            $criteria->addColumn($col["field"]);
+                        }
                     }
                 }
-            }
 
+            }
         }
 
-         if (isset($data["order"])) {
-             foreach ($data["order"] as $order) {
-                 $criteria->order($order["field"], $order["dir"]);
-             }
-         }
+        if (isset($data["order"])) {
+            foreach ($data["order"] as $order) {
+                $criteria->order($order["field"], $order["dir"]);
+            }
+        }
 
         //print_r($data["filters"]);
 
@@ -111,11 +110,13 @@ class TableDataSource extends Criteria
 
     public static function prepareResponse(Criteria $criteria, $data, $fetchType = DataSet::AS_ARRAY)
     {
+        $onPage = $data["onPage"] ?? 25;
+        $currentPage = $data["currentPage"] ?? 1;
         $countAll = $criteria->count();
-        $criteria->limit(($data["currentPage"] - 1) * $data["onPage"], $data["onPage"]);
+        $criteria->limit(($currentPage - 1) * $onPage, $onPage);
         $result = $criteria->find();
         $query = $result->getQuery();
-        if($fetchType == DataSet::AS_ARRAY) {
+        if ($fetchType == DataSet::AS_ARRAY) {
             $result = $result->toArray($fetchType);
         }
         return ["data" => $result, "countAll" => $countAll, "debug" => $query];

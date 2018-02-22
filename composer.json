@@ -15,6 +15,11 @@
     "symfony/http-foundation": "^3.4",
     "symfony/cache": "^3.4"
   },
+  "require-dev": {
+    "nette/php-generator": "^3.1",
+    "symfony/debug": "^4.0",
+    "php-console/php-console": "^3.1"
+  },
   "autoload": {
     "classmap": [
       "src/server/"

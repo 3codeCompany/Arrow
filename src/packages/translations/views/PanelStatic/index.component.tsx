@@ -59,7 +59,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     {!row.loading && !row.edited && <div>{val}</div>}
                 </div>})
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
-                .onClick((row, column, event, rowContainer) => {
+                .onClick((row, column, rowContainer) => {
 
                     row.edited = true;
                     row.changedText = row.value;

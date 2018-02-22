@@ -1,7 +1,7 @@
 import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
-import {Table, Column} from "frontend/src/ctrl/Table";
-import {Modal, confirm} from "frontend/src/ctrl/Overlays";
+import {Column, Table} from "frontend/src/ctrl/Table";
+import {confirm, Modal} from "frontend/src/ctrl/Overlays";
 import {BFile, BSelect, BSwitch} from "frontend/src/layout/BootstrapForm";
 
 import download from "frontend/src/lib/Downloader";
@@ -42,8 +42,11 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleUpload(files) {
-        
-        alert("Import w trakcie przygotowania");
+        this.props._startLoadingIndicator();
+        Comm._post(this.props._baseURL + "/uploadFile", {file: this.state.fileToUpload}).then(() => {
+            this.props._notification("Pomyślnie załadowano plik");
+            this.props._stopLoadingIndicator();
+        });
     }
 
     public handleDelete(rows) {
@@ -79,8 +82,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
         this.columns = [
             this.state.selectedObject.label == "Produkty" ? Column.hidden("E:name") : null,
-            this.state.selectedObject.label == "Produkty" && Column.hidden("E:group_key"),
-            this.state.selectedObject.label == "Produkty" && Column.hidden("E:color"),
+            this.state.selectedObject.label == "Produkty" ? Column.hidden("E:group_key") : null,
+            this.state.selectedObject.label == "Produkty" ? Column.hidden("E:color") : null,
             Column.hidden("id_object"),
             Column.id("id", "Id"),
             Column.text("lang", "Język [kod]").width(140),
@@ -123,7 +126,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     {!row.loading && !row.edited && <div>{val}</div>}
                 </div>)
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
-                .onClick((row, column, event, rowContainer) => {
+                .onClick((row, column, rowContainer) => {
                     row.edited = true;
                     row.containerReference = rowContainer;
                     row.changedText = row.value;

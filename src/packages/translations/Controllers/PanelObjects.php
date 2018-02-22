@@ -4,31 +4,29 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-
-use App\Models\Persistent\Product;
-use Arrow\Common\Layouts\ReactComponentLayout;
-use Arrow\Common\Models\Helpers\FormHelper;
-use Arrow\Common\Models\Helpers\TableListORMHelper;
-use Arrow\Models\Dispatcher;
-use Arrow\Models\Operation;
-use Arrow\Models\Project;
-use Arrow\Models\View;
-use Arrow\ORM\Persistent\Criteria,
-    \Arrow\Access\Models\Auth;
-use Arrow\ORM\Persistent\DataSet;
+use Arrow\Access\Models\Auth;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\AdministrationPopupLayout;
 use Arrow\Common\BreadcrumbGenerator;
 use Arrow\Common\Links;
+use Arrow\Common\Models\Helpers\FormHelper;
+use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Common\PopupFormBuilder;
 use Arrow\Common\TableDatasource;
+use Arrow\Media\Element;
+use Arrow\Media\ElementConnection;
+use Arrow\Models\Dispatcher;
+use Arrow\Models\Operation;
+use Arrow\Models\Project;
+use Arrow\Models\View;
+use Arrow\ORM\Persistent\Criteria;
+use Arrow\ORM\Persistent\DataSet;
 use Arrow\Shop\Models\Persistent\Category;
 use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
-use Arrow\Media\Element;
-use Arrow\Media\ElementConnection;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -64,7 +62,7 @@ class PanelObjects extends BaseController
             "objects" => FormHelper::assocToOptions(array(
                 Category::getClass() => "Kategorie",
                 Property::getClass() => "Cechy",
-                \Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
+                //\Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
 
             ))
         ];
@@ -179,6 +177,45 @@ class PanelObjects extends BaseController
         $objWriter->save("php://output");
         exit;
 
+    }
+
+    /**
+     * @Route("/uploadFile")
+     */
+    public function uploadFile(Request $request, Project $project)
+    {
+        /** @var UploadedFile $fileObj */
+        $fileObj = $request->files->get("file")[0];
+        //  Read your Excel workbook
+        try {
+            $inputFileType = \PHPExcel_IOFactory::identify($fileObj->getPathname());
+            $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load($fileObj->getPathname());
+        } catch (\Exception $e) {
+            die('Error loading file "' . pathinfo($fileObj->getPathname(), PATHINFO_BASENAME) . '": ' . $e->getMessage());
+        }
+
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
+
+        $t = ObjectTranslation::getTable();
+        $db = $project->getDB();
+
+
+        $stm = $db->prepare("update $t set value=?  where id=?");
+
+        foreach ($sheetData as $row) {
+
+            if ($row[0]) {
+
+                $stm->execute([
+                    $row[3],
+                    $row[0],
+                ]);
+            }
+        }
+
+
+        return [true];
     }
 
     /**

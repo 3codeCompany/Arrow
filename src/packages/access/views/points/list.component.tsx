@@ -52,17 +52,15 @@ export default class  extends React.Component<any, any> {
                             Column.text("point_object_friendly_id", "Nazwa"),
 
                             Column.bool("control_enabled", "Kontrola")
-                                .onClick((row, val, event, rowComponent) => {
+                                .onClick((row, val, rowComponent) => {
                                     row.control_enabled = row.control_enabled == "1" ? "0" : "1";
                                     this.saveAccessPoint(row);
                                     rowComponent.forceUpdate();
                                 })
                             ,
                             Column.text("groups", "Grupy dostępu")
-                                .onClick((row, column, event, rowComponent) => {
-                                    if (event.target.tagName == "DIV" || event.target.tagName == "TD" || event.target.tagName == "I") {
-                                        row.edited = !row.edited;
-                                    }
+                                .onClick((row, column, rowComponent) => {
+                                    row.edited = !row.edited;
                                     rowComponent.forceUpdate();
                                 })
                                 .template((val: any, row) => {

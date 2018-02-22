@@ -72,6 +72,7 @@ class Router
         /** @var StateProvider $regenerate */
         $regenerate = (bool)\getenv("APP_DEBUG_LIVE_ROUTING_SCAN");
 
+
         $sourceFolders = [];
 
         $packages = Project::getInstance()->getPackages();
@@ -202,12 +203,12 @@ class Router
 
     }
 
-    public function execute($path)
+    public function execute($path, Request $request = null)
     {
         $action = $this->symfonyRouter($path);
         $action->setServiceContainer(Project::getInstance()->getContainer());
 
-        return $action->fetch($this->request, true);
+        return $action->fetch($request ?? $this->request, true);
     }
 
 }
