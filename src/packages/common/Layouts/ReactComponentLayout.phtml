@@ -29,7 +29,8 @@ unset($input["layout"])
             "dashboard" => $data["layout"]["allowedElements"]["dashboard"],
             "onlyBody" => $data["layout"]["onlyBody"],
             "user" => [
-                "login" => $data["layout"]["user"]["login"]
+                "login" => $data["layout"]["user"]["login"],
+                "isDev" => $data["layout"]["user"]["isDev"]
             ],
         ],
     ], JSON_PRETTY_PRINT) ?>;

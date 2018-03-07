@@ -45,6 +45,7 @@ export default class  extends React.Component<any, any> {
                     <Table
                         remoteURL={this.props._baseURL + "/getData"}
                         ref={(table) => this.table = table}
+                        rememberState={true}
                         columns={[
                             Column.id("id", "Id").headerTooltip("To jest bardzo bardzo ciekawe"),
 
@@ -62,12 +63,12 @@ export default class  extends React.Component<any, any> {
                                     row.edited = !row.edited;
                                     rowComponent.forceUpdate();
                                 })
-                                .template((val, row) => {
-                                    const v = parseInt(val || 0);
+                                .template((val: any, row) => {
+                                    const v: number = parseInt(val || 0, 10);
                                     const selected = [];
                                     const selectedNames = [];
                                     Object.entries(this.props.agroups).map(([id, name]) => {
-                                        if (v & id) {
+                                        if (v & id as any) {
                                             selected.push(id);
                                             selectedNames.push(name);
                                         }
@@ -79,9 +80,9 @@ export default class  extends React.Component<any, any> {
                                                 options={this.props.agroups}
                                                 onChange={(x) => {
                                                     if (x.event.target.checked) {
-                                                        row.groups = v + parseInt(x.event.target.value);
+                                                        row.groups = v + parseInt(x.event.target.value, 10);
                                                     } else {
-                                                        row.groups = v - parseInt(x.event.target.value);
+                                                        row.groups = v - parseInt(x.event.target.value, 10);
                                                     }
                                                     this.saveAccessPoint(row);
                                                 }}

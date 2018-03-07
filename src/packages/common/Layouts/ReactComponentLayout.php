@@ -58,7 +58,8 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $user = $auth->getUser();
         $data["user"] = $user ? [
             "login" => $user->_login(),
-            "id" => $user->_id()
+            "id" => $user->_id(),
+            "isDev" => $user->isInGroup("Developers")
         ] : null;
         $data["config"] = ConfigProvider::get("panel");
 
