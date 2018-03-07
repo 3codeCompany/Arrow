@@ -72,6 +72,8 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
         $data["language"] = $session->get("language", "pl");
 
+        $data["languages"] = (new AdministrationExtensionPoint())->getActiveLanguages();
+
         $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
         $data["jsCompilationData"] = explode("|", $tmp);
 

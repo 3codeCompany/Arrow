@@ -82,8 +82,8 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
         return <div className="login-view">
             <div className="lang-select">
-                {["PL", "EN"].map((el) =>
-                    <a key={el} className={el.toLowerCase() == LANGUAGE ? "active" : ""} onClick={() => this.handleLangChange(el)}>{el}</a>,
+                {window.reactBackOfficeVar.panel.languages.map((el) =>
+                    <a key={el} className={el.toLowerCase() == LANGUAGE ? "active" : ""} onClick={() => this.handleLangChange(el)}>{el.toUpperCase()}</a>,
                 )}
             </div>
 
