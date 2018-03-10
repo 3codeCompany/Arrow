@@ -23,6 +23,7 @@ trait TraitFileAwareObject
     {
         /** @var  PersistentObject $this */
         $this->files = MediaAPI::getMedia($this);
+
         $this->addVirtualField(
             $this->filesNamespace,
             function () {
@@ -32,6 +33,7 @@ trait TraitFileAwareObject
                 $this->files = $value;
             }
         );
+
 
         return $this;
     }
