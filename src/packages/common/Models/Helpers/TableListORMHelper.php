@@ -18,6 +18,7 @@ class TableListORMHelper
 
     private $defaultOrder = [];
     private $filters = [];
+    private $sorters = [];
     private $debug = false;
     private $fetchType = DataSet::AS_ARRAY;
     private $withMedia = false;
@@ -30,10 +31,12 @@ class TableListORMHelper
     }
 
 
+
     public function setWithMedia($flag)
     {
         $this->withMedia = $flag;
     }
+
 
     public function getInputData()
     {
@@ -51,6 +54,12 @@ class TableListORMHelper
                 unset($data["filters"][$name]);
             }
         }
+        foreach ($this->sorters as $name => $sorter) {
+            if (isset($data["order"][$name])) {
+                $sorter($criteria, $data["order"][$name]);
+                unset($data["order"][$name]);
+            }
+        }
 
 
         $criteria = TableDataSource::prepareCriteria($criteria, $data);
@@ -61,21 +70,34 @@ class TableListORMHelper
             }
         }
 
+
         $response = TableDataSource::prepareResponse($criteria, $data, $this->withMedia ? DataSet::AS_OBJECT : $this->fetchType);
 
-        MediaAPI::prepareMedia($response["data"]);
+        if($this->withMedia) {
+            MediaAPI::prepareMedia($response["data"]);
+        }
 
         if ($this->withMedia && DataSet::AS_OBJECT != $this->fetchType) {
             $response["data"]->toArray();
         }
 
-        $response["debug"] = $this->debug;
+         if($this->debug === true) {
+            $response["debug"] = $response["debug"];
+        }elseif($this->debug){
+            $response["debug"] = $this->debug;
+        }
         return $response;
     }
 
     public function addFilter($name, callable $fn)
     {
         $this->filters[$name] = $fn;
+        return $this;
+    }
+
+    public function addSorter($name, callable $fn)
+    {
+        $this->sorters[$name] = $fn;
         return $this;
     }
 

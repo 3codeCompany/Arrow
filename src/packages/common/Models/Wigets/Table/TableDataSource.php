@@ -67,7 +67,9 @@ class TableDataSource extends Criteria
         if (isset($data["columns"])) {
             foreach ($data["columns"] as $col) {
                 if (isset($col["field"]) && $col["field"]) {
-                    $criteria->addColumn($col["field"]);
+                    if(!is_numeric($col["field"])) {
+                        $criteria->addColumn($col["field"]);
+                    }
 
                 } elseif (isset($col["columns"])) {
                     foreach ($col["columns"] as $col) {
