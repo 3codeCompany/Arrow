@@ -40,6 +40,7 @@ class Kernel
 
         self::$project = new \Arrow\Models\Project((new Services())->buildContainer());
         //self::$project->setServiceContainer();
+        $router = Router::getDefault(self::$project->getContainer());
 
     }
 
@@ -47,10 +48,8 @@ class Kernel
     public static function processCall()
     {
 
-
         //paths for server only
-        $router = Router::getDefault(self::$project->getContainer());
-        $router->process();
+        Router::getDefault()->process();
         \Arrow\Kernel::end();
 
     }
