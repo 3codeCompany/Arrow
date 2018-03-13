@@ -9,6 +9,7 @@
 namespace Arrow\Common\Models\Helpers;
 
 use Arrow\Common\Models\Wigets\Table\TableDataSource;
+use Arrow\Media\Models\MediaAPI;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 
@@ -20,12 +21,20 @@ class TableListORMHelper
     private $sorters = [];
     private $debug = false;
     private $fetchType = DataSet::AS_ARRAY;
+    private $withMedia = false;
 
     private $inputData = null;
 
     public function __construct()
     {
         $this->inputData = json_decode(file_get_contents('php://input'), true);
+    }
+
+
+
+    public function setWithMedia($flag)
+    {
+        $this->withMedia = $flag;
     }
 
 
@@ -61,9 +70,18 @@ class TableListORMHelper
             }
         }
 
-        $response = TableDataSource::prepareResponse($criteria, $data, $this->fetchType);
 
-        if($this->debug === true) {
+        $response = TableDataSource::prepareResponse($criteria, $data, $this->withMedia ? DataSet::AS_OBJECT : $this->fetchType);
+
+        if($this->withMedia) {
+            MediaAPI::prepareMedia($response["data"]);
+        }
+
+        if ($this->withMedia && DataSet::AS_OBJECT != $this->fetchType) {
+            $response["data"]->toArray();
+        }
+
+         if($this->debug === true) {
             $response["debug"] = $response["debug"];
         }elseif($this->debug){
             $response["debug"] = $this->debug;

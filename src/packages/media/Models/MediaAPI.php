@@ -440,7 +440,7 @@ class MediaAPI
     public static function getMedia(PersistentObject $obj)
     {
         $result = MediaAPI::prepareMedia([$obj], null, null, false);
-        return !empty($result) ? $result : [];
+        return !empty($result) ? $result[$obj->getPKey()] : [];
     }
 
     public static function prepareMedia($objSet, $namesToGet = null, $limit = null, $assignToParam = true)

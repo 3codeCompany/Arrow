@@ -63,6 +63,11 @@ class FormHelper
     public static function bindFilesToObject(PersistentObject $object, $filesData, $upload)
     {
 
+
+        /*print "<pre>";
+        print_r($upload);
+        exit();*/
+
         foreach ($upload as $connName => $files) {
             foreach ($files as $file) {
                 MediaAPI::addFileToObject($object, $connName, $file["name"], $file["tmp_name"]);
@@ -70,6 +75,10 @@ class FormHelper
         }
 
         $media = MediaAPI::getMedia($object);
+
+      /*  print "<pre>";
+        print_r($filesData);
+        exit();*/
 
         // lookup to delete
         foreach ($media as $connName => $files) {
