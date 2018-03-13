@@ -17,6 +17,7 @@ class TableListORMHelper
 
     private $defaultOrder = [];
     private $filters = [];
+    private $sorters = [];
     private $debug = false;
     private $fetchType = DataSet::AS_ARRAY;
 
@@ -28,7 +29,8 @@ class TableListORMHelper
     }
 
 
-    public function getInputData(){
+    public function getInputData()
+    {
         return $this->inputData;
     }
 
@@ -43,6 +45,12 @@ class TableListORMHelper
                 unset($data["filters"][$name]);
             }
         }
+        foreach ($this->sorters as $name => $sorter) {
+            if (isset($data["order"][$name])) {
+                $sorter($criteria, $data["order"][$name]);
+                unset($data["order"][$name]);
+            }
+        }
 
 
         $criteria = TableDataSource::prepareCriteria($criteria, $data);
@@ -54,13 +62,24 @@ class TableListORMHelper
         }
 
         $response = TableDataSource::prepareResponse($criteria, $data, $this->fetchType);
-        $response["debug"] = $this->debug;
+
+        if($this->debug === true) {
+            $response["debug"] = $response["debug"];
+        }elseif($this->debug){
+            $response["debug"] = $this->debug;
+        }
         return $response;
     }
 
     public function addFilter($name, callable $fn)
     {
         $this->filters[$name] = $fn;
+        return $this;
+    }
+
+    public function addSorter($name, callable $fn)
+    {
+        $this->sorters[$name] = $fn;
         return $this;
     }
 
