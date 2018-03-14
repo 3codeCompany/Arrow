@@ -85,7 +85,9 @@ class TableListORMHelper
             $response["debug"] = $response["debug"];
         }elseif($this->debug){
             $response["debug"] = $this->debug;
-        }
+        }else{
+            $response["debug"] = false;
+         }
         return $response;
     }
 
