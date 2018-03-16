@@ -57,9 +57,9 @@
         <field name="user_id" type="integer" size="11"/>
         <field name="model" type="VARCHAR" size="50"/>
         <field name="model_id" type="VARCHAR" size="255"/>
+        <field name="element_id" type="VARCHAR" size="255"/>
         <field name="action" type="VARCHAR" size="255"/>
         <field name="add_data_1" type="text"/>
         <field name="add_data_2" type="text"/>
-
     </table>
 </schema>

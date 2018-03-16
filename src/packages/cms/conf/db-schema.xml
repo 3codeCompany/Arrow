@@ -16,6 +16,7 @@
         <field name="seo_page_text" type="VARCHAR" size="1255"/>
         <field name="content" type="TEXT"/>
         <field name="contents_additional" type="TEXT"/>
+        <field name="country" type="varchar" size="3"/>
     </table>
 
 
