@@ -57,10 +57,14 @@ class History extends ORM_Arrow_Common_Models_History_History {
         $user = Auth::getDefault()->getUser();
         $base =  [
             History::F_MODEL_ID => $object->getPKey(),
+            History::F_ELEMENT_ID => $object->getPKey(),
             History::F_MODEL => $object::getClass(),
+            History::F_CLASS => $object::getClass(),
             History::F_DATE => date("Y-m-d H:i:s"),
+            History::F_CREATED => date("Y-m-d H:i:s"),
             History::F_USER_ID => $user?$user->_id():"-1",
             History::F_ACTION => $description,
+            History::F_DESCRIPTION => $description,
             History::F_ADD_DATA_1 => $addData1,
             History::F_ADD_DATA_2 => $addData2,
         ];
