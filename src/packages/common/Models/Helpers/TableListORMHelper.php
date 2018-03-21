@@ -24,12 +24,13 @@ class TableListORMHelper
     private $withMedia = false;
 
     private $inputData = null;
+    private $objectsPostProcess;
+    private $arrayPostProcess;
 
     public function __construct()
     {
         $this->inputData = json_decode(file_get_contents('php://input'), true);
     }
-
 
 
     public function setWithMedia($flag)
@@ -71,23 +72,35 @@ class TableListORMHelper
         }
 
 
-        $response = TableDataSource::prepareResponse($criteria, $data, $this->withMedia ? DataSet::AS_OBJECT : $this->fetchType);
+        $response = TableDataSource::prepareResponse(
+            $criteria,
+            $data,
+            ($this->withMedia || $this->objectsPostProcess) ? DataSet::AS_OBJECT : $this->fetchType
+        );
 
-        if($this->withMedia) {
+        if ($this->withMedia) {
             MediaAPI::prepareMedia($response["data"]);
         }
 
-        if ($this->withMedia && DataSet::AS_OBJECT != $this->fetchType) {
+        if ($this->objectsPostProcess) {
+            ($this->objectsPostProcess)($response["data"]);
+        }
+
+        if (($this->withMedia || $this->objectsPostProcess) && DataSet::AS_OBJECT != $this->fetchType) {
             $response["data"]->toArray();
         }
 
-         if($this->debug === true) {
+        if ($this->fetchType == DataSet::AS_ARRAY && $this->arrayPostProcess) {
+            ($this->arrayPostProcess)($response["data"]);
+        }
+
+        if ($this->debug === true) {
             $response["debug"] = $response["debug"];
-        }elseif($this->debug){
+        } elseif ($this->debug) {
             $response["debug"] = $this->debug;
-        }else{
+        } else {
             $response["debug"] = false;
-         }
+        }
         return $response;
     }
 
@@ -109,6 +122,7 @@ class TableListORMHelper
         return $this;
     }
 
+
     public function setDebug($debug)
     {
         $this->debug = $debug;
@@ -118,6 +132,16 @@ class TableListORMHelper
     public function setFetchType($type)
     {
         $this->fetchType = $type;
+    }
+
+    public function addObjectsPostProcess($callback)
+    {
+        $this->objectsPostProcess = $callback;
+    }
+
+    public function addArrayPostProcess($callback)
+    {
+        $this->arrayPostProcess = $callback;
     }
 
 

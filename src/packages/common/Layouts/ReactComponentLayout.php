@@ -48,12 +48,17 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
     public function prepareData()
     {
+
+        $container = Kernel::getProject()->getContainer();
         $data = [];
         /** @var Auth $auth */
-        $auth = Kernel::getProject()->getContainer()->get(Auth::class);
+        $auth = $container->get(Auth::class);
 
         /** @var Session $session */
-        $session = Kernel::getProject()->getContainer()->get(Session::class);
+        $session = $container->get(Session::class);
+
+        /** @var Request $request */
+        $request = $container->get(Request::class);
 
         $user = $auth->getUser();
         $data["user"] = $user ? [
@@ -78,7 +83,7 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
         $data["jsCompilationData"] = explode("|", $tmp);
 
-        $data["ARROW_DEV_MODE_FRONT"] = (bool)\getenv("APP_DEBUG_WEBPACK_DEV_SERVER");
+        $data["ARROW_DEV_MODE_FRONT"] = (bool)\getenv("APP_DEBUG_WEBPACK_DEV_SERVER") || $request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER");
 
         return $data;
 
