@@ -174,6 +174,8 @@ class Router
             return;
         }
 
+
+
         $return = $this->action->fetch($this->request);
 
         if ($return !== null) {

@@ -129,8 +129,11 @@ class Action
             $preparedArgs[$key] = [];
             foreach ($argumentClassHint as $index => $hint) {
                 if ($hint) {
-
-                    $injection = $this->resolveClassDependancy($hint);
+                    if($hint->getName() == Request::class){
+                        $injection = $request;
+                    }else {
+                        $injection = $this->resolveClassDependancy($hint);
+                    }
                     if ($injection === null) {
                         throw new AutowiringFailedException($hint->getName(), "Service '{$hint->getName()}' not found [ Controller: {$this->controller}::{$this->method}] ");
                     } else {
@@ -152,11 +155,14 @@ class Action
             }
         }
 
+
         $instance = new $this->controller(...$preparedArgs["constructor"]);
 
         if ($instance instanceof Controller) {
             $instance->eventRunBeforeAction($this, $request);
         }
+
+
 
         return $instance->{$this->method}(...$preparedArgs["method"]);
 
