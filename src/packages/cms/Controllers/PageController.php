@@ -1,354 +1,261 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Adrian Śliwka
- * Date: 20.02.2018
- * Time: 12:38
+ * User: artur
+ * Date: 06.09.2017
+ * Time: 03:43
  */
 
 namespace Arrow\CMS\Controllers;
 
+
 use App\Controllers\BaseController;
+use App\Models\Translations\Helper;
+use Arrow\Access\Models\Auth;
+use Arrow\CMS\Models\Persistent\Page;
+use Arrow\Common\Layouts\ReactComponentLayout;
+
+use Arrow\Common\Models\Helpers\FormHelper;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Common\Models\Helpers\Validator;
+use Arrow\Media\Models\MediaAPI;
+use Arrow\ORM\Persistent\DataSet;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\Shop\Models\Persistent\Category;
-use Arrow\Shop\Models\Persistent\Property;
-use Arrow\Shop\Models\Persistent\PropertyCategoryConnection;
+use Arrow\Translations\Models\Language;
+use Arrow\Translations\Models\Translations;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class PageController
- * @package Arrow\Cms\Controllers
+ * @package Arrow\CMS\Controllers
  * @Route("/pages")
  */
 class PageController extends BaseController
 {
+        private $user;
+    private $country = "pl";
+
+    public function __construct(Auth $auth)
+    {
+                $this->user = $auth->getUser();
+                if ($this->user->isInGroup("Partnerzy sprzedaży")) {
+                        $this->country = substr($this->user->_login(), 2);
+                        Translations::setupLang($this->country);
+                    }
+    }
+
+    private function addAccessCondition(Criteria $criteria, $key)
+    {
+                switch ($criteria->getModel()) {
+                    case Page::class:
+                                $criteria->c(Page::F_COUNTRY, ["all", $this->country], Criteria::C_IN);
+                                break;
+        }
+    }
+
+
     /**
-     * @Route( "" )
+     * @Route("/index")
      */
     public function index()
     {
-        return [
-            true
-        ];
+                $editEnabled = $this->country == "pl" ? true : false;
+        
+                return [
+                        "editEnabled" => $editEnabled,
+                    ];
     }
-
-
     /**
-     * @Route( "/asyncIndex" )
+     * @Route("/asyncIndex")
      */
-    public function asyncListData()
-    {
-        $criteria = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC);
+    public function list()
+            {
+                $criteria = Page::get()
+                        ->_id(1, Criteria::C_GREATER_THAN);
 
+        if($this->country !== "pl"){
+                        $this->addAccessCondition($criteria, "");
+                    }
 
         $helper = new TableListORMHelper();
 
+        $helper->addDefaultOrder(Page::F_SORT);
+        $helper->setFetchType(DataSet::AS_OBJECT);
+        $data = $helper->getListData($criteria);
 
-        return $helper->getListData($criteria);
+        if($this->country == "ua"){
+                        Translations::translateObjectsList($data["data"], false, $this->country);
+                    }
+        //MediaAPI::prepareMedia($data["data"]);
+        return $this->json($data);
     }
 
-
     /**
-     * @Route( "/create" )
+     * @Route("/delete")
      */
-    public function create()
+    public function delete(Request $request)
     {
-        $names = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findAsFieldArray("name");
-        $depths = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findAsFieldArray("depth");
-        $ids = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findAsFieldArray("id");
-
-        $arr = [];
-        $i = 0;
-        foreach ($names as $key){
-            $arr[$i]["name"] = $key;
-            $i++;
-        }
-        $i = 0;
-        foreach ($depths as $key){
-            $arr[$i]{"depth"} = $key;
-            $i++;
-        }
-        $i = 0;
-        foreach ($ids as $key){
-            $arr[$i]{"id"} = $key;
-            $i++;
-        }
-
-
-        $propName = Property::get()
-            ->findAsFieldArray("name");
-        $propId = Property::get()
-            ->findAsFieldArray("id");
-
-        $prepareArr  = [];
-        $i = 0;
-        foreach ($propId as $row){
-            $prepareArr[$i]["id"] = $row;
-            $i++;
-        }
-        $i = 0;
-        foreach ($propName as $row){
-            $prepareArr[$i]["name"] = $row;
-            $i++;
-        }
-
-        return [
-            "depths" => $arr,
-            "properties" => $prepareArr,
-        ];
+                $data = Page::get()
+                        ->findByKey($request->get("key"));
+        MediaAPI::removeFilesFromObject($data);
+        $data->delete();
+        $this->json([true]);
     }
 
-
     /**
-     * @Route( "/store" )
+     * @Route("/get")
      */
-    public function store(Request $request)
+    public function get(Request $request)
     {
-        $data = $request->get("data");
-
-        $validator = Validator::create($data)
-            ->required([])
-        ;
-
-        $getParent = Category::get()
-            ->findByKey($data["parent_id"]);
-
-        $data["sort"] = $getParent["sort"] + 1;
-        $data["depth"] = $getParent["depth"] + 1;
-
-        if($validator->fails()){
-            return $validator->response();
-        }else{
-            $object = Category::create( $data );
-
-            return [
-                "id" => $object->_id()
-            ];
-        }
+                $data = Page::get()
+                        ->findByKey($request->get("key"));
+        Translations::translateObjectsList([$data]);
+        MediaAPI::prepareMedia([$data]);
+        $this->json($data);
     }
 
     /**
-     * @Route( "/{key}/storeProperties" )
+     * @Route("/edit")
      */
-    public function storeProperties(Request $request)
+    public function edit(Request $request)
     {
-        $data = $request->get("data");
+                $page = $request->get("key") != 1 ? Page::get()
+                        ->findByKey($request->get("key")) : [];
 
-        return [
-            "return" => $data
-        ];
-    }
+        if ($this->country !== "pl") {
+                        Translations::setupLang($this->country);
+                    } else if ($request->get("language") !== null){
+                        Translations::setupLang($request->get("language"));
+                    }
 
-    /**
-     * @Route( "/{key}/edit" )
-     */
-    public function edit(int $key)
-    {
-        $object = Category::get()
-            ->findByKey( $key );
-
-        $names = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findAsFieldArray("name");
-        $depths = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findAsFieldArray("depth");
-        $ids = Category::get()
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findAsFieldArray("id");
-
-        $arr = [];
-        $i = 0;
-        foreach ($names as $key){
-            $arr[$i]["name"] = $key;
-            $i++;
-        }
-        $i = 0;
-        foreach ($depths as $key){
-            $arr[$i]{"depth"} = $key;
-            $i++;
-        }
-        $i = 0;
-        foreach ($ids as $key){
-            $arr[$i]{"id"} = $key;
-            $i++;
-        }
+        Translations::translateObjectsList([$page]);
+        $pagData = $page->getData();
 
 
-        $propName = Property::get()
-            ->findAsFieldArray("name");
-        $propId = Property::get()
-            ->findAsFieldArray("id");
+        $pagesList = Page::get()
+                ->setColumns(["name"])
+                    ->_type("folder")
+                    ->find();
 
-        $prepareArr  = [];
-        $i = 0;
-        foreach ($propId as $row){
-            $prepareArr[$i]["id"] = $row;
-            $i++;
-        }
-        $i = 0;
-        foreach ($propName as $row){
-            $prepareArr[$i]["name"] = $row;
-            $i++;
-        }
 
-        return [
-            "object" => $object,
-            "properties" => $prepareArr,
-            "depths" => $arr,
-        ];
-    }
-
-    /**
-     * @Route( "/{key}/update" )
-     */
-    public function update(int $key, Request $request)
-    {
-        $data = $request->get("data");
-
-        $validator = Validator::create($data)
-            ->required([])
-        ;
-
-        $getParent = Category::get()
-            ->findByKey($data["parent_id"]);
-
-        $data["sort"] = $getParent["sort"];
-        $data["depth"] = $getParent["depth"] + 1;
-
-        if($validator->fails()){
-            return $validator->response();
-        }else{
-
-            $object = Category::get()
-                ->findByKey( $key )
-                ->setValues($data)
-                ->save()
-            ;
-
-            return [
-                "id" => $object->_id()
-            ];
-        }
-    }
-
-    /**
-     * @Route("/{key}/toggleActive")
-     */
-    public function toggleActive(int $key, Request $request){
-        $data = $request->get("active");
-        if($data == 1){
-            $data = 0;
+        if($this->country !== "pl"){
+                        $langs = Language::get()
+                                ->_code($this->country)
+                            ->setColumns(["name", "code"])
+                            ->find();
         } else {
-            $data = 1;
+                        $langs = Language::get()
+                                ->setColumns(["name", "code"])
+                            ->find();
         }
 
-        $saveArray = [
-            'active' => $data
-        ];
-        $object = Category::get()
-            ->findByKey($key)
-            ->setValues($saveArray)
-            ->save();
+        $pagData["files"] = FormHelper::bindFilesToForm($page);
 
-        return[
-            "id" => $object
-        ];
+        $currentLengauge = $this->country == "pl" ? "pl" : $this->country;
+
+        $editEnabled = $this->country == "pl" ? true : false;
+
+        $this->json([
+                "language" => $currentLengauge,
+                "editEnabled" => $editEnabled,
+                "page" => $pagData,
+                "parents" => $pagesList,
+                "languages" => $langs
+                ]);
     }
 
     /**
-     * @Route( "/{key}/moveUp" )
+     * @Route("/save")
      */
-    public function moveUp(int $key){
-        $el = Category::get()->findByKey($key);
+    public function save(Request $request)
+    {
+                $data = $request->get('page');
+                unset($data["files"]);
 
-        $target = Category::get()
-            ->_sort($el->_sort(), Criteria::C_LESS_THAN)
-            ->order(Category::F_SORT, Criteria::O_DESC)
-            ->findFirst();
+        $validator = Validator::create($data)
+                ->required(['name',]);
 
+        if (!$validator->check()) {
+                        return $this->json($validator->response());
+        }
 
-        $elSort = $el->_sort();
-        $targetSort = $target->_sort();
+        if (!isset($data["id"])) {
+                        $obj = Page::create($data);
+                    } else {
+                        $obj = Page::get()->findByKey($data["id"]);
+                    }
 
-        $el["sort"] = $targetSort;
-        $target["sort"] = $elSort;
+        //print_r($this->country);
+        if($this->country !== "pl"){
+                        if(strtoupper($this->country ) !== $request->get("language")){
+                                Translations::saveObjectTranslation($obj, $data, $this->country);
+                            } else {
+                                throw new \Exception('Your language is not correct. Please change it to "'.$this->country.'"');
+            }
+        } else {
+                        if($request->get("language") == null){
+                                Translations::saveObjectTranslation($obj, $data, $request->get("pl"));
+                            }
+            Translations::saveObjectTranslation($obj, $data, $request->get("language"));
+        }
 
-        $el->save();
-        $target->save();
+        //FormHelper::replaceObjectFiles($obj, "page");
+        $obj->updateTreeSorting();
 
-        return [];
+        //FormHelper::bindFilesToObject($obj, $files, $uploaded);
+
+        $this->json([$obj->_id()]);
     }
 
     /**
-     * @Route( "/{key}/moveDown" )
+     * @Route("/add")
      */
-    public function moveDown(int $key){
-        $el = Category::get()->findByKey($key);
+    public function add(Request $request)
+    {
+                $page = Page::create(
+                        [
+                                "parent_id" => 15,
+                                "name" => $request->get("data")["name"],
+                                Page::F_TYPE => Page::TYPE_PAGE,
+                                "country" => $this->country,
+                            ]
+                    );
+                $page->updateTreeSorting();
+        
+                $this->json([1]);
+            }
 
-        $target = Category::get()
-            ->_sort($el->_sort(), Criteria::C_GREATER_THAN)
-            ->order(Category::F_SORT, Criteria::O_ASC)
-            ->findFirst();
-
-
-        $elSort = $el->_sort();
-        $targetSort = $target->_sort();
-
-        $el["sort"] = $targetSort;
-        $target["sort"] = $elSort;
-
-        $el->save();
-        $target->save();
-
-        return [];
-    }
-
-    // test
     /**
-     * @Route( "/propArray" )
+     * @Route("/moveDown")
      */
-    public function propArray(){
-        $names = Category::get()
-            ->findAsFieldArray("name");
-        $depths = Category::get()
-            ->findAsFieldArray("depth");
+    public function moveDown(Request $request)
+    {
+                $obj = Page::get()->findByKey($request->get("key"));
+                $obj->moveDown();
+                $this->json();
+            }
 
-        $arr = [];
-        $i = 0;
+    /**
+     * @Route("/moveUp")
+     */
+    public function moveUp(Request $request)
+    {
+                $obj = Page::get()->findByKey($request->get("key"));
+                $obj->moveUp();
+                $this->json();
+            }
 
-        foreach ($names as $key){
-            $arr[$i]["name"] = $key;
-            $i++;
-        }
-
-        $i = 0;
-        foreach ($depths as $key){
-            $arr[$i]{"depth"} = $key;
-            $i++;
-        }
-
-        $i = 0;
-        $completedArr = [];
-        foreach ($arr as $row){
-//            if($arr[$i]["depth"] == 0){
-//                $arr[$i]["depth"] = "---";
-//            }
-            $completedArr[$arr[$i]["name"]] = $arr[$i]["depth"];
-            $i++;
-        }
-
-
-        return $completedArr;
+    /**
+     * @Route ( "/updateLang" )
+     */
+    public function updateLang(){
+                $arr = [
+                    ];
+                Translations::setupLang("ua");
+                Translations::translateTextArray($arr);
+        
+                return [true];
     }
+
 }
