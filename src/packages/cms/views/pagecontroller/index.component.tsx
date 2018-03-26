@@ -99,7 +99,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             "", icon: "Add", onClick: () => this.setState({currEdited: -1})},
                     ]}/>
                 <Navbar>
-                    <span>Cms</span>
+                    <span>{__("CMS")}</span>
                     <span>{__("Strony www")}</span>
                 </Navbar>
                 <div style={{padding: "0 10px"}}>

@@ -138,7 +138,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
 
                     ]}/>
                 <Navbar>
-                    <span>Cms</span>
+                    <span>{__("CMS")}</span>
                     <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{__("Strony www")}</a>
                     <span>{page.name}</span>
                 </Navbar>
