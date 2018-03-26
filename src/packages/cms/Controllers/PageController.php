@@ -38,19 +38,19 @@ class PageController extends BaseController
 
     public function __construct(Auth $auth)
     {
-                $this->user = $auth->getUser();
-                if ($this->user->isInGroup("Partnerzy sprzedaży")) {
-                        $this->country = substr($this->user->_login(), -2);
-                        Translations::setupLang($this->country);
-                    }
+        $this->user = $auth->getUser();
+        if ($this->user->isInGroup("Partnerzy sprzedaży")) {
+            $this->country = substr($this->user->_login(), -2);
+            Translations::setupLang($this->country);
+        }
     }
 
     private function addAccessCondition(Criteria $criteria, $key)
     {
-                switch ($criteria->getModel()) {
-                    case Page::class:
-                    $criteria->c(Page::F_COUNTRY, ["all", $this->country], Criteria::C_IN);
-                    break;
+        switch ($criteria->getModel()) {
+            case Page::class:
+                $criteria->c(Page::F_COUNTRY, ["all", $this->country], Criteria::C_IN);
+                break;
         }
     }
 
@@ -60,23 +60,24 @@ class PageController extends BaseController
      */
     public function index()
     {
-                $editEnabled = $this->country == "pl" ? true : false;
-        
-                return [
-                        "editEnabled" => $editEnabled,
-                    ];
+        $editEnabled = $this->country == "pl" ? true : false;
+
+        return [
+            "editEnabled" => $editEnabled,
+        ];
     }
+
     /**
      * @Route("/asyncIndex")
      */
     public function list()
-            {
-                $criteria = Page::get()
-                        ->_id(1, Criteria::C_GREATER_THAN);
+    {
+        $criteria = Page::get()
+            ->_id(1, Criteria::C_GREATER_THAN);
 
-        if($this->country !== "pl"){
-                        $this->addAccessCondition($criteria, "");
-                    }
+        if ($this->country !== "pl") {
+            $this->addAccessCondition($criteria, "");
+        }
 
         $helper = new TableListORMHelper();
 
@@ -84,9 +85,9 @@ class PageController extends BaseController
         $helper->setFetchType(DataSet::AS_OBJECT);
         $data = $helper->getListData($criteria);
 
-        if($this->country == "ua"){
-                        Translations::translateObjectsList($data["data"], false, $this->country);
-                    }
+        if ($this->country == "ua") {
+            Translations::translateObjectsList($data["data"], false, $this->country);
+        }
         //MediaAPI::prepareMedia($data["data"]);
         return $this->json($data);
     }
@@ -96,8 +97,8 @@ class PageController extends BaseController
      */
     public function delete(Request $request)
     {
-                $data = Page::get()
-                        ->findByKey($request->get("key"));
+        $data = Page::get()
+            ->findByKey($request->get("key"));
         MediaAPI::removeFilesFromObject($data);
         $data->delete();
         $this->json([true]);
@@ -108,8 +109,8 @@ class PageController extends BaseController
      */
     public function get(Request $request)
     {
-                $data = Page::get()
-                        ->findByKey($request->get("key"));
+        $data = Page::get()
+            ->findByKey($request->get("key"));
         Translations::translateObjectsList([$data]);
         MediaAPI::prepareMedia([$data]);
         $this->json($data);
@@ -121,12 +122,14 @@ class PageController extends BaseController
     public function edit(Request $request)
     {
         $page = $request->get("key") != 1 ? Page::get()
-                ->findByKey($request->get("key")) : [];
+            ->findByKey($request->get("key")) : [];
 
         if ($this->country !== "pl") {
             Translations::setupLang($this->country);
-        } else if ($request->get("language") !== null){
-            Translations::setupLang($request->get("language"));
+        } else {
+            if ($request->get("language") !== null) {
+                Translations::setupLang($request->get("language"));
+            }
         }
 
         Translations::translateObjectsList([$page]);
@@ -134,20 +137,26 @@ class PageController extends BaseController
 
 
         $pagesList = Page::get()
-                ->setColumns(["name"])
-                    ->_type("folder")
-                    ->find();
+            ->setColumns(["name"])
+            ->_type("folder")
+            ->find();
 
 
-        if($this->country !== "pl"){
-                        $langs = Language::get()
-                                ->_code($this->country)
-                            ->setColumns(["name", "code"])
-                            ->find();
+        if ($this->country !== "pl") {
+            $langs = Language::get()
+                ->_code($this->country)
+                ->setColumns(["name", "code"])
+                ->find()
+                ->toPureArray();
+
+            foreach ($langs as $key => $item) {
+                $langs[$key]["name"] = Translations::translateText($langs[$key]["name"]);
+            }
+
         } else {
-                        $langs = Language::get()
-                                ->setColumns(["name", "code"])
-                            ->find();
+            $langs = Language::get()
+                ->setColumns(["name", "code"])
+                ->find();
         }
 
         $pagData["files"] = FormHelper::bindFilesToForm($page);
@@ -157,12 +166,12 @@ class PageController extends BaseController
         $editEnabled = $this->country == "pl" ? true : false;
 
         $this->json([
-                "language" => $currentLengauge,
-                "editEnabled" => $editEnabled,
-                "page" => $pagData,
-                "parents" => $pagesList,
-                "languages" => $langs
-                ]);
+            "language" => $currentLengauge,
+            "editEnabled" => $editEnabled,
+            "page" => $pagData,
+            "parents" => $pagesList,
+            "languages" => $langs
+        ]);
     }
 
     /**
@@ -170,33 +179,33 @@ class PageController extends BaseController
      */
     public function save(Request $request)
     {
-                $data = $request->get('page');
-                unset($data["files"]);
+        $data = $request->get('page');
+        unset($data["files"]);
 
         $validator = Validator::create($data)
-                ->required(['name',]);
+            ->required(['name',]);
 
         if (!$validator->check()) {
-                        return $this->json($validator->response());
+            return $this->json($validator->response());
         }
 
         if (!isset($data["id"])) {
-                        $obj = Page::create($data);
-                    } else {
-                        $obj = Page::get()->findByKey($data["id"]);
-                    }
+            $obj = Page::create($data);
+        } else {
+            $obj = Page::get()->findByKey($data["id"]);
+        }
 
         //print_r($this->country);
-        if($this->country !== "pl"){
-                        if(strtoupper($this->country ) !== $request->get("language")){
-                                Translations::saveObjectTranslation($obj, $data, $this->country);
-                            } else {
-                                throw new \Exception('Your language is not correct. Please change it to "'.$this->country.'"');
+        if ($this->country !== "pl") {
+            if (strtoupper($this->country) !== $request->get("language")) {
+                Translations::saveObjectTranslation($obj, $data, $this->country);
+            } else {
+                throw new \Exception('Your language is not correct. Please change it to "' . $this->country . '"');
             }
         } else {
-                        if($request->get("language") == null){
-                                Translations::saveObjectTranslation($obj, $data, $request->get("pl"));
-                            }
+            if ($request->get("language") == null) {
+                Translations::saveObjectTranslation($obj, $data, $request->get("pl"));
+            }
             Translations::saveObjectTranslation($obj, $data, $request->get("language"));
         }
 
@@ -213,49 +222,50 @@ class PageController extends BaseController
      */
     public function add(Request $request)
     {
-                $page = Page::create(
-                        [
-                                "parent_id" => 15,
-                                "name" => $request->get("data")["name"],
-                                Page::F_TYPE => Page::TYPE_PAGE,
-                                "country" => $this->country,
-                            ]
-                    );
-                $page->updateTreeSorting();
-        
-                $this->json([1]);
-            }
+        $page = Page::create(
+            [
+                "parent_id" => 15,
+                "name" => $request->get("data")["name"],
+                Page::F_TYPE => Page::TYPE_PAGE,
+                "country" => $this->country,
+            ]
+        );
+        $page->updateTreeSorting();
+
+        $this->json([1]);
+    }
 
     /**
      * @Route("/moveDown")
      */
     public function moveDown(Request $request)
     {
-                $obj = Page::get()->findByKey($request->get("key"));
-                $obj->moveDown();
-                $this->json();
-            }
+        $obj = Page::get()->findByKey($request->get("key"));
+        $obj->moveDown();
+        $this->json();
+    }
 
     /**
      * @Route("/moveUp")
      */
     public function moveUp(Request $request)
     {
-                $obj = Page::get()->findByKey($request->get("key"));
-                $obj->moveUp();
-                $this->json();
-            }
+        $obj = Page::get()->findByKey($request->get("key"));
+        $obj->moveUp();
+        $this->json();
+    }
 
     /**
      * @Route ( "/updateLang" )
      */
-    public function updateLang(){
-                $arr = [
-                    ];
-                Translations::setupLang("ua");
-                Translations::translateTextArray($arr);
-        
-                return [true];
+    public function updateLang()
+    {
+        $arr = [
+        ];
+        Translations::setupLang("ua");
+        Translations::translateTextArray($arr);
+
+        return [true];
     }
 
 }
