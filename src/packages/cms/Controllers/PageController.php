@@ -33,14 +33,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PageController extends BaseController
 {
-        private $user;
+    private $user;
     private $country = "pl";
 
     public function __construct(Auth $auth)
     {
                 $this->user = $auth->getUser();
                 if ($this->user->isInGroup("Partnerzy sprzedaży")) {
-                        $this->country = substr($this->user->_login(), 2);
+                        $this->country = substr($this->user->_login(), -2);
                         Translations::setupLang($this->country);
                     }
     }
@@ -49,8 +49,8 @@ class PageController extends BaseController
     {
                 switch ($criteria->getModel()) {
                     case Page::class:
-                                $criteria->c(Page::F_COUNTRY, ["all", $this->country], Criteria::C_IN);
-                                break;
+                    $criteria->c(Page::F_COUNTRY, ["all", $this->country], Criteria::C_IN);
+                    break;
         }
     }
 
@@ -120,14 +120,14 @@ class PageController extends BaseController
      */
     public function edit(Request $request)
     {
-                $page = $request->get("key") != 1 ? Page::get()
-                        ->findByKey($request->get("key")) : [];
+        $page = $request->get("key") != 1 ? Page::get()
+                ->findByKey($request->get("key")) : [];
 
         if ($this->country !== "pl") {
-                        Translations::setupLang($this->country);
-                    } else if ($request->get("language") !== null){
-                        Translations::setupLang($request->get("language"));
-                    }
+            Translations::setupLang($this->country);
+        } else if ($request->get("language") !== null){
+            Translations::setupLang($request->get("language"));
+        }
 
         Translations::translateObjectsList([$page]);
         $pagData = $page->getData();

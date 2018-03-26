@@ -12,6 +12,7 @@ import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {Datasource} from "frontend/src/lib/Datasource";
 import {LoaderContainer} from "frontend/src/ctrl/LoaderContainer";
 import Icon from "frontend/src/ctrl/Icon";
+import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
@@ -34,7 +35,13 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 .template((val, row) => <div style={{marginLeft: 30 * (row.depth - 1)}}>{row.type == "container" ? <Icon name={"OpenFolderHorizontal"} /> : <Icon name={"FileASPX"} />} {val} </div>),
             Column.id("id", "Id").noFilter(),
             Column.bool("active", __("Aktywna")),
-            Column.map("type", __("Typ"), {page: __("Strona"), container: __("Folder")}),
+            Column.text("type", __("Typ"))
+                .noFilter()
+                .addFilter(FilterHelper.select("type", __("Typ"), [
+                    {value: "page", label: "page"},
+                    {value: "folder", label: "folder"},
+                    {value: "link", label: "link"},
+                ], false).get()),
             Column.text("link", __("Link")),
 
             props.editEnabled ? Column.template("", () => <Icon name={"ChevronDown"} />)
@@ -125,7 +132,6 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             this.props._notification(this.state.currEditedData.name, __("Zapisano pomyślnie"));
                             this.setState({currEdited: -1});
                             this.table.load();
-
                         }}
                     >
                         {(form) => <div style={{padding: 10, width: 300}} className="">
