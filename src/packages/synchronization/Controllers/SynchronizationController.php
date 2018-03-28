@@ -10,16 +10,16 @@ namespace Arrow\Synchronization\Controllers;
 
 use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\ORM\Persistent\Criteria;
-use Arrow\Shop\Models\Esotiq\Synchronization\SynchLog;
-use Arrow\Shop\Models\Esotiq\Synchronization\SynchronizationConfig;
-use Arrow\Shop\Models\Esotiq\Synchronization\SynchronizationRunner;
-use Arrow\Shop\Models\Esotiq\Synchronization\SynrronizationRunner;
-use Symfony\Component\HttpFoundation\Request;
+use Arrow\Synchronization\Models\SynchLog;
+
+use Arrow\Synchronization\Models\SynchronizationConfig;
+use Arrow\Synchronization\Models\SynchronizationRunner;
+use Arrow\Synchronization\Models\SynrronizationRunner;
 use Symfony\Component\Routing\Annotation\Route;
 
 
 /**
- * @Route("/synchronization")
+ * @Route("")
  */
 class SynchronizationController
 {
@@ -29,7 +29,7 @@ class SynchronizationController
      * @return array
      * @Route("/log")
      */
-    public function index()
+    public function log()
     {
         $config = new SynchronizationConfig();
         return [

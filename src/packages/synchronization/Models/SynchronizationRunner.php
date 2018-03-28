@@ -6,7 +6,7 @@
  * Time: 09:18
  */
 
-namespace Arrow\Shop\Models\Esotiq\Synchronization;
+namespace Arrow\Synchronization\Models;
 
 
 use Symfony\Component\Stopwatch\Stopwatch;

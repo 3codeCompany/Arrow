@@ -6,12 +6,12 @@
  * Time: 09:18
  */
 
-namespace Arrow\Shop\Models\Esotiq\Synchronization;
+namespace Arrow\Synchronization\Models;
 
 
-use Arrow\Shop\Models\Esotiq\Synchronization\Synchronizers\Connectors\Parlours;
-use Arrow\Shop\Models\Esotiq\Synchronization\Synchronizers\OrdersSynchronizer;
-use Arrow\Shop\Models\Esotiq\Synchronization\Synchronizers\WarehouseSynchronizer;
+use Arrow\Synchronization\Models\Synchronizers\Connectors\Parlours;
+use Arrow\Synchronization\Models\Synchronizers\OrdersSynchronizer;
+use Arrow\Synchronization\Models\Synchronizers\WarehouseSynchronizer;
 use Arrow\Shop\Models\Persistent\Warehouse;
 
 class SynchronizationConfig

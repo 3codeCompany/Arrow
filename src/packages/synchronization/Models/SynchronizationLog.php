@@ -6,7 +6,7 @@
  * Time: 16:53
  */
 
-namespace Arrow\Shop\Models\Esotiq\Synchronization;
+namespace Arrow\Synchronization\Models;
 
 
 
