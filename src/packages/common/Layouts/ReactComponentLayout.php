@@ -80,10 +80,12 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 
         $data["languages"] = (new AdministrationExtensionPoint())->getActiveLanguages();
 
-        $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
-        $data["jsCompilationData"] = explode("|", $tmp);
-
         $data["ARROW_DEV_MODE_FRONT"] = (bool)\getenv("APP_DEBUG_WEBPACK_DEV_SERVER") || $request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER");
+
+        if (!$data["ARROW_DEV_MODE_FRONT"]) {
+            $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
+            $data["jsCompilationData"] = explode("|", $tmp);
+        }
 
         return $data;
 

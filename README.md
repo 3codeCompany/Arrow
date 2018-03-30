@@ -76,3 +76,7 @@
     * Clear cache
         
         `php bin/console cache:clear`
+
+4. Chrome pierdoły
+
+chrome://flags/#allow-insecure-localhost

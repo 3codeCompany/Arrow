@@ -4,7 +4,7 @@ import Navbar from "frontend/src/ctrl/Navbar";
 
 import {Table, Column} from "frontend/src/ctrl/Table";
 import {Modal, confirm} from "frontend/src/ctrl/Overlays";
-import {BFile, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
+import {BFile, BFileList, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
 import Comm from "frontend/src/lib/Comm";
 
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
@@ -173,10 +173,22 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                 >
                     <div style={{padding: 10, maxWidth: 500}} className="container">
-                        <BFile label={""} value={this.state.fileToUpload} onChange={(e) => this.setState({fileToUpload: e.value})}/>
-                        {this.state.fileToUpload != false &&
-                        <button onClick={this.handleUpload.bind(this)} className="btn btn-primary pull-right"><Icon name={"Upload"}/> Laduj</button>
-                        }
+                        <BForm
+                            ref={(el) => this.form = el}
+                            action={this.props._baseURL + `/uploadLangFile`}
+                            namespace={"data"}
+                            onSuccess={() => {
+                                this.props._notification("Sukces", "Plik załadowano poprawnie.");
+                            }}
+                        >{(form) => {
+                            return (
+                                <div>
+                                    <BFileList name="files" {...form("files")}/>
+                                    <button className="btn btn-primary pull-right"><Icon name={"Upload"}/> Laduj</button>
+                                </div>
+                            )
+                        }}
+                        </BForm>
                     </div>
 
                 </Modal>

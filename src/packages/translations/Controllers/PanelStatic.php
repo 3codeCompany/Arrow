@@ -91,10 +91,7 @@ class PanelStatic extends BaseController
      */
     public function uploadLangFile()
     {
-        print_r($_FILES);
-
-
-        $file = $_FILES["file"]["tmp_name"][0];
+        $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
 
         //  Read your Excel workbook
         try {
@@ -117,14 +114,11 @@ class PanelStatic extends BaseController
 
         foreach ($sheetData as $row) {
             $stm->execute([
-                $row[0],
-                $row[2]
+                $row[2],
+                $row[0]
             ]);
         }
         $db->commit();
-
-        print_r($sheetData);
-
 
         $this->json();
     }

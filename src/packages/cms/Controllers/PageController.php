@@ -18,12 +18,14 @@ use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Common\Models\Helpers\FormHelper;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Common\Models\Helpers\Validator;
+use Arrow\Kernel;
 use Arrow\Media\Models\MediaAPI;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\Translations;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -38,10 +40,18 @@ class PageController extends BaseController
 
     public function __construct(Auth $auth)
     {
-        $this->user = $auth->getUser();
-        if ($this->user->isInGroup("Partnerzy sprzedaży")) {
-            $this->country = substr($this->user->_login(), -2);
-            Translations::setupLang($this->country);
+
+        $user = Auth::getDefault()->getUser();
+        $container = Kernel::getProject()->getContainer();
+
+        /** @var Session $session */
+        $session = $container->get(Session::class);
+
+        $data["language"] = $session->get("language", "pl");
+        Translations::setupLang($data["language"]);
+
+        if ($user->isInGroup("Partnerzy sprzedaży")) {
+            $this->country = substr($user->_login(), -2);
         }
     }
 

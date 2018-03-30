@@ -31,7 +31,8 @@
       "Arrow\\Communication\\": "src/packages/communication",
       "Arrow\\Media\\": "src/packages/media",
       "Arrow\\Translations\\": "src/packages/translations",
-      "Arrow\\Utils\\": "src/packages/utils"
+      "Arrow\\Utils\\": "src/packages/utils",
+      "Arrow\\Synchronization\\": "src/packages/synchronization"
     }
   }
 }
