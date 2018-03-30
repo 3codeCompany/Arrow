@@ -47,6 +47,9 @@ class Router
 
     private $symfonyRouter = null;
 
+    /**
+     * @var Request
+     */
     private $request;
 
     /**
@@ -99,7 +102,7 @@ class Router
 
 
         $file = ARROW_CACHE_PATH . "/symfony/route.json";
-        if ($regenerate || !file_exists($file)) {
+        if ($regenerate || !file_exists($file) || $this->request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER")) {
             $col = $router->getRouteCollection();
             $jsCache = [];
 
@@ -173,7 +176,6 @@ class Router
             $this->notFound($this->action);
             return;
         }
-
 
 
         $return = $this->action->fetch($this->request);

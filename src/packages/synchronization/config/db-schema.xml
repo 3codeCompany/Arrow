@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<schema class-namespace="Arrow\Media">
+    <table name="crm_synch_log" class="Arrow\Synchronization\SynchronizationLog">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="type" type="VARCHAR" size="255"/>
+        <field name="started" type="DATETIME"/>
+        <field name="finished" type="DATETIME"/>
+        <field name="time" type="int" size="8"/>
+        <field name="memory" type="int" size="8"/>
+        <field name="sub_tasks_log" type="Text"/>
+        <field name="output" type="Text"/>
+        <field name="errors" type="Text"/>
+    </table>
+</schema>

@@ -87,7 +87,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
             $data["jsCompilationData"] = explode("|", $tmp);
         }
 
-
         return $data;
 
     }
