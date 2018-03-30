@@ -77,23 +77,7 @@ class DeveloperTools extends \Arrow\Models\Controller
         $this->json([$_SESSION["ARROW_DEV_MODE"]]);
     }
 
-    /**
-     * @Route("/dumpLangFiles")
-     */
-    public function dumpLangFiles(Project $project)
-    {
-        $lang = "en";
-        $text = LanguageText::get()
-            ->_lang($lang)
-            ->_value("", Criteria::C_NOT_EQUAL)
-            ->findAsFieldArray(LanguageText::F_VALUE, LanguageText::F_ORIGINAL);
 
-        $text["language"] = "en";
-
-        file_put_contents(ARROW_DOCUMENTS_ROOT . "/build/js/lang/{$lang}.json", json_encode($text, JSON_PRETTY_PRINT));
-
-        return [];
-    }
 
 
 }

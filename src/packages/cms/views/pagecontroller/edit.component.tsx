@@ -127,7 +127,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     isSearchBoxVisible={false}
 
                     items={[
-                        {key: "f0", label: __("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "/index")},
+                        {key: "f0", label: __("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL )},
                         {key: "f1", label: __("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
                         this.state.dirty ? {
                             key: "f3", label: __("Anuluj") + ` `, icon: "Save", onClick: () => {

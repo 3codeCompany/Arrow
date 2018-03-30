@@ -10,6 +10,7 @@ import Comm from "frontend/src/lib/Comm";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Icon} from "frontend/src/ctrl/Icon";
+import download from "frontend/src/lib/Downloader";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -18,6 +19,8 @@ interface IProps extends IArrowViewComponentProps {
 }
 
 export default class ArrowViewComponent extends React.Component<IProps, any> {
+
+
     public table: any;
     private columns: any;
 
@@ -34,30 +37,30 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("lang", "Kod języka"),
             Column.map("lang", "Język", this.props.language),
             Column.text("value", "Wartość")
-                .template((val, row, ) => {
-                    console.log("here");
+                .template((val, row) => {
                     return <div>
 
-                    {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
-                    {row.edited === true && [
-                        <textarea
-                            style={{width: "100%", display: "block"}}
-                            onChange={(e) => row.changedText = e.target.value} defaultValue={val}
-                            autoFocus={true}
-                            onClick={(e) => e.stopPropagation}
-                        />,
-                        <div>
+                        {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
+                        {row.edited === true && [
+                            <textarea
+                                style={{width: "100%", display: "block"}}
+                                onChange={(e) => row.changedText = e.target.value} defaultValue={val}
+                                autoFocus={true}
+                                onClick={(e) => e.stopPropagation}
+                            />,
+                            <div>
 
-                            <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>Zapisz</a>
-                            <a onClick={(e) => {
-                                e.stopPropagation();
-                                row.edited = false;
-                                row.container.forceUpdate();
-                            }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>Anuluj</a>
-                        </div>,
-                    ]}
-                    {!row.loading && !row.edited && <div>{val}</div>}
-                </div>})
+                                <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>Zapisz</a>
+                                <a onClick={(e) => {
+                                    e.stopPropagation();
+                                    row.edited = false;
+                                    row.container.forceUpdate();
+                                }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>Anuluj</a>
+                            </div>,
+                        ]}
+                        {!row.loading && !row.edited && <div>{val}</div>}
+                    </div>
+                })
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
                 .onClick((row, column, rowContainer) => {
 
@@ -75,6 +78,14 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 .onClick((row) => this.handleDelete(row)),
         ];
 
+    }
+
+    handleDownload(): any {
+        const lang = this.state.langToDownload
+        //window.open(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
+
+
+        download(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
     }
 
     public handleRowChanged(row, e) {
@@ -148,7 +159,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             onChange={(e) => this.setState({langToDownload: e.value})}
                         />
 
-                        {this.state.langToDownload != "xx" && <button className="btn btn-primary pull-right"><Icon name={"Download"}/> Pobierz</button>}
+                        {this.state.langToDownload != "xx" && <button className="btn btn-primary pull-right" onClick={() => this.handleDownload()}><Icon name={"Download"}/> Pobierz</button>}
 
                     </div>
                 </Modal>

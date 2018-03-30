@@ -51,7 +51,7 @@ class PanelStatic extends BaseController
     {
         $db = Project::getInstance()->getDB();
         $t = LanguageText::getTable();
-        //$db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+        $db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
 
         return [
             'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
@@ -135,7 +135,7 @@ class PanelStatic extends BaseController
     public function downloadLangFile(Request $request)
     {
 
-        $data = json_decode($request->get("payload"), true);
+        //$data = json_decode($request->get("payload"), true);
 
 
         $objPHPExcel = new \PHPExcel();
@@ -143,9 +143,9 @@ class PanelStatic extends BaseController
         $sh = $objPHPExcel->setActiveSheetIndex(0);
 
         $criteria = LanguageText::get()
-            ->_lang($data["lang"]);
+            ->_lang($request->get("lang"));
 
-        if ($data["onlyEmpty"]) {
+        if ($request->get("onlyEmpty")) {
             $criteria->_value([null, ""], Criteria::C_IN);
         }
         // Add some data
@@ -189,7 +189,7 @@ class PanelStatic extends BaseController
         $objPHPExcel->setActiveSheetIndex(0);
         // Redirect output to a client’s web browser (Excel5)
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="tłumaczenia_' . $data['lang'] . '.xls"');
+        header('Content-Disposition: attachment;filename="tłumaczenia_' . $request->get("lang"). '.xls"');
         header('Cache-Control: max-age=0');
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save("php://output");

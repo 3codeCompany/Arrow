@@ -7,7 +7,9 @@ use App\Controllers\BaseController;
 use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\Translations\Models\Language;
+use Arrow\Translations\Models\LanguageText;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -83,6 +85,23 @@ class Languages extends BaseController
             ->findByKey($request->get("key"));
         $data->delete();
         return [true];
+    }
+
+    /**
+     * @Route("/dumpLangFile/{langCode}")
+     */
+    public function dumpLangFile($langCode)
+    {
+
+        $text = LanguageText::get()
+            ->_lang($langCode)
+            ->_value("", Criteria::C_NOT_EQUAL)
+            ->findAsFieldArray(LanguageText::F_VALUE, LanguageText::F_ORIGINAL);
+
+        $text["language"] = "en";
+
+        return $text;
+
     }
 
 }

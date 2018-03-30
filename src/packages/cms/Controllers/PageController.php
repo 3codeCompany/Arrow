@@ -56,7 +56,7 @@ class PageController extends BaseController
 
 
     /**
-     * @Route("/index")
+     * @Route("")
      */
     public function index()
     {
@@ -86,7 +86,7 @@ class PageController extends BaseController
         $data = $helper->getListData($criteria);
 
         if ($this->country == "ua") {
-            Translations::translateObjectsList($data["data"], false, $this->country);
+            Translations::translateObjectsList($data["data"], Page::class, $this->country);
         }
         //MediaAPI::prepareMedia($data["data"]);
         return $this->json($data);
