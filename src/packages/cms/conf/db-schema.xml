@@ -9,6 +9,7 @@
         <field name="sort" type="INTEGER" size="11"/>
         <field name="type" type="VARCHAR" size="255"/>
         <field name="name" type="VARCHAR" size="255"/>
+        <field name="link" type="VARCHAR" size="255"/>
         <field name="front_link" type="VARCHAR" size="255"/>
         <field name="seo_title" type="VARCHAR" size="255"/>
         <field name="seo_keywords" type="VARCHAR" size="255"/>

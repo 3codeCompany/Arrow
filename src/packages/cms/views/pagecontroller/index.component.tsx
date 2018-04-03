@@ -34,6 +34,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("name", __("Nazwa"))
                 .template((val, row) => <div style={{marginLeft: 30 * (row.depth - 1)}}>{row.type == "container" ? <Icon name={"OpenFolderHorizontal"} /> : <Icon name={"FileASPX"} />} {val} </div>),
             Column.id("id", "Id").noFilter(),
+            Column.text("country", __("Kraj"))
+                .width(70)
+                .className("center"),
             Column.bool("active", __("Aktywna")),
             Column.text("type", __("Typ"))
                 .noFilter()
@@ -107,7 +110,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     ]}/>
                 <Navbar>
                     <span>{__("CMS")}</span>
-                    <span>{__("Strony www")}</span>
+                    <span>{__("Strony wwww")}</span>
                 </Navbar>
                 <div style={{padding: "0 10px"}}>
                     <Table

@@ -12,10 +12,9 @@ import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {Arrow} from "../../../../data/cache/db/ts-definitions";
 import {Panel} from "frontend/src/ctrl/Panel";
 import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
-import IPage = Arrow.CMS.Models.Persistent.IPage;
 
 interface IProps extends IArrowViewComponentProps {
-    page: IPage;
+    page: any;
     languages: any;
     parents: any;
 
@@ -162,6 +161,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
 
                                     <Row noGutters={false}>
                                         <BText label={__("Nazwa")} {...form("name")} />
+                                        <BSelect label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
                                     </Row>
                                     {this.props.editEnabled ?
                                         <Row noGutters={false}>
@@ -177,7 +177,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             : null
                                         }
 
-                                        <BText label={__("Link")} {...form("front_link")} />
+                                        <BText label={__("Link")} {...form("link")} />
 
                                     </Row>
 
