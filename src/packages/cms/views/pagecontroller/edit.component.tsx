@@ -9,13 +9,13 @@ import {Row} from "frontend/src/layout/BootstrapLayout";
 
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {Arrow} from "../../../../data/cache/db/ts-definitions";
+
 import {Panel} from "frontend/src/ctrl/Panel";
 import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
-import IPage = Arrow.CMS.Models.Persistent.IPage;
+
 
 interface IProps extends IArrowViewComponentProps {
-    page: IPage;
+    page: any;
     languages: any;
     parents: any;
 
