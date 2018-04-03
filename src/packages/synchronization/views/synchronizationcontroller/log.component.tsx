@@ -68,7 +68,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                 <span onClick={() => this.handleSync(sub)}>{sub.label}</span>
                                                 <span onClick={() => this.handleOpen(sub)} style={{float: 'right'}}><Icon name={"OpenInNewWindow"}/> </span>
                                             </a>
-                                        </li>}
+                                        </li>)}
                                     </ul>}
                                 </li>,
                             )}
