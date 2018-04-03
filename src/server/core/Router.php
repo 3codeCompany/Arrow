@@ -57,6 +57,12 @@ class Router
      *
      * @return Router
      */
+
+    /**
+     * @var bool
+     */
+    private $inDevMode = false;
+
     public static function getDefault($serviceContainer = null)
     {
         if (self::$oInstance == null) {
@@ -73,7 +79,7 @@ class Router
         $this->request = $this->container->get(Request::class);
 
         /** @var StateProvider $regenerate */
-        $regenerate = (bool)\getenv("APP_DEBUG_LIVE_ROUTING_SCAN");
+        $this->inDevMode = (bool)\getenv("APP_DEBUG_LIVE_ROUTING_SCAN") || $this->request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER");
 
 
         $sourceFolders = [];
@@ -96,13 +102,13 @@ class Router
         $router = new \Symfony\Component\Routing\Router(
             $loader,
             $sourceFolders,
-            ($regenerate ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
+            ($this->inDevMode ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
             $context
         );
 
 
         $file = ARROW_CACHE_PATH . "/symfony/route.json";
-        if ($regenerate || !file_exists($file) || $this->request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER")) {
+        if ($this->inDevMode || !file_exists($file)) {
             $col = $router->getRouteCollection();
             $jsCache = [];
 
@@ -183,7 +189,7 @@ class Router
         if ($return !== null) {
 
             if (is_array($return)) {
-                (new JsonResponse($return))->send();
+                $return = (new JsonResponse($return));
 
             } elseif ($return instanceof AbstractLayout) {
 
@@ -191,19 +197,21 @@ class Router
                     $template = Action::generateTemplatePath($this->action->routeParameters);
                     $return->setTemplate(ARROW_DOCUMENTS_ROOT . $template . ".phtml");
                 }
-
-                $response = new Response(
+                $return = new Response(
                     $return->render(),
                     Response::HTTP_OK,
                     array('content-type' => 'text/html')
                 );
 
-                $response->send();
-            } else {
-                $return->send();
             }
+            if ($this->inDevMode) {
+                $return->headers->set("ARROW_DEBUG_ROUTE_HASH", hash_file('md5', ARROW_CACHE_PATH . "/symfony/route.json"));
+            }
+            $return->send();
+
 
         }
+
 
     }
 
