@@ -49,7 +49,11 @@ class SynchronizationRunner
                     $return .= $obj->{$method[1]}(...$method[2]);
 
                 } else {
-                    $errors .= "Sych metod '{$method[0]}::{$method[1]}' don't exists!";
+                    if ($this->outputBufferEnabled) {
+                        $errors .= "Sych metod '{$method[0]}::{$method[1]}' don't exists!";
+                    } else {
+                        print  "Sych metod '{$method[0]}::{$method[1]}' don't exists!";
+                    }
                 }
             }
 

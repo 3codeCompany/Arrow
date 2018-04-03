@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<schema class-namespace="Arrow\Media">
-    <table name="crm_synch_log" class="Arrow\Synchronization\SynchronizationLog">
+<schema>
+    <table name="synchronization_log" class="Arrow\Synchronization\Models\SynchronizationLog">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="type" type="VARCHAR" size="255"/>
         <field name="started" type="DATETIME"/>

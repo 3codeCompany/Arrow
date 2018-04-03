@@ -8,11 +8,9 @@
 
 namespace Arrow\Synchronization\Models;
 
+use Arrow\ORM\ORM_Arrow_Synchronization_Models_SynchronizationLog;
 
-
-use Arrow\ORM\ORM_Arrow_Shop_Models_Esotiq_Synchronization_SynchLog;
-
-class SynchronizationLog extends ORM_Arrow_Shop_Models_Esotiq_Synchronization_SynchLog
+class SynchronizationLog extends ORM_Arrow_Synchronization_Models_SynchronizationLog
 {
 
 }
