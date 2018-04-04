@@ -39,7 +39,6 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("value", __("Wartość"))
                 .template((val, row) => {
                     return <div>
-
                         {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
                         {row.edited === true && [
                             <textarea

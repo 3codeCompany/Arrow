@@ -125,7 +125,6 @@ class ArrowViewComponent extends React.Component<IProps, any> {
             <div>
                 <CommandBar
                     isSearchBoxVisible={false}
-
                     items={[
                         {key: "f0", label: __("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL )},
                         {key: "f1", label: __("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
@@ -137,90 +136,93 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                         } : null,
 
                     ]}/>
-                <Navbar>
-                    <span>{__("CMS")}</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{__("Strony www")}</a>
-                    <span>{page.name}</span>
-                </Navbar>
 
-                <Row noGutters={false} md={[12]}>
-                    <Tabs defaultActiveTab={this.state.indexTab} onTabChange={this.handleLangChange.bind(this)}>
-                        {languages.map((el) => <TabPane title={el.name} key={el.id}>{null}</TabPane>)}
-                        {/*<TabPane title={"Polski"} key={"pl"}>{null}</TabPane>*/}
-                    </Tabs>
-                </Row>
+                <div className={"panel-body-margins"}>
+                    <Navbar>
+                        <span>{__("CMS")}</span>
+                        <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{__("Strony www")}</a>
+                        <span>{page.name}</span>
+                    </Navbar>
 
-                <div className="">
-                    <BForm
-                        data={s.page}
-                        onChange={(form) => this.setState({page: form.form.getData(), dirty: true})}
-                    >
-                        {(form) => <Row>
-                            <div>
+                    <Row noGutters={true} md={[12]}>
+                        <Tabs defaultActiveTab={this.state.indexTab} onTabChange={this.handleLangChange.bind(this)}>
+                            {languages.map((el) => <TabPane title={el.name} key={el.id}>{null}</TabPane>)}
+                            {/*<TabPane title={"Polski"} key={"pl"}>{null}</TabPane>*/}
+                        </Tabs>
+                    </Row>
 
-                                <Panel noPadding={true} title={__("Dane")}>
+                    <div className="">
+                        <BForm
+                            data={s.page}
+                            onChange={(form) => this.setState({page: form.form.getData(), dirty: true})}
+                        >
+                            {(form) => <Row>
+                                <div>
 
-                                    <Row noGutters={false}>
-                                        <BText label={__("Nazwa")} {...form("name")} />
-                                        <BSelect label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
-                                    </Row>
-                                    {this.props.editEnabled ?
+                                    <Panel noPadding={true} title={__("Dane")}>
+
                                         <Row noGutters={false}>
-                                            <BSwitch label={__("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
-                                            <BSwitch label={__("Typ")} {...form("type")} options={{page: __("Strona"), container: __("Folder")}}/>
+                                            <BText label={__("Nazwa")} {...form("name")} />
+                                            <BSelect label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
                                         </Row>
-                                        : null
-                                    }
-                                    <Row noGutters={false}>
-                                        {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
                                         {this.props.editEnabled ?
-                                            <BSelect label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
+                                            <Row noGutters={false}>
+                                                <BSwitch label={__("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
+                                                <BSwitch label={__("Typ")} {...form("type")} options={{page: __("Strona"), container: __("Folder")}}/>
+                                            </Row>
                                             : null
                                         }
+                                        <Row noGutters={false}>
+                                            {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
+                                            {this.props.editEnabled ?
+                                                <BSelect label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
+                                                : null
+                                            }
 
-                                        <BText label={__("Link")} {...form("link")} />
+                                            <BText label={__("Link")} {...form("link")} />
 
-                                    </Row>
+                                        </Row>
 
-                                </Panel>
-                                {page.type == "page" &&
-                                <Panel noPadding={true} title={__("SEO")}>
-                                    <Row noGutters={false}>
-                                        <BText label={__("SEO Title")} {...form("seo_title")} />
-                                        <BText label={__("SEO Keywords")} {...form("seo_keywords")} />
-                                    </Row>
-                                    <Row noGutters={false}>
-                                        <BTextarea label={__("SEO description")} {...form("seo_description")} />
-                                    </Row>
-                                    <Row noGutters={false}>
-                                        <BTextarea label={__("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
-                                    </Row>
-                                </Panel>
-                                }
-                                {/*{page.type != "page" &&*/}
-                                {/*<Panel title={__("Pliki")}>*/}
+                                    </Panel>
+                                    {page.type == "page" &&
+                                    <Panel noPadding={true} title={__("SEO")}>
+                                        <Row noGutters={false}>
+                                            <BText label={__("SEO Title")} {...form("seo_title")} />
+                                            <BText label={__("SEO Keywords")} {...form("seo_keywords")} />
+                                        </Row>
+                                        <Row noGutters={false}>
+                                            <BTextarea label={__("SEO description")} {...form("seo_description")} />
+                                        </Row>
+                                        <Row noGutters={false}>
+                                            <BTextarea label={__("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
+                                        </Row>
+                                    </Panel>
+                                    }
+                                    {/*{page.type != "page" &&*/}
+                                    {/*<Panel title={__("Pliki")}>*/}
 
-                                    {/*<BFileList label={__("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
+                                        {/*<BFileList label={__("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
 
-                                    {/*<BFileList label={__("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
+                                        {/*<BFileList label={__("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
 
-                                    {/*<BFileList label={__("Do pobrania")} {...form("files[files]")} />*/}
+                                        {/*<BFileList label={__("Do pobrania")} {...form("files[files]")} />*/}
 
-                                    {/*<BFileList label={__("Pliki przypisane")} {...form("files[assigned]")}  />*/}
-                                {/*</Panel>*/}
-                                {/*}*/}
-                            </div>
-                            <div>
-                                {page.type != "folder" &&
-                                <Panel noPadding={true}>
-                                    <BWysiwig label={""} {...form("content")} style={{height: 600}}/>
-                                </Panel>
-                                }
+                                        {/*<BFileList label={__("Pliki przypisane")} {...form("files[assigned]")}  />*/}
+                                    {/*</Panel>*/}
+                                    {/*}*/}
+                                </div>
+                                <div>
+                                    {page.type != "folder" &&
+                                    <Panel noPadding={true}>
+                                        <BWysiwig label={""} {...form("content")} style={{height: 600}}/>
+                                    </Panel>
+                                    }
 
-                            </div>
+                                </div>
 
-                        </Row>}
-                    </BForm>
+                            </Row>}
+                        </BForm>
+                    </div>
                 </div>
             </div>
         );
