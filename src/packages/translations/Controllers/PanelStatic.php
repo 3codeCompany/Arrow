@@ -44,6 +44,18 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PanelStatic extends BaseController
 {
+    private $user;
+    private $country = "pl";
+
+    public function __construct()
+    {
+        $this->user = Auth::getDefault()->getUser()->_login();
+        $tmp = explode("_", $this->user);
+        if (count($tmp) == 2) {
+            $this->country = $tmp[1];
+        }
+    }
+
     /**
      * @Route("/index")
      */
@@ -55,7 +67,7 @@ class PanelStatic extends BaseController
 
         return [
             'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
-            "test" => "Nasz test"
+            "country" => $this->country,
         ];
     }
 

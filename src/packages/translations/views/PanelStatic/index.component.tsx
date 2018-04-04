@@ -34,9 +34,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
         this.columns = [
             Column.id("id", "Id"),
-            Column.text("lang", "Kod języka"),
-            Column.map("lang", "Język", this.props.language),
-            Column.text("value", "Wartość")
+            Column.text("lang", __("Kod języka")),
+            Column.map("lang", __("Język"), this.props.language),
+            Column.text("value", __("Wartość"))
                 .template((val, row) => {
                     return <div>
 
@@ -50,12 +50,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             />,
                             <div>
 
-                                <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>Zapisz</a>
+                                <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>{__("Zapisz")}</a>
                                 <a onClick={(e) => {
                                     e.stopPropagation();
                                     row.edited = false;
                                     row.container.forceUpdate();
-                                }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>Anuluj</a>
+                                }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>{__("Anuluj")}</a>
                             </div>,
                         ]}
                         {!row.loading && !row.edited && <div>{val}</div>}
@@ -70,8 +70,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     rowContainer.forceUpdate();
                 })
             ,
-            Column.text("original", "Orginał"),
-            Column.text("module", "Moduł"),
+            Column.text("original", __("Orginał")),
+            Column.text("module", __("Moduł")),
 
             Column.template("", () => <i className="ms-Icon ms-Icon--Delete" style={{fontSize: 14}}/>)
                 .className("center darkred")
@@ -120,6 +120,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
         return (
             <div>
+                {this.props.country == "pl" ?
                 <CommandBar
                     isSearchBoxVisible={true}
                     onSearch={(val) => {
@@ -129,10 +130,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         {key: "f1", label: "Pobierz arkusz", icon: "Download", onClick: () => this.setState({langToDownload: "xx"})},
                         {key: "f2", label: "Załaduj plik", icon: "Upload", onClick: () => this.setState({isUploading: -1})},
                     ]}
-                />
+                /> : null }
                 <Navbar>
-                    <span>Cms</span>
-                    <span>Lista dostępnych tłumaczeń</span>
+                    <span>{__("Cms")}</span>
+                    <span>{__("Lista dostępnych ")}tłumaczeń</span>
                 </Navbar>
                 <div className="panel-body-margins">
                     <Table
