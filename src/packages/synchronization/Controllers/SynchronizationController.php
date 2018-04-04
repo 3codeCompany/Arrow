@@ -13,14 +13,13 @@ use Arrow\ORM\Persistent\Criteria;
 use Arrow\Synchronization\Models\SynchLog;
 
 use Arrow\Synchronization\Models\SynchronizationConfig;
+use Arrow\Synchronization\Models\SynchronizationLog;
 use Arrow\Synchronization\Models\SynchronizationRunner;
 use Arrow\Synchronization\Models\SynrronizationRunner;
 use Symfony\Component\Routing\Annotation\Route;
 
 
-/**
- * @Route("")
- */
+
 class SynchronizationController
 {
 
@@ -67,7 +66,7 @@ class SynchronizationController
      */
     public function asyncLog()
     {
-        $criteria = SynchLog::get();
+        $criteria = SynchronizationLog::get();
 
         $helper = new TableListORMHelper();
         $helper->addDefaultOrder("id", Criteria::O_DESC);

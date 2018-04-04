@@ -68,14 +68,6 @@ class DeveloperTools extends \Arrow\Models\Controller
         $this->json([]);
     }
 
-    /**
-     * @Route("/changeDevState")
-     */
-    public function changeDevState()
-    {
-        $_SESSION["ARROW_DEV_MODE"] = !ARROW_DEV_MODE;
-        $this->json([$_SESSION["ARROW_DEV_MODE"]]);
-    }
 
 
 

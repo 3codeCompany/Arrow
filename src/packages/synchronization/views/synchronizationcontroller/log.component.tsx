@@ -55,6 +55,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             </Navbar>
 
             <div className="panel-body-top-fix">
+                {currSync && <Panel noPadding={true}><LoadingIndicator text={currSync.label}/></Panel>}
+
                 <Row md={[5, 7]} noGutters={false}>
                     <Panel title={"Dostępne synchronizacje"} noPadding={true} icon={"Sync"}>
                         <ul className={"tasks-list"}>
@@ -66,18 +68,19 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                 <span onClick={() => this.handleSync(sub)}>{sub.label}</span>
                                                 <span onClick={() => this.handleOpen(sub)} style={{float: 'right'}}><Icon name={"OpenInNewWindow"}/> </span>
                                             </a>
-                                        </li>}
+                                        </li>)}
                                     </ul>}
                                 </li>,
                             )}
                         </ul>
                     </Panel>
 
-                    <Panel title={currSync && currSync.label} noPadding={true}>
+
+                    <Panel noPadding={true}>
                         {/*{currSync && <div>
                             <iframe style={{width: "100%", height: 500}} src={this.props._baseURL + "/" + currSync.action + "?" + currSync.rand}></iframe>
                         </div>}*/}
-                        {currSync && <LoadingIndicator/>}
+
                         <Table
                             ref={(el) => this.table = el}
                             remoteURL={this.props._baseURL + "/asyncLog"}
