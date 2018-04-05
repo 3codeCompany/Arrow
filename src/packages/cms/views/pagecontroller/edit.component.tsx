@@ -163,7 +163,9 @@ class ArrowViewComponent extends React.Component<IProps, any> {
 
                                         <Row noGutters={false}>
                                             <BText label={__("Nazwa")} {...form("name")} />
-                                            <BSelect label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
+                                            {this.props.editEnabled ?
+                                                <BSelect label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
+                                            : null }
                                         </Row>
                                         {this.props.editEnabled ?
                                             <Row noGutters={false}>
