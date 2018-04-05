@@ -144,7 +144,6 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     <Row noGutters={true} md={[12]}>
                         <Tabs defaultActiveTab={this.state.indexTab} onTabChange={this.handleLangChange.bind(this)}>
                             {languages.map((el) => <TabPane title={el.name} key={el.id}>{null}</TabPane>)}
-                            {/*<TabPane title={"Polski"} key={"pl"}>{null}</TabPane>*/}
                         </Tabs>
                     </Row>
 
@@ -197,18 +196,6 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         </Row>
                                     </Panel>
                                     }
-                                    {/*{page.type != "page" &&*/}
-                                    {/*<Panel title={__("Pliki")}>*/}
-
-                                        {/*<BFileList label={__("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
-
-                                        {/*<BFileList label={__("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
-
-                                        {/*<BFileList label={__("Do pobrania")} {...form("files[files]")} />*/}
-
-                                        {/*<BFileList label={__("Pliki przypisane")} {...form("files[assigned]")}  />*/}
-                                    {/*</Panel>*/}
-                                    {/*}*/}
                                 </div>
                                 <div>
                                     {page.type != "folder" &&
@@ -216,9 +203,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         <BWysiwig label={""} {...form("content")} style={{height: 600}}/>
                                     </Panel>
                                     }
-
                                 </div>
-
                             </Row>}
                         </BForm>
                     </div>
