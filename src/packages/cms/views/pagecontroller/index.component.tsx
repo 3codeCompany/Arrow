@@ -46,6 +46,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     {value: "link", label: "link"},
                 ], false).get()),
             Column.text("link", __("Link")),
+            
+            Column.template("", () => {
+                return (
+                    <Icon name={"OpenInNewWindow"}/>
+                )
+            }).className("center")
+                .onClick((row) => {
+                    window.open(`https://www.esotiq.com/${this.props.language}/${this.props.language}/${row.link}`);
+                }),
 
             props.editEnabled ? Column.template("", () => <Icon name={"ChevronDown"} />)
                 .className("center")

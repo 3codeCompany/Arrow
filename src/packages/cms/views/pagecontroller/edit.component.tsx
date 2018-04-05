@@ -57,9 +57,6 @@ class ArrowViewComponent extends React.Component<IProps, any> {
             }
         }
 
-
-
-
         this.state = {
             page: {...props.page},
             language: props.language,
@@ -140,7 +137,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                 <div className={"panel-body-margins"}>
                     <Navbar>
                         <span>{__("CMS")}</span>
-                        <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{__("Strony www")}</a>
+                        <a onClick={() => this.props._goto(this.props._baseURL + "")}>{__("Strony www")}</a>
                         <span>{page.name}</span>
                     </Navbar>
 

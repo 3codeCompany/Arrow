@@ -74,6 +74,7 @@ class PageController extends BaseController
 
         return [
             "editEnabled" => $editEnabled,
+            "language" => $this->country,
         ];
     }
 
