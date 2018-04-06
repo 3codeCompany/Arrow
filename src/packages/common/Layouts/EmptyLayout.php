@@ -1,26 +1,43 @@
 <?php
-
 namespace Arrow\Common\Layouts;
 
-use AccessManager;
-use Arrow\ViewManager;
-use function ob_end_clean;
-use function ob_get_contents;
-use function ob_start;
+use
+Arrow\ORM\Persistent\Criteria,
+Arrow\Access\Models\Auth,
+AccessManager,
+\Arrow\RequestContext,
+\Arrow\Access\Models\AccessAPI,
+Arrow\ViewManager;
+use Arrow\Router;
 
-class EmptyLayout extends \Arrow\Models\AbstractLayout
-{
+class EmptyLayout extends \Arrow\Models\AbstractLayout{
 
-    public function render()
+
+    public function createLayout(ViewManager $manager)
     {
-        ob_start();
-        include __DIR__ . "/EmptyLayout.phtml";
-        $content = ob_get_contents();
-        ob_end_clean();
+        if(!isset($this->view["user"]))
+            $manager->get()->assign("user", \Arrow\Access\Models\Auth::getDefault()->getUser());
 
-        return $content;
+        $this->view = $manager->get();
 
     }
+
+     public function getLayoutFile()
+    {
+        $packages = \Arrow\Controller::$project->getPackages();
+        return __DIR__."/EmptyLayout.phtml";
+    }
+
+
+    public function getAccessConf()
+    {
+        return array(
+            "loginTemplate" => "access::auth/login"
+            //"loginAddress" => "logowanie"
+        );
+    }
+
+    //todo zmienic na standard
 
 }
 

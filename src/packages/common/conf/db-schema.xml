@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <schema>
     <table name="common_objects_track" class="Arrow\Common\Models\Track\Track">
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id" type="BIGINT" primaryKey="true" autoIncrement="true"/>
         <field name="user_id" type="INTEGER" required="true"/>
         <field name="date" type="TIMESTAMP" required="true"/>
         <field name="action" type="VARCHAR" required="true" size="50"/>
         <field name="info" type="VARCHAR" size="255"/>
         <field name="class" type="VARCHAR" required="true" size="40"/>
-        <field name="object_id" type="INTEGER" required="true"/>
+        <field name="object_id" type="BIGINT" required="true"/>
         <index name="f_key_index_utils_track_user_id" type="">
             <index-field name="user_id"/>
         </index>
@@ -19,7 +19,7 @@
         </foreign-key>
     </table>
 
-    <table name="common_objects_archive" class="Arrow\Common\Models\Track\Archive">
+    <table name="common_objects_archive" class="Arrow\Common\Models\Track\Archive" >
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="date" type="TIMESTAMP" required="true"/>
         <field name="class" type="VARCHAR" required="true" size="40"/>
@@ -29,10 +29,10 @@
             <index-field name="class"/>
         </index>
     </table>
-    <table name="common_user_settings" class="Arrow\Common\Models\UserSetting">
+    <table name="common_user_settings" class="Arrow\Common\Models\UserSetting" >
         <trackers>
-            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
-            <tracker class="Arrow\Common\Models\Track\ORMObjectsArchiver"/>
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="id_user" type="INTEGER"/>
@@ -51,13 +51,14 @@
         <field name="value" type="VARCHAR" size="255"/>
     </table>
 
-    <table name="common_history" class="Arrow\Common\Models\History\History">
+        <table name="common_history" class="Arrow\Common\Models\History\History">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="date" type="DATETIME"/>
+        <field name="created" type="DATETIME"/>
+
         <field name="user_id" type="integer" size="11"/>
-        <field name="model" type="VARCHAR" size="50"/>
-        <field name="model_id" type="VARCHAR" size="255"/>
-        <field name="action" type="VARCHAR" size="255"/>
+        <field name="class" type="VARCHAR" size="50"/>
+        <field name="element_id" type="VARCHAR" size="255"/>
+        <field name="description" type="VARCHAR" size="255"/>
         <field name="add_data_1" type="text"/>
         <field name="add_data_2" type="text"/>
 

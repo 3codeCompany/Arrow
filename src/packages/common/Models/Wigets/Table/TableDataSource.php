@@ -9,39 +9,14 @@
 
 namespace Arrow\Common\Models\Wigets\Table;
 
+use Arrow\Controls\API\Table\ITableDataSource;
 use Arrow\Exception;
 use Arrow\ORM\DB\DB;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
+use Arrow\RequestContext;
 
-
-interface ITableDataSource
-{
-    const FILTER_EQUAL = "==";
-    const FILTER_IN = "IN";
-    const FILTER_NOT_IN = "NOT IN";
-    const FILTER_LIKE = "LIKE";
-    const FILTER_NOT_EQUAL = "!=";
-    const FILTER_NOT_LIKE = "NOT LIKE";
-    const FILTER_START_WITH = "^%";
-    const FILTER_END_WITH = "%$";
-
-    public function getRows($columns, $debug);
-
-    public function addOrder($order, $direction);
-
-    public function limit($index, $length);
-
-    public function count();
-
-    public function applyFilterSearch($field, $value, $type, $filter);
-
-    public function dataPrepared($data);
-
-}
-
-
-class TableDataSource extends Criteria
+class TableDataSource extends Criteria implements ITableDataSource
 {
 
     protected $afterDataPrepared = [];
@@ -64,27 +39,25 @@ class TableDataSource extends Criteria
     {
         $criteria->setColumns([]);
 
-        if (isset($data["columns"])) {
-            foreach ($data["columns"] as $col) {
-                if (isset($col["field"]) && $col["field"]) {
-                    $criteria->addColumn($col["field"]);
+        foreach ($data["columns"] as $col) {
+            if (isset($col["field"]) && $col["field"]) {
+                $criteria->addColumn($col["field"]);
 
-                } elseif (isset($col["columns"])) {
-                    foreach ($col["columns"] as $col) {
-                        if ($col["field"]) {
-                            $criteria->addColumn($col["field"]);
-                        }
+            } elseif (isset($col["columns"])) {
+                foreach ($col["columns"] as $col) {
+                    if ($col["field"]) {
+                        $criteria->addColumn($col["field"]);
                     }
                 }
-
             }
+
         }
 
-        if (isset($data["order"])) {
-            foreach ($data["order"] as $order) {
-                $criteria->order($order["field"], $order["dir"]);
-            }
-        }
+         if (isset($data["order"])) {
+             foreach ($data["order"] as $order) {
+                 $criteria->order($order["field"], $order["dir"]);
+             }
+         }
 
         //print_r($data["filters"]);
 
@@ -110,13 +83,11 @@ class TableDataSource extends Criteria
 
     public static function prepareResponse(Criteria $criteria, $data, $fetchType = DataSet::AS_ARRAY)
     {
-        $onPage = $data["onPage"] ?? 25;
-        $currentPage = $data["currentPage"] ?? 1;
         $countAll = $criteria->count();
-        $criteria->limit(($currentPage - 1) * $onPage, $onPage);
+        $criteria->limit(($data["currentPage"] - 1) * $data["onPage"], $data["onPage"]);
         $result = $criteria->find();
         $query = $result->getQuery();
-        if ($fetchType == DataSet::AS_ARRAY) {
+        if($fetchType == DataSet::AS_ARRAY) {
             $result = $result->toArray($fetchType);
         }
         return ["data" => $result, "countAll" => $countAll, "debug" => $query];

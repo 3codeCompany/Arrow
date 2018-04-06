@@ -39,7 +39,7 @@ class TableListORMHelper
 
         foreach ($this->filters as $name => $filter) {
             if (isset($data["filters"][$name])) {
-                $filter($criteria, $data["filters"][$name]);
+                $filter($criteria, $filter);
                 unset($data["filters"][$name]);
             }
         }

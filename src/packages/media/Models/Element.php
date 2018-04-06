@@ -62,8 +62,6 @@ class Element extends ORM_Arrow_Media_Models_Element
             "upload_name" => $uploadName,
             "upload_path" => $uploadPath));
         $element->save();
-
-        return $element;
     }
 
     private static function appendFile($folder, $file, $nameSuggestion = "", $delete = false, $realName = false)
@@ -85,7 +83,6 @@ class Element extends ORM_Arrow_Media_Models_Element
 
 
         if(!file_exists(MediaAPI::getBasePath().$folderPath)){
-            //exit(MediaAPI::getBasePath().$folderPath);
             mkdir(MediaAPI::getBasePath().$folderPath,0777,true);
         }
 

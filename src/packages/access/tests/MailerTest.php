@@ -1,4 +1,4 @@
-yarn ru<?php
+<?php
 /**
  * Created by PhpStorm.
  * User: artur

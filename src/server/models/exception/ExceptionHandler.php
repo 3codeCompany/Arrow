@@ -4,9 +4,8 @@
 use Arrow\Access\Models\Auth;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
-use Symfony\Component\HttpFoundation\Request;
 
-class ExceptionHandler
+class ExceptionHandler implements IExceptionHandler
 {
     const DISPLAY = "display";
     const REDIRECT = "redirect";
@@ -94,16 +93,16 @@ class ExceptionHandler
             }
         }
 
-        $currView = false;
+        $currView = \Arrow\ViewManager::getCurrentView();
         if ($currView) {
             $str .= "<div style='margin-top: 20px;'><b>Current template:</b>  " . $currView->get()->getPackage() . "::" . $currView->get()->getPath() . "</div>";
         }
 
-        $runConf = \Arrow\Kernel::getRunConfiguration();
+        $runConf = \Arrow\Controller::getRunConfiguration();
         //$str .= "<div style='margin-top: 20px;'><a href='http://localhost:8091/?message={$exception->getFile()}:{$exception->getLine()}' target='_blank' >Go to error</a></div>";
 
         $str .= "<div style='margin-top: 20px;'><b>File:</b> " . $exception->getFile() . ":" . $exception->getLine() . "</div>";
-        $str .= "<div style='margin-top: 20px;'><b>Run configuration:</b> " . \Arrow\Kernel::getRunConfiguration() . "</div>";
+        $str .= "<div style='margin-top: 20px;'><b>Run configuration:</b> " . \Arrow\Controller::getRunConfiguration() . "</div>";
 
         $str .= "<div style='margin-top: 20px;'>" . $this->printRequest() . "</div>";
         $str .= "<div style='margin-top: 20px;'>" . $this->stackTrace($exception) . "</div>";
@@ -141,7 +140,7 @@ class ExceptionHandler
     {
         $this->log($exception);
 
-        $cli = \Arrow\Kernel::isInCLIMode();
+        $cli = \Arrow\Controller::isInCLIMode();
 
         if ($this->clearOutput && !$cli) {
             while (ob_get_level()) {
@@ -169,13 +168,17 @@ class ExceptionHandler
         //zmienić aby było pobierane przez handlery
         $user = null;
 
-        $user = Auth::getDefault()->getUser();
+        //$user = Auth::getDefault()->getUser();
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
-        print $this->getHead().$this->printDeveloperMessage($exception).$this->getFooter();
+        if($_SERVER["REMOTE_ADDR"]=="83.142.126.242" || $_SERVER["REMOTE_ADDR"]=="91.240.76.1" || $_SERVER["REMOTE_ADDR"]=="89.77.54.49" || true/*dom*/){
+            print $this->getHead().$this->printDeveloperMessage($exception).$this->getFooter();
+        }
+
+        print $this->printPublicMinimumMessage();
         exit();
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
@@ -247,7 +250,7 @@ class ExceptionHandler
         $logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
-            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Request::createFromGlobals()->getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
+            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Router::getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
             "\n" . $message .
             "\n" . $file . ":" . $line
 
@@ -361,7 +364,7 @@ class ExceptionHandler
             } elseif (is_array($arg)) {
                 $str .= "Array[" . count($arg) . "] {" . $this->printArguments($arg, $i) . "}";
             } elseif (is_string($arg)) {
-                $str .= substr($arg, 0, 100);
+                $str .= substr($arg, 0, 20);
             }
             //if ($key + 1 < count($args)) {
             $str .= ", ";

@@ -5,57 +5,38 @@ namespace Arrow\Translations\Controllers;
 
 use App\Controllers\BaseController;
 use Arrow\Common\Layouts\ReactComponentLayout;
-use Arrow\Common\Models\Helpers\Validator;
-use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\Controls\API\Forms\Validator;
+use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Translations\Models\Language;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class Languages
- * @package Arrow\Translations\Controllers
- * @route("/languages")
- */
 class Languages extends BaseController
 {
 
-    /**
-     * @Route("/index")
-     */
     function index()
     {
-        return [];
+        $this->action->setLayout(new ReactComponentLayout());
     }
 
-    /**
-     * @Route("/list")
-     */
     public function list()
     {
         $ctit = Language::get();
         $helper = new TableListORMHelper();
 
         $helper->addDefaultOrder(Language::F_NAME);
-        return $helper->getListData($ctit);
+        $this->json($helper->getListData($ctit));
     }
 
-    /**
-     * @Route("/get")
-     */
-    public function get(Request $request)
+    public function get()
     {
         $data = Language::get()
-            ->findByKey($request->get("key"));
-        return $data;
+            ->findByKey($this->request["key"]);
+        $this->json($data);
     }
 
-    /**
-     * @Route("/save")
-     */
-    public function save(Request $request)
-    {
 
-        $data = $request->get('data');
+    public function save(){
+
+        $data = $this->request['data'];
         $validator = Validator::create($data)
             ->required(['name', 'code']);
 
@@ -71,18 +52,14 @@ class Languages extends BaseController
         }
         $obj->save();
 
-        return [$obj->_id()];
+        $this->json([$obj->_id()]);
     }
 
-    /**
-     * @Route("/delete")
-     */
-    public function delete(Request $request)
-    {
+    public function delete(){
         $data = Language::get()
-            ->findByKey($request->get("key"));
+            ->findByKey($this->request["key"]);
         $data->delete();
-        return [true];
+        $this->json([true]);
     }
 
 }

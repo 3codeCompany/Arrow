@@ -26,7 +26,6 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         this.state = {
             langToDownload: false,
             search: "",
-            isUploading: false
         };
 
         this.columns = [
@@ -34,36 +33,25 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("lang", "Kod języka"),
             Column.map("lang", "Język", this.props.language),
             Column.text("value", "Wartość")
-                .template((val, row, ) => {
-                    console.log("here");
-                    return <div>
-
+                .template((val, row, ) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
                     {row.edited === true && [
-                        <textarea
-                            style={{width: "100%", display: "block"}}
-                            onChange={(e) => row.changedText = e.target.value} defaultValue={val}
-                            autoFocus={true}
-                            onClick={(e) => e.stopPropagation}
-                        />,
+                        <textarea style={{width: "100%", display: "block"}} onChange={(e) => row.changedText = e.target.value} defaultValue={val}/>,
                         <div>
-
                             <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>Zapisz</a>
                             <a onClick={(e) => {
                                 e.stopPropagation();
                                 row.edited = false;
-                                row.container.forceUpdate();
+                                this.table.forceUpdate();
                             }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>Anuluj</a>
                         </div>,
                     ]}
                     {!row.loading && !row.edited && <div>{val}</div>}
-                </div>})
+                </div>)
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
-                .onClick((row, column, rowContainer) => {
-
+                .onClick((row, column, event, rowContainer) => {
                     row.edited = true;
                     row.changedText = row.value;
-                    row.container = rowContainer
                     rowContainer.forceUpdate();
                 })
             ,
@@ -81,19 +69,19 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         e.stopPropagation();
         row.loading = true;
         row.edited = false;
-        row.container.forceUpdate();
-        Comm._post(this.props._baseURL + "/inlineUpdate", {key: row.id, newValue: row.changedText}).then(() => {
+        this.table.forceUpdate();
+        Comm._post(this.props.baseURL + "/inlineUpdate", {key: row.id, newValue: row.changedText}).then(() => {
             this.props._notification("Pomyślnie zmodyfikowano element");
             row.value = row.changedText;
             row.loading = false;
-            this.table.load();
+            this.table.forceUpdate();
         });
 
     }
 
     public handleDelete(row) {
         confirm(`Czy na pewno usunąć "${row.name}"?`).then(() => {
-            Comm._post(this.props._baseURL + "/Language/delete", {key: row.id}).then(() => {
+            Comm._post(this.props.baseURL + "/Language/delete", {key: row.id}).then(() => {
                 this.props._notification(`Pomyślnie usunięto "${row.name}"`);
                 this.table.load();
             });
@@ -126,7 +114,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 <div className="panel-body-margins">
                     <Table
                         columns={this.columns}
-                        remoteURL={this.props._baseURL + "/list"}
+                        remoteURL={this.props.baseURL + "/list"}
                         ref={(table) => this.table = table}
                         additionalConditions={{search: this.state.search}}
                     />

@@ -9,6 +9,7 @@
 namespace Arrow\Common\Models\Helpers;
 
 
+
 use Arrow\RequestContext;
 
 class Validator
@@ -75,7 +76,7 @@ class Validator
     /**
      * @return Boolean
      */
-    public function check(): bool
+    public function check()
     {
         $ok = true;
         foreach ($this->toCheck as $type => $checkArr) {
@@ -104,11 +105,6 @@ class Validator
 
         return $ok;
 
-    }
-
-    public function fails(): bool
-    {
-        return !$this->check();
     }
 
     public function responseAndEnd()

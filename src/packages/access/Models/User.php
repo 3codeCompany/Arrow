@@ -1,13 +1,12 @@
 <?php
 namespace Arrow\Access\Models;
 
-use Arrow\Exception;
 use Arrow\ORM\ORM_Arrow_Access_Models_User;
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
 use Arrow\ORM\Persistent\PersistentObject;
 
-class User extends ORM_Arrow_Access_Models_User
+class User extends ORM_Arrow_Access_Models_User implements \Arrow\Models\IUser
 {
 
     /**
@@ -30,7 +29,7 @@ class User extends ORM_Arrow_Access_Models_User
     public function beforeObjectCreate(PersistentObject $object)
     {
         if ($object["password"] == "") {
-            $this->setValue("password", md5(microtime() . rand(1, 100)));
+            $this->setValue("password", md5(microtime() + rand(1, 100)));
         }
         //$this->setValue(self::F_CREATED, date("Y-m-d H:i:s"));
         $this->setValue(self::F_PASSPORT_ID, self::generatePassportId());
@@ -181,7 +180,7 @@ class User extends ORM_Arrow_Access_Models_User
      */
     public function generatePassportId()
     {
-        return md5((isset($this->data["login"])?$this->data["login"]: rand(100,10000))  . time());
+        return md5($this->data["login"] . time());
     }
 
     /**
@@ -281,11 +280,7 @@ class User extends ORM_Arrow_Access_Models_User
     {
         if ($this->settings == null) {
             if ($this->_settings()) {
-                try {
-                    $this->settings = unserialize($this->_settings());
-                }catch (\Exception $exception){
-                    $this->settings = [];
-                }
+                $this->settings = unserialize($this->_settings());
             } else {
                 $this->settings = [];
             }

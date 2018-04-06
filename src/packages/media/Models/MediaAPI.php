@@ -437,13 +437,13 @@ class MediaAPI
 
     }
 
-    public static function getMedia(PersistentObject $obj)
+    public static function getMedia($obj)
     {
-        $result = MediaAPI::prepareMedia([$obj], null, null, false);
-        return !empty($result) ? $result : [];
+        MediaAPI::prepareMedia(array($obj));
+        return $obj->getParameter("media");
     }
 
-    public static function prepareMedia($objSet, $namesToGet = null, $limit = null, $assignToParam = true)
+    public static function prepareMedia($objSet, $namesToGet = null, $limit = null)
     {
 
 
@@ -471,9 +471,7 @@ class MediaAPI
         foreach ($objSet as $obj) {
             if ($obj) {
                 $keys[$obj->getPKey()] = $obj;
-                if ($assignToParam) {
-                    $obj->setParameter(self::MEDIA_VAR, array());
-                }
+                $obj->setParameter(self::MEDIA_VAR, array());
             }
         }
 
@@ -536,23 +534,14 @@ class MediaAPI
 
         }
 
-        $return = $assignToParam ? null : [];
 
         foreach ($tmp as $objId => &$elements) {
             foreach ($elements as $name => $values) {
                 $elements[$name] = array_values($elements[$name]);
             }
             //print_r($elements);
-
-            if ($assignToParam) {
-                $keys[$objId]->setParameter(self::MEDIA_VAR, $elements);
-            } else {
-                $return[$objId] = $elements;
-            }
+            $keys[$objId]->setParameter(self::MEDIA_VAR, $elements);
         }
-
-        return $return;
-
 
     }
 
@@ -835,6 +824,7 @@ class MediaAPI
 
     public static function getMini($path, $width, $height, $crop = false, $points = false)
     {
+
 
 
         if (!file_exists($path)) {

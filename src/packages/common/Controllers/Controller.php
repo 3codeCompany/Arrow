@@ -14,7 +14,7 @@ use Arrow\Models\Action;
 use Arrow\Models\Operation;
 use Arrow\ORM\Persistent\Criteria,
 \Arrow\Access\Models\Auth,
- \Arrow\RequestContext, Arrow\Models\View;
+\Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\View;
 use Arrow\Router;
 
 /**
@@ -88,7 +88,7 @@ class Controller extends \Arrow\Models\Controller
             ->on(Form::EVENT_SUCCESS, "SerenityCommon.info('Zapisano ustawienia')");
 
         $config = \Arrow\Models\Settings::getDefault()->getConfiguration();
-        $packages = \Arrow\Kernel::$project->getPackages();
+        $packages = \Arrow\Controller::$project->getPackages();
 
         $lay = LayoutBuilder::create()
             ->insert(Toolbar::_new("Ustawienia",[$form->getSubmit()->addCSSClass("btn-link")->prepend(Icons::icon(Icons::CHECK_CIRCLE)." ")]))
@@ -148,7 +148,7 @@ class Controller extends \Arrow\Models\Controller
             }
         }
 
-        \Arrow\Kernel::$project->clearCache();
+        \Arrow\Controller::$project->clearCache();
         $this->json([true]);
 
     }

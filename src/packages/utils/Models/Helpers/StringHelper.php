@@ -1,20 +1,14 @@
 <?php
-
 namespace Arrow\Utils\Models\Helpers;
-
-use function strtolower;
 
 class StringHelper
 {
 
     public static function toRewrite($str)
     {
-
-        $str = iconv("UTF-8", "ASCII//IGNORE//TRANSLIT", trim($str));
-
-        $str = preg_replace("/[^A-Za-z0-9?! ]/", "", $str);
-        $str = strtolower($str);
-        $str = str_replace(" ", "_", $str);
+        $orginal = array("Ą", "ą", "Ć", "ć", "ś", "Ś", "ń", "Ń", "ż", "Ż", "Ł", "ł", "Ź", "ź", "Ó", "ó", "Ę", "ę", " ", ",", "/", "\"", "'", "\"", "`", "__");
+        $replace = array("a", "a", "c", "c", "s", "s", "n", "n", "z", "z", "l", "l", "z", "z", "o", "o", "e", "e", "_", "_", "_;", "_", "_", "_", "_", "_");
+        $str = str_replace($orginal, $replace, mb_strtolower($str, "UTF-8"));
 
         return $str;
     }

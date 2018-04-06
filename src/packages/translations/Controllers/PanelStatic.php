@@ -6,15 +6,31 @@ namespace Arrow\Translations\Controllers;
 use App\Controllers\BaseController;
 use App\Models\Persistent\TransactionText;
 use Arrow\Common\Layouts\ReactComponentLayout;
-
-use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\Controls\API\Components\Toolbar;
+use Arrow\Controls\API\Forms\Fields\Button;
+use Arrow\Controls\API\Forms\Fields\File;
+use Arrow\Controls\API\Forms\Fields\Files;
+use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
+use Arrow\Controls\API\Forms\Fields\Date;
+use Arrow\Controls\API\Forms\Fields\Hidden;
+use Arrow\Controls\API\Forms\Fields\Select;
+use Arrow\Controls\API\Forms\Fields\SwitchF;
+use Arrow\Controls\API\Forms\Fields\Text;
+use Arrow\Controls\API\Forms\Fields\Textarea;
+use Arrow\Controls\API\Forms\Fields\Wyswig;
+use Arrow\Controls\API\Forms\FieldsList;
+use Arrow\Controls\API\Forms\Form;
+use Arrow\Controls\API\Forms\FormBuilder;
+use Arrow\Controls\API\Table\ColumnList;
+use Arrow\Controls\API\Table\Columns\Menu;
+use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
-    \Arrow\RequestContext;
+    \Arrow\ViewManager, \Arrow\RequestContext;
 use Arrow\Access\Models\AccessGroup;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\PresentationLayout;
@@ -32,36 +48,21 @@ use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
 use Arrow\Media\MediaAPI;
-
+use Arrow\Controls\API\Table\Table;
+use Arrow\Router;
 use function file_get_contents;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * Class PanelStatic
- * @package Arrow\Translations\Controllers
- * @Route("/static")
- */
 class PanelStatic extends BaseController
 {
-    /**
-     * @Route("/index")
-     */
     public function index()
     {
+        $this->action->setLayout(new ReactComponentLayout());
+        $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
         $db = Project::getInstance()->getDB();
         $t = LanguageText::getTable();
-        //$db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
-
-        return [
-            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
-            "test" => "Nasz test"
-        ];
+        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
     }
 
-    /**
-     * @Route("/list")
-     */
     public function list()
     {
         $c = LanguageText::get();
@@ -69,7 +70,7 @@ class PanelStatic extends BaseController
 
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
-        if (count($tmp) == 2) {
+        if(count($tmp) == 2){
             $c->_lang($tmp[1]);
         }
 
@@ -82,16 +83,11 @@ class PanelStatic extends BaseController
 
         //$data["debug"] = $c->find()->getQuery();
         //$helper->addDefaultOrder(Language::F_NAME);
-
-        return $data;
+        $this->json($data);
     }
 
-    /**
-     * @Route("/uploadLangFile")
-     */
     public function uploadLangFile()
     {
-        print_r($_FILES);
 
 
         $file = $_FILES["file"]["tmp_name"][0];
@@ -116,26 +112,27 @@ class PanelStatic extends BaseController
         $db->beginTransaction();
 
         foreach ($sheetData as $row) {
-            $stm->execute([
-                $row[0],
-                $row[2]
-            ]);
+            if($row[0]) {
+                //print $row[0]." : ".$row[2]."<br />";
+                $stm->execute([
+                    $row[2],
+                    $row[0],
+
+                ]);
+            }
         }
         $db->commit();
 
-        print_r($sheetData);
+
 
 
         $this->json();
     }
 
-    /**
-     * @Route("/downloadLangFile")
-     */
-    public function downloadLangFile(Request $request)
+    public function downloadLangFile()
     {
 
-        $data = json_decode($request->get("payload"), true);
+        $data = json_decode($this->request["payload"], true);
 
 
         $objPHPExcel = new \PHPExcel();
@@ -197,13 +194,11 @@ class PanelStatic extends BaseController
 
     }
 
-    /**
-     * @Route("/delete")
-     */
-    public function delete(Request $request)
+
+    public function delete()
     {
         $elements = LanguageText::get()
-            ->_id($request->get("keys"), Criteria::C_IN)
+            ->_id($this->request["keys"], Criteria::C_IN)
             ->find();
 
         foreach ($elements as $element) {
@@ -213,15 +208,12 @@ class PanelStatic extends BaseController
         $this->json([true]);
     }
 
-    /**
-     * @Route("/inlineUpdate")
-     */
-    public function inlineUpdate(Request $request)
+    public function inlineUpdate()
     {
         $obj = LanguageText::get()
-            ->findByKey($request->get("key"));
+            ->findByKey($this->request["key"]);
 
-        $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
+        $obj->setValue(LanguageText::F_VALUE, $this->request["newValue"]);
         $obj->save();
 
 

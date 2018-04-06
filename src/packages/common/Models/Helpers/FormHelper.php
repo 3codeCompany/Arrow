@@ -11,7 +11,6 @@ namespace Arrow\Common\Models\Helpers;
 
 use function array_keys;
 use Arrow\Media\Models\Element;
-use Arrow\Media\Models\ElementConnection;
 use Arrow\Media\Models\MediaAPI;
 use Arrow\Models\ExceptionHandler;
 use Arrow\ORM\Persistent\PersistentObject;
@@ -77,7 +76,6 @@ class FormHelper
                 $exists = false;
                 if (isset($filesData[$connName])) {
                     foreach ($filesData[$connName] as &$inFile) {
-                        //checking that file which exist in server exist in incoming file list
                         if (
                             $file["id"] == $inFile["key"] ||
                             !$inFile["key"] && $inFile["size"] == filesize($file["path"])
@@ -93,27 +91,6 @@ class FormHelper
                 }
             }
         }
-
-        //sorting
-        foreach ($filesData as $connName => $elements) {
-            if ($elements) {
-                foreach ($elements as $index => $element) {
-                    //just uploaded dont have keys
-                    if ($element["key"]) {
-                        //$sort[$element["key"]] = $index;
-                        $el = ElementConnection::get()
-                            ->_objectId($object->getPKey())
-                            ->_model($object->getClass())
-                            ->_elementId($element["key"])
-                            ->findFirst();
-
-                        $el["sort"] = $index;
-                        $el->save();
-                    }
-                }
-            }
-        }
-        //print_r($sort);
 
     }
 
@@ -160,25 +137,13 @@ class FormHelper
         return $files;
     }
 
-    public static function getOrganizedFiles($namespace = false)
+    public static function getOrganizedFiles()
     {
 
-        if (!isset($_FILES)) {
+        if(!isset($_FILES))
             return [];
-        }
 
         $ret = self::getFixedFilesArray();
-        if ($namespace) {
-            $tmp = explode(".", $namespace);
-            foreach ($tmp as $el) {
-                if (isset($ret[$el])) {
-                    $ret = $ret[$el];
-                }else{
-                    return [];
-                }
-            }
-        }
-
 
 
         return $ret;

@@ -6,7 +6,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use function var_dump;
 
-class MailerAPI
+class MailerAPI extends \Arrow\Object
 {
 
     private static $mailLib = null;
@@ -44,12 +44,10 @@ class MailerAPI
         //require_once ARROW_LIBS_PATH.DIRECTORY_SEPARATOR."Swift".DIRECTORY_SEPARATOR."lib".DIRECTORY_SEPARATOR."swift_required.php";
         $settings = self::$specialConf;
 
-        $transport = (new \Swift_SmtpTransport($settings["host"], $settings["port"]))
+        $transport =  (new \Swift_SmtpTransport($settings["host"], $settings["port"]))
             ->setEncryption($settings["secure_type"])
             ->setUsername($settings["username"])
             ->setPassword($settings["password"]);
-
-        $transport->setLocalDomain("www.as-pl.com");
 
 
         // Create the Mailer using your created Transport
@@ -60,23 +58,34 @@ class MailerAPI
 
         $emails = str_replace([";", " "], [",", ""], $emails);
 
-        $from = $from ? $from : $settings["from_mail"];
-        $from_name = $from_name ? $from_name : $settings["from_name"];
+        $from = $from?$from: $settings["from_mail"];
+        $from_name = $from_name?$from_name: $settings["from_name"];
 
-
-        $message = (new \Swift_Message($topic))
-            ->setSubject($topic)
-            ->setFrom(array($from => $from_name))
-            ->setTo(is_array($emails) ? $emails : explode(",", $emails))
-            ->setBody($content, 'text/html');
-
-        if ($attachments) {
-            foreach ($attachments as $a) {
-                $message->attach(\Swift_Attachment::fromPath($a));
+        try {
+            $message = (new \Swift_Message($topic))
+                ->setSubject($topic)
+                ->setFrom(array($from => $from_name))
+                ->setTo(is_array($emails) ? $emails : explode(",", $emails))
+                ->setBody($content, 'text/html');
+            if ($bcc) {
+                $message->setBcc(is_array($bcc) ? $bcc : explode(",", $bcc));
             }
-        }
+            if ($attachments) {
+                foreach ($attachments as $a) {
+                    $message->attach(\Swift_Attachment::fromPath($a));
+                }
+            }
 
-        $result = $mailer->send($message);
+            $result = $mailer->send($message);
+        } catch (Exception $ex) {
+            print "<pre>";
+            /*print_r($settings);
+            var_dump(explode(",", $emails));
+            var_dump($emails);
+            var_dump($ex);*/
+
+            exit("Błąd wysyłki maila");
+        }
 
         /*if (!$result && $externalLogger) {
             $externalLogger->critical("Mail sent error: " . $logger->dump());

@@ -1,7 +1,7 @@
 <?php
 
 
-class BitHelper {
+class BitHelper extends \Arrow\Object{
 	
 	public static function add( $value, $bit ) {
 		return $value = (int) $value | (int)$bit ;

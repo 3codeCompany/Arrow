@@ -30,7 +30,7 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
-use Arrow\Common\Models\Helpers\Validator;
+use Arrow\Controls\API\Forms\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
@@ -38,7 +38,7 @@ use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
-use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
@@ -53,68 +53,79 @@ use
     \Arrow\ORM\Persistent\Criteria,
     Arrow\Common\Track,
     Arrow\Models\Operation, Arrow\Models\Action;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/groups")
+ * Created by JetBrains PhpStorm.
+ * User: artur
+ * Date: 04.09.12
+ * Time: 14:20
+ * To change this template use File | Settings | File Templates.
  */
 class Groups extends \Arrow\Models\Controller
 {
 
+    public function __construct()
+    {
+        //AccessAPI::checkInstallation();
+    }
 
-    /**
-     * @Route("/getData")
-     */
+
     public function getData()
     {
         $helper = new TableListORMHelper();
         $this->json($helper->getListData(AccessGroup::get()->_id(4, Criteria::C_GREATER_THAN)));
     }
 
-    /**
-     * @Route("/list")
-     */
+
     public function list()
     {
-        return [];
-    }
-
-    /**
-     * @Route("/delete")
-     */
-    public function delete(Request $request)
-    {
-        AccessGroup::get()->findByKey($request->get("key"))->delete();
-
-        return [];
-    }
-
-    /**
-     * @Route("/edit")
-     */
-    public function edit(Request $request)
-    {
-        $group = AccessGroup::get()->findByKey($request->get('key'));
-
-        return [
-            "group" => $group
-        ];
+        $this->action->setLayout(new ReactComponentLayout());
 
     }
 
-    /**
-     * @Route("/save")
-     */
-    public function save(Request $request)
+    public function delete($view, RequestContext $request)
     {
-        if ($request->get("key")) {
-            AccessGroup::get()->findByKey($request->get("key"))->setValues($request->get("data"))->save();
+        AccessGroup::get()->findByKey($request["key"])->delete();
+
+        $this->json([1]);
+    }
+
+    public function edit(Action $view, RequestContext $request)
+    {
+
+        $this->action->setLayout(new ReactComponentLayout());
+
+        $group = AccessGroup::get()->findByKey($request['key']);
+        $this->action->assign("group", $group);
+
+
+    }
+
+    public function save($view, RequestContext $request)
+    {
+        if ($request["key"]) {
+            AccessGroup::get()->findByKey($request["key"])->setValues($request["data"])->save();
         } else {
-            AccessGroup::create($request->get("data"));
+            AccessGroup::create($request["data"]);
         }
 
-        return [1];
+        $this->json([1]);
+    }
+
+    public function access_getData()
+    {
+        $helper = new TableListORMHelper();
+        $criteria = AccessPoint::get();
+        $this->json($helper->getListData($criteria));
+    }
+
+    public function access_save()
+    {
+        AccessPoint::get()
+            ->findByKey($this->request["key"])
+            ->setValues($this->request["data"])
+            ->save();
+        $this->json([1]);
     }
 
 

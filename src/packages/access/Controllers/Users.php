@@ -3,15 +3,16 @@
 namespace Arrow\Access\Controllers;
 
 
+use function array_reduce;
+use Arrow\Access\Models\AccessAPI;
 use Arrow\Access\Models\AccessGroup;
+use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
-use Arrow\Common\AdministrationLayout;
-use Arrow\Common\Models\Helpers\Validator;
+use Arrow\Common\Layouts\ReactComponentLayout;
 use Arrow\Common\Models\History\History;
-use Arrow\Common\Models\Wigets\Table\TableDataSource;
-use Arrow\Common\Track;
+use Arrow\ConfigProvider;
 use Arrow\Controls\api\common\AjaxLink;
 use Arrow\Controls\api\common\BreadcrumbElement;
 use Arrow\Controls\api\common\ContextMenu;
@@ -29,32 +30,45 @@ use Arrow\Controls\API\Forms\Fields\SwitchF;
 use Arrow\Controls\API\Forms\Fields\Text;
 use Arrow\Controls\API\Forms\Fields\Textarea;
 use Arrow\Controls\API\Forms\Form;
+use Arrow\Controls\API\Forms\Validator;
 use Arrow\Controls\api\Layout\LayoutBuilder;
 use Arrow\Controls\api\SerenityJS;
 use Arrow\Controls\API\Table\ColumnList;
 use Arrow\Controls\API\Table\Columns\Editable;
 use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
-use Arrow\Controls\API\Table\Table;
 use Arrow\Controls\api\WidgetsSet;
-use Arrow\Models\Action;
-use Arrow\Models\Operation;
-use Arrow\ORM\Persistent\Criteria;
+use Arrow\Controls\Helpers\TableListORMHelper;
+use Arrow\Models\IAction;
+use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-use Arrow\RequestContext;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use function array_reduce;
+use Arrow\Common\AdministrationLayout;
+use Arrow\Common\Layouts\EmptyLayout;
+use Arrow\Common\Models\Wigets\Table\TableDataSource;
+use Arrow\Router;
+use Arrow\Controls\API\Table\Table;
+use
+    \Arrow\RequestContext,
+    \Arrow\ORM\Persistent\Criteria,
+    Arrow\Common\Track,
+    Arrow\Models\Operation, Arrow\Models\Action;
 use function strlen;
 
 /**
- * Class Users
- * @package Arrow\Access\Controllers
- * @Route("/users")
+ * Created by JetBrains PhpStorm.
+ * User: artur
+ * Date: 04.09.12
+ * Time: 14:20
+ * To change this template use File | Settings | File Templates.
  */
 class Users extends \Arrow\Models\Controller
 {
+
+    public function __construct()
+    {
+        //AccessAPI::checkInstallation();
+    }
 
 
     public function account()
@@ -71,12 +85,12 @@ class Users extends \Arrow\Models\Controller
         ]);
     }
 
-    public function saveAccount(Request $request)
+    public function saveAccount()
     {
 
         $user = Auth::getDefault()->getUser();
 
-        $d = $request->get("data");
+        $d = $this->request["data"];
         $validator = Validator::create($d)
             ->required(["email"])
             ->email(["email"]);
@@ -112,9 +126,6 @@ class Users extends \Arrow\Models\Controller
     }
 
 
-    /**
-     * @Route("/getData")
-     */
     public function getData()
     {
         $data = json_decode(file_get_contents('php://input'), true);
@@ -160,33 +171,24 @@ class Users extends \Arrow\Models\Controller
         $this->json($response);
     }
 
-    /**
-     * @Route("/list")
-     */
-    public function list()
+    public function list(Action $view, RequestContext $request)
     {
-        return [
-            "accessGroups" => AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true)
-        ];
+        $this->action->setLayout(new ReactComponentLayout());
+        $this->action->assign("accessGroups", AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true));
+
     }
 
-    /**
-     * @Route("/delete")
-     */
-    public function delete(Request $request)
+    public function delete($view, RequestContext $request)
     {
-        $user = User::get()->findByKey($request->get("key"));
+        $user = User::get()->findByKey($request["key"]);
         $user->delete();
         $this->json([1]);
     }
 
-    /**
-     * @Route("/edit")
-     */
-    public function edit(Request $request)
+    public function edit(Action $view, RequestContext $request)
     {
-
-        $user = User::get()->findByKey($request->get("key"));
+        $view->setLayout(new ReactComponentLayout());
+        $user = User::get()->findByKey($request["key"]);
 
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
@@ -203,24 +205,20 @@ class Users extends \Arrow\Models\Controller
                 ->limit(0, 10)
                 ->find();
         }
-        $data = [];
-        $data["history"] = $history;
-        $data["groups"] = $groups;
-        $data["user"] = $user;
-        $data["selectedGroups"] = $selectedGroups;
+        $this->action->assign("history", $history);
+        $this->action->assign("groups", $groups);
+        $this->action->assign("user", $user);
+        $this->action->assign("selectedGroups", $selectedGroups);
 
-        return $data;
 
+        return;
 
     }
 
-    /**
-     * @Route("/save")
-     */
-    public function save(Request $request)
+    public function save()
     {
 
-        $data = $request->get("data");
+        $data = $this->request["data"];
 
         $validator = Validator::create($data)
             ->required(["login", "email", "active"])

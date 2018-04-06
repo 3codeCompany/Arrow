@@ -4,73 +4,75 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-use Arrow\Access\Models\Auth;
-use Arrow\Common\AdministrationLayout;
-use Arrow\Common\AdministrationPopupLayout;
-use Arrow\Common\BreadcrumbGenerator;
-use Arrow\Common\Links;
-use Arrow\Common\Models\Helpers\FormHelper;
-use Arrow\Common\Models\Helpers\TableListORMHelper;
-use Arrow\Common\PopupFormBuilder;
-use Arrow\Common\TableDatasource;
-use Arrow\Media\Element;
-use Arrow\Media\ElementConnection;
+use App\Models\Persistent\TransactionText;
+use Arrow\CMS\Models\Persistent\Page;
+use Arrow\Common\Layouts\ReactComponentLayout;
+use Arrow\Controls\API\Components\Toolbar;
+use Arrow\Controls\API\Forms\Fields\Button;
+use Arrow\Controls\API\Forms\Fields\Files;
+use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
+use Arrow\Controls\Helpers\FormHelper;
+use Arrow\Controls\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
 use Arrow\Models\View;
-use Arrow\ORM\Persistent\Criteria;
+use Arrow\ORM\Persistent\Criteria,
+    \Arrow\Access\Models\Auth,
+    \Arrow\ViewManager, \Arrow\RequestContext;
+use Arrow\Access\Models\AccessGroup;
 use Arrow\ORM\Persistent\DataSet;
+use Arrow\Package\Application\PresentationLayout;
+use Arrow\Controls\API\Forms\BuilderSchemas\Bootstrap;
+use Arrow\Common\AdministrationLayout;
+use Arrow\Common\AdministrationPopupLayout;
+use Arrow\Common\BreadcrumbGenerator;
+use Arrow\Common\Layouts\EmptyLayout;
+use Arrow\Common\Links;
+use Arrow\Common\PopupFormBuilder;
+use Arrow\Common\TableDatasource;
 use Arrow\Shop\Models\Persistent\Category;
+use Arrow\Shop\Models\Persistent\Product;
 use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Arrow\Translations\Models\Translations;
+use Arrow\Media\Element;
+use Arrow\Media\ElementConnection;
+use Arrow\Media\Models\MediaAPI;
+use Arrow\Controls\API\Table\Table;
+use Arrow\Router;
 
-/**
- * Class PanelObjects
- * @package Arrow\Translations\Controllers
- * @Route("/objects")
- */
 class PanelObjects extends BaseController
 {
-
-    /**
-     * @Route("/index")
-     */
     public function index()
     {
-
+        $this->action->setLayout(new ReactComponentLayout());
         //$this->action->assign('fields' , LanguageText::getFields());
-
-
-        $db = Project::getInstance()->getDB();
-        $t = ObjectTranslation::getTable();
-        //$db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
-
+        $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
-        //$db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
+        $db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
+
+        $this->action->assign("objects", FormHelper::assocToOptions([
+            Category::getClass() => "Kategorie",
+            Property::getClass() => "Cechy",
+            Page::getClass() => "Strony",
+            Product::getClass() => "Produkty",
+        ]));
+
+        $db = Project::getInstance()->getDB();
+        $t = ObjectTranslation::getTable();
+        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
+  /*      print "<pre>";
+        print "DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class";
+        print "</pre>";*/
 
 
-        return [
-            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
-            "objects" => FormHelper::assocToOptions(array(
-                Category::getClass() => "Kategorie",
-                Property::getClass() => "Cechy",
-                //\Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
-
-            ))
-        ];
     }
 
-    /**
-     * @Route("/list")
-     */
     public function list()
     {
 
@@ -81,12 +83,12 @@ class PanelObjects extends BaseController
         $class = "%" . end($tmp);
         //$crit->_field("link", Criteria::C_NOT_EQUAL);
         $crit->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
-        $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E");//$model::getMultilangFields()
+        $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
 
 
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
-        if (count($tmp) == 2) {
+        if(count($tmp) == 2){
             $crit->_lang($tmp[1]);
         }
 
@@ -105,13 +107,10 @@ class PanelObjects extends BaseController
         $this->json($helper->getListData($crit));
     }
 
-    /**
-     * @Route("/downloadLangFile")
-     */
-    public function downloadLangFile(Request $request)
+    public function downloadLangFile()
     {
 
-        $data = json_decode($request->get("payload"), true);
+        $data = json_decode($this->request["payload"], true);
         $model = $data["model"];
 
 
@@ -179,74 +178,29 @@ class PanelObjects extends BaseController
 
     }
 
-    /**
-     * @Route("/uploadFile")
-     */
-    public function uploadFile(Request $request, Project $project)
-    {
-        /** @var UploadedFile $fileObj */
-        $fileObj = $request->files->get("file")[0];
-        //  Read your Excel workbook
-        try {
-            $inputFileType = \PHPExcel_IOFactory::identify($fileObj->getPathname());
-            $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
-            $objPHPExcel = $objReader->load($fileObj->getPathname());
-        } catch (\Exception $e) {
-            die('Error loading file "' . pathinfo($fileObj->getPathname(), PATHINFO_BASENAME) . '": ' . $e->getMessage());
-        }
-
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
-
-        $t = ObjectTranslation::getTable();
-        $db = $project->getDB();
-
-
-        $stm = $db->prepare("update $t set value=?  where id=?");
-
-        foreach ($sheetData as $row) {
-
-            if ($row[0]) {
-
-                $stm->execute([
-                    $row[3],
-                    $row[0],
-                ]);
-            }
-        }
-
-
-        return [true];
-    }
-
-    /**
-     * @Route("/delete")
-     */
-    public function delete(Request $request)
+    public function delete()
     {
         $elements = ObjectTranslation::get()
-            ->_id($request->get("keys"), Criteria::C_IN)
+            ->_id($this->request["keys"], Criteria::C_IN)
             ->find();
 
         foreach ($elements as $element) {
             $element->delete();
         }
 
-        return [true];
+        $this->json([true]);
     }
 
-    /**
-     * @Route("/inlineUpdate")
-     */
-    public function inlineUpdate(Request $request)
+    public function inlineUpdate()
     {
         $obj = ObjectTranslation::get()
-            ->findByKey($request->get("key"));
+            ->findByKey($this->request["key"]);
 
-        $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
+        $obj->setValue(LanguageText::F_VALUE, $this->request["newValue"]);
         $obj->save();
 
 
-        return [1];
+        $this->json([1]);
     }
 
 }

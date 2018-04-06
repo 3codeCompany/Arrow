@@ -3,14 +3,15 @@
 namespace Arrow\Common\Controllers;
 
 use Arrow\Exception;
-use Arrow\Media\Element;
-use Arrow\Media\ElementConnection;
-use Arrow\Media\MediaAPI;
+use Arrow\Media\Models\Element;
+use Arrow\Media\Models\ElementConnection;
+use Arrow\Media\Models\MediaAPI;
 use Arrow\Models\Dispatcher;
+use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
-     \Arrow\RequestContext, Arrow\Models\Operation,
+    \Arrow\ViewManager, \Arrow\RequestContext, Arrow\Models\Operation,
     Arrow\Router;
 use Arrow\Translations\Models\Translations;
 
@@ -512,7 +513,7 @@ class DataController extends \Arrow\Models\Controller
             fclose($fd);
             exit;
         } else {
-            \Arrow\Kernel::getDefault()->rollBackRequest();
+            \Arrow\Controller::getDefault()->rollBackRequest();
         }
     }
 

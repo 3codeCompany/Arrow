@@ -3,65 +3,92 @@
 namespace Arrow\Access\Controllers;
 
 
+use function array_reduce;
+use Arrow\Access\Models\AccessAPI;
 use Arrow\Access\Models\AccessGroup;
+use Arrow\Access\Models\AccessPoint;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Access\Models\User;
-use Arrow\Common\AdministrationLayout;
-use Arrow\Common\Layouts\EmptyLayout;
 use Arrow\Common\Layouts\ReactComponentLayout;
-use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Common\Models\History\History;
-use Arrow\Common\Models\Wigets\Table\TableDataSource;
-use Arrow\Common\Track;
 use Arrow\ConfigProvider;
-use Arrow\Models\Action;
+use Arrow\Controls\api\common\AjaxLink;
+use Arrow\Controls\api\common\BreadcrumbElement;
+use Arrow\Controls\api\common\ContextMenu;
+use Arrow\Controls\api\common\Icons;
+use Arrow\Controls\api\common\Link;
+use Arrow\Controls\API\Components\Breadcrumb;
+use Arrow\Controls\API\Components\MultiFile;
+use Arrow\Controls\API\Components\Toolbar;
+use Arrow\Controls\API\FilterPanel;
+use Arrow\Controls\api\Filters\SelectFilter;
+use Arrow\Controls\API\FiltersPresenter;
+use Arrow\Controls\API\Forms\Fields\Hidden;
+use Arrow\Controls\API\Forms\Fields\Select;
+use Arrow\Controls\API\Forms\Fields\SwitchF;
+use Arrow\Controls\API\Forms\Fields\Text;
+use Arrow\Controls\API\Forms\Fields\Textarea;
+use Arrow\Controls\API\Forms\Form;
+use Arrow\Controls\API\Forms\Validator;
+use Arrow\Controls\api\Layout\LayoutBuilder;
+use Arrow\Controls\api\SerenityJS;
+use Arrow\Controls\API\Table\ColumnList;
+use Arrow\Controls\API\Table\Columns\Editable;
+use Arrow\Controls\API\Table\Columns\Simple;
+use Arrow\Controls\API\Table\Columns\Template;
+use Arrow\Controls\api\WidgetsSet;
+use TableListORMHelper;
 use Arrow\Models\IAction;
-use Arrow\Models\Operation;
 use Arrow\Models\Project;
-use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\Language;
-use Arrow\RequestContext;
+use Arrow\Common\Layouts\AdministrationLayout;
+use Arrow\Common\Layouts\EmptyLayout;
+use Arrow\Common\Models\Wigets\Table\TableDataSource;
 use Arrow\Router;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use function array_reduce;
+use Arrow\Controls\API\Table\Table;
+use
+    \Arrow\RequestContext,
+    \Arrow\ORM\Persistent\Criteria,
+    Arrow\Common\Track,
+    Arrow\Models\Operation, Arrow\Models\Action;
 
-
+/**
+ * Created by JetBrains PhpStorm.
+ * User: artur
+ * Date: 04.09.12
+ * Time: 14:20
+ * To change this template use File | Settings | File Templates.
+ */
 class AccessController extends \Arrow\Models\Controller
 {
 
-
-    /**
-     * @param Request $request
-     * @return ReactComponentLayout
-     * @Route("/login")
-     */
-    public function login(Request $request)
+    public function __construct()
     {
-
-        $data = [
-            "backgroundImage" => ConfigProvider::get("panel")["loginBackground"],
-            "from" => $request->get("from"),
-        ];
-
-        $layout = new ReactComponentLayout(null, $data);
-
-        $layout->setOnlyBody(true);
-        return $layout;
-
+        //AccessAPI::checkInstallation();
     }
 
-    /**
-     * @Route("/loginAction")
-     */
-    public function loginAction(Request $request)
+    public function login(Action $view, RequestContext $request)
     {
+        $path = RequestContext::getProtocol() . $_SERVER["HTTP_HOST"] . str_replace([ARROW_DOCUMENTS_ROOT, DIRECTORY_SEPARATOR], ["", "/"], __DIR__);
+        $path .= "/../../org.arrowplatform.common/layouts/admin/";
 
-        $data = $request->get("data");
-        $validator = Validator::create($data)
+
+        if (Auth::getDefault()->isLogged()) {
+            header("Location: " . (RequestContext::getBaseUrl()) . "admin");
+            exit();
+        }
+
+        $view->setLayout(new EmptyLayout());
+        $view->assign("applicationTitle", ConfigProvider::get("panel")["title"]);
+        $view->assign("appPath", RequestContext::getBaseUrl());
+        $view->assign("from", $this->request["from"]); 
+    }
+
+    public function auth_loginAction(IAction $action, RequestContext $request)
+    {
+        $validator = Validator::create($request["data"])
             ->required(["login", "password"]);
 
         if (!$validator->check()) {
@@ -71,7 +98,7 @@ class AccessController extends \Arrow\Models\Controller
 
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
-        $res = $authHandler->doLogin($data["login"], $data["password"]);
+        $authHandler->doLogin($request["data"]["login"], $request["data"]["password"]);
 
 
         if (!$authHandler->isLogged()) {
@@ -79,31 +106,77 @@ class AccessController extends \Arrow\Models\Controller
             $this->json($validator->response());
         }
 
-        return [
-            "redirectTo" => trim($request->get("from", Router::getDefault()->getBasePath() . "/admin", "/"))
-        ];
+
+        $this->json(["redirectTo" => trim($request["from"] ? $request["from"] : Router::getBasePath() . "/admin", "/")]);
 
 
     }
 
-    /**
-     * @param $action
-     * @param RequestContext $request
-     * @Route("/logout")
-     */
-    public function logout(Auth $auth)
+    public function logout(IAction $action, RequestContext $request)
     {
-        $auth->doLogout();
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            return RedirectResponse::create($_SERVER['HTTP_REFERER']);
-        }
-        return [true];
+        $authHandler = Auth::getDefault();
+        $authHandler->doLogout();
+        $this->back();
     }
 
+    public function dashboard_main(Action $view, RequestContext $request)
+    {
+    }
 
     public function users_account(Action $view, RequestContext $request)
     {
-        return [];
+        $view->setLayout(new AdministrationLayout(), new EmptyLayout());
+        /** @var User $user */
+        $user = Auth::getDefault()->getUser();
+
+        $ds = TableDataSource::fromClass(Track::getClass())
+            ->c(Track::F_CLASS, User::getClass())
+            ->c(Track::F_OBJECT_ID, $user["id"])
+            ->c(Track::F_ACTION, "login")
+            ->limit(0, 10);
+        //->order("id", Criteria::O_DESC);
+
+        $cols = ColumnList::create()
+            ->addColumn(Simple::_new(Track::F_DATE));
+        $table = Table::create("lastLogin", $ds, $cols);
+
+
+        $l = LayoutBuilder::create()
+            ->panel("Twoje konto", Icons::USER);
+
+
+        $form = Form::_new("editAccount", $user)
+            ->setAction(Router::link("./accountSave"))
+            ->on(Form::EVENT_SUCCESS, "alert('Zapisano');")
+            ->setNamespace("data");
+
+        $l
+            ->tabSet()
+            ->tab("Dane konta")
+            ->form($form)
+            ->formText("Login", $user->_login())
+            /*->row()
+            ->formField("Dział", Text::_new(User::F_EMAIL, "Dział"),[LayoutBuilder::CONF_COLUMNS => 4])
+            ->formField("Stanowisko", Text::_new(User::F_EMAIL, "Email"),[LayoutBuilder::CONF_COLUMNS => 4])
+            ->rowEnd()*/
+            ->formField("Email", Text::_new(User::F_EMAIL, "Email"), [LayoutBuilder::CONF_COLUMNS => 4])
+            //->formField("Tel. stacjonarny", Text::_new(User::F_EMAIL, "Tel. stacjonarny"),[LayoutBuilder::CONF_COLUMNS => 3])
+            //->formField("Tel. komórkowy", Text::_new(User::F_EMAIL, "Tel. komórkowy"),[LayoutBuilder::CONF_COLUMNS => 3])
+
+            ->formField("Zmień hasło", Text::_new(User::F_PASSWORD, "Zostaw puste jeśli nie zmieniasz")->setValue(""), [LayoutBuilder::CONF_COLUMNS => 4])
+            ->row()
+            ->label("Avatar")
+            ->col2(MultiFile::_new("photo", $user))
+            ->rowEnd()
+            ->add($form->getSubmit(), ["offset" => 2])
+            ->separator()
+            ->formEnd()
+            ->tabEnd()
+            //->tab("Ostatnie logowania")
+            ->tabSetEnd();
+
+
+        $view->setGenerator(AdministrationLayout::page($l));
     }
 
     public function users_accountSave($op, RequestContext $request)
@@ -114,7 +187,7 @@ class AccessController extends \Arrow\Models\Controller
         $this->json();
     }
 
-    public function auth_change_password($action, RequestContext $request)
+    public function auth_change_password(IAction $action, RequestContext $request)
     {
         $user = Auth::getDefault()->getUser();
 
@@ -201,6 +274,7 @@ class AccessController extends \Arrow\Models\Controller
     public function users_list(Action $view, RequestContext $request)
     {
         $this->action->setLayout(new ReactComponentLayout());
+        print_r("tak");
         $this->action->assign("accessGroups", AccessGroup::get()->findAsFieldArray(AccessGroup::F_NAME, true));
 
     }
@@ -242,29 +316,174 @@ class AccessController extends \Arrow\Models\Controller
 
     }
 
-
-    /**
-     * @param Request $request
-     * @param Auth $auth
-     * @return array
-     * @throws \Arrow\Exception
-     * @throws \Arrow\ORM\Exception
-     * @Route("/loginAs/{key}")
-     */
-    public function loginAs($key, Request $request, Auth $auth)
+    public function users_save()
     {
-        /*if ($key) {
-            $auth->restoreShadowUser();
+
+        $data = $this->request["data"];
+
+        $validator = Validator::create($data)
+            ->required(["login", "email", "active"])
+            ->email("email");
+
+
+        if (!isset($data["id"])) {
+            $validator->required(["password"]);
+        }
+
+        if (!$validator->check()) {
+            $this->json($validator->response());
+        }
+
+        $accessGroups = isset($data["selectedGroups"]) ? $data["selectedGroups"] : [];
+        unset($data["selectedGroups"]);
+
+        if (isset($data["id"])) {
+            $user = User::get()
+                ->findByKey($data["id"]);
+            $user
+                ->setValues($data)
+                ->save();
+
         } else {
+            $user = User::create($data);
 
-        }*/
-        $user = User::get()->findByKey($key);
-        $auth->doLogin($user["login"], false, true);
 
-        return [true];
+        }
+        $user->setGroups($accessGroups);
+
+        $this->json([1]);
+    }
+
+
+
+    public function access_list(Action $view, RequestContext $request)
+    {
+
+        $this->action->setLayout(new ReactComponentLayout());
+        $groups = AccessGroup::get()
+            ->_id(4, Criteria::C_GREATER_THAN)
+            ->findAsFieldArray(AccessGroup::F_NAME, true);
+        $view->assign("agroups", $groups);
+
+        return;
+
+        $view->setLayout(new AdministrationLayout(), new EmptyLayout());
+        $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray(AccessGroup::F_NAME, true);
+        $view->assign("agroups", $groups);
+
+        $view->setLayout(new AdministrationLayout(), new EmptyLayout());
+
+
+        $ds = TableDataSource::fromClass(AccessPoint::getClass());
+        //$ds->setGlobalSearchFields(["point_object_friendly_id"]);
+
+
+        $list = ColumnList::create()
+            ->addColumn(Simple::_new("id", "id"))
+            ->addColumn(Simple::_new("point_type", "Typ"))
+            ->addColumn(Simple::_new("point_action", "Action"))
+            ->addColumn(Simple::_new("point_object_friendly_id", "Friendly id"))
+            ->addColumn(Editable::_boolswitch("control_enabled", "Control", Router::link("./changePointControl"), ["id"]))
+            ->addColumn(Template::_new(function ($context) use ($groups) {
+                print '<select multiple="multiple" class="span5 group-select" context="' . $context["id"] . ' >';
+                foreach ($groups as $id => $name) {
+                    if (!in_array($id, array(2, 4))) {
+                        print  '<option' . ($id & $context["groups"] ? 'selected="selected"' : '') . ' value="' . $id . '">' . $name . '</option>';
+                    }
+                }
+                print  "</select>";
+
+            }));
+        $table = new Table("access", $ds, $list);
+        $table->prependWidged(FiltersPresenter::create([$table]));
+        $l = LayoutBuilder::create();
+
+        $l->insert(Toolbar::_new([
+            Breadcrumb::create([
+                "System",
+                BreadcrumbElement::create("Udzielone dostępy")->setActive(1)
+            ])
+        ]));
+
+        $table->addDataColumn(["groups"]);
+        $l->add($table);
+
+
+        $view->assign("generator", AdministrationLayout::page(new WidgetsSet([$l])));
+
 
     }
 
+    public function access_changePointControl()
+    {
+        $obj = AccessPoint::get()->findByKey($this->request["id"]);
+        $obj[AccessPoint::F_CONTROL_ENABLED] = $obj[AccessPoint::F_CONTROL_ENABLED] ? 0 : 1;
+        $obj->save();
+        $this->json([1]);
+    }
+
+    public function changePointGroup(IAction $action, RequestContext $request)
+    {
+        //$tmp = explode(",",$request["groups"]);
+
+        $point = Criteria::query(AccessPoint::getClass())->findByKey($request["accessPoint"]);
+        if ($request["groups"]) {
+            $sum = array_sum($request["groups"]);
+            $point["groups"] = $sum;
+        } else {
+            $point["groups"] = 0;
+        }
+
+
+        $point->save();
+        $this->json([true]);
+    }
+
+    public function auth_loginAs(IAction $action, RequestContext $request)
+    {
+
+        $auth = Auth::getDefault();
+        if (empty($request["loginToLoginAs"]) && empty($request["id"])) {
+            $auth->restoreShadowUser();
+        } elseif ($request["id"]) {
+            $user = User::get()->findByKey($request["id"]);
+            $auth->doLogin($user["login"], false, true);
+        } else {
+            $auth->doLogin($request["loginToLoginAs"], false, true);
+        }
+
+        if (RequestContext::getDefault()->isXHR()) {
+            $this->json([true]);
+        } else {
+            $this->back();
+        }
+    }
+
+    public function dashboard_currentlyLogged(Action $view, RequestContext $request)
+    {
+        $view->setLayout(new EmptyLayout());
+
+        $span = new \DateTime();
+        $span->sub(new \DateInterval("PT30M"));
+        $spanFormatted = $span->format("Y-m-d H:i:s");
+
+        $db = Project::getInstance()->getDB();
+
+        $query = "select s.*,u.login from access_sessions s left join access_user u on(s.user_id=u.id) where last>'{$spanFormatted}'  order by last desc";
+        $result = Project::getInstance()->getDB()->query($query);
+        $view->assign("list", $result);
+
+
+        $query = "select count(*) from access_sessions s where last>'{$spanFormatted}' and user_id is NULL";
+        $result = $db->query($query)->fetchColumn();
+        $view->assign("countNotLogged", $result);
+
+        $query = "select count(*) from access_sessions s where last>'{$spanFormatted}' and user_id is not NULL";
+        $result = $db->query($query)->fetchColumn();
+        $view->assign("countLogged", $result);
+
+
+    }
 
     public function getUsers()
     {

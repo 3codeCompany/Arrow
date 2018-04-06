@@ -8,17 +8,7 @@
     }
   ],
   "require": {
-    "symfony/yaml": "^3.2",
-    "symfony/routing": "^3.4",
-    "symfony/config": "^3.4",
-    "doctrine/annotations": "^1.6",
-    "symfony/http-foundation": "^3.4",
-    "symfony/cache": "^3.4"
-  },
-  "require-dev": {
-    "nette/php-generator": "^3.1",
-    "symfony/debug": "^4.0",
-    "php-console/php-console": "^3.1"
+    "symfony/yaml": "^3.2"
   },
   "autoload": {
     "classmap": [
