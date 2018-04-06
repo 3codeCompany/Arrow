@@ -27,12 +27,12 @@ class TableListORMHelper
     private $objectsPostProcess;
     private $arrayPostProcess;
 
-    public function __construct( $inputVariable = false )
+    public function __construct( $inputData = false )
     {
-        if(!$inputVariable) {
+        if(!$inputData) {
             $this->inputData = json_decode(file_get_contents('php://input'), true);
         }else{
-            $this->inputData = $_POST[$inputVariable];
+            $this->inputData = $inputData;
         }
     }
 
