@@ -45,13 +45,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class PanelStatic extends BaseController
 {
     private $user;
-    private $country = "pl";
+    public $country = "pl";
 
     public function __construct()
     {
         $this->user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $this->user);
-        if (count($tmp) == 2) {
+
+        if (count($tmp) >= 2) {
             $this->country = $tmp[1];
         }
     }
@@ -117,14 +118,14 @@ class PanelStatic extends BaseController
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
 
 
-        $t = $t = LanguageText::getTable();
+        $table = $table = LanguageText::getTable();
         $db = Project::getInstance()->getDB();
 
-        $stm = $db->prepare("update $t set value=? where id=?");
+        $query = $db->prepare("update $table set value=? where id=?");
         $db->beginTransaction();
 
         foreach ($sheetData as $row) {
-            $stm->execute([
+            $query->execute([
                 $row[2],
                 $row[0]
             ]);

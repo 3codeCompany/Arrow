@@ -50,7 +50,7 @@ class PageController extends BaseController
         $data["language"] = $session->get("language", "pl");
         Translations::setupLang($data["language"]);
 
-        if ($user->isInGroup("Partnerzy sprzedaży")) {
+        if ($user->isInGroup("Partnerzy sprzedaży")|| $user->isInGroup("Tłumacz")) {
             $this->country = substr($user->_login(), -2);
         }
     }
