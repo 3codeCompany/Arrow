@@ -14,8 +14,6 @@
         <field name="need_change_password" type="TINYINT" size="1"/>
         <field name="name" type="VARCHAR" size="255"/>
         <field name="settings" type="text"/>
-        <field name="lang" type="varchar"  size="10"/>
-        <field name="country" type="varchar"  size="10"/>
 
         <connection name="AccessGroups">
             <table name="access_user_group" local="id" foreign="user_id" />
