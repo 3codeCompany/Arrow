@@ -136,7 +136,11 @@ class PageController extends BaseController
             ->findByKey($request->get("key")) : [];
 
         if ($this->country !== "pl") {
-            Translations::setupLang($this->country);
+            if ($request->get("language") == "ru") {
+                Translations::setupLang($request->get("language"));
+            } else {
+                Translations::setupLang($this->country);
+            }
         } else {
             if ($request->get("language") !== null) {
                 Translations::setupLang($request->get("language"));
@@ -154,14 +158,21 @@ class PageController extends BaseController
 
 
         if ($this->country !== "pl") {
-            $langs = Language::get()
-                ->_code($this->country)
-                ->setColumns(["name", "code"])
-                ->find()
-                ->toPureArray();
+            if ($this->country == "ua"){
+                $langs = Language::get()
+                    ->_code(["ua", "ru"], Criteria::C_IN)
+                    ->setColumns(["name", "code"])
+                    ->find();
+            } else {
+                $langs = Language::get()
+                    ->_code($this->country)
+                    ->setColumns(["name", "code"])
+                    ->find()
+                    ->toPureArray();
 
-            foreach ($langs as $key => $item) {
-                $langs[$key]["name"] = Translations::translateText($langs[$key]["name"]);
+                foreach ($langs as $key => $item) {
+                    $langs[$key]["name"] = Translations::translateText($langs[$key]["name"]);
+                }
             }
 
         } else {
@@ -206,13 +217,16 @@ class PageController extends BaseController
             $obj = Page::get()->findByKey($data["id"]);
         }
 
-        //print_r($this->country);
         if ($this->country !== "pl") {
-            if (strtoupper($this->country) !== $request->get("language")) {
-                Translations::saveObjectTranslation($obj, $data, $this->country);
-            } else {
-                throw new \Exception('Your language is not correct. Please change it to "' . $this->country . '"');
-            }
+                if (strtoupper($this->country) !== $request->get("language")) {
+                    if ($request->get("language") == "ru"){
+                        Translations::saveObjectTranslation($obj, $data, $request->get("language"));
+                    } else {
+                        Translations::saveObjectTranslation($obj, $data, $this->country);
+                    }
+                } else {
+                    throw new \Exception('Your language is not correct. Please change it to "' . $this->country . '"');
+                }
         } else {
             if ($request->get("language") == null) {
                 Translations::saveObjectTranslation($obj, $data, $request->get("pl"));

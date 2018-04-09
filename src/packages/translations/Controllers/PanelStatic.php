@@ -105,6 +105,19 @@ class PanelStatic extends BaseController
     {
         $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
 
+
+        $this->downloadLangFile();
+
+        print_r($backupName);
+        die();
+
+        $currentDate = date("d-m-Y");
+        $currentTime = date("H:i:s");
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . ".xls";
+        $target = "data/translate_uploads/" . $backupName;
+        move_uploaded_file($file, $target);
+
+
         //  Read your Excel workbook
         try {
             $inputFileType = \PHPExcel_IOFactory::identify($file);
@@ -117,20 +130,21 @@ class PanelStatic extends BaseController
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
 
+        print_r("works here");
 
-        $table = $table = LanguageText::getTable();
-        $db = Project::getInstance()->getDB();
-
-        $query = $db->prepare("update $table set value=? where id=?");
-        $db->beginTransaction();
-
-        foreach ($sheetData as $row) {
-            $query->execute([
-                $row[2],
-                $row[0]
-            ]);
-        }
-        $db->commit();
+//        $table = $table = LanguageText::getTable();
+//        $db = Project::getInstance()->getDB();
+//
+//        $query = $db->prepare("update $table set value=? where id=?");
+//        $db->beginTransaction();
+//
+//        foreach ($sheetData as $row) {
+//            $query->execute([
+//                $row[2],
+//                $row[0]
+//            ]);
+//        }
+//        $db->commit();
 
         $this->json();
     }
@@ -140,9 +154,7 @@ class PanelStatic extends BaseController
      */
     public function downloadLangFile(Request $request)
     {
-
         //$data = json_decode($request->get("payload"), true);
-
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()->setCreator("CMS");

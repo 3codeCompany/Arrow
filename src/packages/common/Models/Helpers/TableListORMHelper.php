@@ -48,6 +48,38 @@ class TableListORMHelper
         return $this->inputData;
     }
 
+    /**
+     * @param Criteria $criteria
+     * @return Criteria
+     */
+    public function getPreparedCriteria(Criteria $criteria){
+        $data = $this->inputData;
+
+        foreach ($this->filters as $name => $filter) {
+            if (isset($data["filters"][$name])) {
+                $filter($criteria, $data["filters"][$name]);
+                unset($data["filters"][$name]);
+            }
+        }
+        foreach ($this->sorters as $name => $sorter) {
+            if (isset($data["order"][$name])) {
+                $sorter($criteria, $data["order"][$name]);
+                unset($data["order"][$name]);
+            }
+        }
+
+
+        $criteria = TableDataSource::prepareCriteria($criteria, $data);
+
+        if (empty($data["order"]) && !empty($this->defaultOrder)) {
+            foreach ($this->defaultOrder as $column) {
+                $criteria->order($column[0], $column[1]);
+            }
+        }
+
+        return $criteria;
+    }
+
     public function getListData(Criteria $criteria = null)
     {
 
