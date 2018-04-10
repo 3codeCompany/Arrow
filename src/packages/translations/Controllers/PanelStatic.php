@@ -101,24 +101,23 @@ class PanelStatic extends BaseController
     /**
      * @Route("/uploadLangFile")
      */
-    public function uploadLangFile()
+    public function uploadLangFile(Request $request)
     {
+        $data = $request->get("data");
+        if ($data["language"] == null){
+            return [
+                "status" => "fail",
+            ];
+        } else {
         $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
-
-
-        $this->downloadLangFile();
-
-        print_r($backupName);
-        die();
 
         $currentDate = date("d-m-Y");
         $currentTime = date("H:i:s");
-        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . ".xls";
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
         $target = "data/translate_uploads/" . $backupName;
-        move_uploaded_file($file, $target);
 
 
-        //  Read your Excel workbook
+        // file stored
         try {
             $inputFileType = \PHPExcel_IOFactory::identify($file);
             $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
@@ -130,23 +129,30 @@ class PanelStatic extends BaseController
 
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
 
-        print_r("works here");
 
-//        $table = $table = LanguageText::getTable();
-//        $db = Project::getInstance()->getDB();
-//
-//        $query = $db->prepare("update $table set value=? where id=?");
-//        $db->beginTransaction();
-//
-//        foreach ($sheetData as $row) {
-//            $query->execute([
-//                $row[2],
-//                $row[0]
-//            ]);
-//        }
-//        $db->commit();
+        $table = $table = LanguageText::getTable();
+        $db = Project::getInstance()->getDB();
 
-        $this->json();
+        $currLang = $data["language"];
+
+        $query = $db->prepare("update $table set value=? where id=? and lang=?");
+        $db->beginTransaction();
+
+        foreach ($sheetData as $row) {
+            $query->execute([
+                $row[2],
+                $row[0],
+                $currLang,
+            ]);
+        }
+        $db->commit();
+        move_uploaded_file($file, $target);
+
+
+            return [
+                "status" => "done",
+            ];
+        }
     }
 
     /**
@@ -176,7 +182,6 @@ class PanelStatic extends BaseController
             LanguageText::F_VALUE,
             LanguageText::F_MODULE,
         ];
-
 
         $sh->setCellValueByColumnAndRow(0, 1, "id");
         $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
@@ -216,6 +221,76 @@ class PanelStatic extends BaseController
     }
 
     /**
+     * @Route("/langBackUp")
+     */
+    public function langBackUp(Request $request)
+    {
+        //$data = json_decode($request->get("payload"), true);
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("CMS");
+        $sh = $objPHPExcel->setActiveSheetIndex(0);
+
+        $criteria = LanguageText::get()
+            ->_lang($request->get("lang"));
+
+        if ($request->get("onlyEmpty")) {
+            $criteria->_value([null, ""], Criteria::C_IN);
+        }
+        // Add some data
+
+        $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
+
+        $columns = [
+            LanguageText::F_ID,
+            LanguageText::F_ORIGINAL,
+            LanguageText::F_VALUE,
+            LanguageText::F_MODULE,
+        ];
+
+        $sh->setCellValueByColumnAndRow(0, 1, "id");
+        $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
+        $sh->setCellValueByColumnAndRow(2, 1, "Tłumaczenie");
+        $sh->setCellValueByColumnAndRow(3, 1, "Moduł");
+        foreach ($result as $index => $r) {
+            foreach ($columns as $key => $c) {
+                $sh->setCellValueByColumnAndRow($key, $index + 2, $r[$c]);
+            }
+
+            //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
+        }
+        $objPHPExcel->getActiveSheet()->getStyle('B1:D5000')
+            ->getAlignment()->setWrapText(true);
+
+        foreach ($columns as $key => $c) {
+            //$sh->getColumnDimensionByColumn($key)->setAutoSize(true);
+            //$sh->getColumnDimensionByColumn($key)->setWidth(200);
+        }
+
+        $sh->getColumnDimensionByColumn(1)->setWidth(70);
+        $sh->getColumnDimensionByColumn(2)->setWidth(70);
+
+        $currentDate = date("d-m-Y");
+        $currentTime = date("H:i:s");
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $request->get("lang") . ".xls";
+        $target = "data/translate_backups/" . $backupName;
+
+        // Rename worksheet
+        $sh->setTitle('Tłumaczenia ');
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $objPHPExcel->setActiveSheetIndex(0);
+        // Redirect output to a client’s web browser (Excel5)
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="tłumaczeniaa_' . $request->get("lang"). '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save($target);
+        exit;
+
+    }
+
+
+    /**
      * @Route("/delete")
      */
     public function delete(Request $request)
@@ -246,6 +321,34 @@ class PanelStatic extends BaseController
         $this->json([1]);
     }
 
+    /**
+     * @Route("/history")
+     */
+    public function history(){
+        $dir = "data/translate_uploads";
 
+        $files = scandir($dir);
+
+        $returnData = [];
+
+        foreach ($files as $file){
+            $slicedFile = explode("_", $file);
+            if (count($slicedFile) >= 3){
+                $returnData[] = [
+                    "full_name" => $file,
+                    "language" => explode(".", $slicedFile[3])[0],
+                    "user" => $slicedFile[2],
+                    "date" => $slicedFile[0],
+                    "time" => $slicedFile[1],
+                ];
+            }
+        }
+
+        return[
+            "countAll" => count($files) - 2,
+            "data" => $returnData,
+            "debug" => false,
+        ];
+    }
 }
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
 import {Column, Table} from "frontend/src/ctrl/Table";
 import {confirm, Modal} from "frontend/src/ctrl/Overlays";
-import {BFile, BSelect, BSwitch} from "frontend/src/layout/BootstrapForm";
+import {BFile, BFileList, BForm, BSelect, BSwitch} from "frontend/src/layout/BootstrapForm";
 
 import download from "frontend/src/lib/Downloader";
 import Comm from "frontend/src/lib/Comm";
@@ -29,12 +29,22 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             isUploading: false,
             fileToUpload: false,
             selectedObject: props.objects[0],
+            historyModalVisible: false,
         };
 
     }
 
     public handleDownload() {
         download(this.props._baseURL + "/downloadLangFile", {
+            lang: this.state.langToDownload,
+            onlyEmpty: this.state.downloadOnlyEmpty,
+            model: this.state.selectedObject.value,
+        });
+    }
+
+    handleBackup(lang): any {
+        //window.open(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
+        download(this.props._baseURL + "/langBackUp", {
             lang: this.state.langToDownload,
             onlyEmpty: this.state.downloadOnlyEmpty,
             model: this.state.selectedObject.value,
@@ -163,6 +173,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             icon: "Upload",
                             onClick: () => this.setState({isUploading: true})
                         },
+                        {key: "f3", label: "Historia tłumaczeń", icon: "History", onClick: () => this.setState({historyModalVisible: true})},
                     ]}
                 />
 
@@ -232,19 +243,80 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     show={s.isUploading != false}
                     onHide={() => this.setState({isUploading: false, fileToUpload: false})}
                     showHideLink={true}
+                    top={100}
 
                 >
                     <div style={{padding: 10, maxWidth: 500}} className="container">
-                        <BFile label={""} value={this.state.fileToUpload}
-                               onChange={(e) => this.setState({fileToUpload: e.value})}/>
-                        {this.state.fileToUpload != false &&
-                        <button onClick={this.handleUpload.bind(this)} className="btn btn-primary pull-right"><i
-                            className="fa fa-upload"/> Laduj</button>
-                        }
+                        <BForm
+                            ref={(el) => this.form = el}
+                            action={this.props._baseURL + `/uploadFile`}
+                            namespace={"data"}
+                            onSuccess={(el) => {
+                                if (el.response.status == "done"){
+                                    this.props._notification("Sukces", "Plik załadowano poprawnie.");
+                                    this.handleBackup(el.form.state.data.language);
+                                    console.log(el.response);
+                                } else {
+                                    this.props._notification("Błąd", "Wybierz język.", {level: "error"});
+                                    console.log(el.response);
+                                }
+                            }}
+                        >{(form) => {
+                            return (
+                                <div>
+                                    <BSelect
+                                        label={"Język do wczytania"}
+                                        value={this.state.langToDownload}
+                                        options={{xx: "--Wybierz język ---", ...this.props.language}}
+                                        onChange={(e) => {
+                                            this.setState({langToDownload: e.value});
+                                            console.log(this.state.langToDownload);
+                                        }
+                                        }
+                                        require={true}
+                                        {...form("language")}
+                                    />
+                                    <BFileList name="files" {...form("files")}/>
+                                    <button className="btn btn-primary pull-right"><Icon name={"Upload"}/> Laduj</button>
+                                </div>
+                            )
+                        }}
+                        </BForm>
                     </div>
 
                 </Modal>
 
+                <Modal
+                    title={"Historia tłumaczeń"}
+                    show={this.state.historyModalVisible}
+                    onHide={() => this.setState({historyModalVisible: false})}
+                    showHideLink={true}
+                    top={100}
+
+                >
+                    <div style={{padding: 10}} className="container">
+                        <Table
+                            remoteURL={this.props._baseURL + `/history`}
+                            onPage={100}
+                            showFooter={false}
+                            columns={[
+                                Column.text("language", __("Język")).width(70).className("center uppercase"),
+                                Column.email("user", __("Użytkownik")),
+                                Column.date("date", __("Data")),
+                                Column.date("time", __("Czas")),
+                                Column.text("full_name", __("Pobierz"))
+                                    .template((value, row) => {
+                                        return (
+                                            <a href={this.props._basePath + `/data/translate_object_uploads/${row["full_name"]}`} target={"_blank"}>
+                                                <Icon name={"Download"}/>
+                                            </a>
+                                        );
+                                    }).width(60).className("center").noFilter(true)
+                            ]}
+                        />
+                    </div>
+
+                </Modal>
             </div>
         );
     }
