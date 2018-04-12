@@ -116,7 +116,7 @@ class MailerController extends Controller
     }
 
 
-    public function eventRunBeforeAction(Action $action)
+    public function prepareData(Action $action)
     {
 
         $action->assign("_title", function ($text) {
@@ -129,7 +129,7 @@ class MailerController extends Controller
 
         $action->assign("style_th", 'text-align: center; font-size: 13px; padding: 4px; background-color: rgb(240,240,240); font-weight: bold;');
         $action->assign("style_td", 'text-align: right; font-size: 11px;padding: 6px;');
-        parent::eventRunBeforeAction($action);
+
     }
 
     public function viewBeforeCompileEvent(Action $view)
