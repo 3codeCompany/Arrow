@@ -119,7 +119,7 @@ class Translations
                 if ($_lang == "pl") {
                     continue;
                 }
-                LanguageText::create(array(
+                LanguageText::createIfNotExists(array(
                     LanguageText::F_HASH => md5($text),
                     LanguageText::F_ORIGINAL => $text,
                     LanguageText::F_LANG => $_lang,
@@ -158,6 +158,7 @@ class Translations
         }
 
 
+
         //geting first element
         $first = null;
         if ($list instanceof DataSet) {
@@ -182,10 +183,17 @@ class Translations
         //geting fields
         if (is_array($first)) {
             //$fields = array_keys($first);
+
+
             $fields = array_intersect($class::getMultiLangFields(), $fields);
+
         } elseif ($first instanceof IMultilangObject) {
             $fields = array_intersect($class::getMultiLangFields(), $first->getLoadedFields());
         }
+
+
+
+
 
 
         $keys = [-1];
@@ -203,6 +211,10 @@ class Translations
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",",
                 $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','",
                 $fields) . "') order by value desc";
+
+
+
+
         $stm = $db->prepare($q);
 
         /*  print_r($q);
@@ -325,15 +337,23 @@ class Translations
         foreach (self::getLangs() as $_lang => $name) {
             if ($_lang != "pl") {
                 foreach ($langFields as $field) {
-                    ObjectTranslation::createIfNotExists([
-                        ObjectTranslation::F_CLASS => $class,
-                        ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
-                        ObjectTranslation::F_LANG => $_lang,
-                        ObjectTranslation::F_FIELD => $field,
-                        ObjectTranslation::F_VALUE => "",
-                        "source" => ""
-                        //ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
-                    ]);
+
+                    $test = ObjectTranslation::get()
+                        ->_class($class)
+                        ->_idObject($obiect->getPKey())
+                        ->_field($field)
+                        ->findFirst();
+
+                    if (!$test) {
+                        ObjectTranslation::create([
+                            ObjectTranslation::F_CLASS => $class,
+                            ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
+                            ObjectTranslation::F_LANG => $_lang,
+                            ObjectTranslation::F_FIELD => $field,
+                            ObjectTranslation::F_VALUE => "",
+                            ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
+                        ]);
+                    }
                 }
             }
         }

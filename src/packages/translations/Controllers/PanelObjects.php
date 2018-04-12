@@ -66,7 +66,7 @@ class PanelObjects extends BaseController
 
         $db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
-        //$db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
+        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id  and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
 
 
         return [

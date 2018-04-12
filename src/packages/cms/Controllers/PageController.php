@@ -40,12 +40,15 @@ class PageController extends BaseController
 
     public function __construct(Auth $auth)
     {
-
         $user = Auth::getDefault()->getUser();
         $container = Kernel::getProject()->getContainer();
 
         /** @var Session $session */
         $session = $container->get(Session::class);
+
+        if ($user->isInGroup("Administratos") || $user->isInGroup("Developers")) {
+            $this->country = "pl";
+        }
 
         $data["language"] = $session->get("language", "pl");
         Translations::setupLang($data["language"]);
@@ -96,7 +99,7 @@ class PageController extends BaseController
         $helper->setFetchType(DataSet::AS_OBJECT);
         $data = $helper->getListData($criteria);
 
-        if ($this->country == "ua") {
+        if ($this->country !== "pl") {
             Translations::translateObjectsList($data["data"], Page::class, $this->country);
         }
         //MediaAPI::prepareMedia($data["data"]);
@@ -132,22 +135,19 @@ class PageController extends BaseController
      */
     public function edit(Request $request)
     {
-        $page = $request->get("key") != 1 ? Page::get()
-            ->findByKey($request->get("key")) : [];
+        $page = Page::get()
+            ->findByKey($request->get("key"));
 
-        if ($this->country !== "pl") {
-            if ($request->get("language") == "ru") {
-                Translations::setupLang($request->get("language"));
-            } else {
-                Translations::setupLang($this->country);
-            }
+        if ($request->get("language") == null){
+            Translations::setupLang($this->country);
         } else {
-            if ($request->get("language") !== null) {
-                Translations::setupLang($request->get("language"));
-            }
+            Translations::setupLang($request->get("language"));
         }
 
         Translations::translateObjectsList([$page]);
+
+        //Translations::translateObjectsList([$page], Page::class, $request->get("language"));
+
         $pagData = $page->getData();
 
 
@@ -156,11 +156,15 @@ class PageController extends BaseController
             ->_type("folder")
             ->find();
 
-
         if ($this->country !== "pl") {
             if ($this->country == "ua"){
                 $langs = Language::get()
                     ->_code(["ua", "ru"], Criteria::C_IN)
+                    ->setColumns(["name", "code"])
+                    ->find();
+            } else if ($this->country == "ru") {
+                $langs = Language::get()
+                    ->_code(["ru", "gb"], Criteria::C_IN)
                     ->setColumns(["name", "code"])
                     ->find();
             } else {
