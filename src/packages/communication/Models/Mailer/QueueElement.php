@@ -39,7 +39,8 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
         if (file_exists($file)) {
             return file_get_contents($this->folder . "/" . $this->_id() . ".txt");
         } else {
-            throw new Exception("Content file dosn't exists [{$this->_id()}] ");
+            return "---Content file dosn't exists --";
+            //throw new Exception("Content file dosn't exists [{$this->_id()}] ");
         }
     }
 
