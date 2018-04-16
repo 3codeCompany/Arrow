@@ -2,7 +2,8 @@
 namespace Arrow\Package\Communication;
 
 use Arrow\ORM\Persistent\Criteria;
-
+//todo wysyłka maila - problem z pamięcią ?
+ini_set("memory_limit", "500M");
 class MailerAPI extends \Arrow\Object
 {
 

@@ -8,12 +8,19 @@
     }
   ],
   "require": {
-    "robloach/component-installer": "*"
+    "robloach/component-installer": "*",
+    "fortawesome/font-awesome": "4.7.0"
   },
   "autoload": {
     "classmap": [
       "src/"
     ]
+  },
+  "config": {
+    "component-dir": "assets",
+    "component-baseurl": "assets",
+    "component-scriptFilters": {
+    }
   },
   "extra": {
     "component": {
@@ -27,7 +34,15 @@
         "src/packages/org.arrowplatform.common/layouts/admin/styles/*.css",
         "src/packages/org.arrowplatform.common/layouts/admin/scripts/*.js",
         "src/packages/org.arrowplatform.common/layouts/admin/images/*.*"
-      ]
+      ],
+      "fortawesome/font-awesome": {
+        "styles": [
+          "css/font-awesome.min.css"
+        ],
+        "files": [
+          "fonts/*"
+        ]
+      }
     }
   }
 }

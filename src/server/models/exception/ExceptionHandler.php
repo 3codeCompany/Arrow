@@ -6,6 +6,9 @@ class ExceptionHandler implements IExceptionHandler
     const DISPLAY = "display";
     const REDIRECT = "redirect";
     public $clearOutput = true;
+
+    private $sendErrors = false;
+
     /**
      * Object instance keeper
      *
@@ -187,7 +190,8 @@ class ExceptionHandler implements IExceptionHandler
             mkdir($dir);
 
         file_put_contents($dir . "/" . $file, $contents);
-        @mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );
+        if($this->sendErrors)
+            @mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );
 
     }
 
@@ -398,6 +402,26 @@ HEAD;
         $footer = "</body></html>";
         return $footer;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isSendErrors()
+    {
+        return $this->sendErrors;
+    }
+
+    /**
+     * @param boolean $sendErrors
+     * @return ExceptionHandler
+     */
+    public function setSendErrors($sendErrors)
+    {
+        $this->sendErrors = $sendErrors;
+        return $this;
+    }
+
+
 }
 
 ?>
