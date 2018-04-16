@@ -117,7 +117,7 @@ class Router
 
                 $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
                 $defaults["_debug"] = [
-                    "file" => str_replace(ARROW_DOCUMENTS_ROOT, "", $tmp->getFileName()),
+                    "file" =>  str_replace(ARROW_PROJECT, "", $tmp->getFileName()),
                     "line" => $tmp->getStartLine(),
                     "template" => Action::generateTemplatePath($defaults)
                 ];

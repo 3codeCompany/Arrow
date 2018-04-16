@@ -177,7 +177,7 @@ class Action
     {
         $packages = Project::getInstance()->getPackages();
         $controllerExploded = explode("\\Controllers\\", $defaults["_controller"]);
-        return ($defaults["_package"] == "app" ? "/app" : "/" . $packages[$defaults["_package"]]) .
+        return ($defaults["_package"] == "app" ? "/app" :  $packages[$defaults["_package"]]) .
             "/views/" . str_replace("\\", "/", strtolower($controllerExploded[1])) .
             "/" . $defaults["_method"];
     }
