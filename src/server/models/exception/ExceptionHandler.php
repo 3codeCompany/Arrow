@@ -175,7 +175,7 @@ class ExceptionHandler
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
-        print $this->getHead().$this->printDeveloperMessage($exception).$this->getFooter();
+        print $this->getHead() . $this->printDeveloperMessage($exception) . $this->getFooter();
         exit();
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
@@ -400,7 +400,11 @@ class ExceptionHandler
                 $html .= '<td class="file">---</td></tr>';
                 continue;
             }
-            $html .= '<td class="file"><a href="" onclick="document.getElementById(\'source' . $key . '\').style.display=\'block\'; return false;" >File: ' . $trace['file'] . ' Line: ' . $trace['line'] . '</a></td>';
+            $html .= '
+                <td class="file">
+                    <a href="" onclick="document.getElementById(\'source' . $key . '\').style.display=\'block\'; return false;" >File: ' . $trace['file'] . ' Line: ' . $trace['line'] . '</a> 
+                        <a href="phpstorm://open?url=file://' . $trace['file'] . '&line=' . $trace['line'] . '"><span style="font-size: 20px">&#x261B;</span></a> 
+                    </td>';
             $html .= "</tr>";
             $html .= "<tr>";
             $html .= '<td colspan="2"><div class="source" id="source' . $key . '">'
