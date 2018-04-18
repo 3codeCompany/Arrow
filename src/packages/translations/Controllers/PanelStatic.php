@@ -86,6 +86,10 @@ class PanelStatic extends BaseController
             $c->_lang($tmp[1]);
         }
 
+        if ($tmp[1] == "ua"){
+            $c->_lang(["ua", "ru"], Criteria::C_IN);
+        }
+
         $search = $helper->getInputData()["additionalConditions"]["search"];
         if ($search) {
             $c->addSearchCondition([LanguageText::F_ORIGINAL], "%{$search}%", Criteria::C_LIKE);
