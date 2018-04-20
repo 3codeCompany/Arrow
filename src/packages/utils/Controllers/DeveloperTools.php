@@ -8,6 +8,8 @@
 
 namespace Arrow\Utils\Controllers;
 
+use Arrow\Kernel;
+use Arrow\Models\AnnotationRouteManager;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\Translations\Models\LanguageText;
@@ -19,6 +21,7 @@ use function json_encode;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -36,9 +39,13 @@ class DeveloperTools extends \Arrow\Models\Controller
      */
     public function index()
     {
+        $request = Kernel::getProject()->getContainer()->get(Request::class);
+        $annotatonRouteManager = new AnnotationRouteManager($request);
+
+
         $this->json([
             "ARROW_DEV_MODE" => false,
-            "routes" => json_decode(file_get_contents(ARROW_CACHE_PATH . "/symfony/route.json"))
+            "routes" => $annotatonRouteManager->exposeRoutingToJson(), //json_decode(file_get_contents(ARROW_CACHE_PATH . "/symfony/route.json"))
         ]);
     }
 
@@ -47,7 +54,8 @@ class DeveloperTools extends \Arrow\Models\Controller
      */
     public function getRoutes()
     {
-        $this->json(json_decode(file_get_contents(ARROW_CACHE_PATH . "/symfony/route.json")));
+        return [];
+        //$this->json(json_decode(file_get_contents(ARROW_CACHE_PATH . "/symfony/route.json")));
     }
 
     /**
@@ -67,9 +75,6 @@ class DeveloperTools extends \Arrow\Models\Controller
         }
         $this->json([]);
     }
-
-
-
 
 
 }

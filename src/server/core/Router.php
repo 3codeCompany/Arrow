@@ -135,8 +135,9 @@ class Router
             return;
         }
 
-
         $return = $this->action->fetch($this->request);
+
+
 
         if ($return !== null) {
 
@@ -156,6 +157,7 @@ class Router
                 );
 
             }
+
 
             $return->send();
 
