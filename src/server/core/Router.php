@@ -4,6 +4,7 @@ namespace Arrow;
 
 use Arrow\Models\AbstractLayout;
 use Arrow\Models\Action;
+use Arrow\Models\AnnotationRouteManager;
 use Arrow\Models\AnnotationsDirectoriesLoader;
 use Arrow\Models\AnnotationsRouteLoader;
 use Arrow\Models\Project;
@@ -58,10 +59,6 @@ class Router
      * @return Router
      */
 
-    /**
-     * @var bool
-     */
-    private $inDevMode = false;
 
     public static function getDefault($serviceContainer = null)
     {
@@ -78,57 +75,10 @@ class Router
 
         $this->request = $this->container->get(Request::class);
 
-        /** @var StateProvider $regenerate */
-        $this->inDevMode = (bool)\getenv("APP_DEBUG_LIVE_ROUTING_SCAN") || $this->request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER");
+        $annotatonRouteManager = new AnnotationRouteManager($this->request);
+        $this->symfonyRouter = $annotatonRouteManager->getRouter();
 
 
-        $sourceFolders = [];
-
-        $packages = Project::getInstance()->getPackages();
-
-        $sourceFolders[] = ARROW_APPLICATION_PATH . '/Controllers';
-        foreach ($packages as $name => $dir) {
-            $sourceFolders[] = ARROW_PROJECT . "/" . $dir . "/Controllers";
-        }
-
-        AnnotationRegistry::registerLoader('class_exists');
-
-        $routeLoader = new AnnotationsRouteLoader(new AnnotationReader());
-        $loader = new AnnotationsDirectoriesLoader(new FileLocator($sourceFolders), $routeLoader);
-
-        $context = new \Symfony\Component\Routing\RequestContext();
-        $context->fromRequest($this->request);
-
-        $router = new \Symfony\Component\Routing\Router(
-            $loader,
-            $sourceFolders,
-            ($this->inDevMode ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
-            $context
-        );
-
-
-        $file = ARROW_CACHE_PATH . "/symfony/route.json";
-        if ($this->inDevMode || !file_exists($file)) {
-            $col = $router->getRouteCollection();
-            $jsCache = [];
-
-            foreach ($col as $route) {
-                $defaults = $route->getDefaults();
-
-                $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
-                $templatePath = Action::generateTemplatePath($defaults) . ".component.tsx";
-                $defaults["_debug"] = [
-                    "file" => str_replace(ARROW_PROJECT, "", $tmp->getFileName()),
-                    "line" => $tmp->getStartLine(),
-                    "template" => Action::generateTemplatePath($defaults),
-                    "templateExists" => file_exists(ARROW_PROJECT . $templatePath)
-                ];
-                $jsCache[$route->getPath()] = $defaults;
-            }
-
-            file_put_contents($file, json_encode($jsCache));
-        }
-        $this->symfonyRouter = $router;
     }
 
 
@@ -206,9 +156,7 @@ class Router
                 );
 
             }
-            if ($this->inDevMode) {
-                $return->headers->set("ARROW_DEBUG_ROUTE_HASH", hash_file('md5', ARROW_CACHE_PATH . "/symfony/route.json"));
-            }
+
             $return->send();
 
 
