@@ -64,9 +64,8 @@ class AnnotationRouteManager
     }
 
 
-    public function exposeRoutingToJson()
+    public function exposeRouting()
     {
-
 
         //$file = ARROW_CACHE_PATH . "/symfony/route.json";
         //if ($this->inDevMode || !file_exists($file)) {
@@ -87,8 +86,7 @@ class AnnotationRouteManager
             $jsCache[$route->getPath()] = $defaults;
         }
 
-        return json_encode($jsCache);
-
+        return $jsCache;
 
     }
 

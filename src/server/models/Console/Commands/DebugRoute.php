@@ -39,7 +39,7 @@ class DebugRoute extends Command
         if ($input->getOption("json")) {
             $request = Kernel::getProject()->getContainer()->get(Request::class);
             $annotatonRouteManager = new AnnotationRouteManager($request);
-            $output->write($annotatonRouteManager->exposeRoutingToJson());
+            $output->write(json_encode($annotatonRouteManager->exposeRouting()));
         } else {
 
             $routeColection = Kernel::getProject()->getContainer()->get(Router::class)

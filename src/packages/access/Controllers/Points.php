@@ -39,6 +39,7 @@ use Arrow\Controls\API\Table\Columns\Simple;
 use Arrow\Controls\API\Table\Columns\Template;
 use Arrow\Controls\api\WidgetsSet;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\Models\AnnotationRouteManager;
 use Arrow\Models\IAction;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\DataSet;
@@ -80,11 +81,57 @@ class Points extends \Arrow\Models\Controller
     /**
      * @Route("/getData")
      */
-    public function getData()
+    public function getData(Request $request)
     {
-        $helper = new TableListORMHelper();
         $criteria = AccessPoint::get();
+        $helper = new TableListORMHelper();
+        //$helper->setDebug(true);
+        $helper->addFilter("existsInRoute", function ($c, $filter) use ($criteria, $request) {
+
+            $annotatonRouteManager = new AnnotationRouteManager($request);
+            $routing = $annotatonRouteManager->exposeRouting();
+            $tmp = [];
+            foreach ($routing as $route) {
+                $tmp[] = $route["_routePath"];
+            }
+
+            if ($filter["value"] == "exists") {
+                $criteria->_pointObjectFriendlyId($tmp, Criteria::C_IN);
+            } else {
+                $criteria->_pointObjectFriendlyId($tmp, Criteria::C_NOT_IN);
+            }
+        });
+
+
         $this->json($helper->getListData($criteria));
+    }
+
+    /**
+     * @Route("/sync-access-points")
+     */
+    public function syncAccessPoints(Request $request)
+    {
+        $annotatonRouteManager = new AnnotationRouteManager($request);
+        $routing = $annotatonRouteManager->exposeRouting();
+
+        foreach ($routing as $route) {
+            AccessAPI::checkAccess("view", "show", $route["_routePath"], "");
+        }
+
+        return [];
+    }
+
+    /**
+     * @Route("/delete")
+     */
+    public function delete(Request $request)
+    {
+        AccessPoint::get()
+            ->_id($request->get("keys"), Criteria::C_IN)
+            ->find()
+            ->delete();
+
+        $this->json([1]);
     }
 
     /**

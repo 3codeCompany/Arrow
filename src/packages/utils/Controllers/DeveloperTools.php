@@ -45,7 +45,7 @@ class DeveloperTools extends \Arrow\Models\Controller
 
         $this->json([
             "ARROW_DEV_MODE" => false,
-            "routes" => json_decode($annotatonRouteManager->exposeRoutingToJson()),
+            "routes" => $annotatonRouteManager->exposeRouting(),
         ]);
     }
 
