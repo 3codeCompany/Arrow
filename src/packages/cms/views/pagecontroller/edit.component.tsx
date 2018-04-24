@@ -64,6 +64,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
             dirty: false,
         };
 
+        this.props.languages.push({name: "All", code: "all", id: "14"});
     }
 
     public handleDelete(row) {
