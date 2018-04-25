@@ -22,12 +22,23 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             this.props._notification("Cache", "Deleted");
         });
     };
+    public handleRoutingCacheRemove = () => {
+        Comm._post(this.props._baseURL + "/cache/remove/routing").then(() => {
+            this.props._notification("Cache", "Routing delete");
+        });
+    };
 
     public render() {
         const { ARROW_DEV_MODE, routes } = this.props;
         return (
             <div>
-                <CommandBar isSearchBoxVisible={false} items={[{ key: "f1", label: "Usuń cache", icon: "Delete", onClick: this.handleCacheRemove }]} />
+                <CommandBar
+                    isSearchBoxVisible={false}
+                    items={[
+                        { key: "f1", label: "Usuń cache", icon: "Delete", onClick: this.handleCacheRemove },
+                        { key: "f2", label: "Usuń cache routingu", icon: "Delete", onClick: this.handleRoutingCacheRemove },
+                    ]}
+                />
 
                 <Navbar>
                     <span>Utils</span>

@@ -49,14 +49,6 @@ class DeveloperTools extends \Arrow\Models\Controller
         ]);
     }
 
-    /**
-     * @Route("/getRoutes")
-     */
-    public function getRoutes()
-    {
-        return [];
-        //$this->json(json_decode(file_get_contents(ARROW_CACHE_PATH . "/symfony/route.json")));
-    }
 
     /**
      * @Route("/cache/remove")
@@ -73,6 +65,20 @@ class DeveloperTools extends \Arrow\Models\Controller
                 unlink($fileInfo->getRealPath());
             }
         }
+        $this->json([]);
+    }
+
+    /**
+     * @Route("/cache/remove/routing")
+     */
+    public function removeCacheRouting()
+    {
+        if(file_exists(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php")) {
+            unlink(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php");
+            unlink(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php.meta");
+        }
+
+
         $this->json([]);
     }
 
