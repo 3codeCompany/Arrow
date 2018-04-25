@@ -76,12 +76,13 @@ class AnnotationRouteManager
             $defaults = $route->getDefaults();
 
             $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
-            $templatePath = Action::generateTemplatePath($defaults) . ".component.tsx";
+            $templatePath = Action::generateTemplatePath($defaults);
             $defaults["_debug"] = [
                 "file" => str_replace(ARROW_PROJECT, "", $tmp->getFileName()),
                 "line" => $tmp->getStartLine(),
                 "template" => Action::generateTemplatePath($defaults),
-                "templateExists" => file_exists(ARROW_PROJECT . $templatePath)
+                "componentExists" => file_exists(ARROW_PROJECT . $templatePath . ".component.tsx"),
+                "templateExists" => file_exists(ARROW_PROJECT . $templatePath . ".phtml"),
             ];
             $jsCache[$route->getPath()] = $defaults;
         }
