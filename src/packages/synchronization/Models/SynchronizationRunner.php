@@ -43,8 +43,8 @@ class SynchronizationRunner
                 if (method_exists($obj, $method[1])) {
                     if (!$this->outputBufferEnabled) {
                         print "<pre>";
-                        print "Running:  $method[0]::$method[1](  " . implode(",", $method[2]) . " )";
-                        print "<hr />";
+                        print "Running:  $method[0]::$method[1](  " . implode(",", $method[2]) . " )\n\n";
+
                     }
                     $return .= $obj->{$method[1]}(...$method[2]);
 
@@ -82,8 +82,8 @@ class SynchronizationRunner
         $log->save();
 
         if (!$this->outputBufferEnabled) {
-            print "<hr />";
-            exit("end: " . round($time->getDuration() / 1000, 2) . " s");
+
+            exit("\n\nend: " . round($time->getDuration() / 1000, 2) . " s");
         }
 
     }
