@@ -70,12 +70,6 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     {key: "al", label: "Dodaj banner", icon: "Add", onClick: () => {
                             this.props._goto(this.props._baseURL + "/create");
                         }},
-                    {
-                        key: "a2",
-                        label: __("Dostępne miejsca banerów"),
-                        icon: "Download",
-                        subItems: this._prepareAvaiablePlaces()
-                    },
                 ]}/>
                 <Navbar>
                     <span>{__("Sklep")}</span>
@@ -95,6 +89,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                            <div>{this.props.places[val]}</div>
                                        );
                                    }).className("center").width(180)
+                                   .noFilter()
                                    .addFilter(FilterHelper.select("place", "Miejsce baneru", this._prepareAvaiablePlaces(), true).get())
                                ,
                                Column.bool("active", "Aktywny"),
