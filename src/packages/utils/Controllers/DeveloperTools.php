@@ -73,6 +73,8 @@ class DeveloperTools extends \Arrow\Models\Controller
      */
     public function removeCacheRouting()
     {
+
+
         if(file_exists(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php")) {
             unlink(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php");
             unlink(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php.meta");

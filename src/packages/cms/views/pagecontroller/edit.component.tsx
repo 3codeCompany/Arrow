@@ -195,6 +195,14 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         <Row noGutters={false}>
                                             <BTextarea label={__("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
                                         </Row>
+
+                                        <Row>
+                                            <Panel noPadding={true} title={"Obrazy"} icon={"FileImage"}>
+                                                <Row noGutters={false}>
+                                                    <BFileList {...form("files[files]")} type={"gallery"}/>
+                                                </Row>
+                                            </Panel>
+                                        </Row>
                                     </Panel>
                                     }
                                 </div>

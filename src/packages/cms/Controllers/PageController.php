@@ -150,7 +150,6 @@ class PageController extends BaseController
 
         $pagData = $page->getData();
 
-
         $pagesList = Page::get()
             ->setColumns(["name"])
             ->_type("folder")
