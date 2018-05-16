@@ -172,6 +172,7 @@ class BannerController extends BaseController
 
         FormHelper::bindFilesToObject($banner, $files, $uploaded);
 
+        $banner->setValues($data);
         $banner->save();
 
         return[true];
