@@ -2,9 +2,11 @@
 
 
 use Arrow\Access\Models\Auth;
+use Arrow\Kernel;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Route;
 
 class ExceptionHandler
 {
@@ -62,6 +64,7 @@ class ExceptionHandler
 
     private function printDeveloperMessage($exception)
     {
+
 
         $str = "";
         if ($exception instanceof \Arrow\Exception || $exception instanceof \ErrorException) {
@@ -155,6 +158,19 @@ class ExceptionHandler
             exit();
         }
 
+
+        /** @var Request $request */
+        $request = Kernel::getProject()->getContainer()->get(Request::class);
+        if ($request->isXmlHttpRequest()) {
+            print json_encode(["__arrowException" => [
+                "msg" => $exception->getMessage(),
+                "line" => $exception->getLine(),
+                "file" => $exception->getFile(),
+                "code" => $exception->getCode(),
+                "trace" => $exception->getTraceAsString(),
+            ]]);
+            exit;
+        }
 
         ob_start();
         print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";
