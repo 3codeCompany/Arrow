@@ -37,7 +37,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PanelObjects extends BaseController
 {
-    private $user;
+    protected $user;
     public $country = "pl";
 
     public function __construct()

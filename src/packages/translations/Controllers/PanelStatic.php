@@ -44,7 +44,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PanelStatic extends BaseController
 {
-    private $user;
+    protected $user;
     public $country = "pl";
 
     public function __construct()
