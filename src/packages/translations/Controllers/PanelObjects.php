@@ -22,10 +22,12 @@ use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Shop\Models\Persistent\Category;
+use Arrow\Shop\Models\Persistent\Product;
 use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
+use Arrow\Translations\Models\Translations;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,10 +45,16 @@ class PanelObjects extends BaseController
     public function __construct()
     {
         $this->user = Auth::getDefault()->getUser()->_login();
+
         $tmp = explode("_", $this->user);
 
         if (count($tmp) >= 2) {
             $this->country = $tmp[1];
+        }
+
+        if (Auth::getDefault()->getUser()->isInGroup("Partnerzy sprzedaży")) {
+            $this->country = substr(Auth::getDefault()->getUser()->_login(), -2);
+            Translations::setupLang($this->country);
         }
     }
 
@@ -72,8 +80,9 @@ class PanelObjects extends BaseController
         return [
             'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
             "objects" => FormHelper::assocToOptions(array(
-                Category::getClass() => "Kategorie",
-                Property::getClass() => "Cechy",
+                Category::getClass() => Translations::translateText("Kategorie"),
+                Property::getClass() => Translations::translateText("Cechy"),
+                Product::getClass() => Translations::translateText("Produkty"),
                 //\Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
 
             ))
@@ -106,6 +115,15 @@ class PanelObjects extends BaseController
         $helper->addDefaultOrder(ObjectTranslation::F_LANG);
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
         $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
+
+        $helper->addFilter("E:name", function ($nothing, $filter) use ($crit){
+            if (strpos($filter["value"],"-") !== false)
+            {
+                $chunks = explode("-", $filter["value"]);
+                $crit->c("E:group_key", $chunks[0], Criteria::C_LIKE);
+                $crit->c("E:color", $chunks[1], Criteria::C_LIKE);
+            }
+        });
 
         /*if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
