@@ -10,7 +10,7 @@ namespace Arrow;
  */
 use Arrow\Models\Action;
 
-class Controller extends \Arrow\Object
+class Controller 
 {
 
     /**

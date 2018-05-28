@@ -12,7 +12,7 @@ use Arrow\Models\IAction;
  * @author   Artur Kmera <artur.kmera@arrowplatform.org>
  * @todo     Rozwinoc o ciastka i pliki, dodac wykrywanie typu wywołania
  */
-class Router extends \Arrow\Object
+class Router 
 {
 
     public static $INDEX_FILE = ""; //"index.php";

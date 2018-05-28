@@ -173,6 +173,9 @@ class Translations
 
         //geting class if not set
 
+        if($first == null){
+            return $list;
+        }
         $class = $class ? $class : get_class($first);
 
 

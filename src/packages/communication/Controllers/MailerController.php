@@ -72,6 +72,12 @@ class MailerController extends Controller
 
         //$currentLang = Translations::getCurrentLang();
         $lang = $this->forceLang?$this->forceLang:"pl";
+
+
+        if(isset($_REQUEST["xlang"])) {
+            $lang = $_REQUEST["xlang"];
+        }
+
         Translations::setupLang($lang);
 
         $content = $this->prepareContent($conf, $data);

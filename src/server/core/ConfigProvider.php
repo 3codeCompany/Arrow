@@ -5,7 +5,7 @@ namespace Arrow;
 use Arrow\Models\Project;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigProvider extends Object
+class ConfigProvider
 {
 
     private static $cacheFile = "";

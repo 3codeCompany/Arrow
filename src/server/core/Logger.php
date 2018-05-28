@@ -14,7 +14,7 @@ interface ILoggerSave {
 /**
  Uniwersal class which let you log data
  */
-class Logger extends Object implements ILoggerSave {
+class Logger  implements ILoggerSave {
 
 	/**
 	 Defined constant
