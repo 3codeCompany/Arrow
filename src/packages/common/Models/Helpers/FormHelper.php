@@ -138,7 +138,7 @@ class FormHelper
 
                 $fileTarget = $fileDir . basename($el);
 
-                sleep(1);
+                sleep(0.5);
                 if (file_exists($fileTarget))
                 {
                     $fileS = new File($fileTarget);
