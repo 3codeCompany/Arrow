@@ -262,10 +262,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                 if (el.response.status == "done"){
                                     this.props._notification(__("Sukces"), __("Plik załadowano poprawnie"));
                                     this.handleBackup(el.form.state.data.language);
-                                    console.log(el.response);
                                 } else {
                                     this.props._notification(__("Błąd"), __("Wybierz język"), {level: "error"});
-                                    console.log(el.response);
                                 }
                             }}
                         >{(form) => {
@@ -277,7 +275,6 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         options={{xx: __("--Wybierz język ---"), ...this.props.language}}
                                         onChange={(e) => {
                                             this.setState({langToDownload: e.value});
-                                            console.log(this.state.langToDownload);
                                         }
                                         }
                                         require={true}

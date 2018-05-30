@@ -61,6 +61,7 @@ class Element extends ORM_Arrow_Media_Models_Element
             ),
             "upload_name" => $uploadName,
             "upload_path" => $uploadPath));
+
         $element->save();
 
         return $element;
@@ -259,6 +260,7 @@ class Element extends ORM_Arrow_Media_Models_Element
         $this[Element::F_CHOSEN] = 0;
 
         $ret = parent::save();
+
         return $ret;
     }
 

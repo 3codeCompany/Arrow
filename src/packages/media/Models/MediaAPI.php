@@ -165,7 +165,9 @@ class MediaAPI
 
     public static function addFileToObject($object, $connName, $uploadName, $uploadPath)
     {
-        return Element::uploadToObject($object, $connName, $uploadName, $uploadPath);
+        $res = Element::uploadToObject($object, $connName, $uploadName, $uploadPath);
+
+        return $res;
     }
 
     public static function createElement($el, $parent, $filePath, $newFileName = "", $name = false)

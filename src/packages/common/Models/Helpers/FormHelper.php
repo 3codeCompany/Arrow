@@ -18,6 +18,7 @@ use Arrow\ORM\Persistent\PersistentObject;
 use function basename;
 use const PHP_EOL;
 use function strpos;
+use Symfony\Component\HttpFoundation\File\File;
 use function var_dump;
 
 class FormHelper
@@ -63,22 +64,26 @@ class FormHelper
     public static function bindFilesToObject(PersistentObject $object, $filesData, $upload)
     {
 
-
-        /*print "<pre>";
-        print_r($upload);
-        exit();*/
-
         foreach ($upload as $connName => $files) {
             foreach ($files as $file) {
                 MediaAPI::addFileToObject($object, $connName, $file["name"], $file["tmp_name"]);
             }
         }
 
-        $media = MediaAPI::getMedia($object);
+//        foreach ($upload as $type => $file)
+//        {
+//            foreach ($file as $item)
+//            {
+//                $prepareObjectName = str_replace("\\", "_", $object->getClass());
+//                $fileDir = "data/uploads/System/" . $prepareObjectName . "/";
+//                $fileTarget = $fileDir . basename($item["name"]);
+//
+//                $fileS = new File($fileTarget);
+//                $fileS->move("/srv/http/3code/static.esotiq.com/data", $item["name"]);
+//            }
+//        }
 
-      /*  print "<pre>";
-        print_r($filesData);
-        exit();*/
+        $media = MediaAPI::getMedia($object);
 
         // lookup to delete
         foreach ($media as $connName => $files) {
@@ -118,10 +123,37 @@ class FormHelper
 
                         $el["sort"] = $index;
                         $el->save();
+
+
                     }
                 }
             }
         }
+
+        foreach ($media as $connName => $files) {
+            foreach ($files as $file) {
+                $el = Element::get()->findByKey($file["id"])->_file();
+                $prepareObjectName = str_replace("\\", "_", $object->getClass());
+                $fileDir = "data/uploads/System/" . $prepareObjectName . "/";
+
+                $fileTarget = $fileDir . basename($el);
+
+                sleep(1);
+                if (file_exists($fileTarget))
+                {
+                    $fileS = new File($fileTarget);
+                    $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
+                }
+//                do {
+////                    if (file_exists($fileTarget)) {
+////                        $fileS = new File($fileTarget);
+////                        $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
+////                        break;
+////                    }
+////                } while(true);
+            }
+        }
+
         //print_r($sort);
 
     }
