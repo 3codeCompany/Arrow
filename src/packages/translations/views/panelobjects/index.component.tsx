@@ -109,7 +109,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     <small>{row["E:group_key"]}-{row["E:color"]}</small>
                 </div>;
             }).addFilter(FilterHelper.text("E:name", __("Nazwa")).get()) : null,
-            Column.text("E:name", __("Orginał"))
+            Column.text("source", __("Orginał"))
                 .template((val, row) => row["E:" + row.field])
                 .width("30%")
             ,
@@ -159,10 +159,6 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         return (
             <div>
                 <CommandBar
-                    isSearchBoxVisible={true}
-                    onSearch={(val) => {
-                        this.setState({search: val}, () => this.table.load());
-                    }}
                     items={[
                         {
                             key: "f1",

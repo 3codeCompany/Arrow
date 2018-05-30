@@ -80,6 +80,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     <Table remoteURL={this.props._baseURL + `/asyncIndex`}
                            ref={(el) => this.table = el}
                            filters={this.state.filters}
+                           rememberState={true}
                            onFiltersChange={(filters) => this.setState({ filters })}
                            columns={[
                                Column.hidden("id"),
@@ -126,6 +127,17 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    .onClick((row, val) => {
                                    this.props._goto(this.props._baseURL + `/${row.id}/edit`);
                                }),
+                               Column.template("Usuń",() => {
+                                   return (
+                                       <Icon name={"delete"}/>
+                                   )
+                               }).className("center darkred")
+                                   .onClick((row, val) => {
+                                       Comm._post(this.props._baseURL + `/${row.id}/delete`)
+                                           .then((resp) => {
+                                               this.props._notification("Sukces", "Usunięto pomyślnie")
+                                           })
+                                   }),
                            ]}
                     />
                 </div>

@@ -179,6 +179,19 @@ class BannerController extends BaseController
     }
 
     /**
+     * @Route("/{key}/delete")
+     */
+    public function delete(int $key)
+    {
+        $banner = Banner::get()
+            ->findByKey($key)
+        ;
+        $banner->delete();
+
+        return[true];
+    }
+
+    /**
      * @Route("/{key}/moveUp")
      */
     public function moveUp(int $key)
