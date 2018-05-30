@@ -114,7 +114,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.template("Orignał", (val, row) => {
                 field = "E:" + row.field;
                 this.setState({
-                    field: field,
+                    field
                 })
                 this.table.load();
                 return (
