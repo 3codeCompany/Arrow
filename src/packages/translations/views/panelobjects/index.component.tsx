@@ -32,6 +32,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             fileToUpload: false,
             selectedObject: props.objects[0],
             historyModalVisible: false,
+
+            field: null,
         };
 
     }
@@ -90,8 +92,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public render() {
+        let field = null;
         const s = this.state;
-        console.log(this.state.selectedObject);
 
         this.columns = [
             this.state.selectedObject == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.hidden("E:name") : null,
@@ -109,10 +111,16 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     <small>{row["E:group_key"]}-{row["E:color"]}</small>
                 </div>;
             }).addFilter(FilterHelper.text("E:name", __("Nazwa")).get()) : null,
-            Column.text("source", __("Orginał"))
-                .template((val, row) => row["E:" + row.field])
-                .width("30%")
-            ,
+            Column.template("Orignał", (val, row) => {
+                field = "E:" + row.field;
+                this.setState({
+                    field: field,
+                })
+                this.table.load();
+                return (
+                    row["E:" + row.field]
+                )
+            }).width("30%").addFilter(FilterHelper.text(this.state.field, __("Orignał")).get()),
             Column.text("value", __("Wartość"))
                 .template((val, row) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
