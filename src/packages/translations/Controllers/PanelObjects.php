@@ -116,14 +116,15 @@ class PanelObjects extends BaseController
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
         $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
 
-        $helper->addFilter("E:name", function ($nothing, $filter) use ($crit){
-            if (strpos($filter["value"],"-") !== false)
-            {
-                $chunks = explode("-", $filter["value"]);
-                $crit->c("E:group_key", $chunks[0], Criteria::C_LIKE);
-                $crit->c("E:color", $chunks[1], Criteria::C_LIKE);
-            }
-        });
+        if($model == Product::getClass()) {
+            $helper->addFilter("E:name", function ($nothing, $filter) use ($crit) {
+                if (strpos($filter["value"], "-") !== false) {
+                    $chunks = explode("-", $filter["value"]);
+                    $crit->c("E:group_key", $chunks[0], Criteria::C_LIKE);
+                    $crit->c("E:color", $chunks[1], Criteria::C_LIKE);
+                }
+            });
+        }
 
         /*if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
