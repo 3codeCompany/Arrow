@@ -121,7 +121,7 @@ class User extends ORM_Arrow_Access_Models_User
             ->_join(AccessUserGroup::getClass(), [
                 "id" => "group_id",
                 "UserGroup:user_id" => "'{$this->getPKey()}'"
-            ], "UserGroup", ["id"], JoinCriteria::J_OUTER)
+            ], "UserGroup", ["id"], Criteria::J_OUTER)
             ->findAsFieldArray('name', true);
 
 
