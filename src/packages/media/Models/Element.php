@@ -236,7 +236,7 @@ class Element extends ORM_Arrow_Media_Models_Element
         return parent::setValue($field, $val, $tmp);
     }
 
-    public function save()
+    public function save($forceInsert = false)
     {
         /*if(isset($_FILES["file"])){
               $tmp = explode( ".", $_FILES["file"]["name"]);

@@ -28,7 +28,7 @@ class Language extends ORM_Arrow_Translations_Models_Language
         return $object;
     }
 
-    public function save()
+    public function save( $forceInsert = false )
     {
         if (isset($this[self::F_DEFAULT]) && $this[self::F_DEFAULT] == 1) {
             SqlRouter::query("UPDATE utils_lang SET `default` = 0 ", "cms");
