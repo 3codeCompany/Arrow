@@ -27,11 +27,11 @@ class TableListORMHelper
     private $objectsPostProcess;
     private $arrayPostProcess;
 
-    public function __construct( $inputData = false )
+    public function __construct($inputData = false)
     {
-        if(!$inputData) {
+        if (!$inputData) {
             $this->inputData = json_decode(file_get_contents('php://input'), true);
-        }else{
+        } else {
             $this->inputData = $inputData;
         }
     }
@@ -52,7 +52,8 @@ class TableListORMHelper
      * @param Criteria $criteria
      * @return Criteria
      */
-    public function getPreparedCriteria(Criteria $criteria){
+    public function getPreparedCriteria(Criteria $criteria, $withLimit = false)
+    {
         $data = $this->inputData;
 
         foreach ($this->filters as $name => $filter) {
@@ -75,6 +76,12 @@ class TableListORMHelper
             foreach ($this->defaultOrder as $column) {
                 $criteria->order($column[0], $column[1]);
             }
+        }
+
+        if ($withLimit) {
+            $onPage = $data["onPage"] ?? 25;
+            $currentPage = $data["currentPage"] ?? 1;
+            $criteria->limit(($currentPage - 1) * $onPage, $onPage);
         }
 
         return $criteria;
