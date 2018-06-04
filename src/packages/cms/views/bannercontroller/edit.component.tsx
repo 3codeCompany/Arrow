@@ -36,8 +36,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
     constructor(props) {
         super(props);
-        this.state = {};
-
+        this.state = {
+            editPurpose: null,
+        };
     }
 
     public render() {
@@ -46,7 +47,25 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             <div>
                 <CommandBar items={[
                     {key: "f0", label: "Wróc", icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "")},
-                    {key: "f1", label: "Zapisz", icon: "Save", onClick: () => this.form.submit()},
+                    {key: "f1", label: "Zapisz", icon: "Save", onClick: () => {
+                            this.setState({
+                                editPurpose: "update",
+                            });
+                            setTimeout(() => {
+                                this.form.submit();
+                            }, 500)
+                        }},
+                    {
+                        key: "b13", label: "Kopiuj banner", icon: "Copy", onClick: () =>
+                        {
+                            this.setState({
+                                editPurpose: "copy",
+                            });
+                            setTimeout(() => {
+                                this.form.submit();
+                            }, 500)
+                        }
+                    },
                 ]}/>
 
                 <Navbar>
@@ -61,7 +80,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         <BForm
                             data={this.props.object}
                             ref={(el) => this.form = el}
-                            action={this.props._baseURL + `/${this.props.object.id}/update`}
+                            action={this.props._baseURL + `/${this.props.object.id}/${this.state.editPurpose}`}
                             namespace={"data"}
                             onValidatorError={() => {
                                 this.props._notification("Zmiana", "Wystąpił problem", {level: "error"});

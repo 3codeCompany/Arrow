@@ -115,11 +115,18 @@ class FormHelper
                     //just uploaded dont have keys
                     if ($element["key"]) {
                         //$sort[$element["key"]] = $index;
-                        $el = ElementConnection::get()
-                            ->_objectId($object->getPKey())
-                            ->_model($object->getClass())
-                            ->_elementId($element["key"])
-                            ->findFirst();
+                        if ($object->getPKey())
+                        {
+                            $el = ElementConnection::get()
+                                ->_objectId($object->getPKey())
+                                ->_model($object->getClass())
+                                ->_elementId($element["key"])
+                                ->findFirst();
+                        } else {
+                            $el = ElementConnection::get()
+                                ->_elementId($element["key"])
+                                ->findFirst();
+                        }
 
                         $el["sort"] = $index;
                         $el->save();
@@ -132,18 +139,20 @@ class FormHelper
 
         foreach ($media as $connName => $files) {
             foreach ($files as $file) {
-                $el = Element::get()->findByKey($file["id"])->_file();
-                $prepareObjectName = str_replace("\\", "_", $object->getClass());
-                $fileDir = "data/uploads/System/" . $prepareObjectName . "/";
-
-                $fileTarget = $fileDir . basename($el);
-
-                sleep(0.5);
-                if (file_exists($fileTarget))
+                if (Element::get()->findByKey($file["id"]))
                 {
-                    $fileS = new File($fileTarget);
-                    $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
-                }
+                    $el = Element::get()->findByKey($file["id"])->_file();
+                    $prepareObjectName = str_replace("\\", "_", $object->getClass());
+                    $fileDir = "data/uploads/System/" . $prepareObjectName . "/";
+
+                    $fileTarget = $fileDir . basename($el);
+
+                    sleep(0.5);
+                    if (file_exists($fileTarget))
+                    {
+                        $fileS = new File($fileTarget);
+                        $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
+                    }
 //                do {
 ////                    if (file_exists($fileTarget)) {
 ////                        $fileS = new File($fileTarget);
@@ -151,6 +160,7 @@ class FormHelper
 ////                        break;
 ////                    }
 ////                } while(true);
+                }
             }
         }
 

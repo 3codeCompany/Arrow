@@ -179,6 +179,24 @@ class BannerController extends BaseController
     }
 
     /**
+     * @Route("/{key}/copy")
+     */
+    public function copy(int $key, Request $request)
+    {
+        $data = $request->get("data");
+        $uploaded = !empty($_FILES) ? FormHelper::getFixedFilesArray()["data"]["files"] : [];
+        $files = $data["files"];
+        unset($data["files"]);
+
+        $data["id"] = null;
+        $data["title"] = "Kopia " . $data["title"];
+
+        $banner = Banner::create($data);
+
+        return[true];
+    }
+
+    /**
      * @Route("/{key}/delete")
      */
     public function delete(int $key)
