@@ -34,6 +34,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             historyModalVisible: false,
 
             field: null,
+
+            isTableEditable: false,
+            tableRowContainer: null,
         };
 
     }
@@ -124,9 +127,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("value", __("Wartość"))
                 .template((val, row) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
-                    {row.edited === true && <>
+                    {this.state.isTableEditable === row.id && <>
                         <textarea
-                            style={{width: "100%", display: "block"}}
+                            style={{width: "100%", display: "block", minHeight: 80}}
                             onChange={(e) => row.changedText = e.target.value} defaultValue={val}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -137,19 +140,26 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                className="btn btn-primary btn-xs btn-block pull-left"
                                style={{margin: 0, width: "50%"}}>Zapisz</a>
                             <a onClick={(e) => {
+                                this.setState({
+                                    isTableEditable: null,
+                                })
                                 e.stopPropagation();
                                 row.edited = false;
-                                row.containerReference.forceUpdate();
+                                this.state.tableRowContainer.forceUpdate();
                             }} className="btn btn-default btn-xs btn-block pull-right"
                                style={{margin: 0, width: "50%"}}>Anuluj</a>
                         </div>
                     </>}
-                    {!row.loading && !row.edited && <div>{val}</div>}
+                    {this.state.isTableEditable !== row.id && <div>{val}</div>}
                 </div>)
                 .set({styleTemplate: (row) => row.edited ? {padding: 0} : {}})
                 .onClick((row, column, rowContainer) => {
+                    console.log(column);
+                    this.setState({
+                        isTableEditable: row.id,
+                        tableRowContainer: rowContainer,
+                    })
                     row.edited = true;
-                    row.containerReference = rowContainer;
                     row.changedText = row.value;
                     rowContainer.forceUpdate();
                 })
