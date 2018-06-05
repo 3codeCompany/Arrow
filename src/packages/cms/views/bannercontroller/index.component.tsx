@@ -103,9 +103,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    )
                                }).className("center")
                                    .onClick((row, val) => {
-                                       Comm._post(this.props._baseURL + `/${row.id}/moveUp`)
+                                       Comm._get(this.props._baseURL + `/${row.id}/moveUp`)
                                            .then((response) => {
-                                               this.props._notification("Sukces", "Przeniesiono w górę")
+                                               this.props._notification("Sukces", "Przeniesiono w górę");
+                                               this.table.load();
                                            })
                                    }),
                                Column.template("", () => {
@@ -114,9 +115,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    )
                                }).className("center")
                                    .onClick((row, val) => {
-                                       Comm._post(this.props._baseURL + `/${row.id}/moveDown`)
+                                       Comm._get(this.props._baseURL + `/${row.id}/moveDown`)
                                            .then((response) => {
-                                               this.props._notification("Sukces", "Przeniesiono w dół")
+                                               this.props._notification("Sukces", "Przeniesiono w dół");
+                                               this.table.load();
                                            })
                                    }),
                                Column.template("Edytuj",() => {
@@ -133,9 +135,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    )
                                }).className("center darkred")
                                    .onClick((row, val) => {
-                                       Comm._post(this.props._baseURL + `/${row.id}/delete`)
+                                       Comm._get(this.props._baseURL + `/${row.id}/delete`)
                                            .then((resp) => {
-                                               this.props._notification("Sukces", "Usunięto pomyślnie")
+                                               this.props._notification("Sukces", "Usunięto pomyślnie");
+                                               this.table.load();
                                            })
                                    }),
                            ]}
