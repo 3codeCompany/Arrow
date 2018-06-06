@@ -162,10 +162,10 @@ class Auth
                 ->find();
 
 
-            $query = DB::getDB()->getLastQuery();
+
             $result = $result->toArray();
             if (count($result) > 1){
-                throw new \Arrow\Exception( [ "msg" => "Istnieją identyczne loginy", "query" => $query ]);
+                throw new \Arrow\Exception( [ "msg" => "Istnieją identyczne loginy: " . $login ]);
             }
 
             if (count($result) == 0) {
