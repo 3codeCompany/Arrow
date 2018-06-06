@@ -100,9 +100,10 @@ class Translations
             ->c(LanguageText::F_HASH, md5($text))
             ->c(LanguageText::F_LANG, $lang)
             //->c(LanguageText::F_MODULE, self::$module)
+                
             ->findFirst();
         if ($result and !empty($addidtionalData)) {
-            $result[LanguageText::F_MODULE] = implode(",", $addidtionalData);
+            //$result[LanguageText::F_MODULE] = implode(",", $addidtionalData);
             $result->save();
         }
 
@@ -123,7 +124,7 @@ class Translations
                     LanguageText::F_HASH => md5($text),
                     LanguageText::F_ORIGINAL => $text,
                     LanguageText::F_LANG => $_lang,
-                    LanguageText::F_MODULE => implode(",", $addidtionalData)
+                    //LanguageText::F_MODULE => implode(",", $addidtionalData)
                 ));
             }
             //if not english and can't find in current
