@@ -53,7 +53,7 @@ class PageController extends BaseController
         $data["language"] = $session->get("language", "pl");
         Translations::setupLang($data["language"]);
 
-        if ($user->isInGroup("Partnerzy sprzedaży")|| $user->isInGroup("Tłumacz")) {
+        if ($user->isInGroup("Partnerzy sprzedaży") || $user->isInGroup("Tłumacz")) {
             $this->country = substr($user->_login(), -2);
         }
     }
@@ -75,9 +75,17 @@ class PageController extends BaseController
     {
         $editEnabled = $this->country == "pl" ? true : false;
 
+        $containers = Page::get()
+            ->order(Page::F_SORT)
+            ->_type("container")
+            ->_id(1, Criteria::C_NOT_EQUAL)
+            ->findAsFieldArray("name", "id");
+
+
         return [
             "editEnabled" => $editEnabled,
             "language" => $this->country,
+            "containers" => $containers,
         ];
     }
 
@@ -138,7 +146,7 @@ class PageController extends BaseController
         $page = Page::get()
             ->findByKey($request->get("key"));
 
-        if ($request->get("language") == null){
+        if ($request->get("language") == null) {
             Translations::setupLang($this->country);
         } else {
             Translations::setupLang($request->get("language"));
@@ -156,7 +164,7 @@ class PageController extends BaseController
             ->find();
 
         if ($this->country !== "pl") {
-            if ($this->country == "ua"){
+            if ($this->country == "ua") {
                 $langs = Language::get()
                     ->_code(["ua", "ru"], Criteria::C_IN)
                     ->setColumns(["name", "code"])
@@ -221,15 +229,15 @@ class PageController extends BaseController
         }
 
         if ($this->country !== "pl") {
-                if (strtoupper($this->country) !== $request->get("language")) {
-                    if ($request->get("language") == "ru"){
-                        Translations::saveObjectTranslation($obj, $data, $request->get("language"));
-                    } else {
-                        Translations::saveObjectTranslation($obj, $data, $this->country);
-                    }
+            if (strtoupper($this->country) !== $request->get("language")) {
+                if ($request->get("language") == "ru") {
+                    Translations::saveObjectTranslation($obj, $data, $request->get("language"));
                 } else {
-                    throw new \Exception('Your language is not correct. Please change it to "' . $this->country . '"');
+                    Translations::saveObjectTranslation($obj, $data, $this->country);
                 }
+            } else {
+                throw new \Exception('Your language is not correct. Please change it to "' . $this->country . '"');
+            }
         } else {
             if ($request->get("language") == null) {
                 Translations::saveObjectTranslation($obj, $data, $request->get("pl"));
@@ -250,11 +258,21 @@ class PageController extends BaseController
      */
     public function add(Request $request)
     {
+        $data = $request->get("data");
+        $validator = Validator::create($data)
+            ->required([
+                "name", "parent_id", "type"
+            ]);
+
+        if(!$validator->check()){
+            return $validator->response();
+        }
+
         $page = Page::create(
             [
-                "parent_id" => 15,
-                "name" => $request->get("data")["name"],
-                Page::F_TYPE => Page::TYPE_PAGE,
+                "parent_id" => $data["parent_id"],
+                "name" => $data["name"],
+                Page::F_TYPE => $data["type"],
                 "country" => $this->country,
             ]
         );
