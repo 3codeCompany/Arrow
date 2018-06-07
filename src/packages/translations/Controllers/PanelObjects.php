@@ -108,7 +108,12 @@ class PanelObjects extends BaseController
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
         if (count($tmp) == 2) {
-            $crit->_lang($tmp[1]);
+            if ($tmp[1] == "ua")
+            {
+                $crit->_lang(["ua", "ru"], Criteria::C_IN);
+            } else {
+                $crit->_lang($tmp[1]);
+            }
         }
 
 
