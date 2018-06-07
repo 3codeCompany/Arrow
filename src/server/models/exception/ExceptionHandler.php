@@ -216,8 +216,24 @@ class ExceptionHandler
 
     private function logError($exception, $contents)
     {
-        $dir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors/" . date("Y-m-d");
+        $logDir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors";
+        $dir = $logDir . "/" . date("Y-m-d");
         $logFile = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
+
+        $dirIterator = new \DirectoryIterator($logDir);
+        foreach ($dirIterator as $fileinfo) {
+            if (!$fileinfo->isDot()) {
+                if ($fileinfo->getMTime() < time() - 3600 * 24 * 60) {
+                    $i = new \DirectoryIterator($fileinfo->getPathname());
+                    foreach ($i as $subFileInfo) {
+                        if ($subFileInfo->isFile()) {
+                            unlink($subFileInfo->getPathname());
+                        }
+                    }
+                    rmdir($fileinfo->getPathname());
+                }
+            }
+        }
 
 
         if (!file_exists($dir)) {
@@ -226,6 +242,8 @@ class ExceptionHandler
 
 
         file_put_contents($dir . "/" . $logFile, $contents);
+
+
         $logger = new \Monolog\Logger('mySiteLog');
 
         $hipChatHandler = new \Monolog\Handler\HipChatHandler(
