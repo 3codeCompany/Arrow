@@ -26,6 +26,7 @@
     <table name="cms_banners" class="Arrow\CMS\Models\Persistent\Banner">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="active" type="integer" required="true" size="1"/>
+        <field name="visibility" type="VARCHAR" size="5"/>
         <field name="sort" type="integer" size="11"/>
         <field name="country" type="VARCHAR" size="5"/>
         <field name="lang" type="VARCHAR" size="5"/>

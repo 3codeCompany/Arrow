@@ -108,6 +108,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                 <BDate label={__("Do")} {...form("stop")}/>
                                             </Row>
 
+                                            <BSelect label={__("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
                                             <BSelect label={__("Kraj")} {...form("country")} options={this.props.countries}/>
                                             <BSelect label={__("Język")} {...form("lang")} options={this.props.countries}/>
                                             <BSelect label={__("Miejsce")} {...form("place")} options={this.props.places}/>
