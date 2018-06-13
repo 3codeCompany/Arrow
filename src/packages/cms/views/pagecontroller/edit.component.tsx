@@ -179,9 +179,13 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             }
 
                                             <BText label={__("Link")} {...form("link")} />
-
                                         </Row>
-
+                                        {page.type == "page" && <Row noGutters={false}>
+                                        {this.props.editEnabled ?
+                                                <BSelect label={__("Typ zawartości")} {...form("content_type")} options={[{value: "shop_terms", label: "Regulamin"}]}/>
+                                                : null
+                                            }
+                                        </Row>}
                                     </Panel>
                                     {page.type == "page" &&
                                     <Panel noPadding={true} title={__("SEO")}>

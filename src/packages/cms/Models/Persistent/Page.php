@@ -25,6 +25,8 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page
     const TYPE_LINK = "link";
     const TYPE_INLINE_CODE = "inline_code";
 
+    const CONTENT_SHOP_TERMS = "shop_terms";
+
     public static function getMultiLangFields()
     {
         return [
@@ -42,6 +44,13 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page
         }
 
         return "s," . $this->_link();
+    }
+
+    public static function getFieldNames()
+    {
+        return [
+            self::CONTENT_SHOP_TERMS => "Regulamin sklepu internetowego",
+        ];
     }
 
 
