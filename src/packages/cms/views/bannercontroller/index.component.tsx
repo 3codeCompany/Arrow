@@ -94,8 +94,16 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    .addFilter(FilterHelper.select("place", "Miejsce baneru", this._prepareAvaiablePlaces(), true).get())
                                ,
                                Column.bool("active", "Aktywny"),
-                               Column.text("country", "Kraj"),
-                               Column.text("lang", "Język"),
+                               Column.text("visibility", "Widoczny").template((val, row) => {
+                                   const rtr = (val == "male") ? "mężczyzna" : (val == "female") ? "kobieta" : "uniwersalny";
+                                   return <div style={{fontSize: "0.8em", color: "#686868", textTransform: "uppercase"}}>{rtr}</div>;
+                               }).className("center"),
+                               Column.text("country", "Kraj").template((val) => {
+                                   return <div style={{fontSize: "0.8em", color: "#686868", textTransform: "uppercase"}}>{val}</div>
+                               }),
+                               Column.text("lang", "Język").template((val) => {
+                                   return <div style={{fontSize: "0.8em", color: "#3e3e3e", textTransform: "uppercase"}}>{val}</div>
+                               }),
                                Column.text("title", "Tytuł"),
                                Column.template("", () => {
                                    return (

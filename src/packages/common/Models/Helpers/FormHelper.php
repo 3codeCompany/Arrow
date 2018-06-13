@@ -127,11 +127,11 @@ class FormHelper
                                 ->_elementId($element["key"])
                                 ->findFirst();
                         }
-
                         $el["sort"] = $index;
-                        $el->save();
-
-
+                        if (gettype($el) == "object")
+                        {
+                            $el->save();
+                        }
                     }
                 }
             }
