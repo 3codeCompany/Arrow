@@ -23,6 +23,8 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObj
     const TYPE_LINK = "link";
     const TYPE_INLINE_CODE = "inline_code";
 
+    const CONTENT_SHOP_TERMS = "shop_terms";
+
     public static function getMultiLangFields(){
         return [
             Page::F_NAME,
@@ -37,6 +39,13 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObj
             return $this->_link();
 
         return "s,".$this->_link();
+    }
+
+    public static function getContentTypes()
+    {
+        return [
+            self::CONTENT_SHOP_TERMS => "Regulamin sklepu internetowego",
+        ];
     }
 
 
