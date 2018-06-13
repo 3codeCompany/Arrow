@@ -198,12 +198,15 @@ class PageController extends BaseController
 
         $editEnabled = $this->country == "pl" ? true : false;
 
+        $contentTypes = array_merge(["default" => "---"], Page::getContentTypes());
+
         $this->json([
             "language" => $currentLengauge,
             "editEnabled" => $editEnabled,
             "page" => $pagData,
             "parents" => $pagesList,
-            "languages" => $langs
+            "languages" => $langs,
+            "contentTypes" => $contentTypes
         ]);
     }
 

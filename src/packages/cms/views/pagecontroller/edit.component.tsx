@@ -116,7 +116,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
 
     public render() {
         const s = this.state;
-        const {languages, parents} = this.props;
+        const {languages, parents, contentTypes} = this.props;
         const page = this.state.page;
 
         return (
@@ -182,7 +182,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         </Row>
                                         {page.type == "page" && <Row noGutters={false}>
                                         {this.props.editEnabled ?
-                                                <BSelect label={__("Typ zawartości")} {...form("content_type")} options={[{value: "shop_terms", label: "Regulamin"}]}/>
+                                                <BSelect label={__("Typ zawartości")} {...form("content_type")} options={contentTypes}/>
                                                 : null
                                             }
                                         </Row>}
