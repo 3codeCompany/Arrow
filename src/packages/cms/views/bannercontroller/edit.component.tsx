@@ -5,10 +5,8 @@ import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {
     BForm,
     BText,
-    BWysiwig,
     BSwitch,
     BTextarea,
-    BFile,
     BFileList,
     BSelect,
     BDate
@@ -16,14 +14,6 @@ import {
 import {Panel} from "frontend/src/ctrl/Panel";
 import {Row} from "frontend/src/layout/BootstrapLayout";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {Tabs, TabPane} from "frontend/src/ctrl/Tabs";
-import {Column, Table} from "frontend/src/ctrl/Table";
-import {confirm, Modal} from "frontend/src/ctrl/Overlays";
-import Icon from "frontend/src/ctrl/Icon";
-import Comm from "frontend/src/lib/Comm";
-import {Searcher} from "../../../../../../../node_modules_shared/frontend/src/ctrl/Searcher";
-
-const Selectivity = require("selectivity/react");
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
