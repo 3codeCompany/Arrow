@@ -182,11 +182,12 @@ class Users extends \Arrow\Models\Controller
 
     /**
      * @Route("/edit")
+     * @Route("/edit/{key}")
      */
-    public function edit(Request $request)
+    public function edit(Request $request, $key = false)
     {
 
-        $user = User::get()->findByKey($request->get("key"));
+        $user = User::get()->findByKey($request->get("key", $key));
 
 
         $groups = Criteria::query(AccessGroup::getClass())->findAsFieldArray('name', true);
@@ -252,7 +253,7 @@ class Users extends \Arrow\Models\Controller
         }
         $user->setGroups($accessGroups);
 
-        $this->json([1]);
+        $this->json(["key" => $user->_id()]);
     }
 
 
