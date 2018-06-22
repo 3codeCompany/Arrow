@@ -65,4 +65,16 @@
         <field name="add_data_1" type="text"/>
         <field name="add_data_2" type="text"/>
     </table>
+
+
+    <table name="app_dictionaries" class="Arrow\Common\Models\Dictionary">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="parent_id" type="INTEGER" size="11"/>
+        <field name="depth" type="INTEGER" size="11"/>
+        <field name="sort" type="INTEGER" size="11"/>
+        <field name="active" type="integer" size="1"/>
+        <field name="system_name" type="VARCHAR" size="255"/>
+        <field name="name" type="VARCHAR" size="255"/>
+        <field name="data" type="VARCHAR" size="255"/>
+    </table>
 </schema>
