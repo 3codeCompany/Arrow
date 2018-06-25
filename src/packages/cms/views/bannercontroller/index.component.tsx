@@ -14,6 +14,7 @@ import {LoaderContainer} from "frontend/src/ctrl/LoaderContainer";
 import Icon from "frontend/src/ctrl/Icon";
 import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
 import download from "../../../../../../../../node_modules_shared/frontend/src/lib/Downloader";
+import {FilterPanel} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterPanel";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
@@ -30,6 +31,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             dataLoading: false,
             currEditedData: {},
             filters: null,
+            filterModalVisible: false,
         };
 
 
@@ -74,6 +76,17 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 <Navbar>
                     <span>{__("Sklep")}</span>
                     <span>{__("Bannery")}</span>
+
+                    <button
+                        className={"filterBtn"}
+                        onClick={() => {
+                            this.setState({
+                                filterModalVisible: true,
+                            });
+                        }}
+                    >
+                        {__("Filtry")}
+                    </button>
                 </Navbar>
 
                 <div className={"panel-body-margins"}>
@@ -152,6 +165,29 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                            ]}
                     />
                 </div>
+
+
+                <Modal
+                    show={this.state.filterModalVisible}
+                    title={__("Filtry")}
+                    animate={true}
+                    animation={"fadeInDown"}
+                    right={25}
+                    top={50}
+                    onHide={() => {
+                        this.setState({filterModalVisible: false});
+                    }}
+                >
+                    <FilterPanel
+                        filters={this.state.filters}
+                        onChange={(filter, filters) => {
+                            this.setState({filters: {...this.state.filters, ...filters}});
+                        }}
+                        items={[
+                            FilterHelper.text("file_name", __("Nazwa pliku"), false),
+                        ]}
+                    />
+                </Modal>
 
             </div>
         );

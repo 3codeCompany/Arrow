@@ -93,7 +93,6 @@ class Translations
             return $text;
         }
 
-
         //Logger::get('console',new ConsoleStream())->log($text." ".$lang);
 
         $result = LanguageText::get()
@@ -452,9 +451,11 @@ class Translations
      */
     public static function translateTextArray($arrayOfTexts)
     {
+
         foreach ($arrayOfTexts as $index => $text) {
             $arrayOfTexts[$index] = Translations::translateText($text);
         }
+
         return $arrayOfTexts;
     }
 

@@ -20,6 +20,8 @@ use Arrow\Common\Models\Helpers\FormHelper;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Common\Models\Helpers\Validator;
 use Arrow\Kernel;
+use Arrow\Media\Models\Element;
+use Arrow\Media\Models\ElementConnection;
 use Arrow\Media\Models\MediaAPI;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\ORM\Persistent\Criteria;
@@ -58,9 +60,9 @@ class BannerController extends BaseController
             ->findAsFieldArray(Banner::F_PLACE)
         ;
         $placesMap = [
-            "Esotiq kolekcja 1",
             "Esotiq kolekcja 2",
             "Esotiq kafelki",
+            "Esotiq kolekcja 1",
             "Esotiq podziękowanie za zamówienie",
             "Esotiq wyprzedaż",
             "Esotiq slider",
@@ -132,6 +134,22 @@ class BannerController extends BaseController
             if (array_key_exists($filter["value"][0], $revertedPlaces)){
                 $criteria->_place($revertedPlaces[$filter["value"][0]]);
             }
+        });
+
+        $helper->addFilter("file_name", function ($empty, $filter) use ($criteria){
+            $mediaElement = Element::get()
+                ->_file("%" . $filter["value"] . "%", Criteria::C_LIKE)
+                ->find()
+                ->toPureArray()
+            ;
+
+            $mediaElementConnection = ElementConnection::get()
+                ->_elementId($mediaElement[0]["id"])
+                ->find()
+                ->toPureArray()
+            ;
+
+            $criteria->_id($mediaElementConnection[0]["object_id"]);
         });
 
         return $helper->getListData($criteria);
