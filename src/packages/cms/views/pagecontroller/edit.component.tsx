@@ -179,6 +179,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             }
 
                                             <BText label={__("Link")} {...form("link")} />
+                                            <BSwitch label={__("Aktywna")} options={[{value: 0, label: "Nie"}, {value: 1, label: "Tak"}]} {...form("active")} />
                                         </Row>
                                         {page.type == "page" && <Row noGutters={false}>
                                         {this.props.editEnabled ?
