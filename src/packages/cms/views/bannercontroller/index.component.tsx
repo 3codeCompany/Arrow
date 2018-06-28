@@ -106,7 +106,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    .noFilter()
                                    .addFilter(FilterHelper.select("place", "Miejsce baneru", this._prepareAvaiablePlaces(), true).get())
                                ,
-                               Column.bool("active", "Aktywny"),
+                               Column.bool("active", "Aktywny")
+                                   .onClick((row, val) => {
+                                       const active = row.active;
+                                       Comm._post(this.props._baseURL + `/${row.id}/active`, {active})
+                                           .then(() => {
+                                               this.props._notification("Sukces", "Zmieniono wartość");
+                                               this.table.load();
+                                           })
+                                   }),
                                Column.text("visibility", "Widoczny").template((val, row) => {
                                    const rtr = (val == "male") ? "mężczyzna" : (val == "female") ? "kobieta" : "uniwersalny";
                                    return <div style={{fontSize: "0.8em", color: "#686868", textTransform: "uppercase"}}>{rtr}</div>;

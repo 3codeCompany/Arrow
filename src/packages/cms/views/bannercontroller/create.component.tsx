@@ -61,65 +61,46 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     >
                         {(form) => {
                             return (
-                                <BForm
-                                    data={this.props.object}
-                                    ref={(el) => this.form = el}
-                                    action={this.props._baseURL + `/store`}
-                                    namespace={"data"}
-                                    onValidatorError={() => {
-                                        this.props._notification(__("Błąd"), __("Wystąpił problem"), {level: "error"});
-                                    }}
-                                    onSuccess={() => {
-                                        this.props._notification(__("Sukces"), __("Dodano nowy banner"));
-                                        this.props._reloadProps();
-
-                                    }}
-
-                                >{(form) => {
-                                    return (
-                                        <div>
+                                <div>
+                                    <Row>
+                                        <Panel title={"Dane podstawowe"} icon={"Edit"}>
                                             <Row>
-                                                <Panel title={"Dane podstawowe"} icon={"Edit"}>
-                                                    <Row>
-                                                        <BSwitch
-                                                            options={[
-                                                                {value: "1", label: __("Tak")},
-                                                                {value: "0", label: __("nie")},
-                                                            ]}
-                                                            label={"Aktywna"} {...form("active")}
-                                                        />
-                                                        <BDate label={__("Od")} {...form("start")}/>
-                                                        <BDate label={__("Do")} {...form("stop")}/>
-                                                    </Row>
-
-                                                    <BSelect label={__("Kraj")} {...form("country")}
-                                                             options={this.props.countries}/>
-                                                    <BSelect label={__("Język")} {...form("lang")}
-                                                             options={this.props.countries}/>
-                                                    <BSelect label={__("Miejsce")} {...form("place")}
-                                                             options={this.props.places}/>
-
-                                                    <BText label={__("Tytuł")} {...form("title")} />
-                                                    <BText label={__("Podtytuł")} {...form("subtitle")}/>
-                                                    <BText label={__("Link")} {...form("link")}/>
-                                                    <BTextarea label={__("Opis")} {...form("description")}/>
-                                                </Panel>
-
-                                                <div>
-                                                    <Panel title={__("Banner")} icon={"Upload"}>
-                                                        <BFileList {...form("files[image]")} type={"gallery"}/>
-                                                    </Panel>
-                                                    <Panel title={__("Video")} icon={"Upload"} noPadding={true}>
-                                                        <Row noGutters={false}>
-                                                            <BFileList buttonTitle={"Dodaj"} type={"gallery"}/>
-                                                        </Row>
-                                                    </Panel>
-                                                </div>
+                                                <BSwitch
+                                                    options={[
+                                                        {value: "1", label: __("Tak")},
+                                                        {value: "0", label: __("nie")},
+                                                    ]}
+                                                    label={"Aktywna"} {...form("active")}
+                                                />
+                                                <BDate label={__("Od")} {...form("start")}/>
+                                                <BDate label={__("Do")} {...form("stop")}/>
                                             </Row>
+
+                                            <BSelect label={__("Kraj")} {...form("country")}
+                                                     options={this.props.countries}/>
+                                            <BSelect label={__("Język")} {...form("lang")}
+                                                     options={this.props.countries}/>
+                                            <BSelect label={__("Miejsce")} {...form("place")}
+                                                     options={this.props.places}/>
+
+                                            <BText label={__("Tytuł")} {...form("title")} />
+                                            <BText label={__("Podtytuł")} {...form("subtitle")}/>
+                                            <BText label={__("Link")} {...form("link")}/>
+                                            <BTextarea label={__("Opis")} {...form("description")}/>
+                                        </Panel>
+
+                                        <div>
+                                            <Panel title={__("Banner")} icon={"Upload"}>
+                                                <BFileList {...form("files[image]")} type={"gallery"}/>
+                                            </Panel>
+                                            <Panel title={__("Video")} icon={"Upload"} noPadding={true}>
+                                                <Row noGutters={false}>
+                                                    <BFileList buttonTitle={"Dodaj"} type={"gallery"}/>
+                                                </Row>
+                                            </Panel>
                                         </div>
-                                    );
-                                }}
-                                </BForm>
+                                    </Row>
+                                </div>
                             );
                         }}
                     </BForm>

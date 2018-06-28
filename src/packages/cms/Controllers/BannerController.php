@@ -60,11 +60,11 @@ class BannerController extends BaseController
             ->findAsFieldArray(Banner::F_PLACE)
         ;
         $placesMap = [
-            "Esotiq kolekcja 2",
+            "Esotiq wyprzedaż",
             "Esotiq kafelki",
             "Esotiq kolekcja 1",
             "Esotiq podziękowanie za zamówienie",
-            "Esotiq wyprzedaż",
+            "Esotiq kolekcja 2",
             "Esotiq slider",
             "Henderson cała szerokość",
             "Henderson treść",
@@ -143,14 +143,18 @@ class BannerController extends BaseController
                 ->toPureArray()
             ;
 
-            $mediaElementConnection = ElementConnection::get()
-                ->_elementId($mediaElement[0]["id"])
-                ->find()
-                ->toPureArray()
-            ;
-
-            $criteria->_id($mediaElementConnection[0]["object_id"]);
+            if (count($mediaElement) > 0) {
+                $mediaElementConnection = ElementConnection::get()
+                    ->_elementId($mediaElement[0]["id"])
+                    ->find()
+                    ->toPureArray()
+                ;
+                $criteria->_id($mediaElementConnection[0]["object_id"]);
+            } else {
+                $criteria->_id(99999999);
+            }
         });
+        $criteria->order("sort", "desc");
 
         return $helper->getListData($criteria);
     }
@@ -233,9 +237,16 @@ class BannerController extends BaseController
     public function moveUp(int $key)
     {
         $banner = Banner::get()
-            ->findByKey($int)
+            ->findByKey($key)
         ;
-        $banner->moveUp();
+
+        $el = Banner::get()
+            ->_sort($banner->_sort(), Criteria::C_GREATER_THAN)
+            ->order("sort", "asc")
+            ->findFirst()
+        ;
+
+        $banner->setValue("sort", $el->_sort())->save();
 
         return[true];
     }
@@ -246,9 +257,30 @@ class BannerController extends BaseController
     public function moveDown(int $key)
     {
         $banner = Banner::get()
-            ->findByKey()
+            ->findByKey($key)
         ;
-        $banner->moveDown();
+
+        $el = Banner::get()
+            ->_sort($banner->_sort(), Criteria::C_LESS_THAN)
+            ->order("sort", "desc")
+            ->findFirst()
+        ;
+
+        $banner->setValue("sort", $el->_sort())->save();
+
+        return[true];
+    }
+
+    /**
+     * @Route("/{key}/active")
+     */
+    public function active(int $key, Request $request)
+    {
+        $active = (int)$request->get("active") == "1" ? "0" : "1";
+        $banner = Banner::get()
+            ->findByKey($key)
+        ;
+        $banner->setValue("active", $active)->save();
 
         return[true];
     }
@@ -279,6 +311,9 @@ class BannerController extends BaseController
         FormHelper::bindFilesToObject($banner, $files, $uploaded);
 
         $banner->save();
+
+        $ban = Banner::get()->findByKey($banner->_id());
+        $ban->setValue("sort", $banner->_id())->save();
 
         return[true];
     }
