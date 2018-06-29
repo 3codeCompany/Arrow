@@ -183,7 +183,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                 <Row noGutters={false}>
                                     <BSelect
                                         label={__("Element nadrzędny")}
-                                        options={this.props.containers}
+                                        options={this.props.containers.map((el) => ({value: el.id, label: el.name}))}
                                         {...form("parent_id")}
                                     />
                                 </Row>

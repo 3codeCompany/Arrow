@@ -75,17 +75,15 @@ class PageController extends BaseController
     {
         $editEnabled = $this->country == "pl" ? true : false;
 
-        $containers = Page::get()
-            ->order(Page::F_SORT)
-            ->_type("container")
-            ->_id(1, Criteria::C_NOT_EQUAL)
-            ->findAsFieldArray("name", "id");
-
+        $pagesList = Page::get()
+            ->setColumns(["name"])
+            ->_type("folder")
+            ->find();
 
         return [
             "editEnabled" => $editEnabled,
             "language" => $this->country,
-            "containers" => $containers,
+            "containers" => $pagesList,
         ];
     }
 
