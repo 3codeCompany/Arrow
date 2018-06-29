@@ -126,6 +126,28 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    return <div style={{fontSize: "0.8em", color: "#3e3e3e", textTransform: "uppercase"}}>{val}</div>
                                }),
                                Column.text("title", "Tytuł"),
+                               Column.text("sort", "Sort").template((val, row) => {
+                                   return (
+                                       <input
+                                           style={{
+                                               padding: "3px 7px",
+                                               width: 50,
+                                               textAlign: "center",
+                                               border: "1px solid lightgrey",
+                                           }}
+                                           type="text"
+                                           defaultValue={val}
+                                           onBlur={(e) => {
+                                               if (e.target.value !== val) {
+                                                   Comm._post(this.props._baseURL + `/sortUpdate`, {banner: row.id, sort: e.target.value}).then(() => {
+                                                       this.props._notification("Sukces", "Zmieniono wartość.");
+                                                       this.table.load();
+                                                   });
+                                               }
+                                           }}
+                                       />
+                                   )
+                               }).className("center").width(100),
                                Column.template("", () => {
                                    return (
                                        <Icon name={"ChevronUp"}/>

@@ -232,6 +232,21 @@ class BannerController extends BaseController
     }
 
     /**
+     * @Route("/sortUpdate")
+     */
+    public function sortUpdate(Request $request)
+    {
+        $e = $request->get("banner");
+        $s = $request->get("sort");
+        $banner = Banner::get()
+            ->findByKey($e)
+        ;
+        $banner->setValue("sort", $s);
+        $banner->save();
+        return[true];
+    }
+
+    /**
      * @Route("/{key}/moveUp")
      */
     public function moveUp(int $key)
@@ -246,7 +261,7 @@ class BannerController extends BaseController
             ->findFirst()
         ;
 
-        $banner->setValue("sort", $el->_sort())->save();
+        $banner->setValue("sort", $el->_sort() + 1)->save();
 
         return[true];
     }
@@ -266,7 +281,7 @@ class BannerController extends BaseController
             ->findFirst()
         ;
 
-        $banner->setValue("sort", $el->_sort())->save();
+        $banner->setValue("sort", $el->_sort() - 1)->save();
 
         return[true];
     }
