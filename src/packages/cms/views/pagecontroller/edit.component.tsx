@@ -208,6 +208,13 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                 </Row>
                                             </Panel>
                                         </Row>
+                                        <Row>
+                                            <Panel noPadding={true} title={"Pozostałe pliki"} icon={"Files"}>
+                                                <Row noGutters={false}>
+                                                    <BFileList {...form("files[attachments]")} type={"filelist"}/>
+                                                </Row>
+                                            </Panel>
+                                        </Row>
                                     </Panel>
                                     }
                                 </div>
