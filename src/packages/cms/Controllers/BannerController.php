@@ -169,6 +169,12 @@ class BannerController extends BaseController
         ;
 
         $objData = $banner->getData();
+
+//        if (ARROW_IN_DEV_STATE) {
+//            echo "<pre>";
+//            print_r(FormHelper::bindFilesToForm($banner));
+//        }
+
         $objData["files"] = FormHelper::bindFilesToForm($banner);
 
         return [
@@ -185,12 +191,23 @@ class BannerController extends BaseController
     {
         $data = $request->get("data");
         $uploaded = !empty($_FILES) ? FormHelper::getOrganizedFiles()['data']["files"] : [];
-        $files = $data["files"];
+        if (array_key_exists("files", $data)) {
+            $files = $data["files"];
+        } else {
+            $files = ["image" => []];
+        }
+
         unset($data["files"]);
 
         $banner = Banner::get()
             ->findByKey($key)
         ;
+
+//        if (ARROW_IN_DEV_STATE) {
+//            $files = [
+//                "images" => []
+//            ];
+//        }
 
         FormHelper::bindFilesToObject($banner, $files, $uploaded);
 

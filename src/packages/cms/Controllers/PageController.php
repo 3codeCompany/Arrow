@@ -214,6 +214,13 @@ class PageController extends BaseController
     public function save(Request $request)
     {
         $data = $request->get('page');
+        $uploaded = !empty($_FILES) ? FormHelper::getOrganizedFiles()['page']["files"] : [];
+        if (array_key_exists("files", $data)) {
+            $files = $data["files"];
+        } else {
+            $files = ["image" => []];
+        }
+
         unset($data["files"]);
 
         $validator = Validator::create($data)
@@ -245,6 +252,10 @@ class PageController extends BaseController
             }
             Translations::saveObjectTranslation($obj, $data, $request->get("language"));
         }
+
+
+        FormHelper::bindFilesToObject($obj, $files, $uploaded);
+
 
         //FormHelper::replaceObjectFiles($obj, "page");
         $obj->updateTreeSorting();

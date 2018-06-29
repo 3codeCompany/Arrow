@@ -40,6 +40,11 @@ class FormHelper
         $media = MediaAPI::getMedia($object);
 
         $result = [];
+        if (count($media) <= 0) {
+            $result = [
+                "images" => []
+            ];
+        }
         foreach ($media as $connName => $files) {
             $result[$connName] = [];
             foreach ($files as &$file) {
