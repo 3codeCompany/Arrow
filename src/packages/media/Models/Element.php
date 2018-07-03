@@ -1,4 +1,5 @@
 <?php
+
 namespace Arrow\Media\Models;
 
 
@@ -16,7 +17,7 @@ class Element extends ORM_Arrow_Media_Models_Element
 
     /**
      * @param mixed $folder Mixed
-     * @param string $file  Path to file
+     * @param string $file Path to file
      * @param string $nameSuggestion Name suggestion
      * @param bool $delete Delete orginal
      * @return Element
@@ -44,11 +45,11 @@ class Element extends ORM_Arrow_Media_Models_Element
         return $element;
     }
 
-    public static function uploadToObject($object, $connName, $uploadName, $uploadPath, $folder = false )
+    public static function uploadToObject($object, $connName, $uploadName, $uploadPath, $folder = false)
     {
 
         if (!$folder) {
-            $folder = MediaAPI::getFolderBySystemName( str_replace( "\\", "_", get_class($object)) );
+            $folder = MediaAPI::getFolderBySystemName(str_replace("\\", "_", get_class($object)));
             $folder = $folder->getPKey();
         }
 
@@ -72,7 +73,8 @@ class Element extends ORM_Arrow_Media_Models_Element
         if (!is_object($folder))
             $folder = MediaAPI::getSystemFolder();
 
-        $folderPath =/* MediaAPI::getBasePath().*/$folder[Folder::F_PATH];
+        $folderPath =/* MediaAPI::getBasePath().*/
+            $folder[Folder::F_PATH];
 
 
         $path_parts = pathinfo($realName ? $realName : $file);
@@ -84,30 +86,33 @@ class Element extends ORM_Arrow_Media_Models_Element
             $name = str_replace("." . $path_parts['extension'], "", $path_parts['basename']);
 
 
-
-        if(!file_exists(MediaAPI::getBasePath().$folderPath)){
+        if (!file_exists(MediaAPI::getBasePath() . $folderPath)) {
             //exit(MediaAPI::getBasePath().$folderPath);
-            mkdir(MediaAPI::getBasePath().$folderPath,0777,true);
+            mkdir(MediaAPI::getBasePath() . $folderPath, 0777, true);
         }
 
 
-        $nameWithExtension = StringHelper::toValidFilesystemName($name );
-        $path = $folderPath . "/" . $nameWithExtension;
+        $nameWithExtension = StringHelper::toValidFilesystemName($name);
+        $path = MediaAPI::getBasePath() . "./" .$folderPath . "/" . $nameWithExtension;
 
-        $i=1;
-        while(file_exists(MediaAPI::getBasePath().$path)){
-            $nameWithExtension = StringHelper::toValidFilesystemName($path_parts['filename'] . $i.".".$path_parts['extension'] );
+        $i = 1;
+        while (file_exists(MediaAPI::getBasePath() . $path)) {
+            $nameWithExtension = StringHelper::toValidFilesystemName($path_parts['filename'] . $i . "." . $path_parts['extension']);
             $path = $folderPath . "/" . $nameWithExtension;
             $i++;
         }
 
 
-
-        if (!@copy($file, MediaAPI::getBasePath().$path) && !file_exists(MediaAPI::getBasePath().$path) /*import*/)
-            throw new \Arrow\Exception(array("msg" => "File copy error",
+        if (!@copy($file, MediaAPI::getBasePath() . $path) && !file_exists(MediaAPI::getBasePath() . $path)) {
+            throw new \Arrow\Exception([
+                "msg" => "File copy error",
+                "source" => MediaAPI::getBasePath() . $path,
                 "file" => $file,
                 "file_exists" => is_readable($file),
-                "path" => $path));
+                "path" => $path,
+
+            ]);
+        }
 
 
         if ($delete && !self::$forceNoDeleteSource)
@@ -121,12 +126,12 @@ class Element extends ORM_Arrow_Media_Models_Element
         $rq = RequestContext::getDefault();
 
         //@todo sprawdzic czemu isset
-        if(isset($_FILES[$rq["name"]]["name"]) && self::isImageFile($_FILES[$rq["name"]]["name"]) && $rq["imgMinSize"]){
+        if (isset($_FILES[$rq["name"]]["name"]) && self::isImageFile($_FILES[$rq["name"]]["name"]) && $rq["imgMinSize"]) {
             $size = explode(",", $rq["imgMinSize"]);
             $imSize = getimagesize($_FILES[$rq["name"]]["tmp_name"]);
 
-            if($imSize[0] < $size[0] || $imSize[1] < $size[1])
-                exit("Minimalne wymiary dla tego zdjęcia to {$size[0]}x{$size[1]}px \nTo zdjęcie posiada wymiary {$imSize[0]}x{$imSize[1]}px" );
+            if ($imSize[0] < $size[0] || $imSize[1] < $size[1])
+                exit("Minimalne wymiary dla tego zdjęcia to {$size[0]}x{$size[1]}px \nTo zdjęcie posiada wymiary {$imSize[0]}x{$imSize[1]}px");
         }
     }
 
@@ -135,15 +140,13 @@ class Element extends ORM_Arrow_Media_Models_Element
     {
 
         $db = Project::getInstance()->getDB();
-        $this[Element::F_SORT] = $db->query("select max(sort) from ".self::getTable())->fetchColumn()+1;
+        $this[Element::F_SORT] = $db->query("select max(sort) from " . self::getTable())->fetchColumn() + 1;
         $this->save();
 
         if (isset($this->parameters["upload_name"]) || isset($_FILES["file"]["name"])) {
 
 
             $folder = Criteria::query(Folder::getClass())->findByKey($this[self::F_FOLDER_ID]);
-
-
 
 
             $name = isset($this->parameters["upload_name"]) ? $this->parameters["upload_name"] : $_FILES["file"]["name"];
@@ -155,7 +158,6 @@ class Element extends ORM_Arrow_Media_Models_Element
             $this[Element::F_PATH] = $path;
             $this[Element::F_NAME] = $path_parts['filename'];
             $this[Element::F_FILE] = $path_parts['basename'];
-
 
 
             $this->save();
@@ -184,7 +186,7 @@ class Element extends ORM_Arrow_Media_Models_Element
         }
 
         $rq = RequestContext::getDefault();
-        if($rq["maxSize"]){
+        if ($rq["maxSize"]) {
             $size = explode(",", $rq["maxSize"]);
 
             $imTransform = new \ImageTransform();
@@ -196,7 +198,6 @@ class Element extends ORM_Arrow_Media_Models_Element
 
 
         }
-
 
 
         parent::afterObjectCreate($object);
@@ -216,11 +217,10 @@ class Element extends ORM_Arrow_Media_Models_Element
         return self::isImageFile($this[self::F_FILE]);
     }
 
-    public function refreshImageCache(){
+    public function refreshImageCache()
+    {
         MediaAPI::refreshImageCache($this);
     }
-
-
 
 
     public function setValue($field, $val, $tmp = false)
@@ -274,7 +274,7 @@ class Element extends ORM_Arrow_Media_Models_Element
     public function delete()
     {
 
-        $file = MediaAPI::getBasePath().$this[self::F_PATH];
+        $file = MediaAPI::getBasePath() . $this[self::F_PATH];
         if (file_exists($file) && is_file($file))
             unlink($file);
 
@@ -283,7 +283,7 @@ class Element extends ORM_Arrow_Media_Models_Element
             ->c("element_id", $this->getPKey())
             ->find();
 
-        foreach($el as $e)
+        foreach ($el as $e)
             $e->delete();
 
         parent::delete();

@@ -2,6 +2,7 @@
 
 
 use Arrow\Access\Models\Auth;
+use Arrow\Exception;
 use Arrow\Kernel;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
@@ -168,6 +169,7 @@ class ExceptionHandler
                 "file" => $exception->getFile(),
                 "code" => $exception->getCode(),
                 "trace" => $exception->getTraceAsString(),
+                "parameters" => $exception instanceof Exception ? $exception->getData() : []
             ]]);
             exit;
         }

@@ -64,12 +64,16 @@ class DictionaryORMConnector
 
         }, function ($field, $value, PersistentObject $obj) use ($connType, $fieldName, $name) {
 
+            $mainObjectKey = $obj->getPKey();
 
+            if(empty($mainObjectKey)){
+                throw new \Exception("You need object key to properly save dictionary values.\nTry to save object before set dictionaries");
+            }
 
 
             $criteria = DictionaryModelValue::get()
                 ->_model($name)
-                ->_modelId($obj->getPKey())
+                ->_modelId($mainObjectKey)
                 ->_field($fieldName);
 
             if ($connType == self::CONN_SINGLE) {
@@ -88,7 +92,7 @@ class DictionaryORMConnector
                         DictionaryModelValue::create([
                             DictionaryModelValue::F_MODEL => $name,
                             DictionaryModelValue::F_FIELD => $fieldName,
-                            DictionaryModelValue::F_MODEL_ID => $obj->getPKey(),
+                            DictionaryModelValue::F_MODEL_ID => $mainObjectKey,
                             DictionaryModelValue::F_DICTIONARY_ID => $value,
                         ]);
                     } else {
@@ -109,7 +113,7 @@ class DictionaryORMConnector
                     DictionaryModelValue::create([
                         DictionaryModelValue::F_MODEL => $name,
                         DictionaryModelValue::F_FIELD => $fieldName,
-                        DictionaryModelValue::F_MODEL_ID => $obj->getPKey(),
+                        DictionaryModelValue::F_MODEL_ID => $mainObjectKey,
                         DictionaryModelValue::F_DICTIONARY_ID => $key,
                     ]);
                 }
@@ -146,7 +150,7 @@ class DictionaryORMConnector
                             if ($inDb["value"] != $value["value"] || $inDb["data"] != $valueData) {
                                 DictionaryModelValue::get()
                                     ->_model($name)
-                                    ->_modelId($obj->getPKey())
+                                    ->_modelId($mainObjectKey)
                                     ->_field($fieldName)
                                     ->_dictionaryId($inDb["key"])
                                     ->findFirst()

@@ -69,32 +69,22 @@ class FormHelper
     public static function bindFilesToObject(PersistentObject $object, $filesData, $upload)
     {
 
+
         foreach ($upload as $connName => $files) {
             foreach ($files as $file) {
                 MediaAPI::addFileToObject($object, $connName, $file["name"], $file["tmp_name"]);
             }
         }
 
-//        foreach ($upload as $type => $file)
-//        {
-//            foreach ($file as $item)
-//            {
-//                $prepareObjectName = str_replace("\\", "_", $object->getClass());
-//                $fileDir = "data/uploads/System/" . $prepareObjectName . "/";
-//                $fileTarget = $fileDir . basename($item["name"]);
-//
-//                $fileS = new File($fileTarget);
-//                $fileS->move("/srv/http/3code/static.esotiq.com/data", $item["name"]);
-//            }
-//        }
 
         $media = MediaAPI::getMedia($object);
 
         // lookup to delete
         foreach ($media as $connName => $files) {
+
             foreach ($files as $file) {
                 $exists = false;
-                if (isset($filesData[$connName])) {
+                if (isset($filesData[$connName]) && is_array($filesData[$connName])) {
                     foreach ($filesData[$connName] as &$inFile) {
                         //checking that file which exist in server exist in incoming file list
                         if (
@@ -120,8 +110,7 @@ class FormHelper
                     //just uploaded dont have keys
                     if ($element["key"]) {
                         //$sort[$element["key"]] = $index;
-                        if ($object->getPKey())
-                        {
+                        if ($object->getPKey()) {
                             $el = ElementConnection::get()
                                 ->_objectId($object->getPKey())
                                 ->_model($object->getClass())
@@ -133,8 +122,7 @@ class FormHelper
                                 ->findFirst();
                         }
                         $el["sort"] = $index;
-                        if (gettype($el) == "object")
-                        {
+                        if (gettype($el) == "object") {
                             $el->save();
                         }
                     }
@@ -144,8 +132,7 @@ class FormHelper
 
         foreach ($media as $connName => $files) {
             foreach ($files as $file) {
-                if (Element::get()->findByKey($file["id"]))
-                {
+                if (Element::get()->findByKey($file["id"])) {
                     $el = Element::get()->findByKey($file["id"])->_file();
                     $prepareObjectName = str_replace("\\", "_", $object->getClass());
                     $fileDir = "data/uploads/System/" . $prepareObjectName . "/";
@@ -153,23 +140,15 @@ class FormHelper
                     $fileTarget = $fileDir . basename($el);
 
                     sleep(0.5);
-                    if (file_exists($fileTarget))
-                    {
+                    if (file_exists($fileTarget)) {
                         $fileS = new File($fileTarget);
                         $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
                     }
-//                do {
-////                    if (file_exists($fileTarget)) {
-////                        $fileS = new File($fileTarget);
-////                        $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
-////                        break;
-////                    }
-////                } while(true);
+
                 }
             }
         }
 
-        //print_r($sort);
 
     }
 
@@ -229,12 +208,11 @@ class FormHelper
             foreach ($tmp as $el) {
                 if (isset($ret[$el])) {
                     $ret = $ret[$el];
-                }else{
+                } else {
                     return [];
                 }
             }
         }
-
 
 
         return $ret;

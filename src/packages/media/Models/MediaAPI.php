@@ -466,6 +466,10 @@ class MediaAPI
         $tmp = explode('\\', $class);
         $class = end($tmp);
 
+        if($first instanceof InterfaceIdentifiableClass) {
+            $class = $first->getClassID();
+        }
+
 
         $db = \Arrow\Models\Project::getInstance()->getDB();
 
