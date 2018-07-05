@@ -16,7 +16,7 @@ class ElementConnection extends ORM_Arrow_Media_Models_ElementConnection {
     }
 
 
-    public static function create( $initialValues, $class=self::TCLASS ){
+    public static function create( $initialValues, $class = self::class ){
 		
 		if(strpos($initialValues["element_id"], ";") !== false){
 			$tmp = trim($initialValues["element_id"], ";");
