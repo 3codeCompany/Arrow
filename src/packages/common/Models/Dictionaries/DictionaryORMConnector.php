@@ -53,9 +53,9 @@ class DictionaryORMConnector
             } elseif ($connType & self::CONN_MULTI_WITH_VALUE) {
                 return $criteria->find()->map(function (DictionaryModelValue $el) {
                     return [
-                        "key" => $el->_dictionaryId(),
-                        "value" => $el->_value(),
-                        "data" => $el->_data()
+                        "value" => $el->_dictionaryId(),
+                        "additional_value" => $el->_value(),
+                        "additional_data" => $el->_data()
                     ];
                 });
             }
@@ -120,14 +120,17 @@ class DictionaryORMConnector
 
 
             } elseif ($connType & self::CONN_MULTI_WITH_VALUE) {
+                if(empty($value)) {
+                    $value = [];
+                }
 
                 if ($connType & self::CONN_MULTI_WITH_VALUE_INIT_SIMPLE) {
                     foreach ($value as $key => $el) {
                         if (!is_array($el)) {
                             $value[$key] = [
-                                "key" => $el,
-                                "value" => "",
-                                "data" => "",
+                                "value" => $el,
+                                "additional_value" => "",
+                                "additional_data" => "",
 
                             ];
                         }
@@ -143,18 +146,18 @@ class DictionaryORMConnector
                 $existing = $obj->getValue($fieldName);
                 foreach ($value as $value) {
                     $exists = false;
-                    $valueData = isset($value["data"]) ? $value["data"] : "";
+                    $valueData = isset($value["additional_data"]) ? $value["additional_data"] : "";
                     foreach ($existing as $inDb) {
                         if ($inDb["key"] == $value["key"]) {
                             $exists = true;
-                            if ($inDb["value"] != $value["value"] || $inDb["data"] != $valueData) {
+                            if ($inDb["additional_value"] != $value["additional_value"] || $inDb["additional_data"] != $valueData) {
                                 DictionaryModelValue::get()
                                     ->_model($name)
                                     ->_modelId($mainObjectKey)
                                     ->_field($fieldName)
-                                    ->_dictionaryId($inDb["key"])
+                                    ->_dictionaryId($inDb["value"])
                                     ->findFirst()
-                                    ->setValue(DictionaryModelValue::F_VALUE, $value["value"])
+                                    ->setValue(DictionaryModelValue::F_VALUE, $value["additional_value"])
                                     ->setValue(DictionaryModelValue::F_DATA, $valueData)
                                     ->save();
                             }
@@ -165,8 +168,8 @@ class DictionaryORMConnector
                             DictionaryModelValue::F_MODEL => $name,
                             DictionaryModelValue::F_FIELD => $fieldName,
                             DictionaryModelValue::F_MODEL_ID => $obj->getPKey(),
-                            DictionaryModelValue::F_DICTIONARY_ID => $value["key"],
-                            DictionaryModelValue::F_VALUE => $value["value"],
+                            DictionaryModelValue::F_DICTIONARY_ID => $value["value"],
+                            DictionaryModelValue::F_VALUE => $value["additional_value"],
                             DictionaryModelValue::F_DATA => $valueData,
                         ]);
                     }

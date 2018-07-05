@@ -29,7 +29,16 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
             throw new \Exception("No dictionary '{$name}' found");
         }
 
-        return $parent->getChildren();
+        return $parent->getChildren()->map(function (Dictionary $dic) {
+            return
+                [
+                    "value" => $dic->_id(),
+                    "label" => $dic->_label(),
+                    "additional_value" => $dic->_value(),
+                    "additional_data" => $dic->_data()
+                ];
+
+        });
     }
 
 

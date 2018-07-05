@@ -8,7 +8,7 @@
 
 namespace Arrow\Common\Controllers;
 
-use Arrow\Common\Models\Dictionary;
+use Arrow\Common\Models\Dictionaries\Dictionary;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Common\Models\Helpers\Validator;
 use Symfony\Component\HttpFoundation\Request;
