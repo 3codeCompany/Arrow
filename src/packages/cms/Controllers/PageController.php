@@ -172,6 +172,11 @@ class PageController extends BaseController
                     ->_code(["ru", "gb"], Criteria::C_IN)
                     ->setColumns(["name", "code"])
                     ->find();
+            } else if ($this->country == "by") {
+                $langs = Language::get()
+                    ->_code(["by", "ru"], Criteria::C_IN)
+                    ->setColumns(["name", "code"])
+                    ->find();
             } else {
                 $langs = Language::get()
                     ->_code($this->country)

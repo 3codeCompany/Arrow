@@ -843,14 +843,15 @@ class MediaAPI
     {
 
 
-        if (!file_exists($path)) {
 
+        if (!file_exists($path)) {
             $_path = str_replace(self::$basePath, self::$baseURL, $path);
 
             if (!file_exists($_path)) {
                 return $_path;
             }
         }
+
 
         //http://static.esotiq.com/data//System/Arrow_Package_Application_Product/18724-99X.jpg
         ///var/www/static/./data/uploads/System/Arrow_Package_Application_Category/18724-99X-1.jpg
@@ -892,6 +893,8 @@ class MediaAPI
                 $imTransform->resizeToHeight = $height;
 
             }
+
+
 
             @$imTransform->resize();
 
