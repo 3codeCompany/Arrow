@@ -25,7 +25,6 @@ class DictionaryORMConnector
     {
 
 
-
         $name = $object instanceof InterfaceIdentifiableClass ? $object->getClassID() : $object::getClass();
 
         $object->addVirtualField($fieldName, function ($field, PersistentObject $obj) use ($connType, $fieldName, $name) {
@@ -53,6 +52,7 @@ class DictionaryORMConnector
             } elseif ($connType & self::CONN_MULTI_WITH_VALUE) {
                 return $criteria->find()->map(function (DictionaryModelValue $el) {
                     return [
+                        "key" => $el->_id(),
                         "value" => $el->_dictionaryId(),
                         "additional_value" => $el->_value(),
                         "additional_data" => $el->_data()
@@ -66,7 +66,7 @@ class DictionaryORMConnector
 
             $mainObjectKey = $obj->getPKey();
 
-            if(empty($mainObjectKey)){
+            if (empty($mainObjectKey)) {
                 throw new \Exception("You need object key to properly save dictionary values.\nTry to save object before set dictionaries");
             }
 
@@ -101,7 +101,7 @@ class DictionaryORMConnector
 
                 }
             } elseif ($connType == self::CONN_MULTI) {
-                if(empty($value)) {
+                if (empty($value)) {
                     $value = [];
                 }
                 self::deleteNotInValue($value, $fieldName, $name, $obj);
@@ -120,27 +120,37 @@ class DictionaryORMConnector
 
 
             } elseif ($connType & self::CONN_MULTI_WITH_VALUE) {
-                if(empty($value)) {
+                if (empty($value)) {
                     $value = [];
                 }
 
                 if ($connType & self::CONN_MULTI_WITH_VALUE_INIT_SIMPLE) {
                     foreach ($value as $key => $el) {
                         if (!is_array($el)) {
+                            $test = DictionaryModelValue::get()
+                                ->_model($name)
+                                ->_modelId($mainObjectKey)
+                                ->_field($fieldName)
+                                ->_dictionaryId($el)
+                                ->findFirst();
                             $value[$key] = [
+                                "key" => $test ? $test->getPKey() : null,
                                 "value" => $el,
-                                "additional_value" => "",
-                                "additional_data" => "",
-
+                                "additional_value" => $test ? $test->_value() : "",
+                                "additional_data" => $test ? $test->_data() : "",
                             ];
                         }
                     }
                 }
 
                 $values = array_reduce($value, function ($p, $c) {
-                    $p[] = $c["key"];
+                    if (isset($c["value"])) {
+                        $p[] = $c["value"];
+                    }
                     return $p;
                 }, []);
+
+
                 self::deleteNotInValue($values, $fieldName, $name, $obj);
 
                 $existing = $obj->getValue($fieldName);
@@ -148,7 +158,7 @@ class DictionaryORMConnector
                     $exists = false;
                     $valueData = isset($value["additional_data"]) ? $value["additional_data"] : "";
                     foreach ($existing as $inDb) {
-                        if ($inDb["key"] == $value["key"]) {
+                        if (isset($value["key"]) && $inDb["key"] == $value["key"]) {
                             $exists = true;
                             if ($inDb["additional_value"] != $value["additional_value"] || $inDb["additional_data"] != $valueData) {
                                 DictionaryModelValue::get()
