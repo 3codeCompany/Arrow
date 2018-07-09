@@ -111,6 +111,8 @@ class PanelObjects extends BaseController
             if ($tmp[1] == "ua")
             {
                 $crit->_lang(["ua", "ru"], Criteria::C_IN);
+            } elseif ($tmp[1] == "by") {
+                $crit->_lang(["by", "ru"], Criteria::C_IN);
             } else {
                 $crit->_lang($tmp[1]);
             }

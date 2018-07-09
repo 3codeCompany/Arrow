@@ -85,6 +85,8 @@ class PanelStatic extends BaseController
         if (count($tmp) == 2) {
             if ($tmp[1] == "ua"){
                 $c->_lang(["ua", "ru"], Criteria::C_IN);
+            } elseif ($tmp[1] == "by") {
+                $c->_lang(["by", "ru"], Criteria::C_IN);
             } else {
                 $c->_lang($tmp[1]);
             }
