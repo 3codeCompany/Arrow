@@ -9,6 +9,6 @@ namespace Arrow\Common\Models\Interfaces;
 
 interface InterfaceIdentifiableClass
 {
-    public function getClassID();
+    public static function getClassID();
 
 }
