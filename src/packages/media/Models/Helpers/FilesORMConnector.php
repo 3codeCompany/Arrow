@@ -193,6 +193,8 @@ class FilesORMConnector
                     }
                 }
 
+                self::refreshFilesConnection($obj);
+
             }
         );
 
