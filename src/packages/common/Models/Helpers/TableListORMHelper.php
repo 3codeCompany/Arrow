@@ -23,6 +23,8 @@ class TableListORMHelper
     private $fetchType = DataSet::AS_ARRAY;
     private $withMedia = false;
 
+    private $additionalColumns = [];
+
     private $inputData = null;
     private $objectsPostProcess;
     private $arrayPostProcess;
@@ -34,6 +36,11 @@ class TableListORMHelper
         } else {
             $this->inputData = $inputData;
         }
+    }
+
+    public function addColumn($column)
+    {
+        $this->additionalColumns[] = $column;
     }
 
 
@@ -107,6 +114,10 @@ class TableListORMHelper
 
 
         $criteria = TableDataSource::prepareCriteria($criteria, $data);
+
+        foreach($this->additionalColumns as $column){
+            $criteria->addColumn($column);
+        }
 
         if (empty($data["order"]) && !empty($this->defaultOrder)) {
             foreach ($this->defaultOrder as $column) {
