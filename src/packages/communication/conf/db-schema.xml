@@ -3,7 +3,7 @@
     <table name="comm_mailer_queue" class="Arrow\Communication\Models\Mailer\QueueElement">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="created" type="DATETIME"/>
-        <field name="email" type="VARCHAR" size="255"/>
+        <field name="email" type="VARCHAR" size="555"/>
         <field name="topic" type="VARCHAR" size="255"/>
         <field name="content" type="TEXT" />
         <field name="bcc" type="VARCHAR" size="255"/>
