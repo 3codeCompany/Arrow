@@ -27,7 +27,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         this.state = {
             currEdited: false,
             dataLoading: false,
-            currEditedData: {}
+            currEditedData: {},
+            filters: {},
         };
 
         this.columns = [
@@ -146,6 +147,11 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         columns={this.columns}
                         remoteURL={this.props._baseURL + "/asyncIndex"}
                         ref={(table) => (this.table = table)}
+                        filters={this.state.filters}
+                        rememberState={true}
+                        onFiltersChange={(filters) => {
+                            this.setState({ filters })
+                        }}
                     />
                 </div>
 
