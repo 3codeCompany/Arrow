@@ -82,4 +82,44 @@ class SearcherHelper
             "items" => $returnArr,
         ];
     }
+
+    public function getPureProductsProposition($typeWord) {
+        if (strpos($typeWord, "-") !== false)
+        {
+            $searchKeys = explode("-", $typeWord);
+
+            $result = Product::get()
+                ->_groupKey($searchKeys[0])
+                ->_color($searchKeys[1])
+                ->find()
+            ;
+        } else {
+            $typeWord = "%" . $typeWord . "%";
+            $result = Product::get()
+                ->addSearchCondition(["name", "group_key", "color"], $typeWord, Criteria::C_LIKE)
+                ->find();
+        }
+
+        $returnArr = [];
+        foreach ($result as $row) {
+
+                $returnArr[] = [
+                    "id" => $row["id"],
+                    "name" => $row->_name(),
+                    "price" => $row->_price(),
+                    "index" => $row->_groupKey() . "-" . $row->_color(),
+                ];
+
+        }
+
+        $translated = Helper::translateProductsName($returnArr);
+        foreach ($returnArr as $key => $value)
+        {
+            $returnArr[$key]["name"] = $translated[$key]["name"];
+        }
+
+        return [
+            "items" => $returnArr,
+        ];
+    }
 }
