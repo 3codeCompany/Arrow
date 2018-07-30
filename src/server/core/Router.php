@@ -7,6 +7,7 @@ use Arrow\Models\Action;
 use Arrow\Models\AnnotationRouteManager;
 use Arrow\Models\AnnotationsDirectoriesLoader;
 use Arrow\Models\AnnotationsRouteLoader;
+use Arrow\Models\IResponseHandler;
 use Arrow\Models\Project;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -150,11 +151,15 @@ class Router
                     $template = Action::generateTemplatePath($this->action->routeParameters);
                     $return->setTemplate(ARROW_DOCUMENTS_ROOT . $template . ".phtml");
                 }
-                $return = new Response(
-                    $return->render(),
-                    Response::HTTP_OK,
-                    array('content-type' => 'text/html')
-                );
+
+
+                if(!($return instanceof IResponseHandler)) {
+                    $return = new Response(
+                        $return->render(),
+                        Response::HTTP_OK,
+                        array('content-type' => 'text/html')
+                    );
+                }
 
             }
 
