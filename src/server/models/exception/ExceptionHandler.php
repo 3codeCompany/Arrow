@@ -13,7 +13,7 @@ class ExceptionHandler
 {
     const DISPLAY = "display";
     const REDIRECT = "redirect";
-    public $clearOutput = true;
+    public $clearOutput = false;
     /**
      * Object instance keeper
      *
@@ -218,7 +218,8 @@ class ExceptionHandler
 
     private function logError($exception, $contents)
     {
-        $logDir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors";
+        $logDir = ARROW_PROJECT . "/data/logs/errors";
+
         $dir = $logDir . "/" . date("Y-m-d");
         $logFile = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
 

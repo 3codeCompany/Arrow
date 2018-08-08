@@ -16,19 +16,45 @@ use Dompdf\Options;
 class PDFDOMLayout extends \Arrow\Models\AbstractLayout implements IResponseHandler
 {
 
+    private $fileName = "pdf-document";
+
+    /**
+     * @var Dompdf
+     */
+    private $dompdf;
+
+
+    public function __construct(?string $template, array $data = [])
+    {
+        parent::__construct($template, $data);
+
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        //$options->setFontDir( ARROW_PROJECT . "/public/assets/erp/pdf-fonts" );
+
+        $this->dompdf = new Dompdf($options);
+    }
+
+    public function setFileName($str)
+    {
+        $this->fileName = $str;
+    }
+
+
+    public function getDOMPDF(){
+        $this->dompdf->loadHtml($this->render());
+        $this->dompdf->setPaper('A4', 'portail');
+        $this->dompdf->render();
+        return $this->dompdf;
+    }
 
     public function send()
     {
-        $options = new Options();
-        $options->set('defaultFont', 'DejaVu Sans');
 
-        $dompdf = new Dompdf($options);
-
-        $dompdf->loadHtml($this->render());
-
-        $dompdf->setPaper('A4', 'portail');
-        $dompdf->render();
-        $dompdf->stream("xxx",["Attachment" => 0]);
+        $this->dompdf->loadHtml($this->render());
+        $this->dompdf->setPaper('A4', 'portail');
+        $this->dompdf->render();
+        $this->dompdf->stream($this->fileName, ["Attachment" => 0]);
 
     }
 

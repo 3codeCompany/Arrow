@@ -3,7 +3,7 @@ import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
 import { Row } from "frontend/src/layout/BootstrapLayout";
 import { IArrowViewComponentProps } from "frontend/src/lib/PanelComponentLoader";
-import { BForm, BText } from "../../../../../../../../node_modules_shared/frontend/src/layout/BootstrapForm";
+import {BForm, BText, BTextarea} from "../../../../../../../../node_modules_shared/frontend/src/layout/BootstrapForm";
 import { _confirm, Modal } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Overlays";
 import { Column, Table } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Table";
 import { CommandBar } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/CommandBar";
@@ -103,7 +103,7 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                                     );
                                 }),
                             Column.text("value", "Wartość"),
-                            Column.text("data", "Dane"),
+                            Column.text("data", "Dane").template((val) => <pre style={{whiteSpace: "pre-wrap"}}>{val}</pre>),
                             Column.template("", () => <Icon name={"Edit"} />)
                                 .className("center")
                                 .width(40)
@@ -140,7 +140,7 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                                     <>
                                         <BText label={"Etykieta"} {...form("label")} autoFocus={true} />
                                         <BText label={"Wartosc"} {...form("value")} />
-                                        <BText label={"Dane dodatkowe"} {...form("data")} />
+                                        <BTextarea label={"Dane dodatkowe"} {...form("data")} style={{height: 100}} />
                                         <BText
                                             label={"Nazwa systemowa"}
                                             {...form("system_name")}

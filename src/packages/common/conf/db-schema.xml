@@ -76,7 +76,7 @@
         <field name="system_name" type="VARCHAR" size="255"/>
         <field name="label" type="VARCHAR" size="255"/>
         <field name="value" type="VARCHAR" size="255"/>
-        <field name="data" type="VARCHAR" size="255"/>
+        <field name="data" type="TEXT"/>
     </table>
     <table name="app_dictionaries_models" class="Arrow\Common\Models\Dictionaries\DictionaryModelValue">
         <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
