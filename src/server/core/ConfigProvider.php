@@ -11,7 +11,7 @@ class ConfigProvider
     private static $cacheFile = "";
     private static $conf = array();
     private static $refreshConfFile = false;
-    private static $writeConfFile = true;
+    private static $writeConfFile = false;
     private static $cacheMkTime = false;
 
 
@@ -77,8 +77,9 @@ class ConfigProvider
 
     public static function end()
     {
-        if ((self::$refreshConfFile || self::$writeConfFile))
+        if ((self::$refreshConfFile || self::$writeConfFile)) {
             file_put_contents(self::$cacheFile, serialize(self::$conf));
+        }
     }
 
 
