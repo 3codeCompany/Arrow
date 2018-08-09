@@ -240,11 +240,13 @@ class ExceptionHandler
 
 
         if (!file_exists($dir)) {
-            mkdir($dir, 0755, true);
+            mkdir($dir, 755, true);
+
         }
 
 
         file_put_contents($dir . "/" . $logFile, $contents);
+        chmod($dir . "/" . $logFile, 755);
 
 
         $logger = new \Monolog\Logger('mySiteLog');
