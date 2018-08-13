@@ -3,6 +3,7 @@
 namespace Arrow;
 
 use Arrow\Models\Project;
+use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
 
 class ConfigProvider
@@ -41,6 +42,11 @@ class ConfigProvider
             self::$conf = unserialize(file_get_contents(self::$cacheFile));
             self::$cacheMkTime = filemtime(self::$cacheFile);
         } else {
+
+            if (file_exists(ARROW_PROJECT . '/.env')) {
+                (new Dotenv())->load(ARROW_PROJECT . '/.env');
+            }
+
             $content = file_get_contents($configFile);
 
             $content = preg_replace_callback("/%env\((.+?)\)%/", function ($regs) {

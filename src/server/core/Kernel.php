@@ -32,9 +32,6 @@ class Kernel
     public static function init()
     {
 
-        if (file_exists(ARROW_PROJECT . '/.env')) {
-            (new Dotenv())->load(ARROW_PROJECT . '/.env');
-        }
         //Router::setupAction();
         ConfigProvider::init();
 
