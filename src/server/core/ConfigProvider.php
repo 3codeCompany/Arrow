@@ -49,6 +49,7 @@ class ConfigProvider
 
 
             self::$conf = Yaml::parse($content);
+            self::setWriteConfFile(true);
 
             /*foreach (Project::getInstance()->getPackages() as $package) {
                 if (!file_exists($package["dir"] . "/conf/project.yaml")) {
