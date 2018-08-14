@@ -64,6 +64,15 @@ class FilesORMConnector
 
     }
 
+    function setTargetFolder(string $targetFolder)
+    {
+        $this->targetFolder = $targetFolder;
+    }
+
+    function setEncodeFilename( $flag ){
+        $this->encodeFileName = $flag;
+    }
+
     function getRelativePath($base, $path)
     {
         // Detect directory separator
@@ -235,7 +244,7 @@ class FilesORMConnector
             $this->db->beginTransaction();
 
             if ($this->useRelativePath && substr($this->targetFolder, 0, 1) !== ".") {
-                $folderToSave = "." . $this->getRelativePath(ARROW_PROJECT, $this->targetFolder);
+                $folderToSave = "." . $this->getRelativePath(ARROW_DOCUMENTS_ROOT, $this->targetFolder);
             } else {
                 $folderToSave = $this->targetFolder;
             }
@@ -259,6 +268,7 @@ class FilesORMConnector
 
             $moved = $file->move($this->targetFolder, $name);
 
+
             $this->db->commit();
         } catch (\Exception $ex) {
 
@@ -281,7 +291,9 @@ class FilesORMConnector
     public function deleteElementConnection($elementId)
     {
         $element = Element::get()->findByKey($elementId);
-        unlink($element["path"]);
+        if (file_exists($element["path"])) {
+            unlink($element["path"]);
+        }
         $element->delete();
 
         $conn = ElementConnection::get()
