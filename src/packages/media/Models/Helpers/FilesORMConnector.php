@@ -64,13 +64,21 @@ class FilesORMConnector
 
     }
 
+    function useRelativePaths($flag){
+
+        $this->useRelativePath = $flag;
+
+    }
+
     function setTargetFolder(string $targetFolder)
     {
         $this->targetFolder = $targetFolder;
     }
 
     function setEncodeFilename( $flag ){
+
         $this->encodeFileName = $flag;
+
     }
 
     function getRelativePath($base, $path)
