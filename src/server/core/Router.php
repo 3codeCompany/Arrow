@@ -149,7 +149,7 @@ class Router
 
                 if ($return->getTemplate() == null) {
                     $template = Action::generateTemplatePath($this->action->routeParameters);
-                    $return->setTemplate(ARROW_DOCUMENTS_ROOT . $template . ".phtml");
+                    $return->setTemplate(ARROW_PROJECT . $template . ".phtml");
                 }
 
 
