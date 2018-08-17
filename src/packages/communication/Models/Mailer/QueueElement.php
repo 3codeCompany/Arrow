@@ -35,6 +35,8 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
     public function getContent()
     {
 
+        $this->folder = ARROW_PROJECT . "/data/mailerQueue/" .date("Y-m", strtotime($this["created"]));
+
         $file = $this->folder . "/" . $this->_id() . ".txt";
         if (file_exists($file)) {
             return file_get_contents($file);
