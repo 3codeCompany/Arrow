@@ -17,7 +17,7 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
     public function __construct($data = null, ?array $parameters = null)
     {
         parent::__construct($data, $parameters);
-        $this->folder = ARROW_DOCUMENTS_ROOT . "/data/mailerQueue/" . date("Y-m");
+        $this->folder = ARROW_PROJECT . "/data/mailerQueue/" . date("Y-m");
 
     }
 
