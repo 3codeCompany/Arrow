@@ -114,9 +114,9 @@ class TableDataSource extends Criteria
     {
         $onPage = $data["onPage"] ?? 25;
         $currentPage = $data["currentPage"] ?? 1;
-        $countAll = $criteria->count();
         $criteria->limit(($currentPage - 1) * $onPage, $onPage);
         $result = $criteria->find();
+        $countAll = $criteria->count();
         $query = $result->getQuery();
         if ($fetchType == DataSet::AS_ARRAY) {
             $result = $result->toArray($fetchType);
