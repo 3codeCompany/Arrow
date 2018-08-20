@@ -7,11 +7,11 @@
     <trackers>
         <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
     </trackers>
-    <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+    <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
 
     <field name="sort" type="float"/>
-    <field name="parent_id" type="INTEGER" size="10"/>
-    <field name="depth" type="INTEGER"/>
+    <field name="parent_id" type="int" size="10"/>
+    <field name="depth" type="int"/>
     <field name="name" type="VARCHAR" size="100"/>
     <field name="dir_name" type="VARCHAR" size="255"/>
     <field name="path" type="VARCHAR" size="255"/>
@@ -20,12 +20,12 @@
     <field name="accepted_files" type="VARCHAR" size="50"/>
   </table>
   <table name="media_elements" class="Arrow\Media\Models\Element">
-    <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+    <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
     <field name="created" type="datetime"/>
     <field name="created_by" type="int" size="11" />
-    <field name="folder_id" type="INTEGER"/>
+    <field name="folder_id" type="int"/>
     <field name="name" type="VARCHAR" size="255"/>
-    <field name="size" type="INTEGER"/>
+    <field name="size" type="int"/>
     <field name="description" type="LONGVARCHAR" size="65000"/>
     <field name="file" type="VARCHAR" size="255"/>
     <field name="path" type="VARCHAR" size="255"/>
@@ -37,9 +37,9 @@
     </index>
   </table>
   <table name="media_element_connections" class="Arrow\Media\Models\ElementConnection">
-    <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-    <field name="element_id" type="INTEGER"/>
-    <field name="object_id" type="INTEGER"/>
+    <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+    <field name="element_id" type="int"/>
+    <field name="object_id" type="int"/>
     <field name="model" type="VARCHAR" size="255"/>
     <field name="name" type="VARCHAR" size="255"/>
     <field name="sort" type="DOUBLE"/>

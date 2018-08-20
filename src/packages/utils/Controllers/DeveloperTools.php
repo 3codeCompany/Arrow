@@ -11,6 +11,8 @@ namespace Arrow\Utils\Controllers;
 use Arrow\Kernel;
 use Arrow\Models\AnnotationRouteManager;
 use Arrow\Models\Project;
+use Arrow\ORM\DB\DBManager;
+use Arrow\ORM\DB\DBRepository;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\Translations\Models\LanguageText;
 
@@ -82,6 +84,34 @@ class DeveloperTools extends \Arrow\Models\Controller
 
 
         $this->json([]);
+    }
+
+
+
+    /**
+     * @Route("/orm-changes-index")
+     */
+    public function ormChangesIndex(){
+
+        $repository = DBManager::getDefaultRepository();
+        $missMatches = $repository->getMissMatches();
+        $synchronizer = $repository->getConnectionInterface()->getSynchronizer();
+
+        print "<pre>";
+
+        foreach($missMatches as $key => $missMatch){
+            print($missMatch."".PHP_EOL);
+            $synchronizer->resolveMismatch($missMatch);
+            if($key == 60){
+                break;
+            }
+        }
+
+        exit();
+
+        return [
+            "missMatches" => $missMatches
+        ];
     }
 
 

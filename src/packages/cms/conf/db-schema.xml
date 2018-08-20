@@ -2,11 +2,11 @@
 <schema class-namespace="Arrow\CMS">
 
     <table name="cms_pages"  class="Arrow\CMS\Models\Persistent\Page">
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="parent_id" type="INTEGER" size="11"/>
-        <field name="depth" type="INTEGER" size="11"/>
-        <field name="active" type="integer" size="1"/>
-        <field name="sort" type="INTEGER" size="11"/>
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="parent_id" type="int" size="11"/>
+        <field name="depth" type="int" size="11"/>
+        <field name="active" type="int" size="1"/>
+        <field name="sort" type="int" size="11"/>
         <field name="type" type="VARCHAR" size="255"/>
         <field name="name" type="VARCHAR" size="255"/>
         <field name="link" type="VARCHAR" size="255"/>
@@ -24,10 +24,10 @@
 
 
     <table name="cms_banners" class="Arrow\CMS\Models\Persistent\Banner">
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="active" type="integer" required="true" size="1"/>
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="active" type="int" required="true" size="1"/>
         <field name="visibility" type="VARCHAR" size="6"/>
-        <field name="sort" type="integer" size="11"/>
+        <field name="sort" type="int" size="11"/>
         <field name="country" type="VARCHAR" size="5"/>
         <field name="lang" type="VARCHAR" size="5"/>
         <field name="place" type="VARCHAR" size="155"/>
@@ -44,9 +44,9 @@
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="sort" type="INTEGER" size="10" default="0" />
-        <field name="page_id" type="INTEGER" size="10"/>
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="sort" type="int" size="10" default="0" />
+        <field name="page_id" type="int" size="10"/>
         <field name="name" type="VARCHAR" size="255"/>
         <field name="description"  type="LONGVARCHAR" size="65535" />
     </table>
@@ -55,16 +55,16 @@
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
             <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="partner_id" type="INTEGER" size="10"/>
-        <field name="active" type="INTEGER"/>
-        <field name="type" type="INTEGER"/>
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="partner_id" type="int" size="10"/>
+        <field name="active" type="int"/>
+        <field name="type" type="int"/>
         <field name="date" type="DATE"/>
         <field name="date2" type="DATE" default="null" />
         <field name="added" type="DATE"  default="null" />
 
         <field name="title" type="VARCHAR" size="100"/>
-        <field name="title_hide" type="INTEGER"/>
+        <field name="title_hide" type="int"/>
         <field name="language" type="VARCHAR" size="100"/>
         <field name="content_short" type="LONGVARCHAR" size="5000"/>
         <field name="link" type="VARCHAR" size="500"/>
@@ -73,29 +73,29 @@
         <field name="seo_title" type="VARCHAR" size="255"/>
         <field name="seo_keywords" type="VARCHAR" size="255"/>
         <field name="seo_description" type="VARCHAR" size="255"/>
-        <field name="tmp_id" type="INTEGER"/>
+        <field name="tmp_id" type="int"/>
         <field name="on_main" type="TINYINT" size="1"/>
     </table>-->
 
 <!--    <table name="cms_articles" class="CMSArticle"  disabled="true">
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
         <field name="active" type="TINYINT" size="1"/>
-        <field name="archive" type="INTEGER"/>
-        <field name="issue" type="INTEGER"/>
+        <field name="archive" type="int"/>
+        <field name="issue" type="int"/>
         <field name="free" type="TINYINT" size="1"/>
         <field name="title" type="VARCHAR" size="255"/>
         <field name="content" type="LONGVARCHAR" size="65000"/>
         <field name="date" type="DATE"/>
-        <field name="tmp_id" type="INTEGER"/>
-        <field name="page" type="INTEGER" size="1"/>
-        <field name="region" type="INTEGER" size="1"/>
-        <field name="section" type="INTEGER" size="1"/>
-        <field name="sort" type="INTEGER"/>
+        <field name="tmp_id" type="int"/>
+        <field name="page" type="int" size="1"/>
+        <field name="region" type="int" size="1"/>
+        <field name="section" type="int" size="1"/>
+        <field name="sort" type="int"/>
         <field name="subtitle" type="VARCHAR" size="255"/>
         <field name="category_tag_1" type="VARCHAR" size="255"/>
         <field name="category_tag_2" type="VARCHAR" size="255"/>
         <field name="category_tag_3" type="VARCHAR" size="255"/>
-        <field name="on_main" type="INTEGER" size="1"/>
+        <field name="on_main" type="int" size="1"/>
         <field name="list_short_text" type="LONGVARCHAR" size="65000"/>
         <field name="type" type="VARCHAR" size="15"/>
         <field name="seo_rewrite" type="VARCHAR" size="255"/>
@@ -110,9 +110,9 @@
         </foreign-key>
     </table>
     <table name="cms_articles_connections" class="CMSArticlesConnections" baseclass="Persistent" disabled="true">
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
-        <field name="article_id" type="INTEGER"/>
-        <field name="object_id" type="INTEGER"/>
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="article_id" type="int"/>
+        <field name="object_id" type="int"/>
         <field name="model" type="VARCHAR" size="255"/>
         <index name="f_key_index_cms_articles_connections_article_id" type="">
             <index-field name="article_id"/>
