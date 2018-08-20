@@ -238,15 +238,17 @@ class ExceptionHandler
             }
         }
 
-
+        $old = umask(0);
         if (!file_exists($dir)) {
-            mkdir($dir, 755, true);
+            mkdir($dir, 0755, true);
+            chmod($dir,0755);
 
         }
 
-
         file_put_contents($dir . "/" . $logFile, $contents);
-        chmod($dir . "/" . $logFile, 755);
+        chmod($dir . "/" . $logFile, 0755);
+
+        umask($old);
 
 
         $logger = new \Monolog\Logger('mySiteLog');
