@@ -99,12 +99,13 @@ class DeveloperTools extends \Arrow\Models\Controller
 
         print "<pre>";
 
+        $repository->synchronize();
+
+
         foreach($missMatches as $key => $missMatch){
             print($missMatch."".PHP_EOL);
             $synchronizer->resolveMismatch($missMatch);
-            if($key == 60){
-                break;
-            }
+
         }
 
         exit();
