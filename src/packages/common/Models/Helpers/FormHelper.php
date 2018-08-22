@@ -139,10 +139,12 @@ class FormHelper
 
                     $fileTarget = $fileDir . basename($el);
 
-                    sleep(0.5);
-                    if (file_exists($fileTarget)) {
-                        $fileS = new File($fileTarget);
-                        $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
+                    if(strpos($_SERVER["HTTP_HOST"], "esotiq") !== false) {
+                        sleep(0.5);
+                        if (file_exists($fileTarget)) {
+                            $fileS = new File($fileTarget);
+                            $fileS->move("/srv/http/3code/static.esotiq.com/data/uploads/System/" . $prepareObjectName, $el);
+                        }
                     }
 
                 }
