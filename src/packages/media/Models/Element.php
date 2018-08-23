@@ -2,6 +2,7 @@
 namespace Arrow\Media\Models;
 
 
+use Arrow\Exception;
 use Arrow\Models\Project;
 use Arrow\ORM\ORM_Arrow_Media_Models_Element;
 use Arrow\ORM\Persistent\Criteria;
@@ -87,7 +88,12 @@ class Element extends ORM_Arrow_Media_Models_Element
 
         if(!file_exists(MediaAPI::getBasePath().$folderPath)){
             //exit(MediaAPI::getBasePath().$folderPath);
-            mkdir(MediaAPI::getBasePath().$folderPath,0777,true);
+            $dir = MediaAPI::getBasePath().$folderPath;
+            if(is_writable($dir)) {
+                mkdir($dir, 0777, true);
+            }else{
+                throw new Exception("Can't create dir `{$dir}`");
+            }
         }
 
 
