@@ -34,7 +34,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         this.columns = [
             Column.text("name", __("Nazwa")).template((val, row) => (
                 <div style={{ marginLeft: 30 * (row.depth - 1) }}>
-                    {row.type == "container" ? <Icon name={"OpenFolderHorizontal"} /> : <Icon name={"FileASPX"} />}{" "}
+                    {row.type == "folder" ? <Icon name={"OpenFolderHorizontal"} /> : <Icon name={"FileASPX"} />}{" "}
                     {val}{" "}
                 </div>
             )),
