@@ -85,7 +85,7 @@
         <field name="field" type="VARCHAR" size="50"/>
         <field name="dictionary_id" type="int" size="11"/>
         <field name="value" type="VARCHAR" size="255"/>
-        <field name="data" type="VARCHAR" size="255"/>
+        <field name="data" type="VARCHAR" size="1255"/>
     </table>
 
 
