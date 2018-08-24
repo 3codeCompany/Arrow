@@ -42,9 +42,19 @@ unset($input["layout"])
 <div id="modal-root"></div>
 
 <? if (!$data["layout"]["ARROW_DEV_MODE_FRONT"]) { ?>
+
+    <?if(isset($_REQUEST["tesxx"])){?>
+    <script src="<?= $request->getBasePath() ?>/assets/dist2/<?= $data["layout"]["jsCompilationData"][0] ?>"></script>
+<link rel="stylesheet"
+      href="<?= $request->getBasePath() ?>/assets/dist2/bundle-<?= $data["layout"]["jsCompilationData"][1] ?>.css"/>
+    <?}else{?>
     <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["layout"]["jsCompilationData"][0] ?>"></script>
 <link rel="stylesheet"
       href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["layout"]["jsCompilationData"][1] ?>.css"/>
+
+<?}?>
+
+
 <? } else { ?>
     <script src="https://127.0.0.1:3000/bundle.js" crossorigin></script>
 <? } ?>
