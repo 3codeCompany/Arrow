@@ -16,6 +16,7 @@ import {
 import {Panel} from "frontend/src/ctrl/Panel";
 import {Row} from "frontend/src/layout/BootstrapLayout";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;

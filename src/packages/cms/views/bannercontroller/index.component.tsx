@@ -15,6 +15,7 @@ import Icon from "frontend/src/ctrl/Icon";
 import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
 import download from "../../../../../../../../node_modules_shared/frontend/src/lib/Downloader";
 import {FilterPanel} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterPanel";
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;

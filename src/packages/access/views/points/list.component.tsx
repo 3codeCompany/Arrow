@@ -11,6 +11,7 @@ import {CommandBar} from "../../../../../../../../node_modules_shared/frontend/s
 import {IArrowViewComponentProps} from "../../../../../../../../node_modules_shared/frontend/src/lib/PanelComponentLoader";
 import {SwitchFilter} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Filters";
 import {FilterHelper} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterHelper";
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface Props extends IArrowViewComponentProps {
     agroups: { [key: string]: string };

@@ -11,6 +11,7 @@ import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Icon} from "frontend/src/ctrl/Icon";
 import download from "frontend/src/lib/Downloader";
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;

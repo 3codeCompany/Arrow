@@ -13,6 +13,7 @@ import {Arrow} from "../../../../data/cache/db/ts-definitions";
 import {Panel} from "frontend/src/ctrl/Panel";
 import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
 import IPage = Arrow.CMS.Models.Persistent.IPage;
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     page: IPage;

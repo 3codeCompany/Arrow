@@ -12,6 +12,7 @@ import {CommandBar} from "frontend/src/ctrl/CommandBar";
 
 import {Panel} from "frontend/src/ctrl/Panel";
 import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
+import {fI18n} from "frontend/src/utils/I18n";
 
 
 interface IProps extends IArrowViewComponentProps {

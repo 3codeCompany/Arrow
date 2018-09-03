@@ -13,6 +13,7 @@ import { Datasource } from "frontend/src/lib/Datasource";
 import { LoaderContainer } from "frontend/src/ctrl/LoaderContainer";
 import Icon from "frontend/src/ctrl/Icon";
 import { FilterHelper } from "frontend/src/ctrl/filters/FilterHelper";
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;

@@ -12,6 +12,7 @@ import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Icon} from "frontend/src/ctrl/Icon";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {FilterHelper} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterHelper";
+import {fI18n} from "frontend/src/utils/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
