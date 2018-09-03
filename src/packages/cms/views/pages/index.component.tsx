@@ -30,12 +30,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         };
 
         this.columns = [
-            Column.text("name", __("Nazwa"))
+            Column.text("name", fI18n.t("Nazwa"))
                 .template((val, row) => <div style={{marginLeft: 30 * (row.depth - 1)}}>{row.type == "container" ? <Icon name={"OpenFolderHorizontal"} /> : <Icon name={"FileASPX"} />} {val} </div>),
             Column.id("id", "Id").noFilter(),
-            Column.bool("active", __("Aktywna")),
-            Column.map("type", __("Typ"), {page: __("Strona"), container: __("Folder")}),
-            Column.text("link", __("Link")),
+            Column.bool("active", fI18n.t("Aktywna")),
+            Column.map("type", fI18n.t("Typ"), {page: fI18n.t("Strona"), container: fI18n.t("Folder")}),
+            Column.text("link", fI18n.t("Link")),
 
             props.editEnabled ? Column.template("", () => <Icon name={"ChevronDown"} />)
                 .className("center")
@@ -66,9 +66,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirm(__("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirm(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
-                this.props._notification(__("Pomyślnie usunięto") + ` "${row.name}"`);
+                this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
             });
         });
@@ -95,12 +95,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     isSearchBoxVisible={false}
                     onSearch={(search) => alert("To implement " + search)}
                     items={[
-                        {key: "f1", label: __("Dodaj") +
+                        {key: "f1", label: fI18n.t("Dodaj") +
                             "", icon: "Add", onClick: () => this.setState({currEdited: -1})},
                     ]}/>
                 <Navbar>
                     <span>Cms</span>
-                    <span>{__("Strony www")}</span>
+                    <span>{fI18n.t("Strony www")}</span>
                 </Navbar>
                 <div style={{padding: "0 10px"}}>
                     <Table
@@ -111,7 +111,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 </div>
 
                 <Modal
-                    title={(s.currEdited == -1 ? __("Dodanie") : __("Edycja")) + __(" strony www")}
+                    title={(s.currEdited == -1 ? fI18n.t("Dodanie") : fI18n.t("Edycja")) + fI18n.t(" strony www")}
                     show={s.currEdited != false}
                     onHide={() => this.setState({currEdited: false})}
                     showHideLink={true}
@@ -122,7 +122,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         action={this.props._baseURL + "/add"}
                         namespace={"data"}
                         onSuccess={(e) => {
-                            this.props._notification(this.state.currEditedData.name, __("Zapisano pomyślnie"));
+                            this.props._notification(this.state.currEditedData.name, fI18n.t("Zapisano pomyślnie"));
                             this.setState({currEdited: -1});
                             this.table.load();
 
@@ -131,13 +131,13 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         {(form) => <div style={{padding: 10, width: 300}} className="">
 
                             <Row noGutters={false} md={[10, 2]}>
-                                <BText label={__("Nazwa")} {...form("name")} />
+                                <BText label={fI18n.t("Nazwa")} {...form("name")} />
 
                             </Row>
 
                             <div className="hr-line-dashed"/>
-                            <button onClick={() => this.setState({currEdited: false})} className="btn btn-default pull-right">{__("Anuluj")}</button>
-                            <button className="btn btn-primary pull-right">{__("Zapisz")}</button>
+                            <button onClick={() => this.setState({currEdited: false})} className="btn btn-default pull-right">{fI18n.t("Anuluj")}</button>
+                            <button className="btn btn-primary pull-right">{fI18n.t("Zapisz")}</button>
 
                         </div>}
                     </BForm>

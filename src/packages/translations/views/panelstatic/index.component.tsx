@@ -35,9 +35,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
         this.columns = [
             Column.id("id", "Id"),
-            Column.text("lang", __("Kod języka")),
-            Column.map("lang", __("Język"), this.props.language),
-            Column.text("value", __("Wartość"))
+            Column.text("lang", fI18n.t("Kod języka")),
+            Column.map("lang", fI18n.t("Język"), this.props.language),
+            Column.text("value", fI18n.t("Wartość"))
                 .template((val, row) => {
                     return <div>
                         {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
@@ -50,12 +50,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             />,
                             <div>
 
-                                <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>{__("Zapisz")}</a>
+                                <a onClick={this.handleRowChanged.bind(this, row)} className="btn btn-primary btn-xs btn-block pull-left" style={{margin: 0, width: "50%"}}>{fI18n.t("Zapisz")}</a>
                                 <a onClick={(e) => {
                                     e.stopPropagation();
                                     row.edited = false;
                                     row.container.forceUpdate();
-                                }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>{__("Anuluj")}</a>
+                                }} className="btn btn-default btn-xs btn-block pull-right" style={{margin: 0, width: "50%"}}>{fI18n.t("Anuluj")}</a>
                             </div>,
                         ]}
                         {!row.loading && !row.edited && <div>{val}</div>}
@@ -70,8 +70,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     rowContainer.forceUpdate();
                 })
             ,
-            Column.text("original", __("Orginał")),
-            Column.text("module", __("Moduł")),
+            Column.text("original", fI18n.t("Orginał")),
+            Column.text("module", fI18n.t("Moduł")),
 
             Column.template("", () => <i className="ms-Icon ms-Icon--Delete" style={{fontSize: 14}}/>)
                 .className("center darkred")
@@ -134,8 +134,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     ]}
                 /> : null }
                 <Navbar>
-                    <span>{__("Cms")}</span>
-                    <span>{__("Lista dostępnych tłumaczeń")}</span>
+                    <span>{fI18n.t("Cms")}</span>
+                    <span>{fI18n.t("Lista dostępnych tłumaczeń")}</span>
                 </Navbar>
                 <div className="panel-body-margins">
                     <Table
@@ -229,11 +229,11 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             onPage={100}
                             showFooter={false}
                             columns={[
-                                Column.text("language", __("Język")).width(70).className("center uppercase"),
-                                Column.email("user", __("Użytkownik")),
-                                Column.date("date", __("Data")),
-                                Column.date("time", __("Czas")),
-                                Column.text("full_name", __("Pobierz"))
+                                Column.text("language", fI18n.t("Język")).width(70).className("center uppercase"),
+                                Column.email("user", fI18n.t("Użytkownik")),
+                                Column.date("date", fI18n.t("Data")),
+                                Column.date("time", fI18n.t("Czas")),
+                                Column.text("full_name", fI18n.t("Pobierz"))
                                     .template((value, row) => {
                                         return (
                                             <a href={this.props._basePath + `/data/translate_uploads/${row["full_name"]}`} target={"_blank"}>

@@ -38,14 +38,14 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         return (
             <div>
                 <CommandBar items={[
-                    {key: "f0", label: __("Wróc"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "")},
-                    {key: "f1", label: __("Zapisz"), icon: "Save", onClick: () => this.form.submit()},
+                    {key: "f0", label: fI18n.t("Wróc"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "")},
+                    {key: "f1", label: fI18n.t("Zapisz"), icon: "Save", onClick: () => this.form.submit()},
                 ]}/>
 
                 <Navbar>
-                    <span>{__("Sklep")}</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{__("Bannery")}</a>
-                    <span>{__("Dodaj banner")}</span>
+                    <span>{fI18n.t("Sklep")}</span>
+                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{fI18n.t("Bannery")}</a>
+                    <span>{fI18n.t("Dodaj banner")}</span>
                 </Navbar>
 
                 <div className={"panel-body-margins"}>
@@ -67,33 +67,33 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                             <Row>
                                                 <BSwitch
                                                     options={[
-                                                        {value: "1", label: __("Tak")},
-                                                        {value: "0", label: __("nie")},
+                                                        {value: "1", label: fI18n.t("Tak")},
+                                                        {value: "0", label: fI18n.t("nie")},
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
                                                 />
-                                                <BDate label={__("Od")} {...form("start")}/>
-                                                <BDate label={__("Do")} {...form("stop")}/>
+                                                <BDate label={fI18n.t("Od")} {...form("start")}/>
+                                                <BDate label={fI18n.t("Do")} {...form("stop")}/>
                                             </Row>
 
-                                            <BSelect label={__("Kraj")} {...form("country")}
+                                            <BSelect label={fI18n.t("Kraj")} {...form("country")}
                                                      options={this.props.countries}/>
-                                            <BSelect label={__("Język")} {...form("lang")}
+                                            <BSelect label={fI18n.t("Język")} {...form("lang")}
                                                      options={this.props.countries}/>
-                                            <BSelect label={__("Miejsce")} {...form("place")}
+                                            <BSelect label={fI18n.t("Miejsce")} {...form("place")}
                                                      options={this.props.places}/>
 
-                                            <BText label={__("Tytuł")} {...form("title")} />
-                                            <BText label={__("Podtytuł")} {...form("subtitle")}/>
-                                            <BText label={__("Link")} {...form("link")}/>
-                                            <BTextarea label={__("Opis")} {...form("description")}/>
+                                            <BText label={fI18n.t("Tytuł")} {...form("title")} />
+                                            <BText label={fI18n.t("Podtytuł")} {...form("subtitle")}/>
+                                            <BText label={fI18n.t("Link")} {...form("link")}/>
+                                            <BTextarea label={fI18n.t("Opis")} {...form("description")}/>
                                         </Panel>
 
                                         <div>
-                                            <Panel title={__("Banner")} icon={"Upload"}>
+                                            <Panel title={fI18n.t("Banner")} icon={"Upload"}>
                                                 <BFileList {...form("files[image]")} type={"gallery"}/>
                                             </Panel>
-                                            <Panel title={__("Video")} icon={"Upload"} noPadding={true}>
+                                            <Panel title={fI18n.t("Video")} icon={"Upload"} noPadding={true}>
                                                 <Row noGutters={false}>
                                                     <BFileList buttonTitle={"Dodaj"} type={"gallery"}/>
                                                 </Row>

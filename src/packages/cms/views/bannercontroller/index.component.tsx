@@ -74,8 +74,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         }},
                 ]}/>
                 <Navbar>
-                    <span>{__("Sklep")}</span>
-                    <span>{__("Bannery")}</span>
+                    <span>{fI18n.t("Sklep")}</span>
+                    <span>{fI18n.t("Bannery")}</span>
 
                     <button
                         className={"filterBtn"}
@@ -85,7 +85,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             });
                         }}
                     >
-                        {__("Filtry")}
+                        {fI18n.t("Filtry")}
                     </button>
                 </Navbar>
 
@@ -199,7 +199,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                 <Modal
                     show={this.state.filterModalVisible}
-                    title={__("Filtry")}
+                    title={fI18n.t("Filtry")}
                     animate={true}
                     animation={"fadeInDown"}
                     right={25}
@@ -214,7 +214,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             this.setState({filters: {...this.state.filters, ...filters}});
                         }}
                         items={[
-                            FilterHelper.text("file_name", __("Nazwa pliku"), false),
+                            FilterHelper.text("file_name", fI18n.t("Nazwa pliku"), false),
                         ]}
                     />
                 </Modal>

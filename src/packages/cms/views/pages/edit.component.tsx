@@ -70,9 +70,9 @@ class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirm(__("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirm(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
-                this.props._notification(__("Pomyślnie usunięto") + ` "${row.name}"`);
+                this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
             });
         });
@@ -111,7 +111,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
         Comm._post(this.props._baseURL + "/save", toSend).then((response) => {
             this.props._reloadProps();
             this.setState({dirty: false});
-            this.props._notification(toSend.page.name, __("Zapisano pomyślnie"));
+            this.props._notification(toSend.page.name, fI18n.t("Zapisano pomyślnie"));
             this.props._stopLoadingIndicator();
         });
     }
@@ -127,10 +127,10 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     isSearchBoxVisible={false}
 
                     items={[
-                        {key: "f0", label: __("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "/index")},
-                        {key: "f1", label: __("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
+                        {key: "f0", label: fI18n.t("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "/index")},
+                        {key: "f1", label: fI18n.t("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
                         this.state.dirty ? {
-                            key: "f3", label: __("Anuluj") + ` `, icon: "Save", onClick: () => {
+                            key: "f3", label: fI18n.t("Anuluj") + ` `, icon: "Save", onClick: () => {
                                 this.props._reloadProps();
                                 this.setState({dirty: false});
                             },
@@ -139,7 +139,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     ]}/>
                 <Navbar>
                     <span>Cms</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{__("Strony www")}</a>
+                    <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{fI18n.t("Strony www")}</a>
                     <span>{page.name}</span>
                 </Navbar>
 
@@ -158,54 +158,54 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                         {(form) => <Row>
                             <div>
 
-                                <Panel noPadding={true} title={__("Dane")}>
+                                <Panel noPadding={true} title={fI18n.t("Dane")}>
 
                                     <Row noGutters={false}>
-                                        <BText label={__("Nazwa")} {...form("name")} />
+                                        <BText label={fI18n.t("Nazwa")} {...form("name")} />
                                     </Row>
                                     {this.props.editEnabled ?
                                         <Row noGutters={false}>
-                                            <BSwitch label={__("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
-                                            <BSwitch label={__("Typ")} {...form("type")} options={{page: __("Strona"), container: __("Folder")}}/>
+                                            <BSwitch label={fI18n.t("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
+                                            <BSwitch label={fI18n.t("Typ")} {...form("type")} options={{page: fI18n.t("Strona"), container: fI18n.t("Folder")}}/>
                                         </Row>
                                         : null
                                     }
                                     <Row noGutters={false}>
                                         {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
                                         {this.props.editEnabled ?
-                                            <BSelect label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
+                                            <BSelect label={fI18n.t("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
                                             : null
                                         }
 
-                                        <BText label={__("Link")} {...form("front_link")} />
+                                        <BText label={fI18n.t("Link")} {...form("front_link")} />
 
                                     </Row>
 
                                 </Panel>
                                 {page.type == "page" &&
-                                <Panel noPadding={true} title={__("SEO")}>
+                                <Panel noPadding={true} title={fI18n.t("SEO")}>
                                     <Row noGutters={false}>
-                                        <BText label={__("SEO Title")} {...form("seo_title")} />
-                                        <BText label={__("SEO Keywords")} {...form("seo_keywords")} />
+                                        <BText label={fI18n.t("SEO Title")} {...form("seo_title")} />
+                                        <BText label={fI18n.t("SEO Keywords")} {...form("seo_keywords")} />
                                     </Row>
                                     <Row noGutters={false}>
-                                        <BTextarea label={__("SEO description")} {...form("seo_description")} />
+                                        <BTextarea label={fI18n.t("SEO description")} {...form("seo_description")} />
                                     </Row>
                                     <Row noGutters={false}>
-                                        <BTextarea label={__("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
+                                        <BTextarea label={fI18n.t("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
                                     </Row>
                                 </Panel>
                                 }
                                 {/*{page.type != "page" &&*/}
-                                {/*<Panel title={__("Pliki")}>*/}
+                                {/*<Panel title={fI18n.t("Pliki")}>*/}
 
-                                    {/*<BFileList label={__("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
+                                    {/*<BFileList label={fI18n.t("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
 
-                                    {/*<BFileList label={__("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
+                                    {/*<BFileList label={fI18n.t("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
 
-                                    {/*<BFileList label={__("Do pobrania")} {...form("files[files]")} />*/}
+                                    {/*<BFileList label={fI18n.t("Do pobrania")} {...form("files[files]")} />*/}
 
-                                    {/*<BFileList label={__("Pliki przypisane")} {...form("files[assigned]")}  />*/}
+                                    {/*<BFileList label={fI18n.t("Pliki przypisane")} {...form("files[assigned]")}  />*/}
                                 {/*</Panel>*/}
                                 {/*}*/}
                             </div>

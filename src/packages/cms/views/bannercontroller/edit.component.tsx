@@ -59,9 +59,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 ]}/>
 
                 <Navbar>
-                    <span>{__("Sklep")}</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{__("Bannery")}</a>
-                    <span>{__("Edycja")} "{this.props.object.title}"</span>
+                    <span>{fI18n.t("Sklep")}</span>
+                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{fI18n.t("Bannery")}</a>
+                    <span>{fI18n.t("Edycja")} "{this.props.object.title}"</span>
 
                 </Navbar>
 
@@ -94,19 +94,19 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
                                                 />
-                                                <BDate label={__("Od")} {...form("start")}/>
-                                                <BDate label={__("Do")} {...form("stop")}/>
+                                                <BDate label={fI18n.t("Od")} {...form("start")}/>
+                                                <BDate label={fI18n.t("Do")} {...form("stop")}/>
                                             </Row>
 
-                                            <BSelect label={__("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
-                                            <BSelect label={__("Kraj")} {...form("country")} options={this.props.countries}/>
-                                            <BSelect label={__("Język")} {...form("lang")} options={this.props.countries}/>
-                                            <BSelect label={__("Miejsce")} {...form("place")} options={this.props.places}/>
+                                            <BSelect label={fI18n.t("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
+                                            <BSelect label={fI18n.t("Kraj")} {...form("country")} options={this.props.countries}/>
+                                            <BSelect label={fI18n.t("Język")} {...form("lang")} options={this.props.countries}/>
+                                            <BSelect label={fI18n.t("Miejsce")} {...form("place")} options={this.props.places}/>
 
-                                            <BText label={__("Tytuł")} {...form("title")} />
-                                            <BText label={__("Podtytuł")} {...form("subtitle")}/>
-                                            <BText label={__("Link")} {...form("link")}/>
-                                            <BTextarea label={__("Opis")} {...form("description")}/>
+                                            <BText label={fI18n.t("Tytuł")} {...form("title")} />
+                                            <BText label={fI18n.t("Podtytuł")} {...form("subtitle")}/>
+                                            <BText label={fI18n.t("Link")} {...form("link")}/>
+                                            <BTextarea label={fI18n.t("Opis")} {...form("description")}/>
                                         </Panel>
 
                                         <div>

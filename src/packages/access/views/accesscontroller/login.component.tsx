@@ -36,7 +36,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
     public handleSubmit = () => {
         const data = this.state.form;
         if (data.login == "" || data.password == "") {
-            this.props._notification( __("Wypełnij wszystkie pola"), __("Nie udało się zalogować"), {level: "error"});
+            this.props._notification( fI18n.t("Wypełnij wszystkie pola"), fI18n.t("Nie udało się zalogować"), {level: "error"});
             return;
         }
 
@@ -51,7 +51,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
         });
         comm.on(Comm.EVENTS.VALIDATION_ERRORS, (response) => {
             this.setState({loading: false});
-            this.setState({error: __("Nieprawidłowy użytkownik lub hasło")});
+            this.setState({error: fI18n.t("Nieprawidłowy użytkownik lub hasło")});
         });
         comm.on(Comm.EVENTS.SUCCESS, (response) => {
             this.setState({loading: false, error: ""});
@@ -96,10 +96,10 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
                             <div>
                                 <div className="input">
-                                    <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={"login"} placeholder={__("Podaj swój login")}/>
+                                    <input type="text" autoFocus={true} value={s.form.login} onChange={(e) => this.setState({form: {...s.form, login: e.target.value}})} name={"login"} placeholder={fI18n.t("Podaj swój login")}/>
                                 </div>
                                 <div className="input">
-                                    <input type="password" name={"password"} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={__("Podaj hasło")}/>
+                                    <input type="password" name={"password"} value={s.form.password} onChange={(e) => this.setState({form: {...s.form, password: e.target.value}})} placeholder={fI18n.t("Podaj hasło")}/>
                                 </div>
 
                             </div>
@@ -110,7 +110,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                     disabled={this.state.loading}
                                     onClick={this.handleSubmit}
                                 >
-                                    {this.state.loading ? "..." : __("zaloguj się")}
+                                    {this.state.loading ? "..." : fI18n.t("zaloguj się")}
                                 </button>
                             </div>
                             <div style={{height: 20, paddingTop: 10}}>
