@@ -83,12 +83,7 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $data["ARROW_DEV_MODE_FRONT"] = (bool)\getenv("APP_DEBUG_WEBPACK_DEV_SERVER") || $request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER");
 
         if (!$data["ARROW_DEV_MODE_FRONT"]) {
-            if(isset($_REQUEST["tesxx"])) {
-
-                $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist2/compilation-hash-{$data["language"]}.txt");
-            }else{
-                $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
-            }
+            $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-pl.txt");
             $data["jsCompilationData"] = explode("|", $tmp);
         }
 

@@ -24,6 +24,7 @@ unset($input["layout"])
         "basePath" => $request->getBasePath(),
         "inputProps" => $input,
         "panel" => [
+            "language" => $data["layout"]["language"],
             "languages" => $data["layout"]["languages"],
             "icon" => $data["layout"]["config"]["icon"],
             "title" => $data["layout"]["config"]["title"],
