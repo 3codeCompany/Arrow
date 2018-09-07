@@ -51,7 +51,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
         super(props);
 
         let x;
-        for ( let i = 0; i < props.languages.length; i++) {
+        for (let i = 0; i < props.languages.length; i++) {
             if (props.languages[i].code == props.language) {
                 x = i;
                 break;
@@ -125,7 +125,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                 <CommandBar
                     isSearchBoxVisible={false}
                     items={[
-                        {key: "f0", label: fI18n.t("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL )},
+                        {key: "f0", label: fI18n.t("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "/index")},
                         {key: "f1", label: fI18n.t("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
                         this.state.dirty ? {
                             key: "f3", label: fI18n.t("Anuluj") + ` `, icon: "Save", onClick: () => {
@@ -139,7 +139,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                 <div className={"panel-body-margins"}>
                     <Navbar>
                         <span>{fI18n.t("CMS")}</span>
-                        <a onClick={() => this.props._goto(this.props._baseURL + "")}>{fI18n.t("Strony www")}</a>
+                        <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{fI18n.t("Strony www")}</a>
                         <span>{page.name}</span>
                     </Navbar>
 
@@ -163,7 +163,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             <BText label={fI18n.t("Nazwa")} {...form("name")} />
                                             {this.props.editEnabled ?
                                                 <BSelect label={fI18n.t("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
-                                            : null }
+                                                : null}
                                         </Row>
                                         {this.props.editEnabled ?
                                             <Row noGutters={false}>
@@ -183,12 +183,16 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             <BSwitch label={fI18n.t("Aktywna")} options={[{value: 0, label: "Nie"}, {value: 1, label: "Tak"}]} {...form("active")} />
                                         </Row>
                                         {page.type == "page" && <Row noGutters={false}>
-                                        {this.props.editEnabled ?
+                                            {this.props.editEnabled ?
                                                 <BSelect label={fI18n.t("Typ zawartości")} {...form("content_type")} options={contentTypes}/>
                                                 : null
                                             }
                                         </Row>}
                                     </Panel>
+                                    {page.type == "container" && <Panel noPadding={true} title={fI18n.t("Obrazy")}><Row noGutters={false}>
+                                        <FileList {...form("files[menuFile]")} maxLength={1} type={"gallery"}/>
+                                    </Row></Panel>}
+
                                     {page.type == "page" &&
                                     <Panel noPadding={true} title={fI18n.t("SEO")}>
                                         <Row noGutters={false}>
@@ -205,7 +209,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         <Row>
                                             <Panel noPadding={true} title={"Nagłówek"} icon={"FileImage"}>
                                                 <Row noGutters={false}>
-                                                    <BFileList {...form("files[header]")} type={"gallery"} maxLength={1}  />
+                                                    <BFileList {...form("files[header]")} type={"gallery"} maxLength={1}/>
                                                 </Row>
                                             </Panel>
                                         </Row>
@@ -223,6 +227,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                 </Row>
                                             </Panel>
                                         </Row>
+
                                     </Panel>
                                     }
                                 </div>
