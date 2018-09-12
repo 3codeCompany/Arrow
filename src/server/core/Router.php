@@ -139,7 +139,6 @@ class Router
         $return = $this->action->fetch($this->request);
 
 
-
         if ($return !== null) {
 
             if (is_array($return)) {
@@ -153,7 +152,7 @@ class Router
                 }
 
 
-                if(!($return instanceof IResponseHandler)) {
+                if (!($return instanceof IResponseHandler)) {
                     $return = new Response(
                         $return->render(),
                         Response::HTTP_OK,
@@ -172,12 +171,21 @@ class Router
 
     }
 
-    public function execute($path, Request $request = null)
+    public function execute($path, Request $request = null, $appendTemplatePath = false)
     {
         $action = $this->symfonyRouter($path);
         $action->setServiceContainer(Project::getInstance()->getContainer());
 
-        return $action->fetch($request ?? $this->request, true);
+        $return = $action->fetch($request ?? $this->request, true);
+
+        if ($appendTemplatePath && $return instanceof AbstractLayout) {
+            if ($return->getTemplate() == null) {
+                $template = Action::generateTemplatePath($action->routeParameters);
+                $return->setTemplate(ARROW_PROJECT . $template . ".phtml");
+            }
+        }
+
+        return $return;
     }
 
 }
