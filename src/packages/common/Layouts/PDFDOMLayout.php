@@ -58,6 +58,14 @@ class PDFDOMLayout extends \Arrow\Models\AbstractLayout implements IResponseHand
 
     }
 
+    public function getDocument(){
+        $this->dompdf->loadHtml($this->render());
+        $this->dompdf->setPaper('A4', 'portail');
+        $this->dompdf->render();
+        return $this->dompdf->output();
+
+    }
+
 
     public function render()
     {
