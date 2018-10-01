@@ -1,8 +1,8 @@
 import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table";
+import {Column, Table} from "frontend/src/ctrl/Table/Table";
 import {FileList} from "frontend/src/ctrl/FileLists";
-import {confirm} from "frontend/src/ctrl/Overlays";
+
 import {BFileList, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
 import Comm from "frontend/src/lib/Comm";
 import {Row} from "frontend/src/layout/BootstrapLayout";
@@ -13,6 +13,7 @@ import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {Panel} from "frontend/src/ctrl/Panel";
 import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
 import {fI18n} from "frontend/src/utils/I18n";
+import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
 
 
 interface IProps extends IArrowViewComponentProps {
@@ -69,7 +70,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirm(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();

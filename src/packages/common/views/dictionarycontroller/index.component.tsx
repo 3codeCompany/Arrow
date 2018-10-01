@@ -3,12 +3,14 @@ import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
 import { Row } from "frontend/src/layout/BootstrapLayout";
 import { IArrowViewComponentProps } from "frontend/src/lib/PanelComponentLoader";
-import {BForm, BText, BTextarea} from "../../../../../../../../node_modules_shared/frontend/src/layout/BootstrapForm";
-import { _confirm, Modal } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Overlays";
-import { Column, Table } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Table";
+import {BForm, BText, BTextarea} from "frontend/src/layout/BootstrapForm";
+
+import { Column, Table } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Table/Table";
 import { CommandBar } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/CommandBar";
 import Icon from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Icon";
 import Comm from "../../../../../../../../node_modules_shared/frontend/src/lib/Comm";
+import {Modal} from "frontend/src/ctrl/overlays/Modal";
+import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
 
 interface IComponentProps extends IArrowViewComponentProps {
     parent: any;
@@ -32,7 +34,7 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
     }
 
     handleDelete = (row: any) => {
-        _confirm("Czy na pewno chcesz usunąć: " + `'${row.label}' ?`).then(() => {
+        confirmDialog("Czy na pewno chcesz usunąć: " + `'${row.label}' ?`).then(() => {
             Comm._get(this.props._baseURL + "/delete/" + row.id).then(() => {
                 this.props._notification("Usunięto");
                 this.list.load();

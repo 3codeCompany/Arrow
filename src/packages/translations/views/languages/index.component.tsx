@@ -1,13 +1,14 @@
 import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
 import Panel from "frontend/src/ctrl/Panel";
-import {Table, Column} from "frontend/src/ctrl/Table";
-import {Modal, confirm} from "frontend/src/ctrl/Overlays";
+import {Table, Column} from "frontend/src/ctrl/Table/Table";
 import {BFile, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
 import Comm from "frontend/src/lib/Comm";
 import {Row} from "frontend/src/layout/BootstrapLayout";
 import {ColumnHelper} from "frontend/src/ctrl/table/ColumnHelper";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
+import {Modal} from "frontend/src/ctrl/overlays/Modal";
+import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -41,7 +42,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirm(`Czy na pewno usunąć "${row.name}"?`).then(() => {
+        confirmDialog(`Czy na pewno usunąć "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/Language/delete", {key: row.id}).then(() => {
                 this.props._notification(`Pomyślnie usunięto "${row.name}"`);
                 this.table.load();

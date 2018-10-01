@@ -1,6 +1,6 @@
 import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table";
+import {Column, Table} from "frontend/src/ctrl/Table/Table";
 
 import {confirm, Modal} from "frontend/src/ctrl/Overlays";
 import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
@@ -67,7 +67,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirm(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
                 this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();

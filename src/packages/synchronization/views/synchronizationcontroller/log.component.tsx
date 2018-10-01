@@ -4,13 +4,13 @@ import Navbar from "frontend/src/ctrl/Navbar";
 import {Row} from "frontend/src/layout/BootstrapLayout";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Panel} from "frontend/src/ctrl/Panel";
-import {Table} from "frontend/src/ctrl/Table";
+import {Table} from "frontend/src/ctrl/Table/Table";
 import {ColumnHelper as Column} from "frontend/src/ctrl/table/ColumnHelper";
 import Comm from "frontend/src/lib/Comm";
 import {LoadingIndicator} from "frontend/src/ctrl/LoadingIndicator";
 import Icon from "frontend/src/ctrl/Icon";
-import {Modal} from "frontend/src/ctrl/Overlays";
 import {BForm, BSelect, BSwitch, BText} from "../../../../../../../../node_modules_shared/frontend/src/layout/BootstrapForm";
+import {Modal} from "frontend/src/ctrl/overlays/Modal";
 
 interface IProps extends IArrowViewComponentProps {
     options: any;

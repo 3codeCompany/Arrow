@@ -1,17 +1,17 @@
 import * as React from "react";
 
 import Navbar from "frontend/src/ctrl/Navbar";
-import {confirm} from "frontend/src/ctrl/Overlays";
-import {Column, Table} from "frontend/src/ctrl/Table";
+import {Column, Table} from "frontend/src/ctrl/Table/Table";
 import {Icon} from "frontend/src/ctrl/Icon";
 
 import Comm from "frontend/src/lib/Comm";
 import {CheckboxGroup} from "frontend/src/ctrl/Fields";
-import {CommandBar} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/CommandBar";
-import {IArrowViewComponentProps} from "../../../../../../../../node_modules_shared/frontend/src/lib/PanelComponentLoader";
-import {SwitchFilter} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Filters";
-import {FilterHelper} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterHelper";
+import {CommandBar} from "frontend/src/ctrl/CommandBar";
+import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
+
+import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
 import {fI18n} from "frontend/src/utils/I18n";
+import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
 
 interface Props extends IArrowViewComponentProps {
     agroups: { [key: string]: string };
@@ -29,7 +29,7 @@ export default class extends React.Component<Props, any> {
 
     public handleDelete = () => {
         const length = this.state.selectedPoints.length;
-        confirm(`Czy na pewno usunąć ${length} punktów ?`).then(() => {
+        confirmDialog(`Czy na pewno usunąć ${length} punktów ?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", {keys: this.state.selectedPoints.map(el => el.id)}).then(() => {
                 this.props._notification(`Usuneto  ${length} punkty dostępu.`);
                 this.table.load();
@@ -37,7 +37,6 @@ export default class extends React.Component<Props, any> {
         });
     }
 
-    public
 
     saveAccessPoint(row) {
         Comm._post(this.props._baseURL + "/save", {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {

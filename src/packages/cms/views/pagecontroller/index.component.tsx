@@ -1,19 +1,18 @@
 import * as React from "react";
 import Navbar from "frontend/src/ctrl/Navbar";
-import { Column, Table } from "frontend/src/ctrl/Table";
+import { Column, Table } from "frontend/src/ctrl/Table/Table";
 
-import { confirm, Modal } from "frontend/src/ctrl/Overlays";
 import { BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig } from "frontend/src/layout/BootstrapForm";
 import Comm from "frontend/src/lib/Comm";
 import { Row } from "frontend/src/layout/BootstrapLayout";
 
 import { IArrowViewComponentProps } from "frontend/src/lib/PanelComponentLoader";
 import { CommandBar } from "frontend/src/ctrl/CommandBar";
-import { Datasource } from "frontend/src/lib/Datasource";
-import { LoaderContainer } from "frontend/src/ctrl/LoaderContainer";
 import Icon from "frontend/src/ctrl/Icon";
 import { FilterHelper } from "frontend/src/ctrl/filters/FilterHelper";
 import {fI18n} from "frontend/src/utils/I18n";
+import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import {Modal} from "frontend/src/ctrl/overlays/Modal";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
@@ -53,10 +52,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         [
                             { value: "page", label: "page" },
                             { value: "folder", label: "folder" },
-                            { value: "link", label: "link" }
+                            { value: "link", label: "link" },
                         ],
-                        false
-                    ).get()
+                        false,
+                    ).get(),
                 ),
             Column.text("link", fI18n.t("Link")),
 
@@ -98,12 +97,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                       .className("center darkred")
                       .onClick((row) => this.handleDelete(row))
                 : null,
-            Column.hidden("depth")
+            Column.hidden("depth"),
         ];
     }
 
     public handleDelete(row) {
-        confirm(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", { key: row.id }).then(() => {
                 this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
@@ -115,7 +114,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         if (this.state.currEdited != -1) {
             this.setState({ loading: true });
             Comm._post(this.props._baseURL + "/get", { key: this.state.currEdited }).then((response) =>
-                this.setState({ currEditedData: response, loading: false })
+                this.setState({ currEditedData: response, loading: false }),
             );
         } else {
             this.setState({ currEditedData: {} });
@@ -135,8 +134,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             key: "f1",
                             label: fI18n.t("Dodaj") + "",
                             icon: "Add",
-                            onClick: () => this.setState({ currEdited: -1 })
-                        }
+                            onClick: () => this.setState({ currEdited: -1 }),
+                        },
                     ]}
                 />
                 <Navbar>
@@ -151,7 +150,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         filters={this.state.filters}
                         rememberState={true}
                         onFiltersChange={(filters) => {
-                            this.setState({ filters })
+                            this.setState({ filters });
                         }}
                     />
                 </div>
@@ -164,7 +163,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 >
                     <BForm
                         data={{
-                            type: "page"
+                            type: "page",
                         }}
                         action={this.props._baseURL + "/add"}
                         namespace={"data"}
@@ -182,7 +181,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         label={fI18n.t("Typ")}
                                         options={[
                                             { label: "Strona", value: "page" },
-                                            { label: "Folder", value: "container" }
+                                            { label: "Folder", value: "container" },
                                         ]}
                                         {...form("type", "page")}
                                     />
