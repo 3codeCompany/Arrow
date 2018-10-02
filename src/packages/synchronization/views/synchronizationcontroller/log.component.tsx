@@ -5,7 +5,7 @@ import {Row} from "frontend/src/layout/BootstrapLayout";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Panel} from "frontend/src/ctrl/Panel";
 import {Table} from "frontend/src/ctrl/Table/Table";
-import {ColumnHelper as Column} from "frontend/src/ctrl/table/ColumnHelper";
+import {ColumnHelper as Column} from "frontend/src/ctrl/Table/ColumnHelper";
 import Comm from "frontend/src/lib/Comm";
 import {LoadingIndicator} from "frontend/src/ctrl/LoadingIndicator";
 import Icon from "frontend/src/ctrl/Icon";

@@ -5,7 +5,7 @@ import {Table, Column} from "frontend/src/ctrl/Table/Table";
 import {BFile, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
 import Comm from "frontend/src/lib/Comm";
 import {Row} from "frontend/src/layout/BootstrapLayout";
-import {ColumnHelper} from "frontend/src/ctrl/table/ColumnHelper";
+import {ColumnHelper} from "frontend/src/ctrl/Table/ColumnHelper";
 import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Modal} from "frontend/src/ctrl/overlays/Modal";
 import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
