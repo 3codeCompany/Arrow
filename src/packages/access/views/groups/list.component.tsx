@@ -9,7 +9,7 @@ import { Row } from "frontend/src/layout/BootstrapLayout";
 import Comm from "frontend/src/lib/Comm";
 import { confirmDialog } from "frontend/src/ctrl/overlays/ConfirmDialog";
 
-export default class extends React.Component<any, any> {
+export default class ArrowViewComponent extends React.Component<any, any> {
     public table: Table;
 
     constructor(props) {
