@@ -28,7 +28,16 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             currEdited: false,
             dataLoading: false,
             currEditedData: {},
-            filters: {},
+            filters: {
+                brand: {
+                    caption: "Portal",
+                    condition: "LIKE",
+                    field: "brand",
+                    label: "esotiq",
+                    labelCaptionSeparator: "zawiera :",
+                    value: "esotiq"
+                }
+            },
         };
 
         this.columns = [
@@ -42,6 +51,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("country", __("Kraj"))
                 .width(70)
                 .className("center"),
+            Column.text("brand", __("Portal"))
+                .width(70)
+                .className("center")
+                .noFilter().addFilter(FilterHelper.select("brand", "Portal", {
+                esotiq: "Esotiq",
+                henderson: "Henderson",
+                finalsale: "Finalsale",
+            }, true).get())
+            ,
             Column.bool("active", __("Aktywna")),
             Column.text("type", __("Typ"))
                 .noFilter()
@@ -123,6 +141,18 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
     public render() {
         const s = this.state;
+
+        const brandFilter = {
+            brand: {
+                caption: "Portal",
+                condition: "LIKE",
+                field: "brand",
+                label: "finalsale",
+                labelCaptionSeparator: "zawiera :",
+                value: "finalsale"
+            }
+        }
+        console.log(this.state.filters, "FILTREY");
 
         return (
             <div>

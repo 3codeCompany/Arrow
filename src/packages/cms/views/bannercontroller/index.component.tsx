@@ -65,6 +65,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
     public render() {
         const s = this.state;
+        console.log(this._prepareAvaiablePlaces());
 
         return (
             <div>
@@ -118,7 +119,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                Column.text("visibility", "Widoczny").template((val, row) => {
                                    const rtr = (val == "male") ? "mężczyzna" : (val == "female") ? "kobieta" : "uniwersalny";
                                    return <div style={{fontSize: "0.8em", color: "#686868", textTransform: "uppercase"}}>{rtr}</div>;
-                               }).className("center"),
+                               }).className("center")
+                                   .noFilter()
+                                   .addFilter(FilterHelper.select("visibility", "Widoczny", [{value: "male", label: "Mężczyzna"}, {value: "female", label: "Kobieta"}, {value: "all", label: "Uniwersalny"}], true).get())
+                               ,
                                Column.text("country", "Kraj").template((val) => {
                                    return <div style={{fontSize: "0.8em", color: "#686868", textTransform: "uppercase"}}>{val}</div>
                                }),

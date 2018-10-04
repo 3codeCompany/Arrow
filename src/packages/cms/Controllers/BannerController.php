@@ -74,7 +74,7 @@ class BannerController extends BaseController
         ];
         foreach ($places as $key => $place)
         {
-            $this->places[$place] = $placesMap[$key];
+            $this->places[$place] = $placesMap[$key > 0 ? $key - 1 : $key];
         }
 
         $user = Auth::getDefault()->getUser();

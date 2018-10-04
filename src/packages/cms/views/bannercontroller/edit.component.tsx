@@ -113,10 +113,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                             <Panel title={"Banner"} icon={"Upload"}>
                                                 <BFileList {...form("files[image]")} type={"gallery"}/>
                                             </Panel>
-                                            <Panel title={"Video"} icon={"Upload"} noPadding={true}>
-                                                <Row noGutters={false}>
-                                                    <BFileList buttonTitle={"Dodaj"} type={"gallery"}/>
-                                                </Row>
+
+                                            <Panel title={"Video"} icon={"Upload"}>
+                                                <BFileList {...form("files[video]")} type={"gallery"}/>
                                             </Panel>
                                         </div>
                                     </Row>
