@@ -1,18 +1,18 @@
 import * as React from "react";
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table/Table";
-import {BFileList, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
-import {Row} from "frontend/src/layout/BootstrapLayout";
+import { Navbar } from "frontend/lib/Navbar";
+import {Column, Table} from "frontend/lib/Table";
+import {BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
+import {Row} from "frontend/lib/Row";
 
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {CommandBar} from "frontend/lib/CommandBar";
 import {Arrow} from "../../../../data/cache/db/ts-definitions";
-import {Panel} from "frontend/src/ctrl/Panel";
-import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
+import {Panel} from "frontend/lib/Panel";
+import {TabPane, Tabs} from "frontend/lib/Tabs";
 import IPage = Arrow.CMS.Models.Persistent.IPage;
-import {fI18n} from "frontend/src/utils/I18n";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import {fI18n} from "frontend/lib/lib/I18n";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
 
 interface IProps extends IArrowViewComponentProps {
     page: IPage;
@@ -199,13 +199,13 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                 {/*{page.type != "page" &&*/}
                                 {/*<Panel title={fI18n.t("Pliki")}>*/}
 
-                                    {/*<BFileList label={fI18n.t("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
+                                    {/*<BFileListField label={fI18n.t("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
 
-                                    {/*<BFileList label={fI18n.t("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
+                                    {/*<BFileListField label={fI18n.t("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
 
-                                    {/*<BFileList label={fI18n.t("Do pobrania")} {...form("files[files]")} />*/}
+                                    {/*<BFileListField label={fI18n.t("Do pobrania")} {...form("files[files]")} />*/}
 
-                                    {/*<BFileList label={fI18n.t("Pliki przypisane")} {...form("files[assigned]")}  />*/}
+                                    {/*<BFileListField label={fI18n.t("Pliki przypisane")} {...form("files[assigned]")}  />*/}
                                 {/*</Panel>*/}
                                 {/*}*/}
                             </div>

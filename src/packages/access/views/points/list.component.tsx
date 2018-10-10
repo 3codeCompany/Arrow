@@ -1,17 +1,17 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table/Table";
-import {Icon} from "frontend/src/ctrl/Icon";
+import { Navbar } from "frontend/lib/Navbar";
+import {Column, Table} from "frontend/lib/Table";
+import {Icon} from "frontend/lib/Icon";
 
-import Comm from "frontend/src/lib/Comm";
-import {CheckboxGroup} from "frontend/src/ctrl/Fields";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
+import {Comm} from "frontend/lib/lib";
+import {CheckboxGroup} from "frontend/lib/fields";
+import {CommandBar} from "frontend/lib/CommandBar";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
 
-import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
-import {fI18n} from "frontend/src/utils/I18n";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import {FilterHelper} from "frontend/lib/filters";
+import {fI18n} from "frontend/lib/lib/I18n";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
 
 interface Props extends IArrowViewComponentProps {
     agroups: { [key: string]: string };

@@ -1,8 +1,8 @@
 import * as React from "react";
-import {BForm} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {fI18n} from "frontend/src/utils/I18n";
+import {BForm} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {fI18n} from "frontend/lib/lib/I18n";
 declare var LANGUAGE: string;
 declare var window: any;
 

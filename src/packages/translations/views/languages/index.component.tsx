@@ -1,14 +1,14 @@
 import * as React from "react";
-import Navbar from "frontend/src/ctrl/Navbar";
-import Panel from "frontend/src/ctrl/Panel";
-import {Table, Column} from "frontend/src/ctrl/Table/Table";
-import {BFile, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
-import {Row} from "frontend/src/layout/BootstrapLayout";
-import {ColumnHelper} from "frontend/src/ctrl/Table/ColumnHelper";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {Modal} from "frontend/src/ctrl/overlays/Modal";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import { Navbar } from "frontend/lib/Navbar";
+import { Panel } from "frontend/lib/Panel";
+import {Table, Column} from "frontend/lib/Table";
+import {BFile, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
+import {Row} from "frontend/lib/Row";
+import {ColumnHelper} from "frontend/lib/Table";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {Modal} from "frontend/lib/Modal";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;

@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
-import { Row } from "frontend/src/layout/BootstrapLayout";
-import { IArrowViewComponentProps } from "frontend/src/lib/PanelComponentLoader";
-import PrintJSON from "frontend/src/utils/PrintJSON";
+import { Navbar } from "frontend/lib/Navbar";
+import { Row } from "frontend/lib/Row";
+import { IArrowViewComponentProps } from "frontend/lib/backoffice";
+import { PrintJSON } from "frontend/lib/PrintJSON";
 
 interface IComponentProps extends IArrowViewComponentProps {
     missMatches: any;

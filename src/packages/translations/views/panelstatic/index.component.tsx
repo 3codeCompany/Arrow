@@ -1,19 +1,19 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
+import { Navbar } from "frontend/lib/Navbar";
 
-import {Table, Column} from "frontend/src/ctrl/Table/Table";
+import {Table, Column} from "frontend/lib/Table";
 
-import {BFile, BFileList, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
+import {BFile, BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
 
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {Icon} from "frontend/src/ctrl/Icon";
-import download from "frontend/src/lib/Downloader";
-import {fI18n} from "frontend/src/utils/I18n";
-import {Modal} from "frontend/src/ctrl/overlays/Modal";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import {CommandBar} from "frontend/lib/CommandBar";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {Icon} from "frontend/lib/Icon";
+import { download } from "frontend/lib/Downloader";
+import {fI18n} from "frontend/lib/lib/I18n";
+import {Modal} from "frontend/lib/Modal";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -208,7 +208,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         require={true}
                                         {...form("language")}
                                     />
-                                    <BFileList name="files" {...form("files")}/>
+                                    <BFileListField name="files" {...form("files")}/>
                                     <button className="btn btn-primary pull-right"><Icon name={"Upload"}/> Laduj</button>
                                 </div>
                             )

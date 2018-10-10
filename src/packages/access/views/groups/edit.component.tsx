@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import Navbar from 'frontend/src/ctrl/Navbar';
-import {BForm, BText, BTextarea} from 'frontend/src/layout/BootstrapForm';
-import Panel from 'frontend/src/ctrl/Panel';
-import {Row} from 'frontend/src/layout/BootstrapLayout';
-import {Icon} from "frontend/src/ctrl/Icon"
+import { Navbar } from 'frontend/lib/Navbar';
+import {BForm, BText, BTextarea} from 'frontend/lib/BForm';
+import { Panel } from 'frontend/lib/Panel';
+import {Row} from 'frontend/lib/Row';
+import {Icon} from "frontend/lib/Icon"
 
 export default class  extends React.Component<any, any> {
     constructor(props) {

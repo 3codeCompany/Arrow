@@ -1,20 +1,20 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
+import { Navbar } from "frontend/lib/Navbar";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
 import {
     BForm,
     BText,
     BSwitch,
     BTextarea,
-    BFileList,
+    BFileListField,
     BSelect,
     BDate
-} from "frontend/src/layout/BootstrapForm";
-import {Panel} from "frontend/src/ctrl/Panel";
-import {Row} from "frontend/src/layout/BootstrapLayout";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {fI18n} from "frontend/src/utils/I18n";
+} from "frontend/lib/BForm";
+import {Panel} from "frontend/lib/Panel";
+import {Row} from "frontend/lib/Row";
+import {CommandBar} from "frontend/lib/CommandBar";
+import {fI18n} from "frontend/lib/lib/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -112,11 +112,11 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                                         <div>
                                             <Panel title={"Banner"} icon={"Upload"}>
-                                                <BFileList {...form("files[image]")} type={"gallery"}/>
+                                                <BFileListField {...form("files[image]")} type={"gallery"}/>
                                             </Panel>
                                             <Panel title={"Video"} icon={"Upload"} noPadding={true}>
                                                 <Row noGutters={false}>
-                                                    <BFileList buttonTitle={"Dodaj"} type={"gallery"}/>
+                                                    <BFileListField buttonTitle={"Dodaj"} type={"gallery"}/>
                                                 </Row>
                                             </Panel>
                                         </div>

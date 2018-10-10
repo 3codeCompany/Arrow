@@ -1,13 +1,13 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
+import { Navbar } from "frontend/lib/Navbar";
 
-import { Column, Table } from "frontend/src/ctrl/Table/Table";
-import Panel from "frontend/src/ctrl/Panel";
-import { Icon } from "frontend/src/ctrl/Icon";
-import { Row } from "frontend/src/layout/BootstrapLayout";
-import Comm from "frontend/src/lib/Comm";
-import { confirmDialog } from "frontend/src/ctrl/overlays/ConfirmDialog";
+import { Column, Table } from "frontend/lib/Table";
+import { Panel } from "frontend/lib/Panel";
+import { Icon } from "frontend/lib/Icon";
+import { Row } from "frontend/lib/Row";
+import {Comm} from "frontend/lib/lib";
+import { confirmDialog } from "frontend/lib/ConfirmDialog";
 
 export default class ArrowViewComponent extends React.Component<any, any> {
     public table: Table;

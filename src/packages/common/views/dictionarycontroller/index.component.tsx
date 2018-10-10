@@ -1,16 +1,16 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
-import { Row } from "frontend/src/layout/BootstrapLayout";
-import { IArrowViewComponentProps } from "frontend/src/lib/PanelComponentLoader";
-import {BForm, BText, BTextarea} from "frontend/src/layout/BootstrapForm";
+import { Navbar } from "frontend/lib/Navbar";
+import { Row } from "frontend/lib/Row";
+import { IArrowViewComponentProps } from "frontend/lib/backoffice";
+import {BForm, BText, BTextarea} from "frontend/lib/BForm";
 
-import { Column, Table } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Table/Table";
-import { CommandBar } from "../../../../../../../../node_modules_shared/frontend/src/ctrl/CommandBar";
-import Icon from "../../../../../../../../node_modules_shared/frontend/src/ctrl/Icon";
-import Comm from "../../../../../../../../node_modules_shared/frontend/src/lib/Comm";
-import {Modal} from "frontend/src/ctrl/overlays/Modal";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import { Column, Table } from "frontend/lib/Table";
+import { CommandBar } from "frontend/lib/CommandBar";
+import { Icon } from "frontend/lib/Icon";
+import {Comm} from "frontend/lib/lib";
+import {Modal} from "frontend/lib/Modal";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
 
 interface IComponentProps extends IArrowViewComponentProps {
     parent: any;

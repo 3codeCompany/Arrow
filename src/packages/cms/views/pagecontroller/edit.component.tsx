@@ -1,19 +1,19 @@
 import * as React from "react";
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table/Table";
+import { Navbar } from "frontend/lib/Navbar";
+import {Column, Table} from "frontend/lib/Table";
 import {FileList} from "frontend/src/ctrl/FileLists";
 
-import {BFileList, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
-import {Row} from "frontend/src/layout/BootstrapLayout";
+import {BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
+import {Row} from "frontend/lib/Row";
 
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {CommandBar} from "frontend/lib/CommandBar";
 
-import {Panel} from "frontend/src/ctrl/Panel";
-import {TabPane, Tabs} from "frontend/src/ctrl/Tabs";
-import {fI18n} from "frontend/src/utils/I18n";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
+import {Panel} from "frontend/lib/Panel";
+import {TabPane, Tabs} from "frontend/lib/Tabs";
+import {fI18n} from "frontend/lib/lib/I18n";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
 
 
 interface IProps extends IArrowViewComponentProps {
@@ -191,7 +191,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         </Row>}
                                     </Panel>
                                     {page.type == "container" && <Panel noPadding={true} title={fI18n.t("Obrazy")}><Row noGutters={false}>
-                                        <FileList {...form("files[menuFile]")} maxLength={1} type={"gallery"}/>
+                                        <BFileList {...form("files[menuFile]")} maxLength={1} type={"gallery"}/>
                                     </Row></Panel>}
 
                                     {page.type == "page" &&

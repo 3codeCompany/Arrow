@@ -1,14 +1,14 @@
-import Navbar from "frontend/src/ctrl/Navbar";
-import Panel from "frontend/src/ctrl/Panel";
+import { Navbar } from "frontend/lib/Navbar";
+import { Panel } from "frontend/lib/Panel";
 
 import * as React from "react";
-import { IArrowViewComponentProps } from "frontend/src/lib/PanelComponentLoader";
-import { BForm, BSwitch, BContainer } from "frontend/src/layout/BootstrapForm";
-import { CommandBar } from "frontend/src/ctrl/CommandBar";
-import Comm from "frontend/src/lib/Comm";
-import { Row } from "frontend/src/layout/BootstrapLayout";
-import { Copyable } from "frontend/src/ctrl/Copyable";
-import Icon from "frontend/src/ctrl/Icon";
+import { IArrowViewComponentProps } from "frontend/lib/backoffice";
+import { BForm, BSwitch, FieldPlaceholder } from "frontend/lib/BForm";
+import { CommandBar } from "frontend/lib/CommandBar";
+import {Comm} from "frontend/lib/lib";
+import { Row } from "frontend/lib/Row";
+import { Copyable } from "frontend/lib/Copyable";
+import { Icon } from "frontend/lib/Icon";
 import * as path from "path";
 
 interface IProps extends IArrowViewComponentProps {

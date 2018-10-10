@@ -1,16 +1,16 @@
 import * as React from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Row} from "frontend/src/layout/BootstrapLayout";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {Panel} from "frontend/src/ctrl/Panel";
-import {Table} from "frontend/src/ctrl/Table/Table";
-import {ColumnHelper as Column} from "frontend/src/ctrl/Table/ColumnHelper";
-import Comm from "frontend/src/lib/Comm";
-import {LoadingIndicator} from "frontend/src/ctrl/LoadingIndicator";
-import Icon from "frontend/src/ctrl/Icon";
-import {BForm, BSelect, BSwitch, BText} from "../../../../../../../../node_modules_shared/frontend/src/layout/BootstrapForm";
-import {Modal} from "frontend/src/ctrl/overlays/Modal";
+import { Navbar } from "frontend/lib/Navbar";
+import {Row} from "frontend/lib/Row";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {Panel} from "frontend/lib/Panel";
+import {Table} from "frontend/lib/Table";
+import {ColumnHelper as Column} from "frontend/lib/Table";
+import {Comm} from "frontend/lib/lib";
+import {LoadingIndicator} from "frontend/lib/LoadingIndicator";
+import { Icon } from "frontend/lib/Icon";
+import {BForm, BSelect, BSwitch, BText} from "frontend/lib/BForm";
+import {Modal} from "frontend/lib/Modal";
 
 interface IProps extends IArrowViewComponentProps {
     options: any;

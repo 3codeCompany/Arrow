@@ -1,18 +1,18 @@
 import * as React from "react";
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table/Table";
+import { Navbar } from "frontend/lib/Navbar";
+import {Column, Table} from "frontend/lib/Table";
 
 import {confirm, Modal} from "frontend/src/ctrl/Overlays";
-import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
-import {Row} from "frontend/src/layout/BootstrapLayout";
+import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
+import {Row} from "frontend/lib/Row";
 
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {CommandBar} from "frontend/lib/CommandBar";
 import {Datasource} from "frontend/src/lib/Datasource";
 import {LoaderContainer} from "frontend/src/ctrl/LoaderContainer";
-import Icon from "frontend/src/ctrl/Icon";
-import {fI18n} from "frontend/src/utils/I18n";
+import { Icon } from "frontend/lib/Icon";
+import {fI18n} from "frontend/lib/lib/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;

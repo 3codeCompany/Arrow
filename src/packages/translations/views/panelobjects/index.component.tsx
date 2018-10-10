@@ -1,20 +1,20 @@
 import * as React from "react";
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table/Table";
+import { Navbar } from "frontend/lib/Navbar";
+import {Column, Table} from "frontend/lib/Table";
 
-import {BFile, BFileList, BForm, BSelect, BSwitch} from "frontend/src/layout/BootstrapForm";
+import {BFile, BFileListField, BForm, BSelect, BSwitch} from "frontend/lib/BForm";
 
-import download from "frontend/src/lib/Downloader";
-import Comm from "frontend/src/lib/Comm";
-import {Select} from "frontend/src/ctrl/Fields";
+import { download } from "frontend/lib/Downloader";
+import {Comm} from "frontend/lib/lib";
+import {Select} from "frontend/lib/fields";
 import {translate} from "frontend/src/utils/Translator";
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {Icon} from "frontend/src/ctrl/Icon";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import {FilterHelper} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterHelper";
-import {fI18n} from "frontend/src/utils/I18n";
-import {confirmDialog} from "frontend/src/ctrl/overlays/ConfirmDialog";
-import {Modal} from "frontend/src/ctrl/overlays/Modal";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {Icon} from "frontend/lib/Icon";
+import {CommandBar} from "frontend/lib/CommandBar";
+import {FilterHelper} from "frontend/lib/filters";
+import {fI18n} from "frontend/lib/lib/I18n";
+import {confirmDialog} from "frontend/lib/ConfirmDialog";
+import {Modal} from "frontend/lib/Modal";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -293,7 +293,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         require={true}
                                         {...form("language")}
                                     />
-                                    <BFileList name="files" {...form("files")}/>
+                                    <BFileListField name="files" {...form("files")}/>
                                     <button className="btn btn-primary pull-right"><Icon name={"Upload"}/> {fI18n.t("Laduj")}</button>
                                 </div>
                             )

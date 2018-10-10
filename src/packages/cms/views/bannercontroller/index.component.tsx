@@ -1,17 +1,17 @@
 import * as React from "react";
-import Navbar from "frontend/src/ctrl/Navbar";
-import {Column, Table} from "frontend/src/ctrl/Table/Table";
+import { Navbar } from "frontend/lib/Navbar";
+import {Column, Table} from "frontend/lib/Table";
 
-import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/src/layout/BootstrapForm";
-import Comm from "frontend/src/lib/Comm";
+import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
+import {Comm} from "frontend/lib/lib";
 
-import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
-import {CommandBar} from "frontend/src/ctrl/CommandBar";
-import Icon from "frontend/src/ctrl/Icon";
-import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
-import {FilterPanel} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterPanel";
-import {fI18n} from "frontend/src/utils/I18n";
-import {Modal} from "frontend/src/ctrl/overlays/Modal";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import {CommandBar} from "frontend/lib/CommandBar";
+import { Icon } from "frontend/lib/Icon";
+import {FilterHelper} from "frontend/lib/filters";
+import {FilterPanel} from "frontend/lib/filters";
+import {fI18n} from "frontend/lib/lib/I18n";
+import {Modal} from "frontend/lib/Modal";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
