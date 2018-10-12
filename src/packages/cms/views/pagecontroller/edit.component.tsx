@@ -191,7 +191,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         </Row>}
                                     </Panel>
                                     {page.type == "container" && <Panel noPadding={true} title={fI18n.t("Obrazy")}><Row noGutters={false}>
-                                        <BFileList {...form("files[menuFile]")} maxLength={1} type={"gallery"}/>
+                                        <BFileListField {...form("files[menuFile]")} maxLength={1} type={"gallery"}/>
                                     </Row></Panel>}
 
                                     {page.type == "page" &&
@@ -210,21 +210,21 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         <Row>
                                             <Panel noPadding={true} title={"Nagłówek"} icon={"FileImage"}>
                                                 <Row noGutters={false}>
-                                                    <BFileList {...form("files[header]")} type={"gallery"} maxLength={1}/>
+                                                    <BFileListField {...form("files[header]")} type={"gallery"} maxLength={1}/>
                                                 </Row>
                                             </Panel>
                                         </Row>
                                         <Row>
                                             <Panel noPadding={true} title={"Obrazy"} icon={"FileImage"}>
                                                 <Row noGutters={false}>
-                                                    <BFileList {...form("files[files]")} type={"gallery"}/>
+                                                    <BFileListField {...form("files[files]")} type={"gallery"}/>
                                                 </Row>
                                             </Panel>
                                         </Row>
                                         <Row>
                                             <Panel noPadding={true} title={"Pozostałe pliki"} icon={"Files"}>
                                                 <Row noGutters={false}>
-                                                    <BFileList {...form("files[attachments]")} type={"filelist"}/>
+                                                    <BFileListField {...form("files[attachments]")} type={"filelist"}/>
                                                 </Row>
                                             </Panel>
                                         </Row>

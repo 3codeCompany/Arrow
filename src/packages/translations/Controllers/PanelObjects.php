@@ -108,8 +108,7 @@ class PanelObjects extends BaseController
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
         if (count($tmp) == 2) {
-            if ($tmp[1] == "ua")
-            {
+            if ($tmp[1] == "ua") {
                 $crit->_lang(["ua", "ru"], Criteria::C_IN);
             } elseif ($tmp[1] == "by") {
                 $crit->_lang(["by", "ru"], Criteria::C_IN);
@@ -123,7 +122,7 @@ class PanelObjects extends BaseController
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
         $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
 
-        if($model == Product::getClass()) {
+        if ($model == Product::getClass()) {
             $helper->addFilter("E:name", function ($nothing, $filter) use ($crit) {
                 if (strpos($filter["value"], "-") !== false) {
                     $chunks = explode("-", $filter["value"]);
@@ -223,7 +222,7 @@ class PanelObjects extends BaseController
     public function uploadFile(Request $request, Project $project)
     {
         $data = $request->get("data");
-        if ($data["language"] == null){
+        if ($data["language"] == null) {
             return [
                 "status" => "fail",
             ];
@@ -389,16 +388,17 @@ class PanelObjects extends BaseController
     /**
      * @Route("/history")
      */
-    public function history(){
+    public function history()
+    {
         $dir = "data/translate_object_uploads";
 
         $files = scandir($dir);
 
         $returnData = [];
 
-        foreach ($files as $file){
+        foreach ($files as $file) {
             $slicedFile = explode("_", $file);
-            if (count($slicedFile) >= 3){
+            if (count($slicedFile) >= 3) {
                 $returnData[] = [
                     "full_name" => $file,
                     "language" => explode(".", $slicedFile[3])[0],
@@ -409,10 +409,87 @@ class PanelObjects extends BaseController
             }
         }
 
-        return[
+        return [
             "countAll" => count($files) - 2,
             "data" => $returnData,
             "debug" => false,
         ];
+    }
+
+
+    /**
+     * @Route("/single-object/{model}/{key}")
+     * @return array
+     */
+    public function singleObject($model, $key)
+    {
+
+        $obj = $model::get()->findByKey($key);
+        $langFields = $model::getMultiLangFields();
+
+
+        $data = [];
+
+        foreach ($langFields as $field) {
+
+            $row = [
+                "lang" => "Polski",
+                "langId" => "-1",
+                "langCode" => "Pl",
+                "trans" => []
+            ];
+
+            foreach ($langFields as $field) {
+                $row["trans"][$field] = $obj[$field];
+            }
+
+            $data[] = $row;
+        }
+
+
+        $langs = Language::get()
+            ->_code("pl", Criteria::C_NOT_EQUAL)
+            ->order(Language::F_NAME)
+            ->find();
+
+        foreach ($langs as $l) {
+            Translations::translateObject($obj, $l->_code());
+            $row = [
+                "lang" => $l->_name(),
+                "langId" => $l->_id(),
+                "langCode" => $l->_code(),
+                "trans" => []
+            ];
+
+            foreach ($langFields as $field) {
+                $row["trans"][$field] = $obj[$field];
+            }
+
+            $data[] = $row;
+        }
+
+
+        return [
+            //"langs" => $langs,
+            "data" => $data,
+            "model" => $model,
+            "objectKey" => $key
+        ];
+    }
+
+    /**
+     * @Route("/single-object-save/{model}/{key}")
+     * @return array
+     */
+    public function singleObjectSave($model, $key, Request $request)
+    {
+        $obj = $model::get()->findByKey($key);
+
+        $data = $request->get("data");
+        foreach ($data as $lang => $entries) {
+            Translations::saveObjectTranslation($obj, $entries, $lang);
+        }
+
+        return [true];
     }
 }
