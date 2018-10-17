@@ -1,24 +1,25 @@
 import * as React from "react";
 
 import { Navbar } from "frontend/lib/Navbar";
-import {Column, Table} from "frontend/lib/Table";
-import {Icon} from "frontend/lib/Icon";
+import { Column, Table } from "frontend/lib/Table";
+import { Icon } from "frontend/lib/Icon";
 
-import {Comm} from "frontend/lib/lib";
-import {CheckboxGroup} from "frontend/lib/fields";
-import {CommandBar} from "frontend/lib/CommandBar";
-import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import { Comm } from "frontend/lib/lib";
+import { CheckboxGroup } from "frontend/lib/fields";
+import { CommandBar } from "frontend/lib/CommandBar";
+import { IArrowViewComponentProps } from "frontend/lib/backoffice";
 
-import {FilterHelper} from "frontend/lib/filters";
-import {fI18n} from "frontend/lib/lib/I18n";
-import {confirmDialog} from "frontend/lib/ConfirmDialog";
+import { FilterHelper } from "frontend/lib/filters";
+import { fI18n } from "frontend/lib/lib/I18n";
+import { confirmDialog } from "frontend/lib/ConfirmDialog";
+import { PrintJSON } from "frontend/lib/PrintJSON";
 
 interface Props extends IArrowViewComponentProps {
     agroups: { [key: string]: string };
 }
 
 export default class extends React.Component<Props, any> {
-    table: any;
+    public table: any;
 
     constructor(props) {
         super(props);
@@ -30,27 +31,29 @@ export default class extends React.Component<Props, any> {
     public handleDelete = () => {
         const length = this.state.selectedPoints.length;
         confirmDialog(`Czy na pewno usunąć ${length} punktów ?`).then(() => {
-            Comm._post(this.props._baseURL + "/delete", {keys: this.state.selectedPoints.map(el => el.id)}).then(() => {
-                this.props._notification(`Usuneto  ${length} punkty dostępu.`);
-                this.table.load();
-            })
+            Comm._post(this.props._baseURL + "/delete", { keys: this.state.selectedPoints.map((el) => el.id) }).then(
+                () => {
+                    this.props._notification(`Usuneto  ${length} punkty dostępu.`);
+                    this.table.load();
+                },
+            );
         });
-    }
+    };
 
-
-    saveAccessPoint(row) {
-        Comm._post(this.props._baseURL + "/save", {key: row.id, data: {groups: row.groups, control_enabled: row.control_enabled}}).then(() => {
+    public saveAccessPoint(row) {
+        Comm._post(this.props._baseURL + "/save", {
+            key: row.id,
+            data: { groups: row.groups, control_enabled: row.control_enabled },
+        }).then(() => {
             this.props._notification(`Punkt  "${row.point_object_friendly_id}" został zaktualizowany.`);
-            //this.table.load();
+            // this.table.load();
         });
     }
 
-    public
-
-    render() {
+    public render() {
         const routeFilterContent = [
-            {value: "exists", label: "In route"},
-            {value: "notExists", label: "Not in Route"}
+            { value: "exists", label: "In route" },
+            { value: "notExists", label: "Not in Route" },
         ];
         return (
             <div>
@@ -82,25 +85,26 @@ export default class extends React.Component<Props, any> {
                         ref={(table) => (this.table = table)}
                         rememberState={true}
                         selectable={true}
-                        onSelectionChange={(selection) => this.setState({selectedPoints: selection})}
+                        onSelectionChange={(selection) => this.setState({ selectedPoints: selection })}
                         columns={[
-                            Column.id("id", "Id")
-                                .addFilter(FilterHelper.switch("existsInRoute", "Exists in route", routeFilterContent).get())
-                            ,
-
+                            Column.id("id", "Id").addFilter(
+                                FilterHelper.switch("existsInRoute", "Exists in route", routeFilterContent).get(),
+                            ),
                             Column.text("point_object_friendly_id", "Nazwa"),
                             Column.bool("control_enabled", "Kontrola").onClick((row, val, rowComponent) => {
                                 row.control_enabled = row.control_enabled == "1" ? "0" : "1";
                                 this.saveAccessPoint(row);
                                 rowComponent.forceUpdate();
                             }),
+                            Column.text("groups", "groups"),
                             Column.text("groups", "Grupy dostępu")
                                 .onClick((row, column, rowComponent) => {
                                     row.edited = !row.edited;
+                                    row.tmp_groups = row.groups;
                                     rowComponent.forceUpdate();
                                 })
-                                .template((val: any, row) => {
-                                    const v: number = parseInt(val || 0, 10);
+                                .template((val: any, row, column, rowComponent) => {
+                                    const v: number = parseInt(row.tmp_groups || 0, 10);
                                     const selected = [];
                                     const selectedNames = [];
                                     Object.entries(this.props.agroups).map(([id, name]) => {
@@ -111,34 +115,67 @@ export default class extends React.Component<Props, any> {
                                     });
                                     if (row.edited) {
                                         return (
-                                            <div>
+                                            <div
+                                                style={{ backgroundColor: "white", padding: 5 }}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
                                                 <CheckboxGroup
                                                     value={selected}
-                                                    options={this.props.agroups}
+                                                    options={Object.entries(this.props.agroups).map(
+                                                        ([key, value]: any) => ({ value: parseInt(key), label: value }),
+                                                    )}
                                                     onChange={(x) => {
-                                                        if (x.event.target.checked) {
-                                                            row.groups = v + parseInt(x.event.target.value, 10);
-                                                        } else {
-                                                            row.groups = v - parseInt(x.event.target.value, 10);
-                                                        }
-                                                        this.saveAccessPoint(row);
+                                                        row.tmp_groups = x.value.reduce(
+                                                            (a: number, b: number) => parseInt(a) + parseInt(b),
+                                                            0,
+                                                        );
+                                                        rowComponent.forceUpdate();
                                                     }}
+                                                    selectTools={true}
                                                 />
+                                                <hr />
+                                                <div style={{ display: "flex" }}>
+                                                    <a
+                                                        className="btn btn-primary"
+                                                        style={{ width: "100%", textAlign: "center" }}
+                                                        onClick={() => {
+                                                            row.groups = row.tmp_groups;
+                                                            row.edited = !row.edited;
+                                                            this.saveAccessPoint(row);
+                                                            rowComponent.forceUpdate();
+                                                        }}
+                                                    >
+                                                        Ok
+                                                    </a>
+                                                    <a
+                                                        className="btn btn-default"
+                                                        style={{ width: "100%", textAlign: "center" }}
+                                                        onClick={() => {
+                                                            row.edited = !row.edited;
+                                                            rowComponent.forceUpdate();
+                                                        }}
+                                                    >
+                                                        Cancel
+                                                    </a>
+                                                </div>
                                             </div>
                                         );
                                     } else {
                                         return (
-                                            <div>
+                                            <div style={{ padding: 5 }}>
                                                 {selectedNames.length > 0 ? (
                                                     selectedNames.join(", ")
                                                 ) : (
-                                                    <div className={"left"} style={{color: "lightgrey"}}>
-                                                        <Icon name={"ChromeClose"}/>
+                                                    <div className={"left"} style={{ color: "lightgrey" }}>
+                                                        <Icon name={"ChromeClose"} />
                                                     </div>
                                                 )}
                                             </div>
                                         );
                                     }
+                                })
+                                .styleTemplate((row) => {
+                                    return { padding: 0 };
                                 }),
                         ]}
                     />
