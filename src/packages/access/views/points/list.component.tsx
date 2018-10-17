@@ -96,7 +96,7 @@ export default class extends React.Component<Props, any> {
                                 this.saveAccessPoint(row);
                                 rowComponent.forceUpdate();
                             }),
-                            Column.text("groups", "groups"),
+
                             Column.text("groups", "Grupy dostępu")
                                 .onClick((row, column, rowComponent) => {
                                     row.edited = !row.edited;
@@ -106,11 +106,9 @@ export default class extends React.Component<Props, any> {
                                 .template((val: any, row, column, rowComponent) => {
                                     const v: number = parseInt(row.tmp_groups || 0, 10);
                                     const selected = [];
-                                    const selectedNames = [];
                                     Object.entries(this.props.agroups).map(([id, name]) => {
-                                        if (v & (id as any)) {
+                                        if (v & (parseInt(id) as any)) {
                                             selected.push(id);
-                                            selectedNames.push(name);
                                         }
                                     });
                                     if (row.edited) {
@@ -161,6 +159,14 @@ export default class extends React.Component<Props, any> {
                                             </div>
                                         );
                                     } else {
+                                        const v: number = parseInt(row.groups || 0, 10);
+                                        const selectedNames = [];
+                                        Object.entries(this.props.agroups).map(([id, name]) => {
+                                            if (v & (parseInt(id) as any)) {
+                                                selectedNames.push(name);
+                                            }
+                                        });
+
                                         return (
                                             <div style={{ padding: 5 }}>
                                                 {selectedNames.length > 0 ? (
@@ -176,7 +182,22 @@ export default class extends React.Component<Props, any> {
                                 })
                                 .styleTemplate((row) => {
                                     return { padding: 0 };
-                                }),
+                                })
+                                .noFilter()
+                                .width(500)
+                                .addFilter(
+                                    FilterHelper.select(
+                                        "groups",
+                                        "Grupy",
+                                        Object.entries(this.props.agroups).map(([key, value]: any) => ({
+                                            value: parseInt(key),
+                                            label: value,
+                                        })),
+                                        true,
+                                    )
+                                        .setModalProperties({ width: 800 })
+                                        .get(),
+                                ),
                         ]}
                     />
                 </div>

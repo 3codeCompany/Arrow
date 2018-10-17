@@ -86,6 +86,12 @@ class Points extends \Arrow\Models\Controller
         $criteria = AccessPoint::get();
         $helper = new TableListORMHelper();
         //$helper->setDebug(true);
+
+        $helper->addFilter("groups", function ($c, $filter) use ($criteria, $request) {
+
+            $criteria->_groups(array_sum($filter["value"]), Criteria::C_BIT_AND);
+
+        });
         $helper->addFilter("existsInRoute", function ($c, $filter) use ($criteria, $request) {
 
             $annotatonRouteManager = new AnnotationRouteManager($request);
