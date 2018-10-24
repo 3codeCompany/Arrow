@@ -3,6 +3,8 @@
 namespace Arrow\Media\Models;
 
 use function array_keys;
+use Arrow\Kernel;
+use Arrow\Models\DB;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria, Arrow\ORM\SqlRouter;
 use Arrow\ORM\JoinCriteria;
@@ -471,7 +473,8 @@ class MediaAPI
         }
 
 
-        $db = \Arrow\Models\Project::getInstance()->getDB();
+
+        $db = Kernel::getProject()->getContainer()->get(DB::class);
 
 
         foreach ($objSet as $obj) {

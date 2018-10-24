@@ -300,9 +300,13 @@ class ExceptionHandler
 
     }
 
-    private function printConsoleMessage($exception)
+    private function printConsoleMessage(\Exception $exception)
     {
-        print $exception->getMessage();
+        print "------EXCEPTION----".PHP_EOL;
+        print "MSG: ".$exception->getMessage().PHP_EOL;
+        print "File: ".$exception->getFile().":".$exception->getLine().PHP_EOL;
+        print "------TRACE----".PHP_EOL;
+        print "".$exception->getTraceAsString().PHP_EOL;
         if (method_exists($exception, "getState")) {
             print implode("\n", $exception->getData());
         }

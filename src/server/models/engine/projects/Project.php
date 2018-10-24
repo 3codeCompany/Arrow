@@ -55,10 +55,11 @@ class Project
     private $defaultDbConnection;
 
 
-    private static $instance;
+    private static $instance = null;
 
     /**
      * @return Project|\Arrow\Models\Project
+     * @throws Exception
      */
     public static function getInstance()
     {
@@ -92,10 +93,15 @@ class Project
     public function __construct($serviceContainer)
     {
 
+        if(self::$instance !== null){
+            throw new Exception("Can't init project mor than once");
+        }
+
         $this->serviceContainer = $serviceContainer;
         self::$instance = $this;
 
         $this->configuration = ConfigProvider::get();
+
 
         if ($this->configuration) {
 
@@ -169,12 +175,10 @@ class Project
     }
 
 
-
-
-
     /**
      * @return Object
      *
+     * @throws Exception
      */
     public function setUpDB($name = false)
     {
@@ -188,7 +192,7 @@ class Project
             $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
         } catch (\Exception $ex) {
             //todo Rozwiązać inaczej :]
-            print $dbConf['dsn']."<br />";
+
             exit("DB connection problem " . $ex->getMessage());
         }
         $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
@@ -204,6 +208,7 @@ class Project
      */
     public function getDB($name = false)
     {
+
         if (!$name) {
             return $this->defaultDbConnection;
         }
