@@ -21,6 +21,7 @@
   </table>
   <table name="media_elements" class="Arrow\Media\Models\Element">
     <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+    <field name="uid" type="char" size="60"/>
     <field name="created" type="datetime"/>
     <field name="created_by" type="int" size="11" />
     <field name="folder_id" type="int"/>
