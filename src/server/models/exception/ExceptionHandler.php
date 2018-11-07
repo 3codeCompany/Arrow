@@ -174,8 +174,8 @@ class ExceptionHandler implements IExceptionHandler
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
-        if($_SERVER["REMOTE_ADDR"]=="83.142.126.242" || $_SERVER["REMOTE_ADDR"]=="91.240.76.1" || $_SERVER["REMOTE_ADDR"]=="89.77.54.49" || true/*dom*/){
-            print $this->getHead().$this->printDeveloperMessage($exception).$this->getFooter();
+        if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" || $_SERVER["REMOTE_ADDR"] == "91.240.76.1" || $_SERVER["REMOTE_ADDR"] == "89.77.54.49") {
+            print $this->getHead() . $this->printDeveloperMessage($exception) . $this->getFooter();
         }
 
         print $this->printPublicMinimumMessage();
