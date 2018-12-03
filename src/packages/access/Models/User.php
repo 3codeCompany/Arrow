@@ -265,8 +265,11 @@ class User extends ORM_Arrow_Access_Models_User
 
     public static function findByGroupId($groupId)
     {
+        if(!is_array($groupId)){
+            $groupId = [$groupId];
+        }
         $r = Criteria::query(AccessUserGroup::getClass())
-            ->c(AccessUserGroup::F_GROUP_ID, $groupId)
+            ->c(AccessUserGroup::F_GROUP_ID, $groupId, Criteria::C_IN)
             ->findAsFieldArray(AccessUserGroup::F_USER_ID);
 
         return Criteria::query(static::getClass())

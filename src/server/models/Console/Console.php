@@ -9,6 +9,7 @@
 namespace Arrow\Models;
 
 
+use Arrow\Common\Models\Commands\CreateTsDbSchema;
 use Arrow\Models\Commands\ClearCache;
 use Arrow\Models\Commands\DebugRoute;
 use Arrow\Models\Commands\GenerateController;
@@ -27,6 +28,7 @@ class Console
         $application->add(new ClearCache());
         $application->add(new GenerateController());
         $application->add(new RunRoute());
+        $application->add(new CreateTsDbSchema());
 
         $application->run();
     }

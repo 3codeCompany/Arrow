@@ -118,4 +118,22 @@ class Groups extends \Arrow\Models\Controller
     }
 
 
+    /**
+     * @Route("/widget")
+     * @Route("/widget/{mask}")
+     */
+    public function widget($mask = 0)
+    {
+
+        $groups = AccessGroup::get()
+            ->_id(4, Criteria::C_GREATER_THAN)
+            ->findAsFieldArray(AccessGroup::F_NAME, true);
+
+        return [
+            "agroups" => $groups,
+            "mask" => $mask
+        ];
+    }
+
+
 }

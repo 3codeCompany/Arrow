@@ -90,7 +90,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         download(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
     }
 
-    handleBackup(lang): any {
+    handleBackup(lang: string): any {
         //window.open(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
 
         download(this.props._basePath + this.props._baseURL + "/langBackUp?lang=" + lang);
