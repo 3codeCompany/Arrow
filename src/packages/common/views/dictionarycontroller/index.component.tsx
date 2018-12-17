@@ -1,13 +1,13 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
-import { Row } from "frontend/lib/Row";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
+import {Navbar} from "frontend/lib/Navbar";
+import {Row} from "frontend/lib/Row";
+import {IArrowViewComponentProps} from "frontend/lib/backoffice";
 import {BForm, BText, BTextarea} from "frontend/lib/BForm";
 
-import { Column, Table } from "frontend/lib/Table";
-import { CommandBar } from "frontend/lib/CommandBar";
-import { Icon } from "frontend/lib/Icon";
+import {Column, Table} from "frontend/lib/Table";
+import {CommandBar} from "frontend/lib/CommandBar";
+import {Icon} from "frontend/lib/Icon";
 import {Comm} from "frontend/lib/lib";
 import {Modal} from "frontend/lib/Modal";
 import {confirmDialog} from "frontend/lib/ConfirmDialog";
@@ -54,7 +54,7 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                             key: "f1",
                             label: "Dodaj",
                             icon: "Add",
-                            onClick: () => this.setState({ add: true })
+                            onClick: () => this.setState({add: true})
                         }
                     ]}
                 />
@@ -63,14 +63,14 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                     <a onClick={() => this.props._goto(this.props._baseURL + "/list/1")}>Słowniki</a>
                     {this.props.ancestors.length > 1
                         ? this.props.ancestors.filter((el) => el.id != 1).map((el) => (
-                              <a
-                                  onClick={() => {
-                                      this.props._goto(this.props._baseURL + "/list/" + el.id);
-                                  }}
-                              >
-                                  {el.label}
-                              </a>
-                          ))
+                            <a
+                                onClick={() => {
+                                    this.props._goto(this.props._baseURL + "/list/" + el.id);
+                                }}
+                            >
+                                {el.label}
+                            </a>
+                        ))
                         : null}
                     {this.props.parent.id != 1 && <span>{this.props.parent.label}</span>}
                 </Navbar>
@@ -90,13 +90,13 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                                     return (
                                         <>
                                             <div className="pull-right">
-                                                <Icon name={"ChromeBackMirrored"} />
+                                                <Icon name={"ChromeBackMirrored"}/>
                                             </div>
                                             {row.system_name ? (
                                                 <span>
                                                     {row.label}
-                                                    <br />
-                                                    <small style={{ color: "darkgrey" }}>{row.system_name}</small>
+                                                    <br/>
+                                                    <small style={{color: "darkgrey"}}>{row.system_name}</small>
                                                 </span>
                                             ) : (
                                                 val
@@ -104,45 +104,60 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                                         </>
                                     );
                                 }),
+                            Column.template("", () => <Icon name={"ChevronDown"}/>)
+                                .className("center")
+                                .onClick((row) => {
+                                    Comm._post(this.props._baseURL + "/move-down/" + row.id).then((result) => {
+                                        this.list.load();
+                                    });
+                                }),
+                            Column.template("", () => <Icon name={"ChevronUp"}/>)
+                                .className("center")
+                                .onClick((row) => {
+                                    Comm._get(this.props._baseURL + "/move-up/" + row.id).then((result) => {
+                                        this.list.load();
+                                    });
+                                }),
+
                             Column.text("value", "Wartość"),
                             Column.text("data", "Dane").template((val) => <pre style={{whiteSpace: "pre-wrap"}}>{val}</pre>),
-                            Column.template("", () => <Icon name={"Edit"} />)
+                            Column.template("", () => <Icon name={"Edit"}/>)
                                 .className("center")
                                 .width(40)
-                                .onClick((row) => this.setState({ add: true, edited: row })),
-                            Column.template("", () => <Icon name={"Delete"} />)
+                                .onClick((row) => this.setState({add: true, edited: row})),
+                            Column.template("", () => <Icon name={"Delete"}/>)
                                 .className("center darkred")
                                 .width(40)
                                 .onClick(this.handleDelete)
                         ]}
                     />
 
-                    <Row />
+                    <Row/>
                 </div>
 
                 <Modal
                     show={s.add}
                     title={"Dodaj wartość do " + p.parent.label}
                     showHideLink={true}
-                    onHide={() => this.setState({ add: false, edited: null })}
+                    onHide={() => this.setState({add: false, edited: null})}
                 >
-                    <div style={{ padding: 10, width: 500 }}>
+                    <div style={{padding: 10, width: 500}}>
                         <BForm
                             action={this.props._baseURL + (s.edited !== null ? "/save/" : "/create/") + p.parent.id}
                             namespace={"data"}
-                            data={this.state.edited ? { ...this.state.edited } : {}}
+                            data={this.state.edited ? {...this.state.edited} : {}}
                             onSuccess={() => {
                                 this.props._notification(s.edited ? "Zapisano zmiany" : "Dodano");
-                                this.setState({ add: false, edited: null });
+                                this.setState({add: false, edited: null});
                                 this.list.load();
                             }}
                         >
                             {(form) => {
                                 return (
                                     <>
-                                        <BText label={"Etykieta"} {...form("label")} autoFocus={true} />
+                                        <BText label={"Etykieta"} {...form("label")} autoFocus={true}/>
                                         <BText label={"Wartosc"} {...form("value")} />
-                                        <BTextarea label={"Dane dodatkowe"} {...form("data")} style={{height: 100}} />
+                                        <BTextarea label={"Dane dodatkowe"} {...form("data")} style={{height: 100}}/>
                                         <BText
                                             label={"Nazwa systemowa"}
                                             {...form("system_name")}

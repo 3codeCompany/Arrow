@@ -44,9 +44,12 @@ class DictionaryController
     public function listData($parentKey)
     {
         $c = Dictionary::get()
-            ->_parentId($parentKey);
+            ->_parentId($parentKey)
+
+        ;
 
         $helper = new TableListORMHelper();
+        $helper->addDefaultOrder("sort");
 
 
         return $helper->getListData($c);
@@ -128,6 +131,30 @@ class DictionaryController
         return [
             true
         ];
+    }
+
+
+    /**
+     * @Route("/move-up/{key}")
+     */
+    public function moveUp($key)
+    {
+        $dic = Dictionary::get()->findByKey($key);
+        $dic->moveUp();
+        $dic->save();
+        return [];
+    }
+
+
+    /**
+     * @Route("/move-down/{key}")
+     */
+    public function moveDown($key)
+    {
+        $dic = Dictionary::get()->findByKey($key);
+        $dic->moveDown();
+        $dic->save();
+        return [];
     }
 
 }
