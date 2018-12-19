@@ -60,21 +60,25 @@ class BannerController extends BaseController
             ->findAsFieldArray(Banner::F_PLACE)
         ;
         $placesMap = [
-            "Esotiq wyprzedaż",
-            "Esotiq kafelki",
-            "Esotiq kolekcja 1",
-            "Esotiq podziękowanie za zamówienie",
-            "Esotiq kolekcja 2",
-            "Esotiq slider",
-            "Henderson cała szerokość",
-            "Henderson treść",
-            "Henderson logo",
-            "Henderson slider",
-            "Slider",
+            "content" => "Archiwum",
+            "E_content" => "Esotiq kafelki", //
+            "E_inspire" => "Esotiq kolekcja 1", // E_inspire
+            "E_sale" => "Esotiq kolekcja 2", // E_sale
+
+            "E_orderEnd" => "Esotiq podziękowanie za zamówienie",
+            "E_slider" => "Esotiq slider",
+            "H_big" => "Henderson cała szerokość",
+            "H_content" => "Henderson treść",
+            "H_logo" => "Henderson logo",
+            "H_slider" => "Henderson slider",
+            "slider" => "Slider",
+            "F_content" => "Finalsale treść",
+            "F_slider" => "Finalsale slider",
+            "" => "",
         ];
         foreach ($places as $key => $place)
         {
-            $this->places[$place] = $placesMap[$key > 0 ? $key - 1 : $key];
+            $this->places[$place] = $placesMap[$place];
         }
 
         $user = Auth::getDefault()->getUser();
@@ -190,18 +194,29 @@ class BannerController extends BaseController
     public function update(int $key, Request $request)
     {
         $data = $request->get("data");
-        $uploaded = !empty($_FILES) ? FormHelper::getOrganizedFiles()['data']["files"] : [];
-        if (array_key_exists("files", $data)) {
-            $files = $data["files"];
+
+        if (isset($data["sortOnly"])) {
+            $e = $data["banner"];
+            $s = $data["sort"];
+            $banner = Banner::get()
+                ->findByKey($e)
+            ;
+            $banner->setValue("sort", $s);
+            $banner->save();
+            return[true];
         } else {
-            $files = ["image" => []];
-        }
 
-        unset($data["files"]);
+            $uploaded = !empty($_FILES) ? FormHelper::getOrganizedFiles()['data']["files"] : [];
+            if (array_key_exists("files", $data)) {
+                $files = $data["files"];
+            } else {
+                $files = ["image" => []];
+            }
 
-        $banner = Banner::get()
-            ->findByKey($key)
-        ;
+            unset($data["files"]);
+
+            $banner = Banner::get()
+                ->findByKey($key);
 
 //        if (ARROW_IN_DEV_STATE) {
 //            $files = [
@@ -209,12 +224,13 @@ class BannerController extends BaseController
 //            ];
 //        }
 
-        FormHelper::bindFilesToObject($banner, $files, $uploaded);
+            FormHelper::bindFilesToObject($banner, $files, $uploaded);
 
-        $banner->setValues($data);
-        $banner->save();
+            $banner->setValues($data);
+            $banner->save();
 
-        return[true];
+            return [true];
+        }
     }
 
     /**
@@ -249,7 +265,7 @@ class BannerController extends BaseController
     }
 
     /**
-     * @Route("/sortUpdate")
+     * @Route("/{key}/sortUpdate")
      */
     public function sortUpdate(Request $request)
     {

@@ -143,7 +143,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                            defaultValue={val}
                                            onBlur={(e) => {
                                                if (e.target.value !== val) {
-                                                   Comm._post(this.props._baseURL + `/sortUpdate`, {banner: row.id, sort: e.target.value}).then(() => {
+                                                   // Comm._post(this.props._baseURL + `/sortUpdate`, {banner: row.id, sort: e.target.value}).then(() => {
+                                                   //     this.props._notification("Sukces", "Zmieniono wartość.");
+                                                   //     this.table.load();
+                                                   // });
+
+                                                   Comm._post(this.props._baseURL + `/999/update`, {data: {sortOnly: true, banner: row.id, sort: e.target.value}}).then(() => {
                                                        this.props._notification("Sukces", "Zmieniono wartość.");
                                                        this.table.load();
                                                    });
