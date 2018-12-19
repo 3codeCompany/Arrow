@@ -161,20 +161,25 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         <Row noGutters={false}>
                                             <BText label={__("Nazwa")} {...form("name")} />
                                             {this.props.editEnabled ?
-                                                <BSelect label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
+                                                <BSelect emptyValueBlock={true} label={__("Kraj")} {...form("country")} options={languages.map((el) => ({value: el.code, label: el.name}))}/>
                                             : null }
                                         </Row>
                                         {this.props.editEnabled ?
                                             <Row noGutters={false}>
                                                 <BSwitch label={__("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
                                                 <BSwitch label={__("Typ")} {...form("type")} options={{page: __("Strona"), container: __("Folder")}}/>
+                                                <BSelect emptyValueBlock={true} label={__("Portal")} {...form("brand")} options={[
+                                                    {value: "esotiq", label: "Esotiq"},
+                                                    {value: "henderson", label: "Henderson"},
+                                                    {value: "finalsale", label: "Finalsale"},
+                                                ]}/>
                                             </Row>
                                             : null
                                         }
                                         <Row noGutters={false}>
                                             {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
                                             {this.props.editEnabled ?
-                                                <BSelect label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
+                                                <BSelect emptyValueBlock={true} label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
                                                 : null
                                             }
 

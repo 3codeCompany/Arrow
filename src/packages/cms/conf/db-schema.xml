@@ -2,11 +2,12 @@
 <schema class-namespace="Arrow\CMS">
 
     <table name="cms_pages"  class="Arrow\CMS\Models\Persistent\Page">
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
-        <field name="parent_id" type="int" size="11"/>
-        <field name="depth" type="int" size="11"/>
-        <field name="active" type="int" size="1"/>
-        <field name="sort" type="int" size="11"/>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="parent_id" type="INTEGER" size="11"/>
+        <field name="brand" type="VARCHAR" size="100"/>
+        <field name="depth" type="INTEGER" size="11"/>
+        <field name="active" type="integer" size="1"/>
+        <field name="sort" type="INTEGER" size="11"/>
         <field name="type" type="VARCHAR" size="255"/>
         <field name="name" type="VARCHAR" size="255"/>
         <field name="link" type="VARCHAR" size="255"/>
@@ -20,8 +21,6 @@
         <field name="country" type="varchar" size="3"/>
         <field name="content_type" type="VARCHAR" size="255"/>
     </table>
-
-
 
     <table name="cms_banners" class="Arrow\CMS\Models\Persistent\Banner">
         <field name="id" type="int" primaryKey="true" autoIncrement="true"/>

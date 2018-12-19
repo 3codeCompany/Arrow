@@ -31,6 +31,25 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         };
     }
 
+    public dateTimeValidate = (value) => {
+        const regexDate = /^\d{4}-\d{1,2}-\d{1,2}$/;
+        const regexTime = /^\d{1,2}:\d{1,2}:\d{2}([ap]m)?$/;
+        const date = value.split(" ")[0];
+        const time = value.split(" ")[1];
+
+        if(date != '' && !date.match(regexDate)) {
+            alert("Niepoprawny format daty: " + value);
+            return false;
+        }
+
+        if(time != '' && !time.match(regexTime)) {
+            alert("Niepoprawny format czasu: " + value);
+            return false;
+        }
+
+        return true;
+    }
+
     public render() {
         const s = this.state;
         return (
@@ -42,7 +61,17 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                 editPurpose: "update",
                             });
                             setTimeout(() => {
-                                this.form.submit();
+                                const formValues = this.form.fieldsValues;
+                                let validateStatus;
+                                validateStatus = this.dateTimeValidate(formValues.start);
+                                if (validateStatus) {
+                                    validateStatus = this.dateTimeValidate(formValues.stop);
+                                }
+
+                                if (validateStatus) {
+                                    this.form.submit();
+                                }
+
                             }, 500)
                         }},
                     {
@@ -94,8 +123,12 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
                                                 />
-                                                <BDate label={__("Od")} {...form("start")}/>
-                                                <BDate label={__("Do")} {...form("stop")}/>
+                                                <div>
+                                                    <BText label={__("Data od")} {...form("start")}/>
+                                                </div>
+                                                <div>
+                                                    <BText label={__("Data do")} {...form("stop")}/>
+                                                </div>
                                             </Row>
 
                                             <BSelect label={__("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
@@ -113,10 +146,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                             <Panel title={"Banner"} icon={"Upload"}>
                                                 <BFileList {...form("files[image]")} type={"gallery"}/>
                                             </Panel>
-                                            <Panel title={"Video"} icon={"Upload"} noPadding={true}>
-                                                <Row noGutters={false}>
-                                                    <BFileList buttonTitle={"Dodaj"} type={"gallery"}/>
-                                                </Row>
+
+                                            <Panel title={"Video"} icon={"Upload"}>
+                                                <BFileList {...form("files[video]")} type={"gallery"}/>
                                             </Panel>
                                         </div>
                                     </Row>

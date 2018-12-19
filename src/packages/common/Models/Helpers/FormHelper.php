@@ -69,7 +69,6 @@ class FormHelper
     public static function bindFilesToObject(PersistentObject $object, $filesData, $upload)
     {
 
-
         foreach ($upload as $connName => $files) {
             foreach ($files as $file) {
                 MediaAPI::addFileToObject($object, $connName, $file["name"], $file["tmp_name"]);
@@ -108,6 +107,7 @@ class FormHelper
             if ($elements) {
                 foreach ($elements as $index => $element) {
                     //just uploaded dont have keys
+
                     if ($element["key"]) {
                         //$sort[$element["key"]] = $index;
                         if ($object->getPKey()) {
@@ -122,6 +122,9 @@ class FormHelper
                                 ->findFirst();
                         }
                         $el["sort"] = $index;
+                        if (isset($element["data"])) {
+                            $el["data"] = $element["data"];
+                        }
                         if (gettype($el) == "object") {
                             $el->save();
                         }
