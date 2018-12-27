@@ -76,6 +76,7 @@ class AnnotationRouteManager
             $defaults = $route->getDefaults();
 
             $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
+
             $templatePath = Action::generateTemplatePath($defaults);
             $defaults["_debug"] = [
                 "file" => str_replace(ARROW_PROJECT, "", $tmp->getFileName()),

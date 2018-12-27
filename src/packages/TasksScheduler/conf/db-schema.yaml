@@ -1,0 +1,39 @@
+objects:
+    \Arrrow\TasksScheduler\Models\TaskScheduleConfig:
+        table: tasks_scheduler_config
+        fields:
+            id:
+                primary-key: true
+                type: int
+                size: 11
+                auto-increment: true
+            name:
+                type: varchar
+                size: 100
+                required: true
+            shelude_config:
+                type: varchar
+                size: 30
+                required: true
+            last_run:
+                type: datetime
+                nullable: false
+    \Arrrow\TasksScheduler\Models\TaskSchedulerLog:
+        table: tasks_scheduler_log
+        fields:
+            id:
+                primary-key: true
+                type: int
+                size: 11
+                auto-increment: true
+            name:
+                type: varchar
+                size: 100
+                required: true
+            shelude_config:
+                type: varchar
+                size: 30
+                required: true
+            last_run:
+                type: datetime
+                nullable: false
