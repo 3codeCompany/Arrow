@@ -23,7 +23,9 @@ class SchedulerRunner
 
     public function run()
     {
+        set_time_limit(3600);
 
+        
         $this->schedule = new Schedule();
 
         $tasks = TaskScheduleConfig::get()
