@@ -1,5 +1,5 @@
 objects:
-    \Arrrow\TasksScheduler\Models\TaskScheduleConfig:
+    \Arrow\TasksScheduler\Models\TaskScheduleConfig:
         table: tasks_scheduler_config
         fields:
             id:
@@ -7,6 +7,14 @@ objects:
                 type: int
                 size: 11
                 auto-increment: true
+            active:
+                type: enum
+                required: true
+                default: 0
+                meta:
+                    options:
+                        1: On
+                        0: Off
             name:
                 type: varchar
                 size: 100
@@ -15,10 +23,14 @@ objects:
                 type: varchar
                 size: 30
                 required: true
+            task:
+                type: varchar
+                size: 230
+                required: true
             last_run:
                 type: datetime
                 nullable: false
-    \Arrrow\TasksScheduler\Models\TaskSchedulerLog:
+    \Arrow\TasksScheduler\Models\TaskSchedulerLog:
         table: tasks_scheduler_log
         fields:
             id:
@@ -26,14 +38,22 @@ objects:
                 type: int
                 size: 11
                 auto-increment: true
-            name:
-                type: varchar
-                size: 100
+            schedule_config_id:
+                type: int
+                size: 11
                 required: true
-            shelude_config:
-                type: varchar
-                size: 30
-                required: true
-            last_run:
+            started:
                 type: datetime
-                nullable: false
+                required: true
+            finished:
+                type: datetime
+            time:
+                type: int
+                size: 8
+            memory:
+                type: int
+                size: 8
+            output:
+                type: text
+            errors:
+                type: text

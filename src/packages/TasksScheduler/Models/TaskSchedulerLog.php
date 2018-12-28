@@ -9,9 +9,9 @@
 namespace Arrow\TasksScheduler\Models;
 
 
-use Arrow\ORM\ORM_Arrrow_TasksScheduler_Models_TaskSchedulerLog;
+use Arrow\ORM\ORM_Arrow_TasksScheduler_Models_TaskSchedulerLog;
 
-class TaskSchedulerLog extends ORM_Arrrow_TasksScheduler_Models_TaskSchedulerLog
+class TaskSchedulerLog extends ORM_Arrow_TasksScheduler_Models_TaskSchedulerLog
 {
 
 }

@@ -14,6 +14,7 @@ use Arrow\Models\Commands\ClearCache;
 use Arrow\Models\Commands\DebugRoute;
 use Arrow\Models\Commands\GenerateController;
 use Arrow\Models\Commands\RunRoute;
+use Arrow\Models\Commands\SchedulerRun;
 use Symfony\Component\Console\Application;
 
 class Console
@@ -28,8 +29,9 @@ class Console
         $application->add(new ClearCache());
         $application->add(new GenerateController());
         $application->add(new RunRoute());
-        $application->add(new CreateTsDbSchema());
 
+        $application->add(new CreateTsDbSchema());
+        $application->add(new SchedulerRun());
         $application->run();
     }
 }
