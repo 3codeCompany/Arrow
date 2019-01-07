@@ -44,7 +44,7 @@ class TasksConfigurationController extends \Arrow\Models\Controller
         $ret = $helper->getListData(TaskScheduleConfig::get());
 
         foreach ($ret["data"] as &$row) {
-            $dates = CronExpression::factory($row[TaskScheduleConfig::F_SHELUDE_CONFIG])
+            $dates = CronExpression::factory($row[TaskScheduleConfig::F_CRON_EXPRESSION])
                 ->getMultipleRunDates(3);
 
             $row["runDates"] = [];
@@ -66,11 +66,14 @@ class TasksConfigurationController extends \Arrow\Models\Controller
         $data = $request->get("data");
         unset($data["runDates"]);
         $v = Validator::create($data)
-            ->required([TaskScheduleConfig::F_NAME, TaskScheduleConfig::F_SHELUDE_CONFIG, TaskScheduleConfig::F_TASK]);
+            ->required([TaskScheduleConfig::F_NAME, TaskScheduleConfig::F_TASK, TaskScheduleConfig::F_MAX_EXECUTE_TIME]);
+
+        $cron = implode(" ", $data["schedule_config"]);
+        unset($data["schedule_config"]);
 
 
-        if (!CronExpression::isValidExpression($data[TaskScheduleConfig::F_SHELUDE_CONFIG])) {
-            $v->addFieldError(TaskScheduleConfig::F_SHELUDE_CONFIG, "Nieprawidłowy format");
+        if (!CronExpression::isValidExpression($cron)) {
+             $v->addFormError(TaskScheduleConfig::F_SHELUDE_CONFIG, "Nieprawidłowy format cron");
         }
 
         $tmp = explode("::", $data[TaskScheduleConfig::F_TASK]);
@@ -79,7 +82,7 @@ class TasksConfigurationController extends \Arrow\Models\Controller
                 $v->addFieldError(TaskScheduleConfig::F_TASK, "Nie znaleziono możliwości uruchomienia zadania " . $data[TaskScheduleConfig::F_TASK]);
             }
         } else {
-            $v->addFieldError(TaskScheduleConfig::F_TASK, "Nie znaleziono możliwości uruchomienia zadania 1");
+            $v->addFieldError(TaskScheduleConfig::F_TASK, "Nie znaleziono możliwości uruchomienia zadania ");
         }
 
 
@@ -87,7 +90,10 @@ class TasksConfigurationController extends \Arrow\Models\Controller
             $this->json($v->response());
         }
 
-        if ($data["id"]) {
+        $data[TaskScheduleConfig::F_CRON_EXPRESSION] = $cron;
+
+
+        if (isset($data["id"])) {
             $obj = TaskScheduleConfig::get()->findByKey($data["id"]);
             $obj->setValues($data);
             $obj->save();
@@ -125,6 +131,34 @@ class TasksConfigurationController extends \Arrow\Models\Controller
             ->_join(TaskScheduleConfig::class, [TaskSchedulerLog::F_SCHEDULE_CONFIG_ID => "id"], "C", [TaskScheduleConfig::F_NAME]);
 
         return $helper->getListData($crit);
+
+    }
+
+    /**
+     * @Route("/cron-schedule-info")
+     */
+    public function cronScheduleInfo(Request $request)
+    {
+
+        $data = $request->get("data");
+
+        $expression = implode(" ", $data);
+
+        try {
+            $dates = CronExpression::factory($expression)
+                ->getMultipleRunDates(10);
+
+            $ret = [];
+            foreach ($dates as $runDate) {
+                $ret[] = $runDate->format("Y-m-d H:i");
+            }
+
+            return $ret;
+        } catch (\Exception $ex) {
+            return ["error" => "Not valid expression: '{$expression}'"];
+        }
+
+        return $request->get("data");
 
     }
 

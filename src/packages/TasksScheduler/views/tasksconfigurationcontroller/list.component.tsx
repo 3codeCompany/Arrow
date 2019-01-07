@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IArrowViewComponentProps } from "frontend/lib/backoffice";
-import { useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { CommandBar } from "frontend/lib/CommandBar";
 import ColumnHelper, { Column, Table } from "frontend/lib/Table";
 import { Navbar } from "frontend/lib/Navbar";
@@ -11,8 +11,9 @@ import { BText } from "frontend/lib/BForm";
 import { Icon } from "frontend/lib/Icon";
 import { Comm } from "frontend/lib/lib";
 import { LoadingIndicator } from "frontend/lib/LoadingIndicator";
-import { Panel } from "frontend/lib/Panel";
-import { PrintJSON } from "frontend/lib/PrintJSON";
+import { Row } from "frontend/lib/Row";
+import { PanelContext } from "frontend/lib/backoffice/PanelContext";
+import { BSwitch } from "frontend/lib/BForm";
 
 interface IViewProps extends IArrowViewComponentProps {}
 
@@ -51,14 +52,15 @@ export default function view(props: IViewProps) {
                             remoteURL={props._baseURL + "/list-data"}
                             columns={[
                                 Column.hidden("task"),
-                                Column.id("id", "ID"),
+                                Column.hidden("max_execute_time"),
+                                Column.id("id", "ID").width(50),
                                 Column.text("name", "Nazwa"),
-                                Column.text("shelude_config", "Harmonogram"),
+                                Column.text("cron_expression", "Harmonogram"),
                                 Column.text("last_run", "Ostatnie wykonanie"),
                                 Column.template("Plan wykonania", (val, row) => {
                                     return (
                                         <div>
-                                            {row.runDates.map((date) => (
+                                            {row.runDates.map((date: any) => (
                                                 <div key={date}>{date}</div>
                                             ))}
                                         </div>
@@ -95,16 +97,30 @@ export default function view(props: IViewProps) {
                             ]}
                         />
                     </TabPane>
+                    <TabPane title="Zadania do wykonania" icon="Task">
+                        Tutaj zadania do wykonania
+                    </TabPane>
                     <TabPane title="Dziennik zdarzeń" icon="List">
                         <Table
                             ref={table}
                             remoteURL={props._baseURL + "/list-log-data"}
                             columns={[
-                                Column.id("id", "Id"),
+                                Column.id("id", "Id").width(80),
+                                Column.id("pid", "PID").width(80),
                                 Column.text("C:name", "Typ"),
                                 Column.date("started", "Rozpoczęto"),
-                                Column.date("finished", "Zakończono"),
-                                Column.number("time", "Trwała").template((val) => parseInt(val, 10) / 1000 + " s"),
+                                Column.date("finished", "Zakończono").template((val) => {
+                                    if (val == "0000-00-00 00:00:00") {
+                                        return "----";
+                                    }
+                                    return val;
+                                }),
+                                Column.number("time", "Trwała/Trwa").template((val, row) => {
+                                    if (row.finished == "0000-00-00 00:00:00") {
+                                        return "---";
+                                    }
+                                    return parseInt(val, 10) / 1000 + " s";
+                                }),
                                 Column.text("errors", "Błędy")
                                     .template((val) => {
                                         if (val.length > 0) {
@@ -150,7 +166,7 @@ export default function view(props: IViewProps) {
             {textToDisplay != "" && (
                 <Modal show={true} onHide={() => setTextToDisplay("")}>
                     <div style={{ maxWidth: "80vw", margin: 10 }}>
-                        <pre style={{ margin: 0 }}> {textToDisplay}</pre>
+                        <pre style={{ margin: 0 }}>{textToDisplay}</pre>
                     </div>
                 </Modal>
             )}
@@ -167,6 +183,26 @@ interface IModalProops {
 
 const AddModal = function(props: IModalProops) {
     const formRef = useRef<BForm>(null);
+    const panel = useContext<IArrowViewComponentProps>(PanelContext);
+    const [cronInfo, setCronInfo] = useState<any>({});
+    const data = props.editedData;
+    if (data.schedule_config == undefined) {
+        data.schedule_config = props.editedData.cron_expression.split(" ");
+    }
+    let updateCronInfo = (data: any) => {
+        Comm._post(panel._baseURL + "/cron-schedule-info", {
+            data,
+        }).then((result) => {
+            setCronInfo(result);
+        });
+    };
+    useEffect(
+        () => {
+            updateCronInfo(data.schedule_config);
+        },
+        [data.schedule_config],
+    );
+
     return (
         <Modal
             show={true}
@@ -175,9 +211,9 @@ const AddModal = function(props: IModalProops) {
             showHideLink={true}
             top={200}
         >
-            <div style={{ padding: 10, width: 500 }}>
+            <div style={{ padding: "10px 3px", width: 500 }}>
                 <BForm
-                    data={props.editedData}
+                    data={data}
                     ref={formRef}
                     action={props.viewProps._baseURL + "/add"}
                     onSuccess={() => {
@@ -185,27 +221,90 @@ const AddModal = function(props: IModalProops) {
                         props.viewProps._notification("Dodano zadanie");
                         props.setModalVisible(false);
                     }}
+                    onChange={(formEvent) => {
+                        const data = formEvent.form.getData().schedule_config;
+                        updateCronInfo(data);
+                    }}
                     namespace="data"
                 >
                     {(form) => {
                         return (
                             <>
-                                <BText label="Nazwa" {...form("name")} autoFocus={true} />
-                                <BText label="Konfiguracja cron" {...form("shelude_config")} />
-                                <BText label="Zadanie" {...form("task")} />
-                                <div style={{ textAlign: "right" }}>
-                                    <a
-                                        className="btn btn-primary "
-                                        onClick={() => {
-                                            formRef.current.submit();
-                                        }}
-                                    >
-                                        Zapisz
-                                    </a>
-                                    <a className="btn btn-default" onClick={() => props.setModalVisible(false)}>
-                                        Anuluj
-                                    </a>
-                                </div>
+                                <Row noGutters={false}>
+                                    <BText label="Nazwa" {...form("name")} autoFocus={true} />
+                                </Row>
+                                <Row noGutters={false}>
+                                    <BSwitch
+                                        label="Aktywny"
+                                        {...form("active", 1)}
+                                        options={[{ value: 0, label: "Nie" }, { value: 1, label: "Tak" }]}
+                                    />
+
+                                    <BText label="Maksymalny czas (s)" {...form("max_execute_time", "500")} />
+                                </Row>
+                                <hr />
+                                <Row noGutters={false}>
+                                    <label>Konfiguracja cron</label>
+                                </Row>
+                                <Row noGutters={false}>
+                                    <BText label="Min" {...form("schedule_config[0]", "*")} />
+                                    <BText label="Hour" {...form("schedule_config[1]", "*")} />
+                                </Row>
+                                <Row noGutters={false}>
+                                    <BText label="Day (month)" {...form("schedule_config[2]", "*")} />
+                                    <BText label="Month" {...form("schedule_config[3]", "*")} />
+                                </Row>
+                                <Row noGutters={false}>
+                                    <BText label="Day (week)" {...form("schedule_config[4]", "*")} />
+                                </Row>
+                                <Row noGutters={false}>
+                                    {cronInfo.error != undefined && (
+                                        <div style={{ backgroundColor: "darkred", color: "white", padding: 10 }}>
+                                            {cronInfo.error}
+                                        </div>
+                                    )}
+                                </Row>
+                                <Row noGutters={false}>
+                                    <pre>
+                                        <div>* any value</div>
+                                        <div>, value list separator</div>
+                                        <div>- range of values</div>
+                                        <div>/ step values</div>
+                                    </pre>
+                                </Row>
+                                <Row noGutters={false}>
+                                    {Array.isArray(cronInfo) && (
+                                        <div style={{ marginTop: 10 }}>
+                                            <b>Kolejne 10 wykonań:</b>
+                                            <pre>
+                                                {cronInfo.map((date) => (
+                                                    <div key={date}>{date}</div>
+                                                ))}
+                                            </pre>
+                                        </div>
+                                    )}
+                                </Row>
+
+                                <hr />
+
+                                <Row noGutters={false}>
+                                    <BText label="Zadanie" {...form("task")} />
+                                </Row>
+                                <Row noGutters={false}>
+                                    <div style={{ textAlign: "right" }}>
+                                        <a
+                                            className="btn btn-primary "
+                                            onClick={() => {
+                                                formRef.current.submit(null);
+                                            }}
+                                        >
+                                            Zapisz
+                                        </a>
+                                        <a className="btn btn-default" onClick={() => props.setModalVisible(false)}>
+                                            Anuluj
+                                        </a>
+                                    </div>
+                                </Row>
                             </>
                         );
                     }}

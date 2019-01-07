@@ -19,9 +19,13 @@ objects:
                 type: varchar
                 size: 100
                 required: true
-            shelude_config:
+            cron_expression:
                 type: varchar
                 size: 30
+                required: true
+            max_execute_time:
+                type: int
+                size: 6
                 required: true
             task:
                 type: varchar
@@ -47,6 +51,9 @@ objects:
                 required: true
             finished:
                 type: datetime
+            pid:
+                type: int
+                size: 8
             time:
                 type: int
                 size: 8

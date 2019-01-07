@@ -22,7 +22,8 @@ class RunRoute extends Command
         $this
             ->setName('run:route')
             ->setDescription('Run speified route.')
-            ->addArgument('route', InputArgument::REQUIRED, 'Route list filter (strpos)');
+            ->addArgument('route', InputArgument::REQUIRED, 'Route list filter (strpos)')
+            ->addOption("without-info", "w");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -30,11 +31,14 @@ class RunRoute extends Command
         if ($input->getArgument('route')) {
             /** @var Router $router */
             $router = Kernel::getProject()->getContainer()->get(Router::class);
-            $output->writeln("Running {$input->getArgument('route')}");
+
+
+            if (!$input->getOption("without-info"))
+                $output->writeln("Running {$input->getArgument('route')}");
 
             $router->execute($input->getArgument('route'));
-
-            $output->writeln('Finished.');
+            if (!$input->getOption("without-info"))
+                $output->writeln('Finished.');
         }
     }
 }
