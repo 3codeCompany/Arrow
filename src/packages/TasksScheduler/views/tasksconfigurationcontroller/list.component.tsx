@@ -23,9 +23,7 @@ export default function view(props: IViewProps) {
     const [editedData, setEditedData] = useState({});
     const [isRunning, setRunning] = useState(0);
     const [textToDisplay, setTextToDisplay] = useState("");
-
     const table = useRef(null);
-    const panel = getPanelContext();
 
     return (
         <>
