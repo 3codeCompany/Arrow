@@ -21,6 +21,18 @@ use Symfony\Component\Stopwatch\Stopwatch;
 class SchedulerRunner
 {
 
+    private $phpExecCommand = "php";
+
+    /**
+     * @param string $phpExecCommand
+     */
+    public function setPhpExecCommand(string $phpExecCommand): void
+    {
+        $this->phpExecCommand = $phpExecCommand;
+    }
+
+
+
     /**
      * @var Schedule
      */
@@ -178,7 +190,8 @@ class SchedulerRunner
         $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
 
-        $process = new Process(["php",
+        $process = new Process([
+            $this->phpExecCommand,
             "bin/console",
             "run:route",
             "-w",

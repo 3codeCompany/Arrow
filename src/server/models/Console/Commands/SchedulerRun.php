@@ -22,14 +22,15 @@ class SchedulerRun extends Command
     {
         $this
             ->setName('scheduler:run')
-            ->setDescription('Run scheduled tasks.');
-            //->addArgument('route', InputArgument::REQUIRED, 'Route list filter (strpos)');
+            ->setDescription('Run scheduled tasks.')
+            ->addOption("php-command", null, null, "PHP exec command", "php");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
         $scheduler = new SchedulerRunner();
+        $scheduler->setPhpExecCommand($input->getOption("php-command"));
         $scheduler->run();
 
     }
