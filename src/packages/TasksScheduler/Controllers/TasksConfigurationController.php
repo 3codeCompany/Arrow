@@ -49,7 +49,7 @@ class TasksConfigurationController extends \Arrow\Models\Controller
 
             $row["runDates"] = [];
             foreach ($dates as $runDate) {
-                $row["runDates"][] = $runDate->format("Y-m-d H:i:s");
+                $row["runDates"][] = $runDate->format("Y-m-d H:i");
             }
 
         }

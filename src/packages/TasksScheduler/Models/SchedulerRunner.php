@@ -153,6 +153,8 @@ class SchedulerRunner
             TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $errors : $errors,
         ]);
         $log->save();
+        //reload data from DB
+        $task = TaskScheduleConfig::get()->findByKey($task->_id());
         $task->_lastRun(date("y-m-d H:i:s"));
         $task->save();
         return $log;

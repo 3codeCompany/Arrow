@@ -60,7 +60,7 @@ export default function view(props: IViewProps) {
                         Tutaj zadania do wykonania
                     </TabPane>*/}
                     <TabPane title="Dziennik zdarzeń" icon="List">
-                        <Log table={table} setTextToDisplay={setTextToDisplay} />
+                        <Log setTextToDisplay={setTextToDisplay} />
                     </TabPane>
                 </Tabs>
             </div>
@@ -223,8 +223,18 @@ const AddModal = function(props: IModalProops) {
     );
 };
 
-const Log = ({ table, setTextToDisplay }: any) => {
+const Log = ({ setTextToDisplay, key }: any) => {
     const panel = useContext(PanelContext);
+    const table = useRef<Table>(null);
+
+    useEffect(() => {
+        const timeout = setInterval(() => {
+            table.current.load();
+        }, 10000);
+        return () => {
+            clearInterval(timeout);
+        };
+    }, []);
 
     return (
         <Table
