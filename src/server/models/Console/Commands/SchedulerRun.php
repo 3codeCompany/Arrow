@@ -14,6 +14,7 @@ use Arrow\TasksScheduler\Models\SchedulerRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SchedulerRun extends Command
@@ -23,7 +24,7 @@ class SchedulerRun extends Command
         $this
             ->setName('scheduler:run')
             ->setDescription('Run scheduled tasks.')
-            ->addOption("php-command", null, null, "PHP exec command", "php");
+            ->addOption("php-command", null, InputOption::VALUE_OPTIONAL, "PHP exec command", "php");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

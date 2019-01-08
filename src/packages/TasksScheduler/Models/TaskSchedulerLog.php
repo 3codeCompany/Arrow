@@ -29,7 +29,6 @@ class TaskSchedulerLog extends ORM_Arrow_TasksScheduler_Models_TaskSchedulerLog
         $log = self::getLastOpenedFor($task);
 
         if (!$log) {
-            print "creating" . PHP_EOL . PHP_EOL;
             $log = TaskSchedulerLog::create([
                 TaskSchedulerLog::F_STARTED => date("y-m-d H:i:s"),
                 TaskSchedulerLog::F_SCHEDULE_CONFIG_ID => $task->_id()
