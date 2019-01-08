@@ -10,9 +10,11 @@ namespace Arrow\TasksScheduler\Models;
 
 
 use Arrow\Kernel;
+use Arrow\Models\DB;
 use Arrow\ORM\Persistent\Criteria;
 use Cron\CronExpression;
 use Crunz\Schedule;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -27,6 +29,8 @@ class SchedulerRunner
     public function run()
     {
         set_time_limit(3600);
+
+        //Kernel::$project->getContainer()->get(DB::class)->exec("truncate table " . TaskSchedulerLog::getTable());
 
 
         $this->schedule = new Schedule();
@@ -48,12 +52,24 @@ class SchedulerRunner
                 if ($el instanceof Process) {
                     if (!$el->isRunning()) {
                         unset($active[$key]);
+                    } else {
+                        try {
+                            print $el->checkTimeout() . PHP_EOL;
+                        } catch (ProcessTimedOutException $ex) {
+                            $log = TaskSchedulerLog::getLastOpenedFor($task);
+                            $error = $ex->getMessage();
+                            $log->setValues([
+                                TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
+                                TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
+                            ]);
+                            $log->save();
+                        }
                     }
                 } else {
                     unset($active[$key]);
                 }
             }
-            sleep(0.2);
+            sleep(1);
         }
     }
 
@@ -83,10 +99,8 @@ class SchedulerRunner
         $errors = "";
 
 
-        $log = TaskSchedulerLog::create([
-            TaskSchedulerLog::F_STARTED => date("y-m-d H:i:s"),
-            TaskSchedulerLog::F_SCHEDULE_CONFIG_ID => $task->_id()
-        ]);
+
+
 
         ob_start();
 
@@ -117,6 +131,8 @@ class SchedulerRunner
 
         $time = $stopWatch->getEvent("run");
 
+        $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
+
         $log->setValues([
             TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
             TaskSchedulerLog::F_TIME => $time->getDuration(),
@@ -131,13 +147,10 @@ class SchedulerRunner
 
     }
 
-    public function runFromConsole(TaskScheduleConfig $task): Process
+    public function runFromConsole(TaskScheduleConfig $task): ?Process
     {
 
-        $log = TaskSchedulerLog::get()
-            ->_scheduleConfigId($task->_id())
-            ->_finished([null, "0000-00-00 00:00:00"], Criteria::C_IN)
-            ->findFirst();
+        $log = TaskSchedulerLog::getLastOpenedFor($task);
 
         if ($log) {
             $date = new \DateTime($log->_started());
@@ -151,7 +164,7 @@ class SchedulerRunner
                 ]);
                 $log->save();
             } else {
-                $error = "Job still running. Aborting new task";
+                $error = "[".date("Y-m-d H:i:s")."] Job still running. Aborting new task";
                 $log->setValues([
                     ///TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
                     TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
@@ -162,28 +175,23 @@ class SchedulerRunner
         }
 
 
+        $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
+
+
         $process = new Process(["php",
             "bin/console",
             "run:route",
             "-w",
             "/tasksscheduler/tasks-configuration/run/" . $task->_id()
         ]);
+        $process->setTimeout($task->_maxExecuteTime());
+
+
         $process->setWorkingDirectory(ARROW_PROJECT);
 
-        $process->start(function ($type, $buffer) use ($task) {
+        $process->start(function ($type, $buffer) use ($task, $log) {
             if (Process::ERR === $type) {
-                $log = TaskSchedulerLog::get()
-                    ->_scheduleConfigId($task->_id())
-                    ->order("id", "desc")
-                    ->_finished([null, "0000-00-00 00:00:00"], Criteria::C_IN)
-                    ->findFirst();
-
-                if (!$log) {
-                    $log = TaskSchedulerLog::create([
-                        TaskSchedulerLog::F_STARTED => date("y-m-d H:i:s"),
-                        TaskSchedulerLog::F_SCHEDULE_CONFIG_ID => $task->_id()
-                    ]);
-                }
+                //$log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
                 $log->setValues([
                     TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
@@ -198,17 +206,8 @@ class SchedulerRunner
         });
 
 
-        $log = TaskSchedulerLog::get()
-            ->_scheduleConfigId($task->_id())
-            ->_finished([null, "0000-00-00 00:00:00"], Criteria::C_IN)
-            ->order("id", "desc")
-            ->findFirst();
-
-        $pid = $process->getPid();
-        if ($log) {
-            $log->_pid($pid);
-            $log->save();
-        }
+        $log->_pid($process->getPid());
+        $log->save();
 
         return $process;
     }

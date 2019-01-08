@@ -14,6 +14,7 @@ import { LoadingIndicator } from "frontend/lib/LoadingIndicator";
 import { Row } from "frontend/lib/Row";
 import { PanelContext } from "frontend/lib/backoffice/PanelContext";
 import { BSwitch } from "frontend/lib/BForm";
+import { getPanelContext } from "frontend/lib/backoffice/PanelContext";
 
 interface IViewProps extends IArrowViewComponentProps {}
 
@@ -24,6 +25,7 @@ export default function view(props: IViewProps) {
     const [textToDisplay, setTextToDisplay] = useState("");
 
     const table = useRef(null);
+    const panel = getPanelContext();
 
     return (
         <>
@@ -47,111 +49,20 @@ export default function view(props: IViewProps) {
             <div className="panel-body-margins">
                 <Tabs>
                     <TabPane title="Harmonogram" icon="Clock">
-                        <Table
-                            ref={table}
-                            remoteURL={props._baseURL + "/list-data"}
-                            columns={[
-                                Column.hidden("task"),
-                                Column.hidden("max_execute_time"),
-                                Column.id("id", "ID").width(50),
-                                Column.text("name", "Nazwa"),
-                                Column.text("cron_expression", "Harmonogram"),
-                                Column.text("last_run", "Ostatnie wykonanie"),
-                                Column.template("Plan wykonania", (val, row) => {
-                                    return (
-                                        <div>
-                                            {row.runDates.map((date: any) => (
-                                                <div key={date}>{date}</div>
-                                            ))}
-                                        </div>
-                                    );
-                                }),
-                                Column.template("Edytuj", (val, row) => {
-                                    if (isRunning == row.id) {
-                                        return "---";
-                                    }
-                                    return <Icon name="Play" />;
-                                })
-                                    .onClick((row, columnData, RowComponent) => {
-                                        setRunning(row.id);
-                                        RowComponent.forceUpdate();
-                                        Comm._get(props._baseURL + "/run/" + row.id).then((result) => {
-                                            setRunning(0);
-                                            setTextToDisplay(
-                                                "Time: " +
-                                                    parseInt(result.log.time, 10) / 1000 +
-                                                    " s\n\n" +
-                                                    result.log.output +
-                                                    "\n" +
-                                                    result.log.errors,
-                                            );
-                                        });
-                                    })
-                                    .className("center"),
-                                Column.template("Edytuj", () => <Icon name="Edit" />)
-                                    .onClick((row) => {
-                                        setEditedData(row);
-                                        setModalVisible(true);
-                                    })
-                                    .className("center"),
-                            ]}
+                        <Harmonogram
+                            setTextToDisplay={setTextToDisplay}
+                            table={table}
+                            isRunning={isRunning}
+                            setEditedData={setEditedData}
+                            setModalVisible={setModalVisible}
+                            setRunning={setRunning}
                         />
                     </TabPane>
-                    <TabPane title="Zadania do wykonania" icon="Task">
+                    {/*<TabPane title="Zadania do wykonania" icon="Task">
                         Tutaj zadania do wykonania
-                    </TabPane>
+                    </TabPane>*/}
                     <TabPane title="Dziennik zdarzeń" icon="List">
-                        <Table
-                            ref={table}
-                            remoteURL={props._baseURL + "/list-log-data"}
-                            columns={[
-                                Column.id("id", "Id").width(80),
-                                Column.id("pid", "PID").width(80),
-                                Column.text("C:name", "Typ"),
-                                Column.date("started", "Rozpoczęto"),
-                                Column.date("finished", "Zakończono").template((val) => {
-                                    if (val == "0000-00-00 00:00:00") {
-                                        return "----";
-                                    }
-                                    return val;
-                                }),
-                                Column.number("time", "Trwała/Trwa").template((val, row) => {
-                                    if (row.finished == "0000-00-00 00:00:00") {
-                                        return "---";
-                                    }
-                                    return parseInt(val, 10) / 1000 + " s";
-                                }),
-                                Column.text("errors", "Błędy")
-                                    .template((val) => {
-                                        if (val.length > 0) {
-                                            return (
-                                                <a className={"sync-error-icon"}>
-                                                    <Icon name={"Error"} />
-                                                </a>
-                                            );
-                                        }
-                                    })
-                                    .className("center")
-                                    .onClick((row) => {
-                                        setTextToDisplay(row.errors);
-                                    }),
-                                Column.text("output", "Info")
-                                    .template((val) => {
-                                        if (val.length > 0) {
-                                            return (
-                                                <a className={"sync-info-icon"}>
-                                                    <Icon name={"InfoSolid"} />
-                                                </a>
-                                            );
-                                        }
-                                    })
-                                    .className("center")
-                                    .onClick((row) => setTextToDisplay(row.output)),
-
-                                /*Column.number("memory", "Pamięć")
-                                    .template((val) => (parseInt(val, 10) / 1000) + " s"),*/
-                            ]}
-                        />
+                        <Log table={table} setTextToDisplay={setTextToDisplay} />
                     </TabPane>
                 </Tabs>
             </div>
@@ -183,14 +94,14 @@ interface IModalProops {
 
 const AddModal = function(props: IModalProops) {
     const formRef = useRef<BForm>(null);
-    const panel = useContext<IArrowViewComponentProps>(PanelContext);
+    const panel = getPanelContext();
     const [cronInfo, setCronInfo] = useState<any>({});
     const data = props.editedData;
-    if (data.schedule_config == undefined) {
+    if (data.schedule_config == undefined && props.editedData.cron_expression != undefined) {
         data.schedule_config = props.editedData.cron_expression.split(" ");
     }
     let updateCronInfo = (data: any) => {
-        Comm._post(panel._baseURL + "/cron-schedule-info", {
+        Comm._post(panel.baseURL + "/cron-schedule-info", {
             data,
         }).then((result) => {
             setCronInfo(result);
@@ -215,7 +126,7 @@ const AddModal = function(props: IModalProops) {
                 <BForm
                     data={data}
                     ref={formRef}
-                    action={props.viewProps._baseURL + "/add"}
+                    action={panel.baseURL + "/add"}
                     onSuccess={() => {
                         props.table.current.load();
                         props.viewProps._notification("Dodano zadanie");
@@ -311,5 +222,131 @@ const AddModal = function(props: IModalProops) {
                 </BForm>
             </div>
         </Modal>
+    );
+};
+
+const Log = ({ table, setTextToDisplay }: any) => {
+    const panel = useContext(PanelContext);
+
+    return (
+        <Table
+            ref={table}
+            remoteURL={panel.baseURL + "/list-log-data"}
+            columns={[
+                Column.id("id", "Id").width(80),
+                Column.id("pid", "PID").width(80),
+                Column.text("C:name", "Typ"),
+                Column.date("started", "Rozpoczęto"),
+                Column.date("finished", "Zakończono").template((val) => {
+                    if (val == "0000-00-00 00:00:00") {
+                        return "----";
+                    }
+                    return val;
+                }),
+                Column.number("time", "Trwała/Trwa").template((val, row) => {
+                    if (row.finished == "0000-00-00 00:00:00") {
+                        return "---";
+                    }
+                    return parseInt(val, 10) / 1000 + " s";
+                }),
+                Column.text("errors", "Błędy")
+                    .template((val) => {
+                        if (val.length > 0) {
+                            return (
+                                <a className={"sync-error-icon"}>
+                                    <Icon name={"Error"} />
+                                </a>
+                            );
+                        }
+                    })
+                    .className("center")
+                    .onClick((row) => {
+                        setTextToDisplay(row.errors);
+                    }),
+                Column.text("output", "Info")
+                    .template((val) => {
+                        if (val.length > 0) {
+                            return (
+                                <a className={"sync-info-icon"}>
+                                    <Icon name={"InfoSolid"} />
+                                </a>
+                            );
+                        }
+                    })
+                    .className("center")
+                    .onClick((row) => setTextToDisplay(row.output)),
+
+                /*Column.number("memory", "Pamięć")
+                .template((val) => (parseInt(val, 10) / 1000) + " s"),*/
+            ]}
+        />
+    );
+};
+
+const Harmonogram = ({ table, isRunning, setRunning, setTextToDisplay, setEditedData, setModalVisible }: any) => {
+    const panel = getPanelContext();
+    return (
+        <Table
+            ref={table}
+            remoteURL={panel.baseURL + "/list-data"}
+            columns={[
+                Column.hidden("task"),
+                Column.hidden("max_execute_time"),
+                Column.id("id", "ID").width(50),
+                Column.bool("active", "Aktywne").width(90),
+                Column.text("name", "Nazwa"),
+                Column.text("cron_expression", "Harmonogram"),
+                Column.text("last_run", "Ostatnie wykonanie"),
+                Column.template("Plan wykonania", (val, row) => {
+                    return (
+                        <div>
+                            {row.runDates.map((date: any) => (
+                                <div key={date}>{date}</div>
+                            ))}
+                        </div>
+                    );
+                }),
+                Column.template("Run", (val, row) => {
+                    if (isRunning == row.id) {
+                        return "---";
+                    }
+                    return <Icon name="Play" />;
+                })
+                    .onClick((row, columnData, RowComponent) => {
+                        setRunning(row.id);
+                        RowComponent.forceUpdate();
+                        Comm._get(panel.baseURL + "/run/" + row.id).then((result) => {
+                            setRunning(0);
+                            setTextToDisplay(
+                                "Time: " +
+                                    parseInt(result.log.time, 10) / 1000 +
+                                    " s\n\n" +
+                                    result.log.output +
+                                    "\n" +
+                                    result.log.errors,
+                            );
+                        });
+                    })
+                    .className("center")
+                    .width(80),
+                Column.template("Open & Run", (val, row) => {
+                    if (isRunning == row.id) {
+                        return "---";
+                    }
+                    return <Icon name="OpenInNewWindow" />;
+                })
+                    .onClick((row, columnData, RowComponent) => {
+                        window.open(panel.baseURL + "/run/" + row.id);
+                    })
+                    .className("center")
+                    .width(80),
+                Column.template("Edytuj", () => <Icon name="Edit" />)
+                    .onClick((row) => {
+                        setEditedData(row);
+                        setModalVisible(true);
+                    })
+                    .className("center"),
+            ]}
+        />
     );
 };
