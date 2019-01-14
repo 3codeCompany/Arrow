@@ -240,13 +240,11 @@ class ExceptionHandler
 
         $old = umask(0);
         if (!file_exists($dir)) {
-            mkdir($dir, 0755, true);
-            chmod($dir,0755);
-
+            mkdir($dir, 0775, true);
         }
 
         file_put_contents($dir . "/" . $logFile, $contents);
-        chmod($dir . "/" . $logFile, 0755);
+        chmod($dir . "/" . $logFile, 0775);
 
         umask($old);
 
