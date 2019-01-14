@@ -9,6 +9,7 @@
 namespace Arrow\TasksScheduler\Models;
 
 
+use Arrow\Exception;
 use Arrow\Kernel;
 use Arrow\Models\DB;
 use Arrow\ORM\Persistent\Criteria;
@@ -32,31 +33,39 @@ class SchedulerRunner
     }
 
 
-
     /**
      * @var Schedule
      */
     private $schedule;
 
-    public function run()
+    public function run($forceTaskId = false)
     {
-        set_time_limit(3600);
+        set_time_limit(5000);
 
         //Kernel::$project->getContainer()->get(DB::class)->exec("truncate table " . TaskSchedulerLog::getTable());
 
 
         $this->schedule = new Schedule();
 
-        $tasks = TaskScheduleConfig::get()
-            ->_active(1)
-            ->find();
-
 
         $active = [];
 
-        /** @var TaskScheduleConfig $task */
-        foreach ($tasks as $task) {
-            $active[] = $this->runTaskInTime($task);
+        if ($forceTaskId) {
+            $task = TaskScheduleConfig::get()->findByKey($forceTaskId);
+            if (!$task) {
+                throw new Exception("Task `{$forceTaskId}` not found");
+            }else{
+                $active[] = $this->runTaskInEnv($task);
+            }
+        } else {
+            $tasks = TaskScheduleConfig::get()
+                ->_active(1)
+                ->find();
+
+            /** @var TaskScheduleConfig $task */
+            foreach ($tasks as $task) {
+                $active[] = $this->runTaskInTime($task);
+            }
         }
 
         while (count($active) > 0) {
@@ -89,13 +98,17 @@ class SchedulerRunner
     private function runTaskInTime(TaskScheduleConfig $task)
     {
         if (CronExpression::factory($task->_cronExpression())->isDue("now")) {
-            if (!Kernel::isInCLIMode()) {
-                return $this->runTask($task);
-            } else {
-                return $this->runFromConsole($task);
-            }
+            return $this->runTaskInEnv($task);
         }
+    }
 
+    private function runTaskInEnv(TaskScheduleConfig $task)
+    {
+        if (!Kernel::isInCLIMode()) {
+            return $this->runTask($task);
+        } else {
+            return $this->runFromConsole($task);
+        }
     }
 
     public function runTask(TaskScheduleConfig $task): TaskSchedulerLog
@@ -109,9 +122,6 @@ class SchedulerRunner
 
         $return = "";
         $errors = "";
-
-
-
 
 
         ob_start();
@@ -178,7 +188,7 @@ class SchedulerRunner
                 ]);
                 $log->save();
             } else {
-                $error = "[".date("Y-m-d H:i:s")."] Job still running. Aborting new task";
+                $error = "[" . date("Y-m-d H:i:s") . "] Job still running. Aborting new task";
                 $log->setValues([
                     ///TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
                     TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,

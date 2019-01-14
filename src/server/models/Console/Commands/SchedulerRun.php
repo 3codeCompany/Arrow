@@ -24,7 +24,8 @@ class SchedulerRun extends Command
         $this
             ->setName('scheduler:run')
             ->setDescription('Run scheduled tasks.')
-            ->addOption("php-command", null, InputOption::VALUE_OPTIONAL, "PHP exec command", "php");
+            ->addOption("php-command", null, InputOption::VALUE_OPTIONAL, "PHP exec command", "php")
+            ->addOption("task-id", null, InputOption::VALUE_OPTIONAL, "Id of task to force execute");;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -32,7 +33,13 @@ class SchedulerRun extends Command
 
         $scheduler = new SchedulerRunner();
         $scheduler->setPhpExecCommand($input->getOption("php-command"));
-        $scheduler->run();
+
+        if ($input->getOption("task-id")) {
+            $scheduler->run($input->getOption("task-id"));
+        } else {
+            $scheduler->run();
+        }
+
 
     }
 }
