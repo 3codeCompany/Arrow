@@ -23,6 +23,7 @@ class SchedulerRunner
 {
 
     private $phpExecCommand = "php";
+    private $printProcessOutput = false;
 
     /**
      * @param string $phpExecCommand
@@ -31,6 +32,17 @@ class SchedulerRunner
     {
         $this->phpExecCommand = $phpExecCommand;
     }
+
+    /**
+     * @param bool $printProcessOutput
+     */
+    public function setPrintProcessOutput(bool $printProcessOutput): void
+    {
+        $this->printProcessOutput = $printProcessOutput;
+    }
+
+
+
 
 
     /**
@@ -188,13 +200,45 @@ class SchedulerRunner
                 ]);
                 $log->save();
             } else {
-                $error = "[" . date("Y-m-d H:i:s") . "] Job still running. Aborting new task";
+                $error = "[" . date("Y-m-d H:i:s") . "] Job still running. PID: {$log->_pid()}. Aborting new task";
+                if($this->printProcessOutput){
+                    print $error.PHP_EOL;
+                }
                 $log->setValues([
                     ///TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
                     TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
                 ]);
                 $log->save();
-                return null;
+
+                if($log->_pid()) {
+                    $check = new Process([
+                        "ps",
+                        "aux",
+                        "|",
+                        "grep",
+                        "'{$log->_pid()}'",
+                    ]);
+
+                    $check->run();
+                    $output = $check->getOutput();
+                    if($output == ""){
+                        $error = "No process {$log->_pid()} found. Closing opened task.";
+                        $log->setValues([
+                            TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
+                            TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
+                        ]);
+                        $log->save();
+                        if($this->printProcessOutput){
+                            print $error." and continue".PHP_EOL;
+                        }
+                    }else{
+                        return null;
+                    }
+
+
+                }else {
+                    return null;
+                }
             }
         }
 
@@ -211,10 +255,17 @@ class SchedulerRunner
         ]);
         $process->setTimeout($task->_maxExecuteTime());
 
+        print $process->getCommandLine();
 
         $process->setWorkingDirectory(ARROW_PROJECT);
 
+
         $process->start(function ($type, $buffer) use ($task, $log) {
+
+            if($this->printProcessOutput){
+                print $buffer;
+            }
+
             if (Process::ERR === $type) {
                 //$log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
