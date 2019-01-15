@@ -255,8 +255,6 @@ class SchedulerRunner
         ]);
         $process->setTimeout($task->_maxExecuteTime());
 
-        print $process->getCommandLine();
-
         $process->setWorkingDirectory(ARROW_PROJECT);
 
 
