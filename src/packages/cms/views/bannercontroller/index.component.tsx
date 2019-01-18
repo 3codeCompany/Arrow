@@ -97,7 +97,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                            rememberState={true}
                            onFiltersChange={(filters) => this.setState({ filters })}
                            columns={[
-                               Column.hidden("id"),
+                               Column.number("id", "Id").width("50px"),
                                Column.text("place", "Miejsce")
                                    .template((val, row) => {
                                        return (
