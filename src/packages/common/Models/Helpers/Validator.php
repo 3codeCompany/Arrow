@@ -9,6 +9,7 @@
 namespace Arrow\Common\Models\Helpers;
 
 
+use Adbar\Dot;
 use Arrow\RequestContext;
 
 class Validator
@@ -77,6 +78,7 @@ class Validator
      */
     public function check(): bool
     {
+        $input = (new Dot($this->input))->flatten();
         $ok = true;
         foreach ($this->toCheck as $type => $checkArr) {
 
@@ -88,7 +90,7 @@ class Validator
                     $field = $index;
                     $error = $value;
                 }
-                if (!$this->validators[$type]($this->input, $field)) {
+                if (!$this->validators[$type]($input, $field)) {
                     $ok = false;
                     if (!isset($this->errors[$field])) {
                         $this->errors[$field] = [];
@@ -125,19 +127,40 @@ class Validator
     }
 
 
+    private function flattenFields($array)
+    {
+
+        $dot = new Dot($array);
+        $flat = $dot->flatten();
+        $tmp = [];
+        foreach ($flat as $index => $value) {
+            $x = explode(".", $index);
+            array_pop($x);
+            $prefix = join(".", $x);
+            $tmp[] = ($prefix ? $prefix . "." : "") . $value;
+        }
+
+
+        return $tmp;
+    }
+
     /**
-     * @param $field
+     * @param $config
      * @return $this Validator
      */
-    public function required($field)
+    public function required($config)
     {
-        if (!is_array($field)) {
-            $field = [$field];
+        if (!is_array($config)) {
+            $config = [$config];
         }
+
+        $config = $this->flattenFields($config);
+
         if (!isset($this->toCheck["required"])) {
             $this->toCheck["required"] = [];
         }
-        $this->toCheck["required"] = array_merge($this->toCheck["required"], $field);
+
+        $this->toCheck["required"] = array_merge($this->toCheck["required"], $config);
 
         return $this;
     }
@@ -151,6 +174,8 @@ class Validator
         if (!is_array($field)) {
             $field = [$field];
         }
+        $field = $this->flattenFields($field);
+
         if (!isset($this->toCheck["int"])) {
             $this->toCheck["int"] = [];
         }
@@ -183,6 +208,8 @@ class Validator
         if (!is_array($field)) {
             $field = [$field];
         }
+        $field = $this->flattenFields($field);
+
         if (!isset($this->toCheck["date"])) {
             $this->toCheck["date"] = [];
         }
@@ -199,6 +226,8 @@ class Validator
         if (!is_array($field)) {
             $field = [$field];
         }
+        $field = $this->flattenFields($field);
+
         if (!isset($this->toCheck["email"])) {
             $this->toCheck["email"] = [];
         }
@@ -215,6 +244,7 @@ class Validator
         if (!is_array($field)) {
             $field = [$field];
         }
+        $field = $this->flattenFields($field);
         if (!isset($this->toCheck["url"])) {
             $this->toCheck["url"] = [];
         }
@@ -233,6 +263,7 @@ class Validator
         if (!is_array($field)) {
             $field = [$field];
         }
+        $field = $this->flattenFields($field);
         if (!isset($this->toCheck[$name])) {
             $this->toCheck[$name] = [];
         }
