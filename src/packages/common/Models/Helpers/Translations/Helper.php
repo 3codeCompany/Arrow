@@ -20,7 +20,7 @@ class Helper
     {
         [$translationsNames, $translationsDescription] = explode(
             "-----",
-            file_get_contents("https://www.esotiq.com/data/atom-translations.txt")
+            file_get_contents("/srv/http/3code/esotiq.com/data/atom-translations.txt")
         );
         $product = explode(PHP_EOL, $translationsNames);
         foreach ($product as $k => $p) {
