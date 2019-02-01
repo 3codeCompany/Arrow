@@ -40,6 +40,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PanelObjects extends BaseController
 {
     protected $user;
+    protected $isTranslator;
     public $country = "pl";
 
     public function __construct()
@@ -53,6 +54,11 @@ class PanelObjects extends BaseController
         }
 
         if (Auth::getDefault()->getUser()->isInGroup("Partnerzy sprzedaży")) {
+            $this->country = substr(Auth::getDefault()->getUser()->_login(), -2);
+            Translations::setupLang($this->country);
+        }
+
+        if (Auth::getDefault()->getUser()->isInGroup("Tłumacz")) {
             $this->country = substr(Auth::getDefault()->getUser()->_login(), -2);
             Translations::setupLang($this->country);
         }
@@ -76,6 +82,9 @@ class PanelObjects extends BaseController
         $t = ObjectTranslation::getTable();
         $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id  and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
 
+        if (strpos($this->user, "translator") !== false) {
+            $this->isTranslator = true;
+        }
 
         return [
             'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
@@ -85,8 +94,18 @@ class PanelObjects extends BaseController
                 Product::getClass() => Translations::translateText("Produkty"),
                 //\Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
 
-            ))
+            )),
+            $this->isTranslator && "user" => $this->user,
         ];
+    }
+
+    /**
+     * @Route("/findKey")
+     */
+    public function findKey(Request $request) {
+        print_r("there");
+
+        return true;
     }
 
     /**
@@ -108,16 +127,16 @@ class PanelObjects extends BaseController
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
         if (count($tmp) == 2) {
-            if ($tmp[1] == "ua")
-            {
+            if ($tmp[1] == "ua") {
                 $crit->_lang(["ua", "ru"], Criteria::C_IN);
             } elseif ($tmp[1] == "by") {
                 $crit->_lang(["by", "ru"], Criteria::C_IN);
+            } elseif ($tmp[0] == "translator" & $tmp[1] == "ru") {
+                $crit->_lang(["lt", "lv", "ee", "ru"], Criteria::C_IN);
             } else {
                 $crit->_lang($tmp[1]);
             }
         }
-
 
         $helper->addDefaultOrder(ObjectTranslation::F_LANG);
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
@@ -133,6 +152,35 @@ class PanelObjects extends BaseController
             });
         }
 
+
+            $r = $helper->getListData($crit);
+
+            $resultSourceKeys = [];
+            foreach ($r["data"] as $item) {
+                if (isset($item["source"])) {
+                    $val = strlen($item["source"]) > 0 ? $item["source"] : "-empty-";
+                    $resultSourceKeys[$val] = $val;
+                }
+            }
+            $trans = ObjectTranslation::get()
+                ->_source($resultSourceKeys, Criteria::C_IN)
+                ->_lang("ru")
+                ->find()
+                ->toPureArray()
+            ;
+            foreach ($trans as $translated) {
+                $resultSourceKeys[$translated["source"]] = $translated["value"];
+            }
+            foreach ($r["data"] as $key => $result) {
+                if (isset($result["source"])) {
+                    if (isset($resultSourceKeys[$result["source"]])) {
+                        $r["data"][$key]["translated_original"] = $resultSourceKeys[$result["source"]];
+                    }
+                }
+            }
+
+
+
         /*if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
         }*/
@@ -140,7 +188,7 @@ class PanelObjects extends BaseController
         //$helper->setDebug($crit->find()->getQuery());
 
         //$helper->addDefaultOrder(Language::F_NAME);
-        $this->json($helper->getListData($crit));
+        $this->json($r);
     }
 
     /**
