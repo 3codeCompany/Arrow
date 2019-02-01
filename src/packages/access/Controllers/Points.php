@@ -85,7 +85,7 @@ class Points extends \Arrow\Models\Controller
     {
         $criteria = AccessPoint::get();
         $helper = new TableListORMHelper();
-        //$helper->setDebug(true);
+        $helper->setDebug(true);
 
         $helper->addFilter("groups", function ($c, $filter) use ($criteria, $request) {
 
@@ -107,6 +107,7 @@ class Points extends \Arrow\Models\Controller
                 $criteria->_pointObjectFriendlyId($tmp, Criteria::C_NOT_IN);
             }
         });
+
 
 
         $this->json($helper->getListData($criteria));
