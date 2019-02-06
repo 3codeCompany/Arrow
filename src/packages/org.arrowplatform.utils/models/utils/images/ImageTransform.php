@@ -221,7 +221,7 @@ class ImageTransform{
 		// creates a blank image
 		$targetImageIdentifier = @imagecreatetruecolor($width, $height);
         if(!$targetImageIdentifier) {
-            ADebug::log($width);
+            //ADebug::log($width);
             exit("" .$width);
             return;
         }

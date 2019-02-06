@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <schema class-namespace="Arrow\Package\Common">
     <table name="common_objects_track" class="Track">
-        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id" type="BIGINT" primaryKey="true" autoIncrement="true"/>
         <field name="user_id" type="INTEGER" required="true"/>
         <field name="date" type="TIMESTAMP" required="true"/>
         <field name="action" type="VARCHAR" required="true" size="50"/>
         <field name="info" type="VARCHAR" size="255"/>
         <field name="class" type="VARCHAR" required="true" size="40"/>
-        <field name="object_id" type="INTEGER" required="true"/>
+        <field name="object_id" type="BIGINT" required="true"/>
         <index name="f_key_index_utils_track_user_id" type="">
             <index-field name="user_id"/>
         </index>

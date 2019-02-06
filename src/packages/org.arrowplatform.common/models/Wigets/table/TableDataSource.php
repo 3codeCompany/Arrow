@@ -40,7 +40,7 @@ class TableDataSource extends Criteria implements ITableDataSource
             $this->addColumn($c);
         if ($debug) {
             $result = $this->find();
-            \ADebug::log(DB::getDB()->getLastQuery());
+            //\ADebug::log(DB::getDB()->getLastQuery());
 
             return $result;
         }
