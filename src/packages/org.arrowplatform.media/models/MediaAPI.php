@@ -788,14 +788,16 @@ class MediaAPI extends \Arrow\Object
         if (!file_exists($path)) {
 
 
-            $remote = str_replace("/var/www/static/", "", $path);
-            $remote = "http://static2.esotiq.com" . substr($remote, 1);
+
+
+            $remote = str_replace("/srv/http/3code/static.esotiq.com/", "", $path);
+            $remote = "https://static.esotiq.com" . substr($remote, 1);
             $dir = dirname($path);
             if (!file_exists($dir)) {
-                mkdir($dir, 0777, true);
+                mkdir($dir, null, true);
             }
 
-            copy($remote, $path);
+            //copy($remote, $path);
 
 
             $_path = str_replace(self::$basePath, self::$baseURL, $path);
@@ -853,6 +855,7 @@ class MediaAPI extends \Arrow\Object
                 $imTransform->crop($width, $height);
             }
         }
+  
         return str_replace(ARROW_DOCUMENTS_ROOT, "", $file);
 
     }
