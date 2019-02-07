@@ -71,11 +71,11 @@ class AccessController extends \Arrow\Models\Controller
 
         $authHandler = Auth::getDefault();
         $authHandler->doLogout();
-        $res = $authHandler->doLogin($data["login"], $data["password"]);
+        $authHandler->doLogin($data["login"], $data["password"]);
 
 
         if (!$authHandler->isLogged()) {
-            $validator->addError("Nieprawidłowy login lub hasło");
+            $validator->addError($authHandler->getLoginErrorMessage());
             $this->json($validator->response());
         }
 

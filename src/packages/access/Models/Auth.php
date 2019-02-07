@@ -34,9 +34,11 @@ class Auth
     private $shadowUser = null;
 
 
-    private $reason = "";
+    private $loginErrorMessage = "";
 
     private static $rememberCookieName = "arrow_access_remember_key";
+
+    private static $maxBadLog = 5;
 
     /**
      * Singleton IAuthHandlerImplementation
@@ -64,6 +66,22 @@ class Auth
 
         if(is_null($this->user))
             $this->loginByRememberCookie();
+    }
+
+    /**
+     * @return int
+     */
+    public static function getMaxBadLog(): int
+    {
+        return self::$maxBadLog;
+    }
+
+    /**
+     * @param int $maxBadLog
+     */
+    public static function setMaxBadLog(int $maxBadLog): void
+    {
+        self::$maxBadLog = $maxBadLog;
     }
 
 
@@ -156,42 +174,46 @@ class Auth
     public function doLogin($login, $password, $loginAs = false, $user = false)
     {
 
+        $this->loginErrorMessage  = "";
+
+
+
         if(!$user){
-            $result = User::get()
+            $user = User::get()
                 ->_login( $login)
                 ->find();
 
-
-
-            $result = $result->toArray();
+            $result = $user->toArray();
             if (count($result) > 1){
                 throw new \Arrow\Exception( [ "msg" => "Istnieją identyczne loginy: " . $login ]);
             }
 
             if (count($result) == 0) {
-                $this->reason = "Podany login lub hasło nie zgadzają się.";
+                $this->loginErrorMessage = "Podany login lub hasło nie zgadzają się.";
                 return false;
             }
 
-            $result = $result[0];
-        }else{
-            $result = $user;
+            $user = $user[0];
         }
 
         $initVal[Track::F_ACTION] = "login";
         $initVal[Track::F_CLASS] = User::getClass();
-        $initVal[Track::F_OBJECT_ID] = $result["id"];
-        $initVal[Track::F_USER_ID] = $result["id"];
-        if (isset($_SERVER["REMOTE_ADDR"]))
+        $initVal[Track::F_OBJECT_ID] = $user["id"];
+        $initVal[Track::F_USER_ID] = $user["id"];
+        if (isset($_SERVER["REMOTE_ADDR"])) {
             $ext["IP"] = $_SERVER["REMOTE_ADDR"];
-        else
+        }else {
             $ext["IP"] = "not given";
+        }
 
 
+        if($user[User::F_BAD_LOG] >= self::$maxBadLog){
+            $this->loginErrorMessage = "Zbyt dużo błędnych logowań.";
+            return false;
+        }
 
 
-        if (!empty($result["password"]) && (User::comparePassword($result["password"], $password) || $loginAs) && $result["active"] == "1") {
-
+        if (!empty($user["password"]) && (User::comparePassword($user["password"], $password) || $loginAs) && $user["active"] == "1") {
 
             $ext["result"] = true;
             $initVal["info"] = serialize($ext);
@@ -204,27 +226,30 @@ class Auth
                 $_SESSION["auth"]["shadowUser"] = serialize($this->user);
             }
 
-            $this->user = $result;
-            SessionHandler::getDefault()->assignUser($result["id"]);
+            $this->user = $user;
+            SessionHandler::getDefault()->assignUser($user["id"]);
 
             if (RequestContext::getDefault()["remember_me"]) {
                 $this->setRememberCookie();
             }
 
+            $user["bad_log"] = 0;
+            $user->save();
+
 
             return true;
-        } elseif ($result["active"] == "0") {
+        } elseif ($user["active"] == "0") {
             $ext["result"] = false;
-            $this->reason = "Konto nie aktywne.";
+            $this->loginErrorMessage = "Konto nie aktywne.";
             return false;
         } else {
             $ext["result"] = false;
             $initVal["info"] = serialize($ext);
             $track = new Track($initVal);
             $track->save();
-            $result["bad_log"] = $result["bad_log"] + 1;
-            $result->save();
-            $this->reason = "Podany login lub hasło nie zgadzają się.";
+            $user["bad_log"] = $user["bad_log"] + 1;
+            $user->save();
+            $this->loginErrorMessage = "Podany login lub hasło nie zgadzają się.";
             return false;
         }
 
@@ -256,9 +281,9 @@ class Auth
     }
 
 
-    public function getReason()
+    public function getLoginErrorMessage()
     {
-        return $this->reason;
+        return $this->loginErrorMessage;
     }
 }
 
