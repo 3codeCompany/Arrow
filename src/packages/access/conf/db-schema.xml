@@ -43,7 +43,7 @@
         </trackers>
         <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
         <field name="user_id" type="int" size="30"/>
-        <field name="group_id" type="int"/>
+        <field name="group_id" type="BIGINT" size="20"/>
         <index name="f_key_user_id" type="">
             <index-field name="user_id"/>
         </index>
