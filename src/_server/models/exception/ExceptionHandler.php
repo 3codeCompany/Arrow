@@ -209,7 +209,7 @@ class ExceptionHandler implements IExceptionHandler
 
 
         file_put_contents($dir . "/" . $logFile, $contents);
-        $logger = new \Monolog\Logger('mySiteLog');
+        /*$logger = new \Monolog\Logger('mySiteLog');
 
         $hipChatHandler = new \Monolog\Handler\HipChatHandler(
             "LgyH7guDV2ZJ6VDubma2wfpzXFbeYTrY69l2PnF5", "3443801", 'Monolog', true,
@@ -217,7 +217,7 @@ class ExceptionHandler implements IExceptionHandler
             "esotiq.hipchat.com",
             \Monolog\Handler\HipChatHandler::API_V2
         );
-        $hipChatHandler->setFormatter(new LineFormatter(null, null, true, true));
+        $hipChatHandler->setFormatter(new LineFormatter(null, null, true, true));*/
 
         if ($exception instanceof \Exception || $exception instanceof \Error) {
             $message = $exception->getMessage();
@@ -243,7 +243,7 @@ class ExceptionHandler implements IExceptionHandler
         }
 
 
-        $logger->pushHandler($hipChatHandler);
+        /*$logger->pushHandler($hipChatHandler);
         $logger->log(
             \Monolog\Logger::CRITICAL,
             (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Router::getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
@@ -251,7 +251,7 @@ class ExceptionHandler implements IExceptionHandler
             "\n" . $file . ":" . $line
 
 
-        );
+        );*/
 
 
         //@mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );

@@ -239,7 +239,7 @@ class Project
                         if ($loggerData["active"]) {
                             $logger = new Logger($loggerName);
                             if ($loggerData["handler"] == '\Monolog\Handler\HipChatHandler') {
-
+                                continue;
                                 $handler = new \Monolog\Handler\HipChatHandler(
                                     $loggerData["token"], $loggerData["room"], $loggerData["name"], true,
                                     $loggerData["level"], true, true, 'text',
