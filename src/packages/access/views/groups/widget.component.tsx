@@ -1,17 +1,15 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
-
-import { Column, Table } from "frontend/lib/Table";
-import { Panel } from "frontend/lib/Panel";
 import { Icon } from "frontend/lib/Icon";
-import { Row } from "frontend/lib/Row";
 import { Comm } from "frontend/lib/lib";
 import { confirmDialog } from "frontend/lib/ConfirmDialog";
-import { CheckboxGroup } from "frontend/lib/fields";
+
+import { BCheckboxGroup, BSelect } from "frontend/lib/BForm";
 
 export default class ArrowViewComponent extends React.Component<any, any> {
-    public table: Table;
+    public static defaultProps = {
+        presentation: false,
+    };
 
     constructor(props) {
         super(props);
@@ -21,13 +19,16 @@ export default class ArrowViewComponent extends React.Component<any, any> {
             .filter((el) => parseInt(el) & this.props.mask);
 
         this.state = {
-            mask: 0,
+            mask: parseInt(props.mask),
+            owner: props.owner,
             value,
         };
+
+        console.log(this.state.mask, "mask");
     }
 
     private handleSubmit = () => {
-        this.props.onConfirm(this.state.value, this.state.mask);
+        this.props.onConfirm(this.state.value, this.state.mask, this.state.owner);
     };
     private handleCancel = () => {
         this.props.onCancel();
@@ -42,13 +43,55 @@ export default class ArrowViewComponent extends React.Component<any, any> {
         });
     }
 
+    private editAccessRights = (mask: number, owner: number) => {
+        this.props._openModal(
+            "/access/groups/widget/" + mask + "/" + owner,
+            {},
+            {
+                width: 600,
+                title: "Wybierz grupy dostępu",
+            },
+            {
+                onConfirm: (value: number[], changedMask: number, owner: number) => {
+                    this.setState(
+                        {
+                            value,
+                            owner,
+                        },
+                        () => {
+                            console.log("zmieniam stan");
+                            if (this.props.onConfirm) {
+                                this.props.onConfirm(value, changedMask, owner);
+                            }
+                            this.props._closeModal("/access/groups/widget/" + this.props.mask + "/" + this.props.owner);
+                        },
+
+                    );
+                },
+                onCancel: () => {
+                    this.props._closeModal("/access/groups/widget/" + this.props.mask + "/" + this.props.owner);
+                },
+            },
+        );
+    };
+
     public render() {
         return (
             <div style={{ backgroundColor: "white", padding: 5 }}>
-                <CheckboxGroup
+                <BSelect
+                    label="Właściciel"
+                    editable={!this.props.presentation}
+                    options={this.props.owners.map((user) => ({ value: user.id, label: user.login }))}
+                    value={this.state.owner}
+                    onChange={(e) => this.setState({ owner: e.value })}
+                />
+                <hr />
+
+                <BCheckboxGroup
+                    label="Grupy"
+                    editable={!this.props.presentation}
                     columnsCount={2}
                     columns={"vertical"}
-                    value={this.state.value}
                     options={Object.entries(this.props.agroups).map(([key, value]: any) => ({
                         value: parseInt(key),
                         label: value,
@@ -61,24 +104,39 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                         });
                     }}
                     selectTools={true}
+                    value={this.state.value}
                 />
-                <hr />
-                <div style={{ display: "flex" }}>
+
+                {!this.props.presentation ? (
+                    <>
+                        <hr />
+
+                        <div style={{ display: "flex" }}>
+                            <a
+                                className="btn btn-primary"
+                                style={{ width: "100%", textAlign: "center" }}
+                                onClick={this.handleSubmit}
+                            >
+                                Ok
+                            </a>
+                            <a
+                                className="btn btn-default"
+                                style={{ width: "100%", textAlign: "center" }}
+                                onClick={this.handleCancel}
+                            >
+                                Cancel
+                            </a>
+                        </div>
+                    </>
+                ) : (
                     <a
+                        onClick={() => this.editAccessRights(this.props.mask, this.props.owner)}
                         className="btn btn-primary"
-                        style={{ width: "100%", textAlign: "center" }}
-                        onClick={this.handleSubmit}
+                        style={{ marginTop: 10 }}
                     >
-                        Ok
+                        <Icon name="Unlock" /> Zmień uprawnienia
                     </a>
-                    <a
-                        className="btn btn-default"
-                        style={{ width: "100%", textAlign: "center" }}
-                        onClick={this.handleCancel}
-                    >
-                        Cancel
-                    </a>
-                </div>
+                )}
             </div>
         );
     }

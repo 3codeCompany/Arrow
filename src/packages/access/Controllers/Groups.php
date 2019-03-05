@@ -120,18 +120,31 @@ class Groups extends \Arrow\Models\Controller
 
     /**
      * @Route("/widget")
-     * @Route("/widget/{mask}")
+     * @Route("/widget/{mask}/{owner}")
      */
-    public function widget($mask = 0)
+    public function widget($mask = 0, $owner = 0)
     {
 
         $groups = AccessGroup::get()
             ->_id(4, Criteria::C_GREATER_THAN)
             ->findAsFieldArray(AccessGroup::F_NAME, true);
 
+        $owners = User::findByGroupId([64, 16, 1024, 65536])
+            ->toPureArray();
+
+
+        foreach($owners as &$user){
+            $user = [
+                "id" => $user["id"],
+                "login" => $user["login"],
+            ];
+        }
+
         return [
             "agroups" => $groups,
-            "mask" => $mask
+            "mask" => $mask,
+            "owner" => $owner,
+            "owners" => $owners
         ];
     }
 
