@@ -19,6 +19,9 @@
         <field name="contents_additional" type="TEXT"/>
         <field name="country" type="varchar" size="3"/>
         <field name="content_type" type="VARCHAR" size="255"/>
+
+        <field name="owner" type="int" size="11"/>
+        <field name="access_mask" type="BIGINT" size="20"/>
     </table>
 
 
