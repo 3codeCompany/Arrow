@@ -33,7 +33,7 @@ class ClearCache extends Command
         );
 
         foreach ($files as $fileInfo) {
-            if (!$fileInfo->isDir()) {
+            if (!$fileInfo->isDir() && $fileInfo->getFilename() != ".gitignore") {
                 unlink($fileInfo->getRealPath());
             }
         }

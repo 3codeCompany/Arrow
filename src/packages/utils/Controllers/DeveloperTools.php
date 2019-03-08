@@ -23,6 +23,7 @@ use function json_encode;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -61,9 +62,10 @@ class DeveloperTools extends \Arrow\Models\Controller
             new RecursiveDirectoryIterator(ARROW_CACHE_PATH, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::CHILD_FIRST
         );
-
+        /** @var  $fileInfo SplFileInfo */
         foreach ($files as $fileInfo) {
-            if (!$fileInfo->isDir()) {
+
+            if (!$fileInfo->isDir() && $fileInfo->getFilename() != ".gitignore") {
                 unlink($fileInfo->getRealPath());
             }
         }
