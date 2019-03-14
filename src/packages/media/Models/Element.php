@@ -92,7 +92,7 @@ class Element extends ORM_Arrow_Media_Models_Element
             if(is_writable($dir)) {
                 mkdir($dir, 0777, true);
             }else{
-                throw new Exception("Can't create dir `{$dir}`");
+                throw new Exception("Can't create dir x `{$dir}` " . realpath($dir));
             }
         }
 
