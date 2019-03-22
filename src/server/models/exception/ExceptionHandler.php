@@ -251,13 +251,7 @@ class ExceptionHandler
 
         $logger = new \Monolog\Logger('mySiteLog');
 
-        $hipChatHandler = new \Monolog\Handler\HipChatHandler(
-            "LgyH7guDV2ZJ6VDubma2wfpzXFbeYTrY69l2PnF5", "3443801", 'Monolog', true,
-            \Monolog\Logger::CRITICAL, true, true, 'text',
-            "esotiq.hipchat.com",
-            \Monolog\Handler\HipChatHandler::API_V2
-        );
-        $hipChatHandler->setFormatter(new LineFormatter(null, null, true, true));
+
 
         if ($exception instanceof \Exception || $exception instanceof \Error) {
             $message = $exception->getMessage();
@@ -283,15 +277,7 @@ class ExceptionHandler
         }
 
 
-        $logger->pushHandler($hipChatHandler);
-        $logger->log(
-            \Monolog\Logger::CRITICAL,
-            (isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . " \nFull url: http://" . $_SERVER["HTTP_HOST"] . Request::createFromGlobals()->getBasePath() . "/data/logs/errors/" . date("Y-m-d") . "/" . $logFile : "") .
-            "\n" . $message .
-            "\n" . $file . ":" . $line
 
-
-        );
 
 
         //@mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );
