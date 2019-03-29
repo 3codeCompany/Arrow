@@ -56,6 +56,8 @@ class PanelStatic extends BaseController
 {
     public function index()
     {
+        print "   <a href='https://beta.esotiq.com/admin/#/shop/admin/'>kontynuuj w panelu beta.esotiq.com</a>";
+        exit();
         $this->action->setLayout(new ReactComponentLayout());
         $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
         $db = Project::getInstance()->getDB();
