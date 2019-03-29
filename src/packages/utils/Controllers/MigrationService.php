@@ -95,9 +95,26 @@ class MigrationService extends \Arrow\Models\Controller
      */
     public function index()
     {
-        $this->mapProduct("shop_order_products_fs");
+        //$this->allegroProduct();
+        //$this->rewriteTable();
+        //$this->mapProduct("shop_product_allegro_properties_fs");
+
+        //$this->transferOrders();
 
         //$this->mapVariant();
+
+        // podmienic order id
+        //$this->userMigration();
+
+        //podmienic order id
+        //$this->userRewrite();
+
+
+        //$this->userRew();
+
+
+        $this->userUpdate();
+
         die();
         $this->json([
             "result" => true
@@ -123,6 +140,48 @@ class MigrationService extends \Arrow\Models\Controller
 
             $db->exec($q);
         }
+    }
+
+    public function rewriteTable() {
+        $db = $this->conf["db"];
+
+        $query = "select * from shop_order_products_fs";
+        $stm = $db->prepare($query);
+        $stm->execute();
+        $result = $stm->fetchAll(\PDO::FETCH_NUM);
+
+        foreach ($result as $key => $value) {
+            $rowId = $value[0];
+            $productId = $value[2];
+            $variantId = $value[3];
+
+            $query = "select group_key, color from shop_products where old_fs_id = $productId";
+            $stm = $db->prepare($query);
+            $stm->execute();
+            $r = $stm->fetchAll(\PDO::FETCH_NUM);
+
+            if (!is_numeric($variantId)) continue;
+
+            $query = "select size from shop_product_variant_fs where id = $variantId";
+            $stm = $db->prepare($query);
+            $stm->execute();
+            $rr = $stm->fetchAll(\PDO::FETCH_NUM);
+
+
+            if ($rr && $r) {
+                $sku = $r[0][0] . "-" . $r[0][1] . "-" . $rr[0][0];
+
+                $q = "update shop_order_products_fs SET variant_id = '$sku' WHERE id = $rowId";
+
+                $db->exec($q);
+
+            }
+
+        }
+
+        echo "<pre>";
+        print_r($result);
+        die();
     }
 
     /**
@@ -181,7 +240,7 @@ class MigrationService extends \Arrow\Models\Controller
     public function mapProduct($table):void {
         $db = $this->conf["db"];
 
-        $sth = $db->prepare("select * from $table");
+        $sth = $db->prepare("select * from $table where id > 100000");
         $sth->execute();
         $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -203,6 +262,9 @@ class MigrationService extends \Arrow\Models\Controller
 
         }
 
+        echo "<pre>";
+        print_r("done");
+        die();
     }
 
     /**
@@ -221,6 +283,9 @@ class MigrationService extends \Arrow\Models\Controller
             $sku = $value["variant_id"];
             $orderId = $value["order_id"];
             $rowId = $value["id"];
+
+            if (is_numeric($sku)) continue;
+
 
             $sth = $db->prepare("select * from shop_product_variant where sku = '$sku'");
             $sth->execute();
@@ -241,32 +306,78 @@ class MigrationService extends \Arrow\Models\Controller
     }
 
     /**
+     * @Route("/allegroProduct")
+     */
+
+    public function allegroProduct():void {
+        $db = $this->conf["db"];
+
+        $sth = $db->prepare("select * from shop_allegro_order_product_fs");
+        $sth->execute();
+        $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($res as $key => $value) {
+            $allegroId = $value["allegro_id"];
+            $auctionId = $value["auction_id"];
+            $qunatity = $value["quantity"];
+            $price = $value["price"];
+            $sum = $value["sum"];
+            $form_cancelled = $value["form_cancelled"];
+
+            $rowId = $value["id"];
+
+
+            $sth = $db->prepare("select * from shop_allegro_order_product where allegro_id = '$allegroId' and auction_id = '$auctionId'");
+            $sth->execute();
+            $r = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($r) {
+
+
+            } else {
+                $q = "INSERT INTO `shop_allegro_order_product` (`id`, `allegro_id`, `auction_id`, `quantity`, `price`, `sum`, `form_cancelled`) VALUES (null, $allegroId, $auctionId, $qunatity, $price, $sum, null)";
+                $db->exec($q);
+            }
+
+        }
+
+        echo "<pre>";
+        print_r("done");
+        die();
+    }
+
+    /**
      * @Route("/userUpdate")
      */
     public function userUpdate():void {
         $db = $this->conf["db"];
 
-        $q = $db->prepare("SELECT * from access_user where login like '%_finalsale%'");
+        $q = $db->prepare("SELECT * from shop_orders_comments_fs where id > 2500");
         $q->execute();
         $fsUsers = $q->fetchAll(\PDO::FETCH_ASSOC);
 
         foreach ($fsUsers as $key => $fsUser) {
-            $fsLogin = $fsUser["login"];
-            $login = str_replace("_finalsale", "", $fsUser["login"]);
-//
-//
-//            $q = $db->prepare("SELECT * from access_user_fs where login = '$login' ");
-//
-//
-//            $q->execute();
-//            $user = $q->fetch();
-//
-//
-//            $newPass = $user["password"];
-//
-//            $query = "update access_user set password = '$newPass' where login = '$fsLogin' ";
+            $fsLogin = $fsUser["user_id"];
 
-            //$db->exec($query);
+            $row = $fsUser["id"];
+
+
+            $user = User::get()
+                ->_email($fsLogin)
+                ->findFirst()
+            ;
+
+            if ($user) {
+                $newId = $user->_id();
+
+                $query = "update shop_orders_comments_fs set user_id = '$newId' where id = '$row' ";
+
+                $db->exec($query);
+            } else {
+                $query = "update shop_orders_comments_fs set user_id = null where id = '$row' ";
+
+            }
+
 
 
 
@@ -274,6 +385,80 @@ class MigrationService extends \Arrow\Models\Controller
 
         echo "<pre>";
         //print_r(count($fsUsers));
+        die();
+    }
+
+
+    /**
+     * @Route("/userRew2")
+     */
+    public function userRew() {
+        $db = $this->conf["db"];
+
+        $missingOrders = [3000020004,3000020005,3000020006,3000020012,3000020013,3000020014,3000020015,3000020016,3000020023,3000020028,3000020029,3000020038,3000020039,3000020045,3000020053,3000020054,3000020056,3000020057,3000020059,3000020061,3000020065,3000020066,3000020072,3000020076,3000020081,3000020082,3000020084,3000020087,3000020088,3000020089,3000020094,3000020100,3000020102,3000020107,3000020109,3000020111,3000020113,3000020115,3000020116,3000020120,3000020121,3000020125,3000020127,3000020128,3000020130,3000020131,3000020132,3000020134,3000020135,3000020142,3000020164,3000021717];
+
+//        $q = $db->prepare("SELECT * from shop_orders_fs");
+//        $q->execute();
+//        $fsOrders = $q->fetchAll(\PDO::FETCH_ASSOC);
+
+        $notMapped = [];
+
+        foreach ($missingOrders as $oID) {
+
+            $q = $db->prepare("SELECT * from shop_orders_fs where id = $oID");
+            $q->execute();
+            $fsOrders = $q->fetchAll(\PDO::FETCH_ASSOC);
+
+            $order = $fsOrders[0];
+
+            $fsUID = $order["customer_id"];
+
+            $q = $db->prepare("SELECT * from access_user_fs where id = $fsUID ");
+            $q->execute();
+            $fsUser = $q->fetchAll(\PDO::FETCH_ASSOC);
+
+            if ($fsUser) {
+
+//                $user = User::get()
+//                    ->_login($fsUser[0]["login"] . "_finalsale")
+//                    ->findFirst()
+//                ;
+
+                $user = User::get()
+                    ->_login($fsUser[0]["email"])
+                    ->findFirst()
+                ;
+
+
+                if ($user) {
+                    $order = Order::get()
+                        ->findByKey($order["id"])
+                    ;
+
+                    if ($order) {
+                        $order->setValue("customer_id", $user->_id());
+                        $order->save();
+                    }
+                } else {
+                    $notMapped[] = $order["id"];
+
+                }
+
+
+            } else {
+                $notMapped[] = $order["id"];
+            }
+
+        }
+
+
+        $s = "";
+        foreach ($notMapped as $o ) {
+            $s .= $o . ",";
+        }
+
+        echo "<pre>";
+        print_r($s);
         die();
     }
 
@@ -285,7 +470,7 @@ class MigrationService extends \Arrow\Models\Controller
     {
         $db = $this->conf["db"];
 
-        $q = $db->prepare("SELECT * from access_user_fs");
+        $q = $db->prepare("SELECT * from access_user_fs where '2018-11-10 13:05:50' and created < '2018-11-30 13:05:50' ");
         $q->execute();
         $fsUsers = $q->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -296,21 +481,23 @@ class MigrationService extends \Arrow\Models\Controller
                 ->findFirst()
             ;
 
-            $order = Order::get()
-                ->_id(3000020105, Criteria::C_GREATER_EQUAL)
-                ->_customerId($fsUser["id"])
-                ->find()
-                ->toPureArray()
-            ;
+            $fsUId = $fsUser["id"];
 
-            if ($order) {
-                foreach ($order as $o) {
-                    $x = Order::get()
-                        ->findByKey($o["id"])
-                    ;
+            $q = $db->prepare("SELECT * from shop_orders_fs where customer_id = $fsUId");
+            $q->execute();
+            $fsOU = $q->fetchAll(\PDO::FETCH_ASSOC);
 
-                    $x->setValue("customer_id", $user->_id());
-                    $x->save();
+
+            if ($fsOU) {
+                $oId = $fsOU[0]["id"];
+
+                $order = Order::get()
+                    ->findByKey($oId)
+                ;
+
+                if ($order) {
+                    $order->setValue("customer_id", $user->_id());
+                    $order->save();
                 }
             }
         }
@@ -343,7 +530,7 @@ class MigrationService extends \Arrow\Models\Controller
             $user->save();
 
             $order = Order::get()
-                ->_id(3000020105, Criteria::C_GREATER_EQUAL)
+                ->_id(3000022031, Criteria::C_GREATER_EQUAL)
                 ->_customerId($fsUser["id"])
                 ->find()
                 ->toPureArray()
