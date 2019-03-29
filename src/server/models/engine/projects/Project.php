@@ -192,8 +192,8 @@ class Project
             exit("DB connection problem " . $ex->getMessage());
         }
         $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->defaultDbConnection->exec("SET NAMES utf8");
-        $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
+        //$this->defaultDbConnection->exec("SET NAMES utf8");
+        //$this->defaultDbConnection->exec("SET CHARACTER SET utf8");
 
     }
 
