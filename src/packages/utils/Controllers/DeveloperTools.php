@@ -57,6 +57,9 @@ class DeveloperTools extends \Arrow\Models\Controller
      */
     public function removeCache()
     {
+        $comonCache = new \App\Models\Common\Cache();
+        $comonCache->clear();
+
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator(ARROW_CACHE_PATH, RecursiveDirectoryIterator::SKIP_DOTS),
             RecursiveIteratorIterator::CHILD_FIRST
