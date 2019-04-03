@@ -12,6 +12,7 @@ namespace Arrow\Models;
 use Arrow\Models\Commands\ClearCache;
 use Arrow\Models\Commands\DebugRoute;
 use Arrow\Models\Commands\GenerateController;
+use Arrow\Models\Commands\SchedulerRun;
 use Symfony\Component\Console\Application;
 
 class Console
@@ -25,6 +26,7 @@ class Console
         $application->add(new DebugRoute());
         $application->add(new ClearCache());
         $application->add(new GenerateController());
+        $application->add(new SchedulerRun());
 
         $application->run();
     }
