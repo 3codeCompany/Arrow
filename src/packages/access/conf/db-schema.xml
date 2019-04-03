@@ -2,6 +2,7 @@
 <schema>
     <table name="access_user" class="Arrow\Access\Models\User">
         <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="uuid" type="char" size="36"  />
         <field name="created" type="DATETIME"/>
         <field name="login" type="VARCHAR" required="true" size="100"/>
         <field name="email" type="VARCHAR" size="255"/>
