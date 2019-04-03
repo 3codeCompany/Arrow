@@ -32,7 +32,8 @@
       "Arrow\\Media\\": "src/packages/media",
       "Arrow\\Translations\\": "src/packages/translations",
       "Arrow\\Utils\\": "src/packages/utils",
-      "Arrow\\Synchronization\\": "src/packages/synchronization"
+      "Arrow\\Synchronization\\": "src/packages/synchronization",
+      "Arrow\\TasksScheduler\\": "src/packages/TasksScheduler"
     }
   }
 }
