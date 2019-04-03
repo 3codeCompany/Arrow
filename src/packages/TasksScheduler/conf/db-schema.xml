@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<schema>
+    <table name="tasks_scheduler_config" class="\Arrow\TasksScheduler\Models\TaskScheduleConfig">
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="active" type="int" size="1"/>
+        <field name="name" type="varchar" size="100"/>
+        <field name="cron_expression" type="varchar" size="100"/>
+        <field name="max_execute_time" type="int" size="8"/>
+        <field name="task" type="varchar" size="230"/>
+        <field name="last_run" type="DATETIME"/>
+    </table>
+
+    <table name="tasks_scheduler_log" class="\Arrow\TasksScheduler\Models\TaskSchedulerLog">
+        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <field name="schedule_config_id" type="int" size="11"/>
+
+        <field name="started" type="DATETIME"/>
+        <field name="finished" type="DATETIME"/>
+
+        <field name="pid" type="int" size="11"/>
+        <field name="time" type="int" size="11"/>
+        <field name="memory" type="int" size="11"/>
+
+        <field name="output" type="text" />
+        <field name="errors" type="text" />
+
+    </table>
+</schema>
