@@ -7,7 +7,6 @@ use Arrow\Common\Models\Track\Track;
 use Arrow\ORM\DB\DB;
 use Arrow\RequestContext;
 use Arrow\Router;
-use function var_dump;
 
 
 class Auth
