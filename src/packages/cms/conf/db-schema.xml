@@ -21,9 +21,9 @@
         <field name="content_type" type="VARCHAR" size="255"/>
 
         <field name="edit_owner" type="int" size="11"/>
-        <field name="edit_access_mask" type="BIGINT" size="20"/>
+        <field name="edit_access_mask" type="bigint" size="20"/>
         <field name="view_owner" type="int" size="11"/>
-        <field name="view_access_mask" type="BIGINT" size="20"/>
+        <field name="view_access_mask" type="bigint" size="20"/>
     </table>
 
 
