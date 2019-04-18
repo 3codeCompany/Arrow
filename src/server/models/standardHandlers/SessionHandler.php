@@ -1,6 +1,6 @@
 <?php namespace Arrow\Models;
 
-use Arrow\Kernel;
+
 
 class SessionHandler
 {
@@ -40,8 +40,8 @@ class SessionHandler
     private function __construct()
     {
 
-        if(Kernel::isInCLIMode())
-            return;
+        /*if(Kernel::isInCLIMode())
+            return;*/
         $this->db = Project::getInstance()->getDB();
 
         session_set_save_handler(
@@ -72,6 +72,12 @@ class SessionHandler
 
         session_start();
 
+    }
+
+    public function switchSession($newSessionId)
+    {
+        session_id($newSessionId);
+        $this->read("");
     }
 
     public function assignUser($userId){
