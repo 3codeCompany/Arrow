@@ -270,6 +270,8 @@ class PanelObjects extends BaseController
      */
     public function uploadFile(Request $request, Project $project)
     {
+        print "admin test";
+        exit();
         $data = $request->get("data");
         if ($data["language"] == null){
             return [
@@ -283,7 +285,7 @@ class PanelObjects extends BaseController
             /** @var UploadedFile $fileObj */
             $fileObj = $_FILES["data"]["tmp_name"]["files"][0]["nativeObj"];
 
-            $currentDate = date("d-m-Y");
+            $currentDate = date("Y-m-d");
             $currentTime = date("H:i:s");
             $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
             $target = "data/translate_object_uploads/" . $backupName;
@@ -384,7 +386,7 @@ class PanelObjects extends BaseController
             $sh->getColumnDimensionByColumn($key)->setAutoSize(true);
         }*/
 
-        $currentDate = date("d-m-Y");
+        $currentDate = date("Y-m-d");
         $currentTime = date("H:i:s");
         $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $request->get("lang") . ".xls";
         $target = "data/translate_object_backups/" . $backupName;

@@ -109,6 +109,8 @@ class PanelStatic extends BaseController
      */
     public function uploadLangFile(Request $request)
     {
+        print "admin test";
+        exit();
         $data = $request->get("data");
         if ($data["language"] == null){
             return [
@@ -117,7 +119,7 @@ class PanelStatic extends BaseController
         } else {
         $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
 
-        $currentDate = date("d-m-Y");
+        $currentDate = date("Y-m-d");
         $currentTime = date("H:i:s");
         $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
         $target = "data/translate_uploads/" . $backupName;
@@ -223,7 +225,6 @@ class PanelStatic extends BaseController
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save("php://output");
         exit;
-
     }
 
     /**
@@ -276,7 +277,7 @@ class PanelStatic extends BaseController
         $sh->getColumnDimensionByColumn(1)->setWidth(70);
         $sh->getColumnDimensionByColumn(2)->setWidth(70);
 
-        $currentDate = date("d-m-Y");
+        $currentDate = date("Y-m-d");
         $currentTime = date("H:i:s");
         $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $request->get("lang") . ".xls";
         $target = "data/translate_backups/" . $backupName;
