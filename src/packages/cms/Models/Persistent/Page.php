@@ -30,7 +30,8 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObj
             Page::F_NAME,
             Page::F_LINK,
             Page::F_CONTENT,
-            PAGE::F_CONTENTS_ADDITIONAL
+            PAGE::F_CONTENTS_ADDITIONAL,
+            Page::F_SEO_TITLE,
         ];
     }
 
