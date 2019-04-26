@@ -9,16 +9,15 @@
 namespace Arrow\CMS\Models\Persistent;
 
 
+use Arrow\Media\Models\Helpers\TraitFileAwareObject;
 use Arrow\ORM\Extensions\TreeNode;
-
 
 use Arrow\ORM\ORM_Arrow_CMS_Models_Persistent_Page;
 use Arrow\Translations\Models\IMultilangObject;
 
-class Page extends ORM_Arrow_CMS_Models_Persistent_Page
-    implements IMultilangObject
+class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObject
 {
-    use TreeNode;
+    use TreeNode, TraitFileAwareObject;
 
     const TYPE_FOLDER = "folder";
     const TYPE_PAGE = "page";
@@ -29,12 +28,7 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page
 
     public static function getMultiLangFields()
     {
-        return [
-            Page::F_NAME,
-            Page::F_LINK,
-            Page::F_CONTENT,
-            PAGE::F_CONTENTS_ADDITIONAL
-        ];
+        return [Page::F_NAME, Page::F_LINK, Page::F_CONTENT, PAGE::F_CONTENTS_ADDITIONAL];
     }
 
     public function getLink()
@@ -53,8 +47,13 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page
         ];
     }
 
+    protected function registerVirtualFields()
+    {
 
+        $this->filesConnector = $this->getFilesConnector();
+        $this->filesConnector->registerField($this, "gallery");
+        $this->filesConnector->registerField($this, "to_download");
 
-
+    }
 
 }

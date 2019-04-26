@@ -50,6 +50,8 @@ class FilesORMConnector
     private $targetFolder = ARROW_DATA_PATH . "/uploads/storage";
     private $useRelativePath = true;
     private $downloadPathGenerator;
+    private $registredNames = [];
+
 
     /** @var DB $db */
     private $db;
@@ -64,7 +66,8 @@ class FilesORMConnector
 
     }
 
-    function useRelativePaths($flag){
+    function useRelativePaths($flag)
+    {
 
         $this->useRelativePath = $flag;
 
@@ -75,7 +78,8 @@ class FilesORMConnector
         $this->targetFolder = $targetFolder;
     }
 
-    function setEncodeFilename( $flag ){
+    function setEncodeFilename($flag)
+    {
 
         $this->encodeFileName = $flag;
 
@@ -127,13 +131,21 @@ class FilesORMConnector
             }
         }
 
+
         self::$files[$name][$key] = $result;
+
+        foreach ($this->registredNames as $name) {
+            if (!isset(self::$files[$name][$key])) {
+                self::$files[$name][$key] = [];
+            }
+        }
     }
 
     public function registerField(PersistentObject $object, $fieldName, $connType = self::CONN_MULTI)
     {
         $name = $object instanceof InterfaceIdentifiableClass ? $object->getClassID() : $object::getClass();
 
+        $this->registredNames[] = $fieldName;
 
         /** @var  PersistentObject $this */
 
@@ -215,6 +227,18 @@ class FilesORMConnector
             }
         );
 
+    }
+
+    public function getObjectFiles(PersistentObject $object)
+    {
+        $name = $object instanceof InterfaceIdentifiableClass ? $object->getClassID() : $object::getClass();
+        $key = $object->getPKey();
+
+        if(!isset(self::$files[$name][$key])) {
+            self::refreshFilesConnection($object);
+        }
+
+        return self::$files[$name][$key];
     }
 
     public function bindUploadedFileToObject(PersistentObject $object, UploadedFile $file, string $connectionName)
