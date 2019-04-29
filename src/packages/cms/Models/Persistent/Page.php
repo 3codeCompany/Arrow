@@ -17,7 +17,7 @@ use Arrow\Translations\Models\IMultilangObject;
 
 class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObject
 {
-    use TreeNode, TraitFileAwareObject;
+    use TreeNode, TraitFileAwareObject; 
 
     const TYPE_FOLDER = "folder";
     const TYPE_PAGE = "page";
