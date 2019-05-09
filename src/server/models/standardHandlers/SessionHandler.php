@@ -40,8 +40,8 @@ class SessionHandler
     private function __construct()
     {
 
-        /*if(Kernel::isInCLIMode())
-            return;*/
+        if(getenv("APP_DISABLE_DB"))
+            return;
         $this->db = Project::getInstance()->getDB();
 
         session_set_save_handler(
