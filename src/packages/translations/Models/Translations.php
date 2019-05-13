@@ -134,14 +134,14 @@ class Translations
         return $text;
     }
 
-    public static function translateObject($object, $lang = false)
+    public static function translateObject($object, $lang = false, $placeHolderLang = "en")
     {
-        self::translateObjectsList([$object], get_class($object), $lang);
+        self::translateObjectsList([$object], get_class($object), $lang, false, $placeHolderLang);
         return $object;
     }
 
 
-    public static function translateObjectsList($list, $class = false, $lang = false, $debug = false)
+    public static function translateObjectsList($list, $class = false, $lang = false, $debug = false, $placeholderLang = "en")
     {
 
         if (!$lang) {
@@ -184,16 +184,11 @@ class Translations
         if (is_array($first)) {
             //$fields = array_keys($first);
 
-
             $fields = array_intersect($class::getMultiLangFields(), $fields);
 
         } elseif ($first instanceof IMultilangObject) {
             $fields = array_intersect($class::getMultiLangFields(), $first->getLoadedFields());
         }
-
-
-
-
 
 
         $keys = [-1];
@@ -202,54 +197,29 @@ class Translations
             if ($el["id"]) {
                 $keys[] = $el["id"];
             }
+            foreach($fields as $field){
+                $el[$field] = "";
+            }
         }
         $keys = array_unique($keys);
         $db = Project::getInstance()->getDB();
 
-        //exit("select * from common_lang_objects_translaction where id_object in(" . implode(",", $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('".implode("','",$fields)."')");
 
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",",
                 $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','",
                 $fields) . "') order by value desc";
 
+        $stm = $db->query($q);
 
-
-
-        $stm = $db->prepare($q);
-
-        /*  print_r($q);
-          exit();*/
-
-
-        try {
-            $stm->execute();
-        } catch (\PDOException $ex) {
-            exit($q);
-        }
-        $data = array();
+        $data = [];
         while ($row = $stm->fetch(\PDO::FETCH_ASSOC)) {
             $data[$row["id_object"]][$row["field"]] = $row["value"];
         }
         //in case of empty value we taking en language
         $secondLoad = ["objects" => [], "fields" => []];
 
-        /*if($debug){
-            print_r($q)."<br />";
-    print_r($data);
-    exit();
-}*/
-
-
-        /*if ($_SERVER["REMOTE_ADDR"] == "83.142.126.242" && $class == "Arrow\Shop\Models\Persistent\Category" ) {
-            print $class."<br />";
-            print "<pre >";
-            //var_dump($data);
-            print $q;
-            print "</pre>";
-
-            //exit();
-            return $list;
-        }*/
+        /*print "<pre>";
+        print_r($list);*/
 
 
         foreach ($list as $el) {
@@ -276,9 +246,10 @@ class Translations
 
             }
         }
-        if (!empty($secondLoad["objects"])) {
+        if (!empty($secondLoad["objects"]) && $placeholderLang ) {
+            print "cos";
             $query = "select * from common_lang_objects_translaction where id_object in(" . implode(",",
-                    $secondLoad["objects"]) . ") and `class`='" . addslashes($class) . "' and lang='" . "en" . "' and field in('" . implode("','",
+                    $secondLoad["objects"]) . ") and `class`='" . addslashes($class) . "' and lang='" . "{$placeholderLang}" . "' and field in('" . implode("','",
                     $secondLoad["fields"]) . "') ";
             $stm = $db->prepare($query);
 

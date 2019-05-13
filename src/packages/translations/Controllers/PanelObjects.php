@@ -453,7 +453,7 @@ class PanelObjects extends BaseController
             ->find();
 
         foreach ($langs as $l) {
-            Translations::translateObject($obj, $l->_code());
+            Translations::translateObject($obj, $l->_code(), false);
             $row = [
                 "lang" => $l->_name(),
                 "langId" => $l->_id(),
