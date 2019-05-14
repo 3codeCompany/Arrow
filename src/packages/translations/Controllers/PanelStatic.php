@@ -47,6 +47,11 @@ class PanelStatic extends BaseController
     protected $user;
     public $country = "pl";
 
+    const COLUMN_EXPORT_ID = "id";
+    const COLUMN_EXPORT_ORIGINAL = "original";
+    const COLUMN_EXPORT_TRANSLATION = "translation";
+    const COLUMN_EXPORT_MODULE = "module";
+
     public function __construct()
     {
         $this->user = Auth::getDefault()->getUser()->_login();
@@ -109,14 +114,13 @@ class PanelStatic extends BaseController
      */
     public function uploadLangFile(Request $request)
     {
-        print "admin test";
-        exit();
         $data = $request->get("data");
         if ($data["language"] == null){
             return [
                 "status" => "fail",
             ];
-        } else {
+        }
+
         $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
 
         $currentDate = date("Y-m-d");
@@ -143,24 +147,43 @@ class PanelStatic extends BaseController
 
         $currLang = $data["language"];
 
+        $sheetColumns = $sheetData[0];
+
+        $fieldMap = [
+            self::COLUMN_EXPORT_ID,
+            self::COLUMN_EXPORT_ORIGINAL,
+            self::COLUMN_EXPORT_TRANSLATION,
+            self::COLUMN_EXPORT_MODULE
+        ];
+
+        $uploadedColumns = [];
+        foreach ($sheetColumns as $column => $value) {
+            if (in_array($value, $fieldMap)) {
+                $uploadedColumns[$value] = $column;
+            }
+        }
+
+        if (count($uploadedColumns) != count($fieldMap)) {
+            print_r("error - document structure is wrong");
+            exit();
+        }
+
         $query = $db->prepare("update $table set value=? where id=? and lang=?");
         $db->beginTransaction();
 
         foreach ($sheetData as $row) {
             $query->execute([
-                $row[2],
-                $row[0],
+                $row[$uploadedColumns[self::COLUMN_EXPORT_TRANSLATION]],
+                $row[$uploadedColumns[self::COLUMN_EXPORT_ID]],
                 $currLang,
             ]);
         }
         $db->commit();
         move_uploaded_file($file, $target);
 
-
-            return [
-                "status" => "done",
-            ];
-        }
+        return [
+            "status" => "done",
+        ];
     }
 
     /**
@@ -191,10 +214,10 @@ class PanelStatic extends BaseController
             LanguageText::F_MODULE,
         ];
 
-        $sh->setCellValueByColumnAndRow(0, 1, "id");
-        $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
-        $sh->setCellValueByColumnAndRow(2, 1, "Tłumaczenie");
-        $sh->setCellValueByColumnAndRow(3, 1, "Moduł");
+        $sh->setCellValueByColumnAndRow(0, 1, self::COLUMN_EXPORT_ID);
+        $sh->setCellValueByColumnAndRow(1, 1, self::COLUMN_EXPORT_ORIGINAL);
+        $sh->setCellValueByColumnAndRow(2, 1, self::COLUMN_EXPORT_TRANSLATION);
+        $sh->setCellValueByColumnAndRow(3, 1, self::COLUMN_EXPORT_MODULE);
         foreach ($result as $index => $r) {
             foreach ($columns as $key => $c) {
                 $sh->setCellValueByColumnAndRow($key, $index + 2, $r[$c]);
