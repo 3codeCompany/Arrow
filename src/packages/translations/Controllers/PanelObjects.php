@@ -230,17 +230,21 @@ class PanelObjects extends BaseController
 
 
         $columns = [
-            "id",
-            "field",
-            "source",
-            "value",
+            ObjectTranslation::F_ID,
+            ObjectTranslation::F_FIELD,
+            ObjectTranslation::F_SOURCE,
+            ObjectTranslation::F_VALUE,
         ];
 
+        $sh->setCellValueByColumnAndRow(0, 1, ObjectTranslation::F_ID);
+        $sh->setCellValueByColumnAndRow(1, 1, ObjectTranslation::F_FIELD);
+        $sh->setCellValueByColumnAndRow(2, 1, ObjectTranslation::F_SOURCE);
+        $sh->setCellValueByColumnAndRow(3, 1, ObjectTranslation::F_VALUE);
         foreach ($result as $index => $r) {
             //$columns[2] = $r["field"];
             foreach ($columns as $key => $c) {
 
-                $sh->setCellValueByColumnAndRow($key, $index, $r[$c]);
+                $sh->setCellValueByColumnAndRow($key, $index+2, $r[$c]);
 
             }
 
@@ -270,61 +274,72 @@ class PanelObjects extends BaseController
      */
     public function uploadFile(Request $request, Project $project)
     {
-        print "admin test";
-        exit();
         $data = $request->get("data");
         if ($data["language"] == null){
             return [
                 "status" => "fail",
             ];
-        } else {
-
-//            print_r($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
-//            die();
-
-            /** @var UploadedFile $fileObj */
-            $fileObj = $_FILES["data"]["tmp_name"]["files"][0]["nativeObj"];
-
-            $currentDate = date("Y-m-d");
-            $currentTime = date("H:i:s");
-            $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
-            $target = "data/translate_object_uploads/" . $backupName;
-
-            //  Read your Excel workbook
-            try {
-                $inputFileType = \PHPExcel_IOFactory::identify($fileObj);
-                $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
-                $objPHPExcel = $objReader->load($fileObj);
-            } catch (\Exception $e) {
-                die('Error loading file "' . pathinfo($fileObj,
-                        PATHINFO_BASENAME) . '": ' . $e->getMessage());
-            }
-
-            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
-
-            $t = ObjectTranslation::getTable();
-            $db = $project->getDB();
-
-
-            $stm = $db->prepare("update $t set value=?  where id=? and lang=?");
-
-            foreach ($sheetData as $row) {
-
-                if ($row[0]) {
-
-                    $stm->execute([
-                        $row[3],
-                        $row[0],
-                        $data["language"],
-                    ]);
-                }
-            }
-
-            move_uploaded_file($fileObj, $target);
-            return [
-                "status" => "done",
-            ];
         }
+
+        //print_r($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
+        //die();
+
+        /** @var UploadedFile $fileObj */
+        $fileObj = $_FILES["data"]["tmp_name"]["files"][0]["nativeObj"];
+
+        $currentDate = date("Y-m-d");
+        $currentTime = date("H:i:s");
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
+        $target = "data/translate_object_uploads/" . $backupName;
+
+        //  Read your Excel workbook
+        try {
+            $inputFileType = \PHPExcel_IOFactory::identify($fileObj);
+            $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load($fileObj);
+        } catch (\Exception $e) {
+            die('Error loading file "' . pathinfo($fileObj,
+                    PATHINFO_BASENAME) . '": ' . $e->getMessage());
+        }
+
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
+        $sheetColumns = $sheetData[0];
+
+        $fieldMap = [
+            ObjectTranslation::F_ID,
+            ObjectTranslation::F_FIELD,
+            ObjectTranslation::F_SOURCE,
+            ObjectTranslation::F_VALUE,
+        ];
+        $uploadedColumns = [];
+        foreach ($sheetColumns as $column => $value) {
+            if (in_array($value, $fieldMap)) {
+                $uploadedColumns[$value] = $column;
+            }
+        }
+        if (count($uploadedColumns) != count($fieldMap)) {
+            print_r("error - document structure is wrong");
+            exit();
+        }
+
+        $t = ObjectTranslation::getTable();
+        $db = $project->getDB();
+
+        $stm = $db->prepare("update $t set value=?  where id=? and lang=?");
+        foreach ($sheetData as $row) {
+            if ($row[0]) {
+                $stm->execute([
+                    $row[$uploadedColumns[ObjectTranslation::F_VALUE]],
+                    $row[$uploadedColumns[ObjectTranslation::F_ID]],
+                    $data["language"],
+                ]);
+            }
+        }
+
+        move_uploaded_file($fileObj, $target);
+        return [
+            "status" => "done",
+        ];
     }
 
     /**
