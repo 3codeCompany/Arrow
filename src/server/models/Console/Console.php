@@ -8,7 +8,6 @@
 
 namespace Arrow\Models;
 
-
 use Arrow\Common\Models\Commands\CreateTsDbSchema;
 use Arrow\Models\Commands\ClearCache;
 use Arrow\Models\Commands\DebugRoute;

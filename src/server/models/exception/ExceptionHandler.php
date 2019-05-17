@@ -161,7 +161,7 @@ class ExceptionHandler
 
 
         /** @var Request $request */
-        $request = Kernel::getProject()->getContainer()->get(Request::class);
+/*        $request = Kernel::getProject()->getContainer()->get(Request::class);
         if ($request->isXmlHttpRequest()) {
             print json_encode(["__arrowException" => [
                 "msg" => $exception->getMessage(),
@@ -172,7 +172,7 @@ class ExceptionHandler
                 "parameters" => $exception instanceof Exception ? $exception->getData() : []
             ]]);
             exit;
-        }
+        }*/
 
         ob_start();
         print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";

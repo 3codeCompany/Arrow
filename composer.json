@@ -1,6 +1,7 @@
 {
   "name": "arrow/engine",
   "type": "library",
+  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Artur Kmera",
@@ -8,13 +9,15 @@
     }
   ],
   "require": {
-    "symfony/yaml": "^4.0",
+    "symfony/yaml": "^4.4@dev",
     "symfony/routing": "^3.4",
-    "symfony/config": "^3.4",
+    "symfony/config": "^4.3",
     "doctrine/annotations": "^1.6",
     "symfony/http-foundation": "^3.4",
-    "symfony/cache": "^3.4",
-    "adbario/php-dot-notation": "^2.2"
+    "symfony/cache": "^4.4@dev",
+    "adbario/php-dot-notation": "^2.2",
+    "symfony/dependency-injection": "^4.4@dev",
+    "symfony/console": "^4.4@dev"
   },
   "require-dev": {
     "nette/php-generator": "^3.1",
