@@ -4,6 +4,7 @@ namespace Arrow\Access\Models;
 use Arrow\Exception;
 use Arrow\Kernel;
 use Arrow\Models\DB;
+use Arrow\Models\Project;
 use Arrow\ORM\ORM_Arrow_Access_Models_User;
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
@@ -120,9 +121,14 @@ class User extends ORM_Arrow_Access_Models_User
     private function loadAccessGroups()
     {
         /** @var DB $db */
-        $db = Kernel::getProject()->getContainer()->get(DB::class);
+        //$db = Kernel::getProject()->getContainer()->get(DB::class);
+        $db = Project::getInstance()->getDB();
 
         $this->accessGroupsSum = $db->query("select sum(DISTINCT group_id) from " . AccessUserGroup::getTable() . " where user_id=" . $this->getPKey())->fetchColumn();
+
+        $this->accessGroups = AccessGroup::get()
+            ->_id($this->accessGroupsSum, Criteria::C_BIT_AND)
+            ->findAsFieldArray("name");
 
     }
 
