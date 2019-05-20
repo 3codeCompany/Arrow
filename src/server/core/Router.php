@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use function var_dump;
 
 
@@ -107,7 +108,11 @@ class Router
     {
 
 
-        $result = $this->symfonyRouter->match($path); //'/prefix/cars/index/parametr'
+        try {
+            $result = $this->symfonyRouter->match($path);
+        } catch (ResourceNotFoundException $ex) {
+            exit("Route not found: `" . $path . "`");
+        }
 
         return new Action(
             $result["_package"],

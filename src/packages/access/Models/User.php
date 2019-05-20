@@ -2,6 +2,8 @@
 namespace Arrow\Access\Models;
 
 use Arrow\Exception;
+use Arrow\Kernel;
+use Arrow\Models\DB;
 use Arrow\ORM\ORM_Arrow_Access_Models_User;
 use \Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\JoinCriteria;
@@ -117,15 +119,11 @@ class User extends ORM_Arrow_Access_Models_User
 
     private function loadAccessGroups()
     {
-        $this->accessGroups = Criteria::query(AccessGroup::getClass())
-            ->_join(AccessUserGroup::getClass(), [
-                "id" => "group_id",
-                "UserGroup:user_id" => "'{$this->getPKey()}'"
-            ], "UserGroup", ["id"], Criteria::J_OUTER)
-            ->findAsFieldArray('name', true);
+        /** @var DB $db */
+        $db = Kernel::getProject()->getContainer()->get(DB::class);
 
+        $this->accessGroupsSum = $db->query("select sum(DISTINCT group_id) from " . AccessUserGroup::getTable() . " where user_id=" . $this->getPKey())->fetchColumn();
 
-        $this->accessGroupsSum = array_sum(array_keys($this->accessGroups));
     }
 
     /**
@@ -181,7 +179,7 @@ class User extends ORM_Arrow_Access_Models_User
      */
     public function generatePassportId()
     {
-        return md5((isset($this->data["login"])?$this->data["login"]: rand(100,10000))  . time());
+        return md5((isset($this->data["login"]) ? $this->data["login"] : rand(100, 10000)) . time());
     }
 
     /**
@@ -265,7 +263,7 @@ class User extends ORM_Arrow_Access_Models_User
 
     public static function findByGroupId($groupId)
     {
-        if(!is_array($groupId)){
+        if (!is_array($groupId)) {
             $groupId = [$groupId];
         }
         $r = Criteria::query(AccessUserGroup::getClass())
@@ -286,7 +284,7 @@ class User extends ORM_Arrow_Access_Models_User
             if ($this->_settings()) {
                 try {
                     $this->settings = unserialize($this->_settings());
-                }catch (\Exception $exception){
+                } catch (\Exception $exception) {
                     $this->settings = [];
                 }
             } else {
