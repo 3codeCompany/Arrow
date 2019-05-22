@@ -11,6 +11,7 @@ namespace Arrow\Translations\Models;
 
 
 use function array_unique;
+use Arrow\Access\Models\Auth;
 use Arrow\Models\Project;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;

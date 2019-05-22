@@ -102,7 +102,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             this.state.selectedObject == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.hidden("E:name") : null,
             this.state.selectedObject == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.hidden("E:group_key") : null,
             this.state.selectedObject == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.hidden("E:color") : null,
-            Column.hidden("id_object"),
+            Column.id("id_object", "id obiektu tłumaczonego").width(200).className("center"),
             Column.id("id", "Id"),
             Column.text("lang", __("Język [kod]")).width(140),
             Column.map("lang", __("Język"), this.props.language),
@@ -123,7 +123,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 return (
                     row["E:" + row.field]
                 )
-            }).width("30%").addFilter(FilterHelper.text(this.state.field, __("Orignał")).get()),
+            }).width("30%").addFilter(FilterHelper.text(this.state.field, __("Oryginał")).get()),
             Column.text("value", __("Wartość"))
                 .template((val, row) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
