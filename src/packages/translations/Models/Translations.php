@@ -247,7 +247,6 @@ class Translations
             }
         }
         if (!empty($secondLoad["objects"]) && $placeholderLang ) {
-            print "cos";
             $query = "select * from common_lang_objects_translaction where id_object in(" . implode(",",
                     $secondLoad["objects"]) . ") and `class`='" . addslashes($class) . "' and lang='" . "{$placeholderLang}" . "' and field in('" . implode("','",
                     $secondLoad["fields"]) . "') ";
