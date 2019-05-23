@@ -33,10 +33,13 @@ class MailerController extends \Arrow\Communication\Controllers\MailerController
 
     const MAIL_REGISTER = "register";
     const MAIL_FORGOT_PASSWORD = "forgonPassword";
+    const MAIL_REGISTER_EXTERNAL = "registerExternal";
+
 
 
     protected $configuration = [
         self::MAIL_REGISTER => ["/access/mailer/account/register", "Potwierdzenie rejestracji"],
+        self::MAIL_REGISTER_EXTERNAL => ["/access/mailer/account/registerExternal", "Potwierdzenie rejestracji"],
         self::MAIL_FORGOT_PASSWORD => ["/access/mailer/account/forgotPassword", "Zmiana hasła"],
     ];
 
@@ -50,6 +53,19 @@ class MailerController extends \Arrow\Communication\Controllers\MailerController
 
         $view->assign("user", $user);
 
+    }
+
+    public function mail_account_registerExternal(Action $view, $request)
+    {
+        $view->setLayout(new MailerLayout());
+
+        $user = User::get()->findByKey($request["key"]);
+
+        $view->assign("website", $request["website"]);
+        $view->assign("type", $request["brand"]);
+        $view->assign("country", $request["country"]);
+
+        $view->assign("user", $user);
     }
 
 

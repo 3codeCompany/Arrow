@@ -1,0 +1,16 @@
+<?
+/* @var $this \Arrow\Models\View */
+/* @var $request \Arrow\RequestContext */
+?>
+
+<?=$this["_title"]($t("Aktywacja konta"))?>
+
+<p><?=$t('Witaj')?>  <b><?=$this["user"]["login"]?></b>.</p>
+
+<p><?=$t('W serwisie') . " " . $this["website"] . " "  .$t('dokonano rejestracji przy wykorzystaniu tego adresu email.')?></p>
+<table cellspacing="2">
+    <tr>
+        <td style="width: 200px;">Login</td>
+        <td style="padding: 10px; text-align: center; background-color: lightgrey"><?=$this["user"]["login"]?></td>
+    </tr>
+</table>
