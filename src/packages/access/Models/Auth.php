@@ -7,6 +7,7 @@ use Arrow\Common\Models\Track\Track;
 use Arrow\ORM\DB\DB;
 use Arrow\RequestContext;
 use Arrow\Router;
+use function var_dump;
 
 
 class Auth
@@ -55,6 +56,10 @@ class Auth
         $id = SessionHandler::getDefault()->getUserId();
         if($id)
             $this->user = User::get()->findByKey($id);
+
+        if (isset($_SESSION["sys_user_id"])) {
+            $this->user = User::get()->findByKey($_SESSION["sys_user_id"]);
+        }
 
 
         if (isset($_SESSION["auth"]["shadowUser"]) && is_string($_SESSION["auth"]["shadowUser"])) {
@@ -122,8 +127,8 @@ class Auth
     }
 
     private function destroyRememberCookie(){
-        unset($_COOKIE[self::$rememberCookieName]);
-        return setcookie(self::$rememberCookieName, NULL, -1, Router::getBasePath());
+        //unset($_COOKIE[self::$rememberCookieName]);
+        //return setcookie(self::$rememberCookieName, NULL, -1, Router::getDefault()->getBasePath());
     }
 
 
@@ -145,22 +150,26 @@ class Auth
      * @param String $login
      * @param String $password
      *
+     * @param bool $loginAs
+     * @param bool $user
      * @return boolean
+     * @throws Exception
+     * @throws \Arrow\ORM\Exception
      */
 
     public function doLogin($login, $password, $loginAs = false, $user = false)
     {
 
         if(!$user){
-            $result = Criteria::query('\Arrow\Access\Models\User')
-                ->c("login", $login)
+            $result = User::get()
+                ->_login( $login)
                 ->find();
 
 
-            $query = DB::getDB()->getLastQuery();
+
             $result = $result->toArray();
             if (count($result) > 1){
-                throw new \Arrow\Exception( [ "msg" => "Istnieją identyczne loginy", "query" => $query ]);
+                throw new \Arrow\Exception( [ "msg" => "Istnieją identyczne loginy: " . $login ]);
             }
 
             if (count($result) == 0) {
@@ -173,10 +182,8 @@ class Auth
             $result = $user;
         }
 
-
-
         $initVal[Track::F_ACTION] = "login";
-        $initVal[Track::F_CLASS] = 'Arrow\Access\Models\User';
+        $initVal[Track::F_CLASS] = User::getClass();
         $initVal[Track::F_OBJECT_ID] = $result["id"];
         $initVal[Track::F_USER_ID] = $result["id"];
         if (isset($_SERVER["REMOTE_ADDR"]))
@@ -184,34 +191,17 @@ class Auth
         else
             $ext["IP"] = "not given";
 
-        // Sprawdzenie ilości błędnych logowań
-        $limit_bad_log = 10;
 
-        if ( false && $limit_bad_log <= (int)$result["bad_log"]) {
-            $ext["result"] = false;
-            $initVal["info"] = serialize($ext);
-            AccessManager::turnOff();
-            $track = new Track($initVal);
-            $track->save();
-            $result["bad_log"] = $result["bad_log"] + 1;
-            $result->turnOff();
-            $result->save();
-            AccessManager::turnOn();
-            $this->reason = "Konto zostało zablokowane";
-            return false;
-        }
 
 
         if (!empty($result["password"]) && (User::comparePassword($result["password"], $password) || $loginAs) && $result["active"] == "1") {
 
+
             $ext["result"] = true;
             $initVal["info"] = serialize($ext);
-            AccessManager::turnOff();
             $track = new Track($initVal);
             $track->save();
-            $result["bad_log"] = 0;
-            $result->save();
-            AccessManager::turnOn();
+
 
             if($loginAs){
                 $this->shadowUser = $this->user;
@@ -234,23 +224,14 @@ class Auth
         } else {
             $ext["result"] = false;
             $initVal["info"] = serialize($ext);
-            AccessManager::turnOff();
             $track = new Track($initVal);
             $track->save();
             $result["bad_log"] = $result["bad_log"] + 1;
             $result->save();
-            AccessManager::turnOn();
             $this->reason = "Podany login lub hasło nie zgadzają się.";
             return false;
         }
 
-    }
-
-    public function refreshUserData(){
-        $this->user = $result = Criteria::query('\Arrow\Access\Models\User')
-            ->c("id", $this->user->getPKey())
-            ->findFirst();
-        $_SESSION["auth"]["user"] = serialize($this->user);
     }
 
     /**
