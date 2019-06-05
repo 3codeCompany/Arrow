@@ -10,10 +10,10 @@
   ],
   "require": {
     "symfony/yaml": "^4.3",
-    "symfony/routing": "^3.4",
+    "symfony/routing": "^4.4",
     "symfony/config": "^4.3",
     "doctrine/annotations": "^1.6",
-    "symfony/http-foundation": "^3.4",
+    "symfony/http-foundation": "^4.4",
     "symfony/cache": "^4.3",
     "adbario/php-dot-notation": "^2.2",
     "symfony/dependency-injection": "^4.3",
@@ -21,7 +21,7 @@
   },
   "require-dev": {
     "nette/php-generator": "^3.1",
-    "symfony/debug": "^4.0"
+    "symfony/debug": "^4.3"
   },
   "autoload": {
     "classmap": [
