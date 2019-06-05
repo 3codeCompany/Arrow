@@ -8,7 +8,6 @@
 
 namespace Arrow\TasksScheduler\Models;
 
-
 use Arrow\Exception;
 use Arrow\Kernel;
 use Arrow\Models\DB;
@@ -21,7 +20,6 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class SchedulerRunner
 {
-
     private $phpExecCommand = "php";
     private $printProcessOutput = false;
 
@@ -41,10 +39,6 @@ class SchedulerRunner
         $this->printProcessOutput = $printProcessOutput;
     }
 
-
-
-
-
     /**
      * @var Schedule
      */
@@ -56,9 +50,7 @@ class SchedulerRunner
 
         //Kernel::$project->getContainer()->get(DB::class)->exec("truncate table " . TaskSchedulerLog::getTable());
 
-
         $this->schedule = new Schedule();
-
 
         $active = [];
 
@@ -66,7 +58,7 @@ class SchedulerRunner
             $task = TaskScheduleConfig::get()->findByKey($forceTaskId);
             if (!$task) {
                 throw new Exception("Task `{$forceTaskId}` not found");
-            }else{
+            } else {
                 $active[] = $this->runTaskInEnv($task);
             }
         } else {
@@ -93,7 +85,9 @@ class SchedulerRunner
                             $error = $ex->getMessage();
                             $log->setValues([
                                 TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
-                                TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
+                                TaskSchedulerLog::F_ERRORS => $log->_errors()
+                                    ? $log->_errors() . PHP_EOL . $error
+                                    : $error,
                             ]);
                             $log->save();
                         }
@@ -105,7 +99,6 @@ class SchedulerRunner
             sleep(1);
         }
     }
-
 
     private function runTaskInTime(TaskScheduleConfig $task)
     {
@@ -125,23 +118,20 @@ class SchedulerRunner
 
     public function runTask(TaskScheduleConfig $task): TaskSchedulerLog
     {
-
-
         $stopWatch = new Stopwatch();
 
         $stopWatch->start("run");
 
-
         $return = "";
         $errors = "";
 
-
-        ob_start();
+        if (!$this->printProcessOutput) {
+            ob_start();
+        }
 
         try {
-
             $tmp = explode("::", $task[TaskScheduleConfig::F_TASK]);
-            $obj = new $tmp[0];
+            $obj = new $tmp[0]();
 
             if (method_exists($obj, $tmp[1])) {
                 $return = $obj->{$tmp[1]}();
@@ -151,17 +141,16 @@ class SchedulerRunner
             } else {
                 $errors = "Sych metod '{$tmp[0]}::{$tmp[1]}' don't exists!";
             }
-
-
         } catch (\Exception $ex) {
             print $ex->getMessage();
             print $ex->getTraceAsString();
         }
 
-        $errors .= ob_get_contents();
+        if (!$this->printProcessOutput) {
+            $errors .= ob_get_contents();
 
-        ob_end_clean();
-
+            ob_end_clean();
+        }
 
         $time = $stopWatch->getEvent("run");
 
@@ -180,15 +169,13 @@ class SchedulerRunner
         $task->_lastRun(date("y-m-d H:i:s"));
         $task->save();
         return $log;
-
     }
 
     public function runFromConsole(TaskScheduleConfig $task): ?Process
     {
-
         $log = TaskSchedulerLog::getLastOpenedFor($task);
 
-        if ($log) {
+        if ($log && $log->_pid() > 0) {
             $date = new \DateTime($log->_started());
 
             if ($date->getTimestamp() < time() - $task->_maxExecuteTime()) {
@@ -201,8 +188,8 @@ class SchedulerRunner
                 $log->save();
             } else {
                 $error = "[" . date("Y-m-d H:i:s") . "] Job still running. PID: {$log->_pid()}. Aborting new task";
-                if($this->printProcessOutput){
-                    print $error.PHP_EOL;
+                if ($this->printProcessOutput) {
+                    print $error . PHP_EOL;
                 }
                 $log->setValues([
                     ///TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
@@ -210,84 +197,72 @@ class SchedulerRunner
                 ]);
                 $log->save();
 
-                if($log->_pid()) {
-                    $check = new Process([
-                        "ps",
-                        "aux",
-                        "|",
-                        "grep",
-                        "'{$log->_pid()}'",
-                    ]);
+                if ($log->_pid()) {
+                    $check = new Process(["ps", "aux", "|", "grep", "'{$log->_pid()}'"]);
 
                     $check->run();
                     $output = $check->getOutput();
-                    if($output == ""){
+                    if ($output == "") {
                         $error = "No process {$log->_pid()} found. Closing opened task.";
                         $log->setValues([
                             TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
                             TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
                         ]);
                         $log->save();
-                        if($this->printProcessOutput){
-                            print $error." and continue".PHP_EOL;
+                        if ($this->printProcessOutput) {
+                            print $error . " and continue" . PHP_EOL;
                         }
-                    }else{
+                    } else {
                         return null;
                     }
-
-
-                }else {
+                } else {
                     return null;
                 }
             }
         }
 
-
         $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
+        $log = $this->runTask($task);
 
-        $process = new Process([
-            $this->phpExecCommand,
-            "bin/console",
-            "run:route",
-            "-w",
-            "/tasksscheduler/tasks-configuration/run/" . $task->_id()
-        ]);
-        $process->setTimeout($task->_maxExecuteTime());
+        /*        $process = new Process([
+                    $this->phpExecCommand,
+                    "bin/console",
+                    "run:route",
+                    "-w",
+                    "/tasksscheduler/tasks-configuration/run/" . $task->_id()
+                ]);*/
+        /*        $process->setTimeout($task->_maxExecuteTime());
 
-        $process->setWorkingDirectory(ARROW_PROJECT);
-
-
-        $process->start(function ($type, $buffer) use ($task, $log) {
-
-            if($this->printProcessOutput){
-                print $buffer;
-            }
-
-            if (Process::ERR === $type) {
-                //$log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
-
-                $log->setValues([
-                    TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
-                    TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $buffer : $buffer,
-                ]);
-                $log->save();
+                $process->setWorkingDirectory(ARROW_PROJECT);
 
 
-            } else {
+                $process->start(function ($type, $buffer) use ($task, $log) {
 
-            }
-        });
+                    if($this->printProcessOutput){
+                        print $buffer;
+                    }
+
+                    if (Process::ERR === $type) {
+                        //$log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
+
+                        $log->setValues([
+                            TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
+                            TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $buffer : $buffer,
+                        ]);
+                        $log->save();
 
 
-        $log->_pid($process->getPid());
-        $log->save();
+                    } else {
 
-        return $process;
+                    }
+                });*/
+
+        //        $log->_pid($process->getPid());
+        //      $log->save();
+
+        //return $process;
+
+        return null;
     }
-
-
 }
-
-
-
