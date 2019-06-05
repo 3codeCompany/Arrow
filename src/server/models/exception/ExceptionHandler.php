@@ -54,7 +54,7 @@ class ExceptionHandler
             $errline = $error["line"];
             $errstr = $error["message"];
             $error["url"] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli';
-            $error["backtrace"] = debug_print_backtrace();
+            $error["backtrace"] =  debug_print_backtrace();
             $error["request"] = $_REQUEST;
 
             $this->logError($error, $error["message"]);
