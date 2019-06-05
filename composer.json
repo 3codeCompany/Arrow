@@ -1,7 +1,7 @@
 {
   "name": "arrow/engine",
   "type": "library",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Artur Kmera",
