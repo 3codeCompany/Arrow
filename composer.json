@@ -21,7 +21,7 @@
   },
   "require-dev": {
     "nette/php-generator": "^3.1",
-    "symfony/debug": "^4.0",
+    "symfony/debug": "^4.0"
   },
   "autoload": {
     "classmap": [

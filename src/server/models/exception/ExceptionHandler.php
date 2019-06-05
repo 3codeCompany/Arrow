@@ -36,7 +36,7 @@ class ExceptionHandler
     private function __construct()
     {
         set_exception_handler(array($this, "displayException"));
-        register_shutdown_function([&$this, "fatalHandler"]);
+        //register_shutdown_function([&$this, "fatalHandler"]);
     }
 
     public function fatalHandler()
