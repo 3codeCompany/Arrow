@@ -316,6 +316,15 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                             <BFileListField
                                                                 {...form("attachments")}
                                                                 type={"filelist"}
+                                                                transformFilePath={(file: IFile) => {
+                                                                    return (
+                                                                        this.props._baseURL +
+                                                                        "/file/" +
+                                                                        this.props.page.id +
+                                                                        "/get-file/" +
+                                                                        file.key
+                                                                    );
+                                                                }}
                                                             />
                                                         </Row>
                                                     </Panel>
