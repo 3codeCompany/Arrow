@@ -15,4 +15,4 @@
         <field name="error" type="VARCHAR" size="555"/>
         <field name="x1" type="VARCHAR" size="555"/>
     </table>
-</schema>
+</schema> 
