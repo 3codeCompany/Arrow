@@ -26,6 +26,7 @@ class SchedulerRun extends Command
             ->setDescription('Run scheduled tasks.')
             ->addOption("php-command", null, InputOption::VALUE_OPTIONAL, "PHP exec command", "php")
             ->addOption("task-id", null, InputOption::VALUE_OPTIONAL, "Id of task to force execute")
+            ->addOption("is-subprocess", "s", InputOption::VALUE_NONE, "Flag of subprocess (only if task-id provided)")
             ->addOption("print-output", "p", InputOption::VALUE_NONE, "Prints output of process");
     }
 
@@ -36,9 +37,15 @@ class SchedulerRun extends Command
 
         $scheduler->setPrintProcessOutput($input->getOption("print-output"));
         $scheduler->setPhpExecCommand($input->getOption("php-command"));
+        $scheduler->setIsControledProcess($input->getOption("is-subprocess"));
+
+        if ($input->getOption("is-subprocess") && !$input->getOption("task-id")) {
+            $output->writeln("Unable to run list with subproces flag");
+            return;
+        }
 
         if ($input->getOption("task-id")) {
-            $scheduler->run($input->getOption("task-id"));
+            $scheduler->run($input->getOption("task-id"), $input->getOption("task-id"));
         } else {
             $scheduler->run();
         }

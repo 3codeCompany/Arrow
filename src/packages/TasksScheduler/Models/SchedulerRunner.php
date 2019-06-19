@@ -22,6 +22,15 @@ class SchedulerRunner
 {
     private $phpExecCommand = "php";
     private $printProcessOutput = false;
+    private $isControledProcess = false;
+
+    /**
+     * @param bool $controledProcess
+     */
+    public function setIsControledProcess($isControledProcess)
+    {
+        $this->isControledProcess = $isControledProcess;
+    }
 
     /**
      * @param string $phpExecCommand
@@ -59,7 +68,12 @@ class SchedulerRunner
             if (!$task) {
                 throw new Exception("Task `{$forceTaskId}` not found");
             } else {
-                $active[] = $this->runTaskInEnv($task);
+                if ($this->isControledProcess) {
+                    $this->runTask($task);
+                    return;
+                } else {
+                    $active[] = $this->runTaskInEnv($task);
+                }
             }
         } else {
             $tasks = TaskScheduleConfig::get()
@@ -72,28 +86,29 @@ class SchedulerRunner
             }
         }
 
+        foreach ($active as $key => $el) {
+            if (!($el instanceof Process)) {
+                unset($active[$key]);
+            }
+        }
+
         while (count($active) > 0) {
             foreach ($active as $key => $el) {
-                if ($el instanceof Process) {
-                    if (!$el->isRunning()) {
-                        unset($active[$key]);
-                    } else {
-                        try {
-                            print $el->checkTimeout() . PHP_EOL;
-                        } catch (ProcessTimedOutException $ex) {
-                            $log = TaskSchedulerLog::getLastOpenedFor($task);
-                            $error = $ex->getMessage();
-                            $log->setValues([
-                                TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
-                                TaskSchedulerLog::F_ERRORS => $log->_errors()
-                                    ? $log->_errors() . PHP_EOL . $error
-                                    : $error,
-                            ]);
-                            $log->save();
-                        }
-                    }
-                } else {
+                if (!$el->isRunning()) {
+                    $log = TaskSchedulerLog::getLastOpenedFor($task);
                     unset($active[$key]);
+                } else {
+                    try {
+                        print $el->checkTimeout() . PHP_EOL;
+                    } catch (ProcessTimedOutException $ex) {
+                        $log = TaskSchedulerLog::getLastOpenedFor($task);
+                        $error = $ex->getMessage();
+                        $log->setValues([
+                            TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
+                            TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $error : $error,
+                        ]);
+                        $log->save();
+                    }
                 }
             }
             sleep(1);
@@ -187,7 +202,10 @@ class SchedulerRunner
                 ]);
                 $log->save();
             } else {
-                $error = "[" . date("Y-m-d H:i:s") . "] Job still running. PID: {$log->_pid()}. Aborting new task";
+                $error =
+                    "[" .
+                    date("Y-m-d H:i:s") .
+                    "] Job still running. TASK: {$task->_name()} LOG_ID: {$log->_id()} PID: {$log->_pid()}. Aborting new task";
                 if ($this->printProcessOutput) {
                     print $error . PHP_EOL;
                 }
@@ -212,6 +230,7 @@ class SchedulerRunner
                         if ($this->printProcessOutput) {
                             print $error . " and continue" . PHP_EOL;
                         }
+                        return null;
                     } else {
                         return null;
                     }
@@ -223,46 +242,40 @@ class SchedulerRunner
 
         $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
-        $log = $this->runTask($task);
+        //$log = $this->runTask($task);
 
-        /*        $process = new Process([
-                    $this->phpExecCommand,
-                    "bin/console",
-                    "run:route",
-                    "-w",
-                    "/tasksscheduler/tasks-configuration/run/" . $task->_id()
-                ]);*/
-        /*        $process->setTimeout($task->_maxExecuteTime());
+        $process = new Process([
+            $this->phpExecCommand,
+            "bin/console",
+            "scheduler:run",
+            "-p",
+            "-s",
+            "--task-id=" . $task->_id(),
+            "--php-command=" . $this->phpExecCommand,
+        ]);
+        $process->setTimeout($task->_maxExecuteTime());
 
-                $process->setWorkingDirectory(ARROW_PROJECT);
+        $process->setWorkingDirectory(ARROW_PROJECT);
 
+        $process->start(function ($type, $buffer) use ($task, $log) {
+            if ($this->printProcessOutput) {
+                print $buffer;
+            }
 
-                $process->start(function ($type, $buffer) use ($task, $log) {
+            if (Process::ERR === $type) {
+                $log->setValues([
+                    TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
+                    TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $buffer : $buffer,
+                ]);
+                $log->save();
+                print $buffer;
+            } else {
+            }
+        });
 
-                    if($this->printProcessOutput){
-                        print $buffer;
-                    }
+        $log->_pid($process->getPid());
+        $log->save();
 
-                    if (Process::ERR === $type) {
-                        //$log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
-
-                        $log->setValues([
-                            TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
-                            TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $buffer : $buffer,
-                        ]);
-                        $log->save();
-
-
-                    } else {
-
-                    }
-                });*/
-
-        //        $log->_pid($process->getPid());
-        //      $log->save();
-
-        //return $process;
-
-        return null;
+        return $process;
     }
 }
