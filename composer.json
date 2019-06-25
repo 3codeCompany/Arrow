@@ -1,42 +1,43 @@
 {
-  "name": "arrow/engine",
-  "type": "library",
-  "minimum-stability": "stable",
-  "authors": [
-    {
-      "name": "Artur Kmera",
-      "email": "artur.kmera@3code.pl"
-    }
-  ],
-  "require": {
-    "symfony/yaml": "^4.3",
-    "symfony/routing": "^4.3",
-    "symfony/config": "^4.3",
-    "doctrine/annotations": "^1.6",
-    "symfony/http-foundation": "^4.3",
-    "symfony/cache": "^4.3",
-    "adbario/php-dot-notation": "^2.2",
-    "symfony/dependency-injection": "^4.3",
-    "symfony/console": "^4.3"
-  },
-  "require-dev": {
-    "nette/php-generator": "^3.1",
-    "symfony/debug": "^4.3"
-  },
-  "autoload": {
-    "classmap": [
-      "src/server/"
+    "name": "arrow/engine",
+    "type": "library",
+    "minimum-stability": "stable",
+    "description": "Arrow engine project",
+    "authors": [
+        {
+            "name": "Artur Kmera",
+            "email": "artur.kmera@3code.pl"
+        }
     ],
-    "psr-4": {
-      "Arrow\\Access\\": "src/packages/access",
-      "Arrow\\CMS\\": "src/packages/cms",
-      "Arrow\\Common\\": "src/packages/common",
-      "Arrow\\Communication\\": "src/packages/communication",
-      "Arrow\\Media\\": "src/packages/media",
-      "Arrow\\Translations\\": "src/packages/translations",
-      "Arrow\\Utils\\": "src/packages/utils",
-      "Arrow\\Synchronization\\": "src/packages/synchronization",
-      "Arrow\\TasksScheduler\\": "src/packages/TasksScheduler"
+    "require": {
+        "symfony/yaml": "^4.3",
+        "symfony/routing": "^4.3",
+        "symfony/config": "^4.3",
+        "doctrine/annotations": "^1.6",
+        "symfony/http-foundation": "^4.3",
+        "symfony/cache": "^4.3",
+        "adbario/php-dot-notation": "^2.2",
+        "symfony/dependency-injection": "^4.3",
+        "symfony/console": "^4.3"
+    },
+    "require-dev": {
+        "nette/php-generator": "^3.1",
+        "symfony/debug": "^4.3"
+    },
+    "autoload": {
+        "classmap": [
+            "src/server/"
+        ],
+        "psr-4": {
+            "Arrow\\Access\\": "src/packages/access",
+            "Arrow\\CMS\\": "src/packages/cms",
+            "Arrow\\Common\\": "src/packages/common",
+            "Arrow\\Communication\\": "src/packages/communication",
+            "Arrow\\Media\\": "src/packages/media",
+            "Arrow\\Translations\\": "src/packages/translations",
+            "Arrow\\Utils\\": "src/packages/utils",
+            "Arrow\\Synchronization\\": "src/packages/synchronization",
+            "Arrow\\TasksScheduler\\": "src/packages/TasksScheduler"
+        }
     }
-  }
 }
