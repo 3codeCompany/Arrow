@@ -106,6 +106,9 @@ class PageController extends BaseController
         $data = $helper->getListData($criteria);
 
         if ($this->country !== "pl") {
+            $helper->addColumn("content");
+            $helper->addColumn("contents_additional");
+            $helper->addColumn("seo_title");
             Translations::translateObjectsList($data["data"], Page::class, $this->country);
         }
         //MediaAPI::prepareMedia($data["data"]);
