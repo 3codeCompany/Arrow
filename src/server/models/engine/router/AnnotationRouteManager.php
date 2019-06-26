@@ -82,7 +82,7 @@ class AnnotationRouteManager
                 "file" => str_replace(ARROW_PROJECT, "", $tmp->getFileName()),
                 "line" => $tmp->getStartLine(),
                 "template" => Action::generateTemplatePath($defaults),
-                "componentExists" => file_exists(ARROW_PROJECT . $templatePath . ".component.tsx"),
+                "componentExists" => file_exists(ARROW_PROJECT ."/". $templatePath . ".component.tsx"),
                 "templateExists" => file_exists(ARROW_PROJECT . $templatePath . ".phtml"),
             ];
             $jsCache[$route->getPath()] = $defaults;
