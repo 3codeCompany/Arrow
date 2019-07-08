@@ -245,7 +245,7 @@ class ExceptionHandler
 
         $dirIterator = new \DirectoryIterator($logDir);
         foreach ($dirIterator as $fileinfo) {
-            if (!$fileinfo->isDot()) {
+            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
                 if ($fileinfo->getMTime() < time() - 3600 * 24 * 60) {
                     $i = new \DirectoryIterator($fileinfo->getPathname());
                     foreach ($i as $subFileInfo) {
