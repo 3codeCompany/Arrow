@@ -24,6 +24,7 @@ class TableListORMHelper
     private $withMedia = false;
 
     private $additionalColumns = [];
+    private $disableAutoColumnSelection = false;
 
     private $inputData = null;
     private $objectsPostProcess;
@@ -113,7 +114,7 @@ class TableListORMHelper
         }
 
 
-        $criteria = TableDataSource::prepareCriteria($criteria, $data);
+        $criteria = TableDataSource::prepareCriteria($criteria, $data, $this->disableAutoColumnSelection );
 
         foreach($this->additionalColumns as $column){
             $criteria->addColumn($column);
@@ -196,6 +197,14 @@ class TableListORMHelper
     public function addArrayPostProcess($callback)
     {
         $this->arrayPostProcess = $callback;
+    }
+
+    /**
+     * @param bool $disableAutoColumnSelection
+     */
+    public function setDisableAutoColumnSelection($disableAutoColumnSelection)
+    {
+        $this->disableAutoColumnSelection = $disableAutoColumnSelection;
     }
 
 

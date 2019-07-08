@@ -60,9 +60,12 @@ class TableDataSource extends Criteria
         return $ds;
     }
 
-    public static function prepareCriteria(Criteria $criteria, $data)
+    public static function prepareCriteria(Criteria $criteria, $data, $disableAutoColumnSelection = false)
     {
-        $criteria->setColumns([]);
+
+        if(!$disableAutoColumnSelection){
+            $criteria->setColumns([]);
+        }
 
         if (isset($data["columns"])) {
             foreach ($data["columns"] as $col) {
@@ -81,6 +84,7 @@ class TableDataSource extends Criteria
 
             }
         }
+
 
         if (isset($data["order"])) {
             foreach ($data["order"] as $order) {
