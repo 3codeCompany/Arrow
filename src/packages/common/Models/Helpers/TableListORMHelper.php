@@ -92,6 +92,12 @@ class TableListORMHelper
             $criteria->limit(($currentPage - 1) * $onPage, $onPage);
         }
 
+        if(isset($data['additionalConditions']['grouping'])) {
+            foreach($data['additionalConditions']['grouping'] as $group) {
+                $criteria->addGroupBy('raw:'.$group);
+            }
+        }
+
         return $criteria;
     }
 
