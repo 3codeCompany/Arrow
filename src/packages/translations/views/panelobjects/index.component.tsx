@@ -15,6 +15,7 @@ import {FilterHelper} from "frontend/lib/filters";
 import {fI18n} from "frontend/lib/lib/I18n";
 import {confirmDialog} from "frontend/lib/ConfirmDialog";
 import {Modal} from "frontend/lib/Modal";
+import { downloadOld } from "frontend/lib/Downloader/Downloader";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -45,7 +46,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDownload() {
-        download(this.props._baseURL + "/downloadLangFile", {
+        downloadOld(this.props._baseURL + "/downloadLangFile", {
             lang: this.state.langToDownload,
             onlyEmpty: this.state.downloadOnlyEmpty,
             model: this.state.selectedObject.value,
@@ -54,7 +55,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
     handleBackup(lang): any {
         //window.open(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
-        download(this.props._baseURL + "/langBackUp", {
+        downloadOld(this.props._baseURL + "/langBackUp", {
             lang: this.state.langToDownload,
             onlyEmpty: this.state.downloadOnlyEmpty,
             model: this.state.selectedObject.value,
