@@ -78,7 +78,7 @@ class Action
             return $this->serviceContainer->get($dependencyClassName);
         }
 
-        // try to match by interfaces
+        // try to match by common
         $interfaces = $dependencyClass->getInterfaces();
         foreach ($interfaces as $interface) {
             $resolvedService = $this->resolveClassDependancy($interface);

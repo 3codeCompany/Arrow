@@ -19,7 +19,7 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
 {
     use TreeNode;
 
-    public static function getDictionaryFor($name)
+    public static function getDictionaryFor($name, $system = true)
     {
         $parent = Dictionary::get()
             ->_systemName($name)
@@ -35,11 +35,31 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
                     "value" => $dic->_id(),
                     "label" => $dic->_label(),
                     "additional_value" => $dic->_value(),
-                    "additional_data" => $dic->_data()
+                    "additional_data" => $dic->_data(),
+                    "system_name" => $dic->_systemName()
                 ];
 
         });
     }
+
+    public static function getSystemDictionaryFor($name) {
+
+        $dictionary = Dictionary::get()
+            ->_join(Dictionary::getClass(), [Dictionary::F_PARENT_ID => Dictionary::F_ID], 'Parent', [Dictionary::F_LABEL])
+            ->c("Parent:system_name", $name)
+            ->find();
+
+        $result = [];
+        foreach($dictionary as $item) {
+            $result[$item[Dictionary::F_ID]] = [
+                Dictionary::F_SYSTEM_NAME => $item[Dictionary::F_SYSTEM_NAME],
+                Dictionary::F_LABEL => $item[Dictionary::F_LABEL]
+            ];
+        }
+
+        return $result;
+    }
+
 
 
 }
