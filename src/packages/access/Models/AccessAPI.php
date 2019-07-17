@@ -157,6 +157,8 @@ class AccessAPI
     public static function accessDenyProcedure($denyInfo = "")
     {
 
+        header("X-Auth-Deny: 1");
+
         if (!Auth::getDefault()->isLogged()) {
 
 

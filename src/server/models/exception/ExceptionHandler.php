@@ -148,6 +148,8 @@ class ExceptionHandler
     {
         $this->log($exception);
 
+        header("X-Arrow-Error: 1");
+
         $cli = \Arrow\Kernel::isInCLIMode();
 
         if ($this->clearOutput && !$cli) {
