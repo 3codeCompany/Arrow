@@ -42,7 +42,7 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
         });
     }
 
-    public static function getSystemDictionaryFor($name) {
+    public static function getSystemDictionaryFor($name, $key = Dictionary::F_ID) {
 
         $dictionary = Dictionary::get()
             ->_join(Dictionary::getClass(), [Dictionary::F_PARENT_ID => Dictionary::F_ID], 'Parent', [Dictionary::F_LABEL])
@@ -51,7 +51,8 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
 
         $result = [];
         foreach($dictionary as $item) {
-            $result[$item[Dictionary::F_ID]] = [
+            $result[$item[$key]] = [
+                Dictionary::F_ID => $item[Dictionary::F_ID],
                 Dictionary::F_SYSTEM_NAME => $item[Dictionary::F_SYSTEM_NAME],
                 Dictionary::F_LABEL => $item[Dictionary::F_LABEL]
             ];
