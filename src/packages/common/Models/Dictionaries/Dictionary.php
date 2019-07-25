@@ -53,6 +53,7 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
                 Dictionary::F_LABEL
             ])
             ->c("Parent:system_name", $name)
+            ->order(Dictionary::F_SORT)
             ->find();
 
         $result = [];
