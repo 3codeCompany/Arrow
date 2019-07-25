@@ -8,7 +8,6 @@
 
 namespace Arrow\Common\Models\Dictionaries;
 
-
 use Arrow\Exception;
 use Arrow\ORM\Extensions\TreeNode;
 use Arrow\ORM\ORM_Arrow_Common_Models_Dictionaries_Dictionary;
@@ -30,27 +29,34 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
         }
 
         return $parent->getChildren()->map(function (Dictionary $dic) {
-            return
-                [
-                    "value" => $dic->_id(),
-                    "label" => $dic->_label(),
-                    "additional_value" => $dic->_value(),
-                    "additional_data" => $dic->_data(),
-                    "system_name" => $dic->_systemName()
-                ];
-
+            return [
+                "value" => $dic->_id(),
+                "label" => $dic->_label(),
+                "additional_value" => $dic->_value(),
+                "additional_data" => $dic->_data(),
+                "system_name" => $dic->_systemName()
+            ];
         });
     }
 
-    public static function getSystemDictionaryFor($name, $key = Dictionary::F_ID) {
+    public static function getEntryByName($systemName, $field = "id")
+    {
+        return Dictionary::get()
+            ->_systemName($systemName)
+            ->findFirst()[$field];
+    }
 
+    public static function getSystemDictionaryFor($name, $key = Dictionary::F_ID)
+    {
         $dictionary = Dictionary::get()
-            ->_join(Dictionary::getClass(), [Dictionary::F_PARENT_ID => Dictionary::F_ID], 'Parent', [Dictionary::F_LABEL])
+            ->_join(Dictionary::getClass(), [Dictionary::F_PARENT_ID => Dictionary::F_ID], 'Parent', [
+                Dictionary::F_LABEL
+            ])
             ->c("Parent:system_name", $name)
             ->find();
 
         $result = [];
-        foreach($dictionary as $item) {
+        foreach ($dictionary as $item) {
             $result[$item[$key]] = [
                 Dictionary::F_ID => $item[Dictionary::F_ID],
                 Dictionary::F_SYSTEM_NAME => $item[Dictionary::F_SYSTEM_NAME],
@@ -60,7 +66,4 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
 
         return $result;
     }
-
-
-
 }
