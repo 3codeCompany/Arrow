@@ -61,7 +61,8 @@ class Dictionary extends ORM_Arrow_Common_Models_Dictionaries_Dictionary
             $result[$item[$key]] = [
                 Dictionary::F_ID => $item[Dictionary::F_ID],
                 Dictionary::F_SYSTEM_NAME => $item[Dictionary::F_SYSTEM_NAME],
-                Dictionary::F_LABEL => $item[Dictionary::F_LABEL]
+                Dictionary::F_LABEL => $item[Dictionary::F_LABEL],
+                Dictionary::F_SORT => $item[Dictionary::F_SORT],
             ];
         }
 
