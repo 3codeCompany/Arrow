@@ -9,10 +9,6 @@
 namespace Arrow\Media\Models\Helpers;
 
 
-use Arrow\Common\Models\Helpers\FormHelper;
-use Arrow\Media\Models\Helpers\FilesORMConnector;
-use Arrow\ORM\Persistent\PersistentObject;
-
 trait TraitFileAwareObject
 {
 
