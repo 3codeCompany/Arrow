@@ -50,7 +50,7 @@ class AnnotationRouteManager
         $this->router = new Router(
             $loader,
             $sourceFolders,
-            (ARROW_IN_DEV_STATE ? [] : ['cache_dir' => ARROW_CACHE_PATH . "/symfony"]),
+            ['cache_dir' => ARROW_CACHE_PATH . "/symfony"],
             $context
         );
     }
