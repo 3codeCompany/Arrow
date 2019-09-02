@@ -79,9 +79,9 @@ class DeveloperTools extends \Arrow\Models\Controller
     {
 
 
-        if(file_exists(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php")) {
-            unlink(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php");
-            unlink(ARROW_CACHE_PATH . "/symfony/ProjectUrlMatcher.php.meta");
+        if(file_exists(ARROW_CACHE_PATH . "/symfony/UrlMatcher.php")) {
+            unlink(ARROW_CACHE_PATH . "/symfony/UrlMatcher.php");
+            unlink(ARROW_CACHE_PATH . "/symfony/UrlMatcher.php.meta");
         }
 
 
