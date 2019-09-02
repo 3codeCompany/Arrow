@@ -50,9 +50,9 @@ class Project
     /**
      * Reference to default project database connection
      *
-     * @var \PDO
+     * @var \PDO[]
      */
-    private $defaultDbConnection;
+    private $dbConnection;
 
 
     private static $instance = null;
@@ -180,24 +180,22 @@ class Project
      *
      * @throws Exception
      */
-    public function setUpDB($name = false)
+    public function initializeDB($name = 'default')
     {
 
-        if ($name) {
-            throw new \Arrow\Exception(new ExceptionContent("Not implementet [db with name]"));
+        $dbConf = $this->configuration['db'][$name];
+        if(!$dbConf) {
+            throw new \Arrow\Exception(new ExceptionContent("DB - $name - not implemented"));
         }
 
-        $dbConf = $this->configuration["db"];
         try {
-            $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
+            $this->dbConnection[$name] = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
         } catch (\Exception $ex) {
-            //todo Rozwiązać inaczej :]
-
-            exit("DB connection problem " . $ex->getMessage());
+            exit("DB - $name - connection problem: " . $ex->getMessage());
         }
-        $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->defaultDbConnection->exec("SET NAMES utf8");
-        $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
+        $this->dbConnection[$name]->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->dbConnection[$name]->exec("SET NAMES utf8");
+        $this->dbConnection[$name]->exec("SET CHARACTER SET utf8");
 
     }
 
@@ -206,14 +204,13 @@ class Project
      * @throws \Arrow\Exception
      * @return \PDO
      */
-    public function getDB($name = false)
+    public function getDB($name = 'default')
     {
-
-        if (!$name) {
-            return $this->defaultDbConnection;
+        if(!array_key_exists($name, $this->dbConnection)) {
+            $this->initializeDB($name);
         }
 
-        throw new \Arrow\Exception(new ExceptionContent("Not implementet"));
+        return $this->dbConnection[$name];
     }
 
     public function clearCache()
