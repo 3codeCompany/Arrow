@@ -23,18 +23,9 @@ use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\Utils\Models\Helpers\StringHelper;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Validator\Validation;
 
-
-class ConnectedFileInfo
-{
-    public $elementId;
-    public $connectionId;
-    public $connectionData;
-    public $name;
-    public $size;
-    public $path;
-
-}
 
 class FilesORMConnector
 {
@@ -51,6 +42,11 @@ class FilesORMConnector
     private $useRelativePath = true;
     private $downloadPathGenerator;
     private $registredNames = [];
+
+    /**
+     * @var Validation
+     */
+    private  $validatorData;
 
 
     /** @var DB $db */
@@ -97,10 +93,12 @@ class FilesORMConnector
 
     /**
      * @param mixed $files
+     * @return FilesORMConnector
      */
-    public function setInputNamespace($namespace): void
+    public function setInputNamespace($namespace)
     {
         $this->inputNamespace = $namespace;
+        return $this;
     }
 
     public function refreshFilesConnection(PersistentObject $object)
@@ -141,8 +139,14 @@ class FilesORMConnector
         }
     }
 
-    public function registerField(PersistentObject $object, $fieldName, $connType = self::CONN_MULTI)
+    public function registerField(PersistentObject $object, $fieldName, FilesORMConnectorConfig $config = null)
     {
+        if($config == null){
+            $config = new FilesORMConnectorConfig();
+        }
+
+        $connType = $config->getConnectionType();
+
         $name = $object instanceof InterfaceIdentifiableClass ? $object->getClassID() : $object::getClass();
 
         $this->registredNames[] = $fieldName;
@@ -411,6 +415,25 @@ class FilesORMConnector
         return $return;
 
     }
+
+    /**
+     * @return Validation
+     */
+    public function getValidatorData()
+    {
+        return $this->validatorData;
+    }
+
+    /**
+     * @param Validation $validatorData
+     */
+    public function setValidatorData(Collection $validatorData)
+    {
+        $this->validatorData = $validatorData;
+        return $this;
+    }
+
+
 
 
 }
