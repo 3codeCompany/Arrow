@@ -65,6 +65,24 @@ abstract class Controller implements IController
         exit();
     }
 
+    final protected function csv($data = [], $fields = [], $filename = '', $fileShortcut = '.csv') {
+        header( 'Content-Type: text/csv' );
+        if($filename !== '') {
+            header( 'Content-Disposition: attachment;filename='.$filename.$fileShortcut);
+        }
+        $out = fopen('php://output', 'w');
+        fputcsv($out, $fields, ";");
+        foreach ($data as $row) {
+            fputcsv($out, array_intersect_key($row, array_flip($fields)), ";");
+        }
+        fclose($out);
+        exit();
+    }
+
+    final protected function debug($data = []) {
+        print_r($data);
+        exit();
+    }
 
     public function eventRunBeforeAction(Action $action)
     {
