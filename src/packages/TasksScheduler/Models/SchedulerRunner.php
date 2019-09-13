@@ -133,6 +133,7 @@ class SchedulerRunner
 
     public function runTask(TaskScheduleConfig $task): TaskSchedulerLog
     {
+
         $stopWatch = new Stopwatch();
 
         $stopWatch->start("run");
@@ -188,11 +189,16 @@ class SchedulerRunner
 
     public function runFromConsole(TaskScheduleConfig $task): ?Process
     {
+
+        $stopWatch = new Stopwatch();
+
+        $stopWatch->start("run");
+
         $log = TaskSchedulerLog::getLastOpenedFor($task);
 
         if ($log && $log->_pid() > 0) {
             $date = new \DateTime($log->_started());
-
+            print "Here" . $log->_pid() . PHP_EOL;
             if ($date->getTimestamp() < time() - $task->_maxExecuteTime()) {
                 $error = "Job older than  {$task->_maxExecuteTime()}s. Automatic finished";
                 $log->setValues([
@@ -242,8 +248,6 @@ class SchedulerRunner
 
         $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
-        //$log = $this->runTask($task);
-
         $process = new Process([
             $this->phpExecCommand,
             "bin/console",
@@ -253,23 +257,41 @@ class SchedulerRunner
             "--task-id=" . $task->_id(),
             "--php-command=" . $this->phpExecCommand,
         ]);
+
         $process->setTimeout($task->_maxExecuteTime());
 
         $process->setWorkingDirectory(ARROW_PROJECT);
 
-        $process->start(function ($type, $buffer) use ($task, $log) {
+        $process->start(function ($type, $buffer) use ($task, $log, $stopWatch) {
+            $allBuffer = "";
             if ($this->printProcessOutput) {
+                $allBuffer .= $buffer;
                 print $buffer;
             }
 
+            $time = $stopWatch->getEvent("run");
             if (Process::ERR === $type) {
+
+
                 $log->setValues([
                     TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
                     TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $buffer : $buffer,
+                    TaskSchedulerLog::F_TIME => $time->getDuration(),
+                    TaskSchedulerLog::F_MEMORY => $time->getMemory(),
                 ]);
                 $log->save();
                 print $buffer;
             } else {
+
+
+                $log->setValues([
+                    TaskSchedulerLog::F_TIME => date("y-m-d H:i:s"),
+                    TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
+                    TaskSchedulerLog::F_TIME => $time->getDuration(),
+                    TaskSchedulerLog::F_MEMORY => $time->getMemory(),
+                    TaskSchedulerLog::F_OUTPUT => $log->_errors() ? $log->_errors() . PHP_EOL . trim($allBuffer) : trim($allBuffer),
+                ]);
+                $log->save();
             }
         });
 
