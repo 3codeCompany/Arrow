@@ -105,12 +105,9 @@ const AddModal = function(props: IModalProops) {
             setCronInfo(result);
         });
     };
-    useEffect(
-        () => {
-            updateCronInfo(data.schedule_config);
-        },
-        [data.schedule_config],
-    );
+    useEffect(() => {
+        updateCronInfo(data.schedule_config);
+    }, [data.schedule_config]);
 
     return (
         <Modal
