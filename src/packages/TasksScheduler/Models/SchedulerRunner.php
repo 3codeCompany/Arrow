@@ -246,6 +246,7 @@ class SchedulerRunner
             }
         }
 
+
         $log = TaskSchedulerLog::getLastOpenedOrOpenFor($task);
 
         $process = new Process([
@@ -262,22 +263,20 @@ class SchedulerRunner
 
         $process->setWorkingDirectory(ARROW_PROJECT);
 
-        $process->start(function ($type, $buffer) use ($task, $log, $stopWatch) {
-            $allBuffer = "";
+        $allBuffer = "";
+        $process->start(function ($type, $buffer) use ($task, $log, $stopWatch, $allBuffer) {
+            $allBuffer .= $buffer;
             if ($this->printProcessOutput) {
-                $allBuffer .= $buffer;
                 print $buffer;
             }
-
             $time = $stopWatch->getEvent("run");
             if (Process::ERR === $type) {
-
-
                 $log->setValues([
                     TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
-                    TaskSchedulerLog::F_ERRORS => $log->_errors() ? $log->_errors() . PHP_EOL . $buffer : $buffer,
+                    TaskSchedulerLog::F_ERRORS => $allBuffer,
                     TaskSchedulerLog::F_TIME => $time->getDuration(),
                     TaskSchedulerLog::F_MEMORY => $time->getMemory(),
+                    TaskSchedulerLog::F_OUTPUT => "",
                 ]);
                 $log->save();
                 print $buffer;
@@ -289,7 +288,8 @@ class SchedulerRunner
                     TaskSchedulerLog::F_FINISHED => date("y-m-d H:i:s"),
                     TaskSchedulerLog::F_TIME => $time->getDuration(),
                     TaskSchedulerLog::F_MEMORY => $time->getMemory(),
-                    TaskSchedulerLog::F_OUTPUT => $log->_errors() ? $log->_errors() . PHP_EOL . trim($allBuffer) : trim($allBuffer),
+                    TaskSchedulerLog::F_ERRORS => "",
+                    TaskSchedulerLog::F_OUTPUT => trim($allBuffer),
                 ]);
                 $log->save();
             }
