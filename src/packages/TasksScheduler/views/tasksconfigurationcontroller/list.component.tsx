@@ -235,6 +235,7 @@ const Log = ({ setTextToDisplay, key }: any) => {
 
     return (
         <Table
+            rememberState={true}
             ref={table}
             remoteURL={panel.baseURL + "/list-log-data"}
             columns={[
