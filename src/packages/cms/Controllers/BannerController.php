@@ -64,7 +64,7 @@ class BannerController extends BaseController
             "E_content" => "Esotiq kafelki", //
             "E_inspire" => "Esotiq kolekcja 1", // E_inspire
             "E_sale" => "Esotiq kolekcja 2", // E_sale
-
+            "E_club_start" => "Esotiq Club - ekran powitalny",
             "E_orderEnd" => "Esotiq podziękowanie za zamówienie",
             "E_slider" => "Esotiq slider",
             "H_big" => "Henderson cała szerokość",
@@ -76,10 +76,12 @@ class BannerController extends BaseController
             "F_slider" => "Finalsale slider",
             "" => "",
         ];
-        foreach ($places as $key => $place)
+        /*foreach ($places as $key => $place)
         {
             $this->places[$place] = $placesMap[$place];
-        }
+        }*/
+
+        $this->places = $placesMap;
 
         $user = Auth::getDefault()->getUser();
         $container = Kernel::getProject()->getContainer();
