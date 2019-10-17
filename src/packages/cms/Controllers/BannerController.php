@@ -62,6 +62,7 @@ class BannerController extends BaseController
         $placesMap = [
             "content" => "Archiwum",
             "E_content" => "Esotiq kafelki", //
+            "E_content_title" => "Esotiq kafelki - tytuł", //
             "E_inspire" => "Esotiq kolekcja 1", // E_inspire
             "E_sale" => "Esotiq kolekcja 2", // E_sale
             "E_club_start" => "Esotiq Club - ekran powitalny",
