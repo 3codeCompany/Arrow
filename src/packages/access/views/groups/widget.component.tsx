@@ -16,10 +16,10 @@ export default class ArrowViewComponent extends React.Component<any, any> {
 
         const value = Object.entries(this.props.agroups)
             .map(([key, value]: any) => key)
-            .filter((el) => parseInt(el) & this.props.mask);
+            .filter((el) => BigInt(el) & BigInt(this.props.mask));
 
         this.state = {
-            mask: parseInt(props.mask),
+            mask: BigInt(props.mask),
             owner: props.owner,
             value,
         };
@@ -93,11 +93,11 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                     columnsCount={2}
                     columns={"vertical"}
                     options={Object.entries(this.props.agroups).map(([key, value]: any) => ({
-                        value: parseInt(key),
+                        value: key,
                         label: value,
                     }))}
                     onChange={(x) => {
-                        const reduced = x.value.reduce((a: number, b: number) => parseInt(a) + parseInt(b), 0);
+                        const reduced = x.value.reduce((a: number, b: number) => BigInt(a) + BigInt(b), 0);
                         this.setState({
                             value: x.value,
                             mask: reduced,
