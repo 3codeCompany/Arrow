@@ -104,10 +104,13 @@ export default class extends React.Component<Props, any> {
                                     rowComponent.forceUpdate();
                                 })
                                 .template((val: any, row, column, rowComponent) => {
-                                    const v: number = parseInt(row.tmp_groups || 0, 10);
+                                    //const v: number = parseInt(row.tmp_groups || 0, 10);
+                                    const v: number = BigInt(row.tmp_groups !== undefined ? row.tmp_groups : 0);
+
                                     const selected = [];
                                     Object.entries(this.props.agroups).map(([id, name]) => {
-                                        if (v & (parseInt(id) as any)) {
+                                        if (v & (BigInt(id) as any)) {
+
                                             selected.push(id);
                                         }
                                     });
@@ -159,10 +162,10 @@ export default class extends React.Component<Props, any> {
                                             </div>
                                         );
                                     } else {
-                                        const v: number = parseInt(row.groups || 0, 10);
+                                        const v: number = BigInt(row.groups || 0 );
                                         const selectedNames = [];
                                         Object.entries(this.props.agroups).map(([id, name]) => {
-                                            if (v & (parseInt(id) as any)) {
+                                            if (v & (BigInt(id) as any)) {
                                                 selectedNames.push(name);
                                             }
                                         });
