@@ -183,9 +183,7 @@ class Translations
         //geting fields
         if (is_array($first)) {
             //$fields = array_keys($first);
-
             $fields = array_intersect($class::getMultiLangFields(), $fields);
-
         } elseif ($first instanceof IMultilangObject) {
             $fields = array_intersect($class::getMultiLangFields(), $first->getLoadedFields());
         }
@@ -208,6 +206,7 @@ class Translations
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",",
                 $keys) . ") and `class`='" . addslashes($class) . "' and lang='" . $lang . "' and field in('" . implode("','",
                 $fields) . "') order by value desc";
+
 
         $stm = $db->query($q);
 
