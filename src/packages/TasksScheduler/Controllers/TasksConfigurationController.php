@@ -107,12 +107,18 @@ class TasksConfigurationController extends \Arrow\Models\Controller
     /**
      * @Route("/run/{key}")
      */
-    public function run($key)
+    public function run($key, Request $request)
     {
         $obj = TaskScheduleConfig::get()->findByKey($key);
 
         $runner = new SchedulerRunner();
         $log = $runner->runTask($obj);
+
+        if(!$request->isXmlHttpRequest()) {
+            print_r($log->_errors());
+            print_r($log->_output());
+            exit();
+        }
 
         return ["log" => $log];
     }
