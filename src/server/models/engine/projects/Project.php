@@ -31,6 +31,8 @@ class Project
 
     public static $forceDisplayErrors = 1;
 
+    private $postInit = [];
+
     /**
      * Project configuration array
      *
@@ -70,7 +72,7 @@ class Project
     }
 
 
-        /**
+    /**
      * @var Container
      */
     private $serviceContainer;
@@ -86,14 +88,15 @@ class Project
     /**
      * @return Container
      */
-    public function getContainer(){
+    public function getContainer()
+    {
         return $this->serviceContainer;
     }
 
     public function __construct($serviceContainer)
     {
 
-        if(self::$instance !== null){
+        if (self::$instance !== null) {
             throw new Exception("Can't init project mor than once");
         }
 
@@ -124,6 +127,17 @@ class Project
 
     }
 
+    public function postInit()
+    {
+        foreach ($this->postInit as $fn) {
+            $fn();
+        }
+    }
+
+    public function addPostInit(callable $fn)
+    {
+        $this->postInit[] = $fn;
+    }
 
     public function getPackages()
     {
@@ -184,7 +198,7 @@ class Project
     {
 
         $dbConf = $this->configuration['db'][$name];
-        if(!$dbConf) {
+        if (!$dbConf) {
             throw new \Arrow\Exception(new ExceptionContent("DB - $name - not implemented"));
         }
 
@@ -201,12 +215,12 @@ class Project
 
     /**
      * @param bool $name
-     * @throws \Arrow\Exception
      * @return \PDO
+     * @throws \Arrow\Exception
      */
     public function getDB($name = 'default')
     {
-        if(!array_key_exists($name, $this->dbConnection)) {
+        if (!array_key_exists($name, $this->dbConnection)) {
             $this->initializeDB($name);
         }
 

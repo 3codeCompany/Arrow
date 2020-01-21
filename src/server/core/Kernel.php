@@ -34,8 +34,9 @@ class Kernel
 
         //Router::setupAction();
         ConfigProvider::init();
+        self::$project = new Project((new Services())->buildContainer());
 
-        self::$project = new \Arrow\Models\Project((new Services())->buildContainer());
+        self::$project->postInit();
         //self::$project->setServiceContainer();
         $router = Router::getDefault(self::$project->getContainer());
 
