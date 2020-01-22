@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use function var_dump;
 
-
 /**
  * Router
  *
@@ -31,7 +30,6 @@ use function var_dump;
  */
 class Router
 {
-
     use ContainerAwareTrait;
 
     /**
@@ -61,12 +59,10 @@ class Router
      * @return Router
      */
 
-
     public static function getDefault($serviceContainer = null)
     {
         if (self::$oInstance == null) {
             self::$oInstance = new Router($serviceContainer);
-
         }
         return self::$oInstance;
     }
@@ -79,10 +75,7 @@ class Router
 
         $annotatonRouteManager = new AnnotationRouteManager($this->request);
         $this->symfonyRouter = $annotatonRouteManager->getRouter();
-
-
     }
-
 
     public function getBasePath()
     {
@@ -97,7 +90,6 @@ class Router
         return $this->symfonyRouter;
     }
 
-
     public function notFound(Action $action)
     {
         $action->getController()->notFound($action, RequestContext::getDefault());
@@ -106,33 +98,26 @@ class Router
 
     private function symfonyRouter($path)
     {
-
-
         try {
             $result = $this->symfonyRouter->match($path);
         } catch (ResourceNotFoundException $ex) {
             exit("Route not found: `" . $path . "`");
         }
 
-        return new Action(
-            $result["_package"],
-            $result["_controller"],
-            $result["_method"],
-            $path,
-            $result
-        );
-
-
+        return new Action($result["_package"], $result["_controller"], $result["_method"], $path, $result);
     }
 
     public function process(Request $request = null)
     {
-
         if (!$request) {
             $request = $this->request;
         }
 
-        $this->action = $this->symfonyRouter($request->getPathInfo());
+        $this->action = $this->symfonyRouter(
+            isset($_SERVER["REDIRECT_URL"]) && $_SERVER["REDIRECT_URL"]
+                ? $_SERVER["REDIRECT_URL"]
+                : $request->getPathInfo()
+        );
 
         $this->action->setServiceContainer($this->container);
 
@@ -143,37 +128,22 @@ class Router
 
         $return = $this->action->fetch($this->request);
 
-
         if ($return !== null) {
-
             if (is_array($return)) {
-                $return = (new JsonResponse($return));
-
+                $return = new JsonResponse($return);
             } elseif ($return instanceof AbstractLayout) {
-
                 if ($return->getTemplate() == null) {
                     $template = Action::generateTemplatePath($this->action->routeParameters);
                     $return->setTemplate(ARROW_PROJECT . $template . ".phtml");
                 }
 
-
                 if (!($return instanceof IResponseHandler)) {
-                    $return = new Response(
-                        $return->render(),
-                        Response::HTTP_OK,
-                        array('content-type' => 'text/html')
-                    );
+                    $return = new Response($return->render(), Response::HTTP_OK, array('content-type' => 'text/html'));
                 }
-
             }
 
-
             $return->send();
-
-
         }
-
-
     }
 
     public function execute($path, Request $request = null, $appendTemplatePath = false)
@@ -192,5 +162,4 @@ class Router
 
         return $return;
     }
-
 }
