@@ -39,7 +39,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class BannerController extends BaseController
 {
-    private $user;
+
     private $country = "pl";
     private $places = [];
     private $countries = [];

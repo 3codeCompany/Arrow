@@ -35,7 +35,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PageController extends BaseController
 {
-    private $user;
+
     private $country = "pl";
 
     public function __construct(Auth $auth)
