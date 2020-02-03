@@ -13,7 +13,6 @@ use Arrow\ViewManager;
  */
 abstract class AbstractLayout
 {
-
     /**
      * @var array
      */
@@ -43,6 +42,18 @@ abstract class AbstractLayout
         return $this->template;
     }
 
+    public function includeTemplate()
+    {
+        if (file_exists($this->template)) {
+            include $this->template;
+        } else {
+            print "<pre>Template not exists: \n\n Absolute path: " .
+                $this->template .
+                " \n\n Realative path: " .
+                str_replace(ARROW_PROJECT . "/", "", $this->template) .
+                "</pre>";
+        }
+    }
 
     /**
      * @return array
@@ -60,8 +71,5 @@ abstract class AbstractLayout
         $this->data = $data;
     }
 
-
     abstract public function render();
-
-
 }
