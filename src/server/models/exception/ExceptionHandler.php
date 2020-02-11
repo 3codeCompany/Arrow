@@ -5,6 +5,8 @@ use Arrow\Exception;
 use Arrow\Kernel;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
+use Symfony\Component\ErrorHandler\Debug;
+use Symfony\Component\ErrorHandler\DebugClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 
@@ -35,7 +37,14 @@ class ExceptionHandler
 
     private function __construct()
     {
-        set_exception_handler(array($this, "displayException"));
+        $d = Debug::enable();
+
+
+//        $x = \Symfony\Component\ErrorHandler\ErrorHandler::register();
+
+
+
+        //set_exception_handler(array($this, "displayException"));
         //register_shutdown_function([&$this, "fatalHandler"]);
     }
 
