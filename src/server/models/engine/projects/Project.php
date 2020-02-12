@@ -203,13 +203,16 @@ class Project
         }
 
         try {
-            $this->dbConnection[$name] = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
+            $this->dbConnection[$name] = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [
+                \PDO::MYSQL_ATTR_LOCAL_INFILE => 1,
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
+            ]);
         } catch (\Exception $ex) {
             exit("DB - $name - connection problem: " . $ex->getMessage());
         }
         $this->dbConnection[$name]->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $this->dbConnection[$name]->exec("SET NAMES utf8");
-        $this->dbConnection[$name]->exec("SET CHARACTER SET utf8");
+        /*$this->dbConnection[$name]->exec("SET NAMES utf8");
+        $this->dbConnection[$name]->exec("SET CHARACTER SET utf8");*/
 
     }
 
