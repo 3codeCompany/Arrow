@@ -57,7 +57,7 @@ class Auth
         if($id)
             $this->user = User::get()->findByKey($id);
 
-        if (isset($_SESSION["sys_user_id"])) {
+        if(isset($_SESSION["sys_user_id"])){
             $this->user = User::get()->findByKey($_SESSION["sys_user_id"]);
         }
 
