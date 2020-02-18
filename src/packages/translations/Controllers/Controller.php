@@ -19,7 +19,6 @@ class Controller extends BaseController
 
     public function Language_list()
     {
-
         $ctit = Language::get();
         $helper = new TableListORMHelper();
 

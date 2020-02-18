@@ -6,31 +6,15 @@ namespace Arrow\Translations\Controllers;
 use App\Controllers\BaseController;
 use App\Models\Persistent\TransactionText;
 use Arrow\Common\Layouts\ReactComponentLayout;
-use Arrow\Controls\API\Components\Toolbar;
-use Arrow\Controls\API\Forms\Fields\Button;
-use Arrow\Controls\API\Forms\Fields\File;
-use Arrow\Controls\API\Forms\Fields\Files;
-use Arrow\Controls\API\Forms\Fields\Helpers\BoolSwitch;
-use Arrow\Controls\API\Forms\Fields\Date;
-use Arrow\Controls\API\Forms\Fields\Hidden;
-use Arrow\Controls\API\Forms\Fields\Select;
-use Arrow\Controls\API\Forms\Fields\SwitchF;
-use Arrow\Controls\API\Forms\Fields\Text;
-use Arrow\Controls\API\Forms\Fields\Textarea;
-use Arrow\Controls\API\Forms\Fields\Wyswig;
-use Arrow\Controls\API\Forms\FieldsList;
-use Arrow\Controls\API\Forms\Form;
-use Arrow\Controls\API\Forms\FormBuilder;
-use Arrow\Controls\API\Table\ColumnList;
-use Arrow\Controls\API\Table\Columns\Menu;
-use Arrow\Controls\Helpers\TableListORMHelper;
+
+use Arrow\Common\Models\Helpers\TableListORMHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
 use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria,
     \Arrow\Access\Models\Auth,
-    \Arrow\ViewManager, \Arrow\RequestContext;
+    \Arrow\RequestContext;
 use Arrow\Access\Models\AccessGroup;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\PresentationLayout;
@@ -48,23 +32,63 @@ use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
 use Arrow\Media\MediaAPI;
-use Arrow\Controls\API\Table\Table;
-use Arrow\Router;
-use function file_get_contents;
 
+use function file_get_contents;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Class PanelStatic
+ * @package Arrow\Translations\Controllers
+ * @Route("/static")
+ */
 class PanelStatic extends BaseController
 {
-    public function index()
+    protected $user;
+    protected $isTranslator;
+    public $country = "pl";
+
+    public function __construct()
     {
-        print "   <a href='https://beta.esotiq.com/admin/#/shop/admin/'>kontynuuj w panelu beta.esotiq.com</a>";
-        exit();
-        $this->action->setLayout(new ReactComponentLayout());
-        $this->action->assign('language', Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE));
-        $db = Project::getInstance()->getDB();
-        $t = LanguageText::getTable();
-        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+        $this->user = Auth::getDefault()->getUser()->_login();
+        $tmp = explode("_", $this->user);
+
+        if (count($tmp) >= 2) {
+            $this->country = $tmp[1];
+        }
+
+        if (Auth::getDefault()->getUser()->isInGroup("Tłumacz")) {
+            $this->country = substr(Auth::getDefault()->getUser()->_login(), -2);
+            Translations::setupLang($this->country);
+        }
     }
 
+    /**
+     * @Route("/index")
+     */
+    public function index()
+    {
+        $db = Project::getInstance()->getDB();
+        $t = LanguageText::getTable();
+        $db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+
+
+        if (strpos($this->user, "translator") !== false) {
+            $this->isTranslator = true;
+        }
+
+        return [
+            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
+            "country" => $this->country,
+            $this->isTranslator && "user" => $this->user,
+        ];
+    }
+
+
+
+    /**
+     * @Route("/list")
+     */
     public function list()
     {
         $c = LanguageText::get();
@@ -72,29 +96,52 @@ class PanelStatic extends BaseController
 
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
-        if(count($tmp) == 2){
-            $c->_lang($tmp[1]);
+        if (count($tmp) == 2) {
+            if ($tmp[1] == "ua"){
+                $c->_lang(["ua", "ru"], Criteria::C_IN);
+            } elseif ($tmp[1] == "by") {
+                $c->_lang(["by", "ru"], Criteria::C_IN);
+            } elseif ($tmp[0] == "translator" & $tmp[1] == "ru") {
+                $c->_lang(["lt", "lv", "ee"], Criteria::C_IN);
+                $c->_join(LanguageText::class, ["original" => LanguageText::F_ORIGINAL], "L", null, "LEFT", "and L.lang = 'ru'");
+            } else {
+                $c->_lang($tmp[1]);
+            }
         }
-
 
         $search = $helper->getInputData()["additionalConditions"]["search"];
         if ($search) {
             $c->addSearchCondition([LanguageText::F_ORIGINAL], "%{$search}%", Criteria::C_LIKE);
         }
+
         $data = $helper->getListData($c);
 
         //$data["debug"] = $c->find()->getQuery();
         //$helper->addDefaultOrder(Language::F_NAME);
-        $this->json($data);
+
+        return $data;
     }
 
-    public function uploadLangFile()
+    /**
+     * @Route("/uploadLangFile")
+     */
+    public function uploadLangFile(Request $request)
     {
+        $data = $request->get("data");
+        if ($data["language"] == null){
+            return [
+                "status" => "fail",
+            ];
+        } else {
+        $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
+
+        $currentDate = date("d-m-Y");
+        $currentTime = date("H:i:s");
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
+        $target = "data/translate_uploads/" . $backupName;
 
 
-        $file = $_FILES["file"]["tmp_name"][0];
-
-        //  Read your Excel workbook
+        // file stored
         try {
             $inputFileType = \PHPExcel_IOFactory::identify($file);
             $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
@@ -107,44 +154,46 @@ class PanelStatic extends BaseController
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
 
 
-        $t = $t = LanguageText::getTable();
+        $table = $table = LanguageText::getTable();
         $db = Project::getInstance()->getDB();
 
-        $stm = $db->prepare("update $t set value=? where id=?");
+        $currLang = $data["language"];
+
+        $query = $db->prepare("update $table set value=? where id=? and lang=?");
         $db->beginTransaction();
 
         foreach ($sheetData as $row) {
-            if($row[0]) {
-                //print $row[0]." : ".$row[2]."<br />";
-                $stm->execute([
-                    $row[2],
-                    $row[0],
-
-                ]);
-            }
+            $query->execute([
+                $row[2],
+                $row[0],
+                $currLang,
+            ]);
         }
         $db->commit();
+        move_uploaded_file($file, $target);
 
 
-
-
-        $this->json();
+            return [
+                "status" => "done",
+            ];
+        }
     }
 
-    public function downloadLangFile()
+    /**
+     * @Route("/downloadLangFile")
+     */
+    public function downloadLangFile(Request $request)
     {
-
-        $data = json_decode($this->request["payload"], true);
-
+        //$data = json_decode($request->get("payload"), true);
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()->setCreator("CMS");
         $sh = $objPHPExcel->setActiveSheetIndex(0);
 
         $criteria = LanguageText::get()
-            ->_lang($data["lang"]);
+            ->_lang($request->get("lang"));
 
-        if ($data["onlyEmpty"]) {
+        if ($request->get("onlyEmpty")) {
             $criteria->_value([null, ""], Criteria::C_IN);
         }
         // Add some data
@@ -157,7 +206,6 @@ class PanelStatic extends BaseController
             LanguageText::F_VALUE,
             LanguageText::F_MODULE,
         ];
-
 
         $sh->setCellValueByColumnAndRow(0, 1, "id");
         $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
@@ -188,7 +236,7 @@ class PanelStatic extends BaseController
         $objPHPExcel->setActiveSheetIndex(0);
         // Redirect output to a client’s web browser (Excel5)
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="tłumaczenia_' . $data['lang'] . '.xls"');
+        header('Content-Disposition: attachment;filename="tłumaczenia_' . $request->get("lang"). '.xls"');
         header('Cache-Control: max-age=0');
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
         $objWriter->save("php://output");
@@ -196,11 +244,83 @@ class PanelStatic extends BaseController
 
     }
 
+    /**
+     * @Route("/langBackUp")
+     */
+    public function langBackUp(Request $request)
+    {
+        //$data = json_decode($request->get("payload"), true);
 
-    public function delete()
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("CMS");
+        $sh = $objPHPExcel->setActiveSheetIndex(0);
+
+        $criteria = LanguageText::get()
+            ->_lang($request->get("lang"));
+
+        if ($request->get("onlyEmpty")) {
+            $criteria->_value([null, ""], Criteria::C_IN);
+        }
+        // Add some data
+
+        $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
+
+        $columns = [
+            LanguageText::F_ID,
+            LanguageText::F_ORIGINAL,
+            LanguageText::F_VALUE,
+            LanguageText::F_MODULE,
+        ];
+
+        $sh->setCellValueByColumnAndRow(0, 1, "id");
+        $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
+        $sh->setCellValueByColumnAndRow(2, 1, "Tłumaczenie");
+        $sh->setCellValueByColumnAndRow(3, 1, "Moduł");
+        foreach ($result as $index => $r) {
+            foreach ($columns as $key => $c) {
+                $sh->setCellValueByColumnAndRow($key, $index + 2, $r[$c]);
+            }
+
+            //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
+        }
+        $objPHPExcel->getActiveSheet()->getStyle('B1:D5000')
+            ->getAlignment()->setWrapText(true);
+
+        foreach ($columns as $key => $c) {
+            //$sh->getColumnDimensionByColumn($key)->setAutoSize(true);
+            //$sh->getColumnDimensionByColumn($key)->setWidth(200);
+        }
+
+        $sh->getColumnDimensionByColumn(1)->setWidth(70);
+        $sh->getColumnDimensionByColumn(2)->setWidth(70);
+
+        $currentDate = date("d-m-Y");
+        $currentTime = date("H:i:s");
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $request->get("lang") . ".xls";
+        $target = "data/translate_backups/" . $backupName;
+
+        // Rename worksheet
+        $sh->setTitle('Tłumaczenia ');
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $objPHPExcel->setActiveSheetIndex(0);
+        // Redirect output to a client’s web browser (Excel5)
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="tłumaczeniaa_' . $request->get("lang"). '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save($target);
+        exit;
+
+    }
+
+
+    /**
+     * @Route("/delete")
+     */
+    public function delete(Request $request)
     {
         $elements = LanguageText::get()
-            ->_id($this->request["keys"], Criteria::C_IN)
+            ->_id($request->get("keys"), Criteria::C_IN)
             ->find();
 
         foreach ($elements as $element) {
@@ -210,18 +330,49 @@ class PanelStatic extends BaseController
         $this->json([true]);
     }
 
-    public function inlineUpdate()
+    /**
+     * @Route("/inlineUpdate")
+     */
+    public function inlineUpdate(Request $request)
     {
         $obj = LanguageText::get()
-            ->findByKey($this->request["key"]);
+            ->findByKey($request->get("key"));
 
-        $obj->setValue(LanguageText::F_VALUE, $this->request["newValue"]);
+        $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
         $obj->save();
 
 
         $this->json([1]);
     }
 
+    /**
+     * @Route("/history")
+     */
+    public function history(){
+        $dir = "data/translate_uploads";
 
+        $files = scandir($dir);
+
+        $returnData = [];
+
+        foreach ($files as $file){
+            $slicedFile = explode("_", $file);
+            if (count($slicedFile) >= 3){
+                $returnData[] = [
+                    "full_name" => $file,
+                    "language" => explode(".", $slicedFile[3])[0],
+                    "user" => $slicedFile[2],
+                    "date" => $slicedFile[0],
+                    "time" => $slicedFile[1],
+                ];
+            }
+        }
+
+        return[
+            "countAll" => count($files) - 2,
+            "data" => $returnData,
+            "debug" => false,
+        ];
+    }
 }
 
