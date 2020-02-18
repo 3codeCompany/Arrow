@@ -91,7 +91,7 @@ class MailerController extends Controller
 
             try {
 
-                MailerAPI::send($email, $content, $title, "", "", "", $attachments, $bcc, $logger);
+                MailerAPI::send($email, $content, $title, "", "", "", $attachements, $bcc, $logger);
                 if ($historyObject) {
                     History::addByObject($historyObject, $title, $email, $content);
                 }

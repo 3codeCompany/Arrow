@@ -52,7 +52,6 @@ class MailerController extends Controller
     public function send($conf, $email, $data = [], $historyObject = null, $attachements = [], $bcc = false, LoggerInterface $logger = null)
     {
 
-
         $mailerConf = ConfigProvider::get('communication')['emails']['default'];
 
 
