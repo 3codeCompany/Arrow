@@ -32,13 +32,13 @@ class Kernel
     public static function init()
     {
 
+
         //Router::setupAction();
         ConfigProvider::init();
-        self::$project = new Project((new Services())->buildContainer());
 
+        self::$project = new Project((new Services())->buildContainer());
         self::$project->postInit();
-        //self::$project->setServiceContainer();
-        $router = Router::getDefault(self::$project->getContainer());
+        Router::getDefault(self::$project->getContainer());
 
     }
 
