@@ -2,85 +2,93 @@
 
 namespace Arrow\Common\Layouts;
 
+use App\Models\Common\AdministrationExtensionPoint;
 use Arrow\Access\Models\Auth;
-use Arrow\Models\Action;
-
+use Arrow\ConfigProvider;
+use Arrow\Kernel;
+use Arrow\Models\Project;
+use Arrow\StateProvider;
+use Arrow\Translations\Models\Translations;
 use Arrow\ViewManager;
+use Symfony\Component\HttpFoundation\Request;
+use function array_merge;
+use function file_get_contents;
+use function json_encode;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 
 class ReactComponentLayout extends \Arrow\Models\AbstractLayout
 {
-    private $breadcrumbGenerator;
-    private $view;
 
-    public function createLayout(ViewManager $viewM)
+    private $onlyBody = false;
+
+    public function setOnlyBody($onlyBody)
+    {
+        $this->onlyBody = $onlyBody;
+    }
+
+    public function render()
+    {
+        /** @var Request $request */
+        $request = Project::getInstance()->getContainer()->get(Request::class);
+        if ($request->isXmlHttpRequest()) {
+            return json_encode($this->data);
+        }
+
+        $this->data = array_merge($this->data, ["layout" => $this->prepareData()]);
+        ob_start();
+        include __DIR__ . "/ReactComponentLayout.phtml";
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        return $content;
+
+    }
+
+
+    public function prepareData()
     {
 
-        $this->view = $viewM->get();
-        $viewM->get()->assign("path", $viewM->get()->getPath());
+        $container = Kernel::getProject()->getContainer();
+        $data = [];
+        /** @var Auth $auth */
+        $auth = $container->get(Auth::class);
 
-        //$view->assign("path",$view->getPath());
+        /** @var Session $session */
+        $session = $container->get(Session::class);
 
-        if (!isset($_SESSION["inDev"])) {
-            $_SESSION["inDev"] = false;
-        }
-        if (isset($_REQUEST["inDev"])) {
-            $_SESSION["inDev"] = $_REQUEST["inDev"];
-        }
+        /** @var Request $request */
+        $request = $container->get(Request::class);
 
-        $user = Auth::getDefault()->getUser();
+        $user = $auth->getUser();
+        $data["user"] = $user ? [
+            "login" => $user->_login(),
+            "id" => $user->_id(),
+            "isDev" => $user->isInGroup("Developers")
+        ] : null;
+        $data["config"] = ConfigProvider::get("panel");
 
-        if ($user->isInGroup("Developers")) {
-            $viewM->get()->assign("developer", true);
+        $data["config"] = ConfigProvider::get("panel");
+        $data["onlyBody"] = $this->onlyBody;
+        if ($user) {
+            $data["allowedElements"] = (new AdministrationExtensionPoint())->getPreparedData();
         } else {
-            $viewM->get()->assign("developer", false);
+            $data["allowedElements"] = ["menu" => [], "dashboard" => []];
         }
 
-        $viewM->get()->assign("user", $user);
+        $data["language"] = $session->get("language", "pl");
 
-        /*        try{
-                    $user[User::F_NEED_CHANGE_PASSWORD];
-                }catch (\Exception $ex){
-                    Auth::getDefault()->doLogout();
-                    header("Location: /esotiq/access-/users/account");
-                    exit();
+        $data["languages"] = (new AdministrationExtensionPoint())->getActiveLanguages();
 
-                }*/
+        $data["ARROW_DEV_MODE_FRONT"] = (bool)\getenv("APP_DEBUG_WEBPACK_DEV_SERVER") || $request->cookies->get("ARROW_DEBUG_WEBPACK_DEV_SERVER");
 
-        $manifest = false;
-        $manifestFile = ARROW_DOCUMENTS_ROOT . "/assets/dist/webpack-assets.json";
-        if (file_exists($manifestFile)) {
-            $manifest = json_decode(file_get_contents($manifestFile), true);
+        if (!$data["ARROW_DEV_MODE_FRONT"]) {
+            $tmp = file_get_contents(ARROW_DOCUMENTS_ROOT . "/assets/dist/compilation-hash-{$data["language"]}.txt");
+            $data["jsCompilationData"] = explode("|", $tmp);
         }
 
-        $this->view->assign("webpackManifest", $manifest);
-
-
-
+        return $data;
 
     }
 
-    public function setBreadcrumbGenerateor( BreadcrumbGenerator $generator ){
-        $this->breadcrumbGenerator = $generator;
-    }
-
-    public function generateBreadcrumb( ){
-        if($this->breadcrumbGenerator)
-            return $this->breadcrumbGenerator->generate( $this->view);
-    }
-
-    public function getLayoutFile()
-    {
-        return __DIR__ . "/ReactComponentLayout.phtml";
-    }
-
-    public function getFileName($path)
-    {
-        return $path . ".component.js";
-    }
-
-    public function getFirstTemplateContent( Action $action)
-    {
-        return "";
-    }
 }

@@ -4,9 +4,11 @@ namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Exception;
+use Arrow\Kernel;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Arrow project class
@@ -24,20 +26,8 @@ class Project
 
     const IErrorHandler = "errorHandler";
     const ISessionHandler = "sessionHandler";
-    const IAuthHandler = "authHandler";
     const IAccessHandler = "accessHandler";
     const IExceptionHandler = "exceptionHandler";
-    const IRemoteResponseHandler = "remoteResponseHandler";
-
-
-    const CACHE_REFRESH_CONF = 1;
-    const CACHE_REFRESH_TEMPLATES = 2;
-    const CACHE_REFRESH_STATIC = 4;
-    const CACHE_REFRESH_TEMPLATES_FORCE = 10; //8+2 ( normal template refresh )
-
-
-    public static $cacheFlag = 0;
-
 
     public static $forceDisplayErrors = 1;
 
@@ -47,14 +37,6 @@ class Project
      * @var array
      */
     private $configuration;
-
-
-    /**
-     * Project id
-     *
-     * @var string
-     */
-    private $id;
 
 
     /**
@@ -72,8 +54,6 @@ class Project
      */
     private $defaultDbConnection;
 
-    private $accesManager;
-
 
     private static $instance;
 
@@ -89,24 +69,50 @@ class Project
     }
 
 
-    public function __construct()
+        /**
+     * @var Container
+     */
+    private $serviceContainer;
+
+    /**
+     * @param mixed $serviceContainer
+     */
+    public function setServiceContainer($serviceContainer): void
     {
+        $this->serviceContainer = $serviceContainer;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getContainer(){
+        return $this->serviceContainer;
+    }
+
+    public function __construct($serviceContainer)
+    {
+
+        $this->serviceContainer = $serviceContainer;
         self::$instance = $this;
 
         $this->configuration = ConfigProvider::get();
 
         if ($this->configuration) {
+
             $this->id = $this->configuration["name"];
 
             date_default_timezone_set($this->configuration["timezone"]);
 
             require_once ARROW_APPLICATION_PATH . "/bootstrap.php";
 
+            /*if(!Kernel::isInCLIMode()) {
+                $this->getHandler(self::IErrorHandler);
+                $this->getHandler(self::IExceptionHandler);
+            }*/
             $this->getHandler(self::IErrorHandler);
             $this->getHandler(self::IExceptionHandler);
             //$this->getHandler(self::ISessionHandler);
-            $this->getHandler(self::IAuthHandler);
-            $this->accesManager = $this->getHandler(self::IAccessHandler);
+
 
         }
 
@@ -163,19 +169,12 @@ class Project
     }
 
 
-    /**
-     * Returns access manager
-     *
-     * @return AccessManager
-     */
-    public function getAccessManager()
-    {
-        return $this->accesManager;
-    }
+
 
 
     /**
      * @return Object
+     *
      */
     public function setUpDB($name = false)
     {
@@ -189,6 +188,7 @@ class Project
             $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
         } catch (\Exception $ex) {
             //todo Rozwiązać inaczej :]
+            print $dbConf['dsn']."<br />";
             exit("DB connection problem " . $ex->getMessage());
         }
         $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

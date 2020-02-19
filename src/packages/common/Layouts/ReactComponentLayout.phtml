@@ -1,63 +1,54 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width">
+    <meta charset="utf-8">
+    <title><?= $this->data["layout"]["config"]["title"] ?></title>
+    <? if ($this->data["layout"]["config"]["favicon"]) { ?>
+        <link href="<?= $this->data["layout"]["config"]["favicon"] ?>" rel="icon" type="image/x-icon"/>
+    <? } ?>
+</head>
+<body>
+
 <?
-$baseURL = explode("/", $this->path);
-array_pop($baseURL);
-$baseURL = implode("/", $baseURL);
-
-
-$class = str_replace(["\\", "/",], "_", $this->getPath());
-$class = trim($class, "_");
-
-
-$class = "app_" . $class;
-
-$props = json_encode(
-    array_merge([
-        "baseURL" => $baseURL,
-        "path" => $this->getPath(),
-        "requestURI" => $_SERVER["REQUEST_URI"],
-        "component" => $class
-    ], $this->getVars())
-);
-
-if (isset($_REQUEST["__PROPS_REQUEST__"])) {
-    header('Content-Type: application/json');
-    echo $props;
-    exit();
-}
-
+/** @var \Symfony\Component\HttpFoundation\Request $request */
+$request = \Arrow\Models\Project::getInstance()->getContainer()->get(\Symfony\Component\HttpFoundation\Request::class);
+$data = $this->getData();
+$input = $data;
+unset($input["layout"])
 ?>
+
 
 <script>
     window.reactBackOfficeVar =  <?=json_encode([
-        "appIcon" => "Mail",
-        "appTitle" => "Esotiq - raporty",
-        "appMenu" => [],
-        "appBaseURL" => "//www.esotiq.com",
-        "user" => ["login" => $this["user"]["login"]],
-
-        "baseURL" => $baseURL,
-        "path" => $this->package.$this->path,
-        "requestURI" => $_SERVER["REQUEST_URI"],
-        "component" => $class
-
-    ]) ?>;
-    window.CONTROLS_BASE_LOCATION = '<?=addslashes($this->getPath())?>';
-    window.reactVariable =  <?= $props ?>
+        "basePath" => $request->getBasePath(),
+        "inputProps" => $input,
+        "panel" => [
+            "languages" => $data["layout"]["languages"],
+            "icon" => $data["layout"]["config"]["icon"],
+            "title" => $data["layout"]["config"]["title"],
+            "menu" => $data["layout"]["allowedElements"]["menu"],
+            "dashboard" => $data["layout"]["allowedElements"]["dashboard"],
+            "onlyBody" => $data["layout"]["onlyBody"],
+            "user" => [
+                "login" => $data["layout"]["user"]["login"],
+                "isDev" => $data["layout"]["user"]["isDev"]
+            ],
+        ],
+    ], JSON_PRETTY_PRINT) ?>;
 </script>
 
 <div id="root"></div>
-
 <div id="modal-root"></div>
 
-<script type="text/javascript" src="<?= $this["webpackManifest"]["vendors"]["js"] ?>"></script>
-<link rel="stylesheet" href="<?= $this["webpackManifest"]["vendors"]["css"] ?>"/>
-
-
-
-<? if (  ($this["webpackManifest"] && !$_SESSION["inDev"])) { ?>
-    <script type="text/javascript" src="<?= $this["webpackManifest"]["admin"]["js"] ?>"></script>
-    <link rel="stylesheet" href="<?= $this["webpackManifest"]["admin"]["css"] ?>"/>
+<? if (!$data["layout"]["ARROW_DEV_MODE_FRONT"]) { ?>
+    <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["layout"]["jsCompilationData"][0] ?>"></script>
+<link rel="stylesheet"
+      href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["layout"]["jsCompilationData"][1] ?>.css"/>
 <? } else { ?>
-    <script src="//localhost:3000/bundle.js" crossorigin></script>
+    <script src="https://127.0.0.1:3000/bundle.js" crossorigin></script>
 <? } ?>
 
+
+</body>
+</html>
