@@ -18,10 +18,13 @@ class Helper
 
     private static function generateCache()
     {
-        [$translationsNames, $translationsDescription] = explode(
-            "-----",
-            file_get_contents("/srv/http/3code/esotiq.com/data/atom-translations.txt")
-        );
+        $contentsFile = "/srv/http/3code/esotiq.com/data/atom-translations.txt";
+        if (isset($_SERVER["HTTP_HOST"]) && $_SERVER["HTTP_HOST"] == "betaeso.com") {
+            $contentsFile = "http://esolocal.com/data/atom-translations.txt";
+        }
+
+        [$translationsNames, $translationsDescription] = explode("-----", file_get_contents($contentsFile));
+
         $product = explode(PHP_EOL, $translationsNames);
         foreach ($product as $k => $p) {
             $product[$k] = trim(preg_replace('/\s\s+/', ' ', $p));
