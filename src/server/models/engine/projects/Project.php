@@ -26,10 +26,11 @@ class Project
 
     const IErrorHandler = "errorHandler";
     const ISessionHandler = "sessionHandler";
-    const IAccessHandler = "accessHandler";
+
     const IExceptionHandler = "exceptionHandler";
 
     public static $forceDisplayErrors = 1;
+    public static bool $onlyAppRoutes = false;
 
     private $postInit = [];
 
@@ -106,13 +107,18 @@ class Project
         $this->configuration = ConfigProvider::get();
 
 
+
+
         if ($this->configuration) {
 
             $this->id = $this->configuration["name"];
 
             date_default_timezone_set($this->configuration["timezone"]);
 
+
+
             require_once ARROW_APPLICATION_PATH . "/bootstrap.php";
+
 
             /*if(!Kernel::isInCLIMode()) {
                 $this->getHandler(self::IErrorHandler);

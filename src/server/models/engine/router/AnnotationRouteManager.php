@@ -8,7 +8,6 @@
 
 namespace Arrow\Models;
 
-
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Symfony\Component\Config\FileLocator;
@@ -18,8 +17,6 @@ use Symfony\Component\Routing\Router;
 
 class AnnotationRouteManager
 {
-
-
     /**
      * @var Router
      */
@@ -35,8 +32,11 @@ class AnnotationRouteManager
         $packages = Project::getInstance()->getPackages();
 
         $sourceFolders[] = ARROW_APPLICATION_PATH . '/Controllers';
-        foreach ($packages as $name => $dir) {
-            $sourceFolders[] = ARROW_PROJECT . "/" . $dir . "/Controllers";
+
+        if (!Project::$onlyAppRoutes) {
+            foreach ($packages as $name => $dir) {
+                $sourceFolders[] = ARROW_PROJECT . "/" . $dir . "/Controllers";
+            }
         }
 
         AnnotationRegistry::registerLoader('class_exists');
@@ -47,12 +47,7 @@ class AnnotationRouteManager
         $context = new RequestContext();
         $context->fromRequest($request);
 
-        $this->router = new Router(
-            $loader,
-            $sourceFolders,
-            ['cache_dir' => ARROW_CACHE_PATH . "/symfony"],
-            $context
-        );
+        $this->router = new Router($loader, $sourceFolders, ['cache_dir' => ARROW_CACHE_PATH . "/symfony"], $context);
     }
 
     /**
@@ -63,10 +58,8 @@ class AnnotationRouteManager
         return $this->router;
     }
 
-
     public function exposeRouting()
     {
-
         //$file = ARROW_CACHE_PATH . "/symfony/route.json";
         //if ($this->inDevMode || !file_exists($file)) {
         $col = $this->router->getRouteCollection();
@@ -75,21 +68,19 @@ class AnnotationRouteManager
         foreach ($col as $route) {
             $defaults = $route->getDefaults();
 
-            $tmp = new \ReflectionMethod ($defaults["_controller"], $defaults["_method"]);
+            $tmp = new \ReflectionMethod($defaults["_controller"], $defaults["_method"]);
 
             $templatePath = Action::generateTemplatePath($defaults);
             $defaults["_debug"] = [
                 "file" => str_replace(ARROW_PROJECT, "", $tmp->getFileName()),
                 "line" => $tmp->getStartLine(),
                 "template" => Action::generateTemplatePath($defaults),
-                "componentExists" => file_exists(ARROW_PROJECT ."/". $templatePath . ".component.tsx"),
-                "templateExists" => file_exists(ARROW_PROJECT . $templatePath . ".phtml"),
+                "componentExists" => file_exists(ARROW_PROJECT . "/" . $templatePath . ".component.tsx"),
+                "templateExists" => file_exists(ARROW_PROJECT . $templatePath . ".phtml")
             ];
             $jsCache[$route->getPath()] = $defaults;
         }
 
         return $jsCache;
-
     }
-
 }
