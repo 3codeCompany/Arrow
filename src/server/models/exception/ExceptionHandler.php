@@ -37,15 +37,15 @@ class ExceptionHandler
 
     private function __construct()
     {
-        $d = Debug::enable();
+        if (ARROW_IN_DEV_STATE) {
+            Debug::enable();
+            \Symfony\Component\ErrorHandler\ErrorHandler::register();
+        } else {
+            set_exception_handler(array($this, "displayException"));
+            register_shutdown_function([&$this, "fatalHandler"]);
+        }
 
 
-//        $x = \Symfony\Component\ErrorHandler\ErrorHandler::register();
-
-
-
-        //set_exception_handler(array($this, "displayException"));
-        //register_shutdown_function([&$this, "fatalHandler"]);
     }
 
     public function fatalHandler()
@@ -63,7 +63,7 @@ class ExceptionHandler
             $errline = $error["line"];
             $errstr = $error["message"];
             $error["url"] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli';
-            $error["backtrace"] =  debug_print_backtrace();
+            $error["backtrace"] = debug_print_backtrace();
             $error["request"] = $_REQUEST;
 
             $this->logError($error, $error["message"]);
@@ -111,16 +111,8 @@ class ExceptionHandler
         $runConf = \Arrow\Kernel::getRunConfiguration();
         //$str .= "<div style='margin-top: 20px;'><a href='http://localhost:8091/?message={$exception->getFile()}:{$exception->getLine()}' target='_blank' >Go to error</a></div>";
 
-        $str .=
-            "<div style='margin-top: 20px;'><b>File:</b> " .
-            $exception->getFile() .
-            ":" .
-            $exception->getLine() .
-            "</div>";
-        $str .=
-            "<div style='margin-top: 20px;'><b>Run configuration:</b> " .
-            \Arrow\Kernel::getRunConfiguration() .
-            "</div>";
+        $str .= "<div style='margin-top: 20px;'><b>File:</b> " . $exception->getFile() . ":" . $exception->getLine() . "</div>";
+        $str .= "<div style='margin-top: 20px;'><b>Run configuration:</b> " . \Arrow\Kernel::getRunConfiguration() . "</div>";
 
         $str .= "<div style='margin-top: 20px;'>" . $this->printRequest() . "</div>";
         $str .= "<div style='margin-top: 20px;'>" . $this->stackTrace($exception) . "</div>";
@@ -159,11 +151,9 @@ class ExceptionHandler
 
         $cli = \Arrow\Kernel::isInCLIMode();
 
-        if(!$cli) {
+        if (!$cli) {
             header("X-Arrow-Error: 1");
         }
-
-
 
         if ($this->clearOutput && !$cli) {
             while (ob_get_level()) {
@@ -190,21 +180,15 @@ class ExceptionHandler
                         "file" => $exception->getFile(),
                         "code" => $exception->getCode(),
                         "trace" => $exception->getTraceAsString(),
-                        "parameters" => $exception instanceof Exception ? $exception->getData() : [],
-                    ],
+                        "parameters" => $exception instanceof Exception ? $exception->getData() : []
+                    ]
                 ]);
                 exit();
             }
         }
 
         ob_start();
-        print "<!--\n" .
-            $exception->getMessage() .
-            "\n" .
-            $exception->getFile() .
-            ":" .
-            $exception->getLine() .
-            "\n-->\n\n\n";
+        print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";
         print $this->getHead();
         print $this->printDeveloperMessage($exception);
         print $this->getFooter();
@@ -225,19 +209,10 @@ class ExceptionHandler
         exit();
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
-        } elseif (
-            \Arrow\RequestContext::getDefault()->isXHR() &&
-            $exception instanceof \Arrow\Models\ApplicationException
-        ) {
+        } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
             $this->printXHRException($exception);
         } else {
-            print "<!--\n" .
-                $exception->getMessage() .
-                "\n" .
-                $exception->getFile() .
-                ":" .
-                $exception->getLine() .
-                "\n-->\n\n\n";
+            print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";
             print $this->getHead();
             echo '<h1>Exception occured</h1>';
             if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
@@ -331,8 +306,8 @@ class ExceptionHandler
         $ret = array(
             "exception" => array(
                 "message" => $exception->getMessage(),
-                "parameters" => $exception->getContent()->getParameters(),
-            ),
+                "parameters" => $exception->getContent()->getParameters()
+            )
         );
         print json_encode($ret);
         exit();
@@ -357,11 +332,7 @@ class ExceptionHandler
         $refresh .= '<input type="submit" value="request again __ARROW_SUBMIT__" style="float: left;" />';
         $refresh .= '</form>';
 
-        $refreshNewWindow = str_replace(
-            array("__ARROW_TARGET__", "__ARROW_SUBMIT__"),
-            array('target="_blank"', "[new window]"),
-            $refresh
-        );
+        $refreshNewWindow = str_replace(array("__ARROW_TARGET__", "__ARROW_SUBMIT__"), array('target="_blank"', "[new window]"), $refresh);
         $refresh = str_replace(array("__ARROW_TARGET__", "__ARROW_SUBMIT__"), array("", ""), $refresh);
 
         $str = "<h3><div style='float: left;'> Request</div> {$refresh}  {$refreshNewWindow}</h3><div style='clear: both;'></div><table>";
