@@ -30,7 +30,7 @@ class Project
     const IExceptionHandler = "exceptionHandler";
 
     public static $forceDisplayErrors = 1;
-    public static bool $onlyAppRoutes = false;
+    public static $onlyAppRoutes = false;
 
     private $postInit = [];
 
