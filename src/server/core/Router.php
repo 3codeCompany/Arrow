@@ -5,20 +5,13 @@ namespace Arrow;
 use Arrow\Models\AbstractLayout;
 use Arrow\Models\Action;
 use Arrow\Models\AnnotationRouteManager;
-use Arrow\Models\AnnotationsDirectoriesLoader;
-use Arrow\Models\AnnotationsRouteLoader;
 use Arrow\Models\IResponseHandler;
 use Arrow\Models\Project;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use function var_dump;
 
 /**
  * Router
@@ -73,8 +66,8 @@ class Router
 
         $this->request = $this->container->get(Request::class);
 
-        $annotatonRouteManager = new AnnotationRouteManager($this->request);
-        $this->symfonyRouter = $annotatonRouteManager->getRouter();
+        $annotationRouteManager = new AnnotationRouteManager($this->request);
+        $this->symfonyRouter = $annotationRouteManager->getRouter();
     }
 
     public function getBasePath()
