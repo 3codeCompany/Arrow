@@ -89,6 +89,11 @@ class Router
         exit();
     }
 
+    public function getRouteData()
+    {
+        return $this->action->routeParameters;
+    }
+
     private function symfonyRouter($path)
     {
         try {
