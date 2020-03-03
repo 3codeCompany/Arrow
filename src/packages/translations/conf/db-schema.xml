@@ -43,6 +43,7 @@
         <field name="name" type="VARCHAR" size="50"/>
         <field name="currency" type="VARCHAR" size="3"/>
         <field name="currency_symbol" type="VARCHAR" size="50"/>
+        <field name="languages" type="VARCHAR" size="50"/>
         <field name="language_1" type="VARCHAR" size="3"/>
         <field name="language_2" type="VARCHAR" size="3"/>
         <field name="free_delivery_price" type="DOUBLE"/>
