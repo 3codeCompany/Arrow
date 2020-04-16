@@ -447,7 +447,7 @@ class MediaAPI
         return !empty($result) ? $result[$obj->getPKey()] : [];
     }
 
-    public static function prepareMedia($objSet, $namesToGet = null, $limit = null, $assignToParam = true)
+    public static function prepareMedia($objSet, $namesToGet = null, $class = null)
     {
 
 
@@ -464,7 +464,7 @@ class MediaAPI
         }
 
 
-        $class = get_class($first);
+        $class = $class ?? get_class($first);
         $tmp = explode('\\', $class);
         $class = end($tmp);
 
@@ -480,9 +480,7 @@ class MediaAPI
         foreach ($objSet as $obj) {
             if ($obj) {
                 $keys[$obj->getPKey()] = $obj;
-                if ($assignToParam) {
-                    $obj->setParameter(self::MEDIA_VAR, array());
-                }
+                $obj->setParameter(self::MEDIA_VAR, array());
             }
         }
 
@@ -494,6 +492,7 @@ class MediaAPI
 
 
         $limitQ = "";
+        $limit = null;
         if ($limit == 1) {
             $limitQ = " group by media_element_connections.`object_id`";
         } elseif ($limit > 1) {
@@ -523,6 +522,7 @@ class MediaAPI
         //media_element_connections.`model` = '" . addslashes($class) . "'
 
 
+
         $result = $db->query($q);
 
         // print_r($result);
@@ -544,7 +544,7 @@ class MediaAPI
 
 
         }
-
+        $assignToParam = true;
         $return = $assignToParam ? null : [];
 
         foreach ($tmp as $objId => &$elements) {
