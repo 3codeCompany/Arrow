@@ -37,13 +37,10 @@ class ExceptionHandler
 
     private function __construct()
     {
-        if (ARROW_IN_DEV_STATE) {
-            Debug::enable();
-            \Symfony\Component\ErrorHandler\ErrorHandler::register();
-        } else {
+
             set_exception_handler(array($this, "displayException"));
-            register_shutdown_function([&$this, "fatalHandler"]);
-        }
+           register_shutdown_function([&$this, "fatalHandler"]);
+
 
 
     }

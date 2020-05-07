@@ -210,4 +210,12 @@ class TableListORMHelper
     }
 
 
+    public function getDataOnPage(){
+        return $this->inputData["onPage"] ?? 25;
+    }
+    public function getDataCurrentPage(){
+        return $this->inputData["currentPage"];
+    }
+
+
 }
