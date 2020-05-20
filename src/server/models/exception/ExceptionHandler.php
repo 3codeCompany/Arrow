@@ -5,6 +5,7 @@ use Arrow\Access\Models\Auth;
 use Arrow\Router;
 use Monolog\Formatter\LineFormatter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class ExceptionHandler
 {
@@ -141,6 +142,7 @@ class ExceptionHandler
     {
         $this->log($exception);
 
+
         $cli = \Arrow\Kernel::isInCLIMode();
 
         if ($this->clearOutput && !$cli) {
@@ -169,14 +171,22 @@ class ExceptionHandler
         //zmienić aby było pobierane przez handlery
         $user = null;
 
+        if (($_SERVER["HTTP_HOST"] == "betaeso.com")) {
+            print $this->getHead() . $this->printDeveloperMessage($exception) . $this->getFooter();
+        }
+
+        print $this->printPublicMinimumMessage();
+        exit();
+
+
         $user = Auth::getDefault()->getUser();
 
 
         //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
         //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
 
-        print $this->getHead() . $this->printDeveloperMessage($exception) . $this->getFooter();
-        exit();
+
+
         if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
             print $this->printPublicMinimumMessage();
         } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
@@ -200,6 +210,9 @@ class ExceptionHandler
 
     private function logError($exception, $contents)
     {
+        if ($exception instanceof ResourceNotFoundException) {
+            return true;
+        }
         $dir = ARROW_DOCUMENTS_ROOT . "/data/logs/errors/" . date("Y-m-d");
         $logFile = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
 

@@ -122,8 +122,10 @@ class SessionHandler
             session_id(md5(microtime().rand(1,10000)));
             $sessionHash = session_id();
         }
+        //$data = $this->db->query("select id,value,user_id from access_sessions where hash='".$sessionHash."'")->fetch(\PDO::FETCH_NUM);
 
-        $data = $this->db->query("select id,value,user_id from access_sessions where hash='".$sessionHash."'")->fetch(\PDO::FETCH_NUM);
+        $addr = isset($_SERVER['REMOTE_ADDR'])?inet_pton ($_SERVER['REMOTE_ADDR']):'NULL';
+        $data = $this->db->query("select id,value,user_id from access_sessions where hash='".$sessionHash."' and ip='".$addr."'")->fetch(\PDO::FETCH_NUM);
 
         if (empty($data)) {
             $addr = isset($_SERVER['REMOTE_ADDR'])?inet_pton ($_SERVER['REMOTE_ADDR']):'NULL';
