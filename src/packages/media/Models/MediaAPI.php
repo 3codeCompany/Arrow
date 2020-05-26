@@ -2,6 +2,7 @@
 
 namespace Arrow\Media\Models;
 
+use Arrow\Access\Models\Auth;
 use function array_keys;
 use Arrow\Kernel;
 use Arrow\Models\DB;
@@ -12,10 +13,8 @@ use Arrow\ORM\Persistent\PersistentObject;
 use Arrow\Package\Application\Product;
 use Arrow\Utils\Models\Images\ImageTransform;
 
-
 class MediaAPI
 {
-
     const VERSIONS_VAR = "ver";
     const MEDIA_VAR = "media";
 
@@ -25,7 +24,6 @@ class MediaAPI
     const ELEMENTS_PATH = 2;
     const VERSIONS = 4;
     const VERSIONS_PATH = 8;
-
 
     const NONE = 0;
     const ALL = 1;
@@ -64,7 +62,6 @@ class MediaAPI
     {
         self::$basePath = $basePath;
     }
-
 
     /**
      * Returns root folder
@@ -105,29 +102,28 @@ class MediaAPI
         $folder = new Folder(array(
             Folder::F_SYSTEM_NAME => $systemName,
             Element::F_NAME => $name,
-            Folder::F_PARENT_ID => $parent->getPKey(),
+            Folder::F_PARENT_ID => $parent->getPKey()
         ));
         $folder->save();
         return $folder;
     }
-
 
     public static function setObjectFile($object, $connName, $uploadName, $uploadPath)
     {
         $media = MediaAPI::getMedia($object);
         if (isset($media[$connName])) {
             foreach ($media[$connName] as $el) {
-                Element::get()->findByKey($el["id"])->delete();
+                Element::get()
+                    ->findByKey($el["id"])
+                    ->delete();
             }
         }
 
         return Element::uploadToObject($object, $connName, $uploadName, $uploadPath);
     }
 
-
     public static function removeFilesFromObject($object, $connName = false)
     {
-
         $tmp = explode('\\', $object::getclass());
         $class = end($tmp);
 
@@ -138,17 +134,13 @@ class MediaAPI
             $criteria->_name($connName);
         }
 
-        $conn = $criteria
-            ->findAsFieldArray(ElementConnection::F_ELEMENT_ID, true);
-
+        $conn = $criteria->findAsFieldArray(ElementConnection::F_ELEMENT_ID, true);
 
         $connId = array_keys($conn);
-
 
         $ele = Element::get()
             ->_id($conn, Criteria::C_IN)
             ->find();
-
 
         foreach ($ele as $e) {
             $e->delete();
@@ -161,8 +153,6 @@ class MediaAPI
         foreach ($elements as $e) {
             $e->delete();
         }
-
-
     }
 
     public static function addFileToObject($object, $connName, $uploadName, $uploadPath)
@@ -178,7 +168,6 @@ class MediaAPI
             $parent = Criteria::query(Folder::getClass())->findByKey($parent);
         }
 
-
         $fileSysName = basename($filePath);
 
         $tmp = explode(".", $newFileName);
@@ -193,14 +182,12 @@ class MediaAPI
 
         $filename = \Arrow\Utils\StringHelper::toValidFilesystemName($filename);
 
-
         //$el = Element::create(array(
         /*$el = \Arrow\Package\Database\ProjectPersistent::create(array(
              Element::F_FOLDER_ID => $parent->getPKey(),
              Element::F_NAME => $explodedName[0],
              Element::F_FILE => $filename
         ), Element::TCLASS);*/
-
 
         $el->setValues(array(
             Element::F_FOLDER_ID => $parent->getPKey(),
@@ -216,12 +203,14 @@ class MediaAPI
         $criteria->addCondition(Element::F_FOLDER_ID, $el[Element::F_FOLDER_ID]);
         $test = $criteria->find();
 
-
         $path = $parent["path"] . "/" . $el[Element::F_FILE];
-        if ($path != $filePath) { /*for import*/
+        if ($path != $filePath) {
+            /*for import*/
             while (file_exists($path) || !empty($test)) {
                 if (isset($explodedName[1])) {
-                    $el[Element::F_FILE] = \Arrow\Utils\StringHelper::toValidFilesystemName($explodedName[0] . "($i)." . $explodedName[1]);
+                    $el[Element::F_FILE] = \Arrow\Utils\StringHelper::toValidFilesystemName(
+                        $explodedName[0] . "($i)." . $explodedName[1]
+                    );
                 } else {
                     $el[Element::F_FILE] = \Arrow\Utils\StringHelper::toValidFilesystemName($explodedName[0] . "($i)");
                 }
@@ -238,7 +227,6 @@ class MediaAPI
                 if ($i > 200) {
                     throw new \Arrow\Exception("[MediaApi] Istenieje 200 wersji uploodowanego pliku :" . $path);
                 }
-
             }
         }
         if (!copy($filePath, $path) && !file_exists($path) /*import*/) {
@@ -249,13 +237,11 @@ class MediaAPI
         $el[Element::F_PATH] = $path;
         $el->save();
 
-
         //if($el->isImage())
         //	$el->createSystemMiniature();
 
         $el[Element::F_SORT] = $el->getPKey();
         $el->save();
-
 
         return $el;
     }
@@ -282,7 +268,6 @@ class MediaAPI
             $el[Element::F_FILE] = $explodedName[0] . "($i)." . $explodedName[1];
             $el[Element::F_NAME] = $explodedName[0] . "($i)";
 
-
             $criteria = new Criteria();
             $criteria->addCondition(Element::F_FILE, $el[Element::F_FILE]);
             $criteria->addCondition(Element::F_FOLDER_ID, $newParent["id"]);
@@ -293,7 +278,6 @@ class MediaAPI
             if ($i > 100) {
                 return;
             }
-
         }
         if (file_exists($el[Element::F_PATH])) {
             if (!rename($el[Element::F_PATH], $path)) {
@@ -301,13 +285,11 @@ class MediaAPI
             }
         }
 
-
         if (file_exists($el->getSystemMiniature())) {
             if (!rename($el->getSystemMiniature(), dirname($path) . "/mf_mini" . $el["id"] . ".jpg")) {
                 throw new \Arrow\Exception(array("msg" => "File copy error", "file" => $el[Element::F_PATH]));
             }
         }
-
 
         $old = mysql_escape_string(dirname($el[Element::F_PATH]));
         $new = mysql_escape_string(dirname($path));
@@ -334,7 +316,6 @@ class MediaAPI
         $el[Element::F_PATH] = $path;
         $el->save();
     }
-
 
     /**
      * Returns folder with given system name
@@ -397,14 +378,16 @@ class MediaAPI
         $criteria->addCondition(ElementConnection::F_MODEL, $obj["model"]);
         $criteria->addCondition(ElementConnection::F_OBJECT_ID, $obj["ids"], Criteria::C_IN);
         $criteria2 = new Criteria('Arrow\Media\Element');
-        $meds = Element::getDataSetByCriteria(new \Arrow\ORM\JoinCriteria(array($criteria2, $criteria)), Element::TCLASS);
+        $meds = Element::getDataSetByCriteria(
+            new \Arrow\ORM\JoinCriteria(array($criteria2, $criteria)),
+            Element::TCLASS
+        );
         $retm = array();
         foreach ($meds as $m) {
             $retm[$m["ElementConnection:object_id"]][] = $m;
         }
         return $retm;
     }
-
 
     /**
      * Returns media elements connected with object
@@ -438,7 +421,6 @@ class MediaAPI
         }
 
         return $result;
-
     }
 
     public static function getMedia(PersistentObject $obj)
@@ -449,8 +431,6 @@ class MediaAPI
 
     public static function prepareMedia($objSet, $namesToGet = null, $class = null)
     {
-
-
         if (empty($objSet)) {
             return false;
         }
@@ -463,19 +443,17 @@ class MediaAPI
             exit();
         }
 
-
         $class = $class ?? get_class($first);
         $tmp = explode('\\', $class);
         $class = end($tmp);
 
-        if($first instanceof InterfaceIdentifiableClass) {
+        if ($first instanceof InterfaceIdentifiableClass) {
             $class = $first->getClassID();
         }
 
-
-
-        $db = Kernel::getProject()->getContainer()->get(DB::class);
-
+        $db = Kernel::getProject()
+            ->getContainer()
+            ->get(DB::class);
 
         foreach ($objSet as $obj) {
             if ($obj) {
@@ -484,12 +462,10 @@ class MediaAPI
             }
         }
 
-
         $connName = "";
         if (is_array($namesToGet)) {
             $connName = "AND media_element_connections.`name` IN ('" . implode("','", $namesToGet) . "')";
         }
-
 
         $limitQ = "";
         $limit = null;
@@ -499,7 +475,8 @@ class MediaAPI
             throw new \Arrow\Exception("[MediaApi] Limits [nand] > x > 1 not implemented");
         }
 
-        $q = "
+        $q =
+            "
 		SELECT 
 		media_element_connections.`id` as 'Conn:id', 
 		media_element_connections.`name` AS `Conn:name`, 
@@ -513,15 +490,17 @@ class MediaAPI
 		FROM media_elements
 		left JOIN media_element_connections ON (media_elements.id=media_element_connections.element_id ) 
 		WHERE
-		media_element_connections.`model` like '%" . addslashes($class) . "'
-		AND media_element_connections.`object_id` IN ('" . implode("','", array_keys($keys)) . "')
+		media_element_connections.`model` like '%" .
+            addslashes($class) .
+            "'
+		AND media_element_connections.`object_id` IN ('" .
+            implode("','", array_keys($keys)) .
+            "')
 		{$connName} 
 		{$limitQ}
 		ORDER BY  media_element_connections.`sort` ASC,media_elements.sort ASC";
         //@todo usunąć like i przeyrócić = ( zmieniły się nazwy klas i problem jest )
         //media_element_connections.`model` = '" . addslashes($class) . "'
-
-
 
         $result = $db->query($q);
 
@@ -539,13 +518,14 @@ class MediaAPI
             $tmp[$row["Conn:object_id"]][$row["Conn:name"]][$row["Element:id"]]["name"] = $row["Element:name"];
 
             if (isset($row["Element:path"])) {
-                $tmp[$row["Conn:object_id"]][$row["Conn:name"]][$row["Element:id"]]["path"] = self::$basePath . $row["Element:path"];
+                $tmp[$row["Conn:object_id"]][$row["Conn:name"]][$row["Element:id"]]["path"] =
+                    self::$basePath . $row["Element:path"];
             }
-
-
         }
+
+        //print_r($tmp);
         $assignToParam = true;
-        $return = $assignToParam ? null : [];
+        $return = [];
 
         foreach ($tmp as $objId => &$elements) {
             foreach ($elements as $name => $values) {
@@ -553,18 +533,12 @@ class MediaAPI
             }
             //print_r($elements);
 
-            if ($assignToParam) {
-                $keys[$objId]->setParameter(self::MEDIA_VAR, $elements);
-            } else {
-                $return[$objId] = $elements;
-            }
+            $keys[$objId]->setParameter(self::MEDIA_VAR, $elements);
+            $return[$objId] = $elements;
         }
 
         return $return;
-
-
     }
-
 
     public static function prepareObjSetElements($objSet, $name, $arrVersions = self::NONE)
     {
@@ -617,14 +591,17 @@ class MediaAPI
             $nameCondition = "media_element_connections.`name` = '{$name}' AND";
         }
 
-        $q = "
+        $q =
+            "
 			SELECT media_elements.`path` , media_element_connections.`name` , media_element_connections.`object_id`
 			FROM media_elements 
 			left JOIN media_element_connections ON (media_elements.id=media_element_connections.element_id ) 
 			WHERE 
 			{$nameCondition}
 			media_element_connections.`model` = '{$obj->getModel()}'  
-			AND media_element_connections.`object_id` IN ('" . implode("','", array_keys($keys)) . "')
+			AND media_element_connections.`object_id` IN ('" .
+            implode("','", array_keys($keys)) .
+            "')
 			ORDER BY media_element_connections.`sort` ASC
 			";
         $res = SqlRouter::toArray(SqlRouter::query($q));
@@ -640,9 +617,7 @@ class MediaAPI
         }
 
         return true;
-
     }
-
 
     public static function copyConnections($sourceObj, $targetObj)
     {
@@ -660,12 +635,15 @@ class MediaAPI
 
     public static function addObjectElementConnection($object, $element, $connectionName = "noname")
     {
-        return ElementConnection::create(array(
-            ElementConnection::F_ELEMENT_ID => $element->getPKey(),
-            ElementConnection::F_MODEL => $object->getModel(),
-            ElementConnection::F_OBJECT_ID => $object->getPKey(),
-            ElementConnection::F_NAME => $connectionName
-        ), ElementConnection::TCLASS)->save();
+        return ElementConnection::create(
+            array(
+                ElementConnection::F_ELEMENT_ID => $element->getPKey(),
+                ElementConnection::F_MODEL => $object->getModel(),
+                ElementConnection::F_OBJECT_ID => $object->getPKey(),
+                ElementConnection::F_NAME => $connectionName
+            ),
+            ElementConnection::TCLASS
+        )->save();
     }
 
     public static function removeFileSystemDir($dir)
@@ -686,12 +664,9 @@ class MediaAPI
 
     public static function synchronize($foldersOnly = true)
     {
-
-
         $dirsList = self::synchronizeFolders($folder);
 
         //self::synchronizeFiles($dirsList);
-
     }
 
     public static function getFilesToSynchronize($path, $folderId)
@@ -735,7 +710,6 @@ class MediaAPI
 
     private static function synchronizeFiles($path)
     {
-
         //foreach( $dirsList as $path){
         $list = glob($path . '/*', GLOB_NOSORT);
         foreach ($list as $file) {
@@ -744,8 +718,6 @@ class MediaAPI
             }
         }
         //}
-
-
     }
 
     public static function synchronizeFolders($folder = null)
@@ -785,7 +757,6 @@ class MediaAPI
         return $dbPaths;
     }
 
-
     private static function createFolderFromFileSys($dir, &$currDbDirs)
     {
         $elements = explode("/", $dir);
@@ -805,9 +776,13 @@ class MediaAPI
         }
 
         if ($parent_id == false) {
-            throw new \Arrow\Exception(array("msg" => "Synchronization failed", "name" => $name, "dir" => $dir, "dbDirs" => $currDbDirs));
+            throw new \Arrow\Exception(array(
+                "msg" => "Synchronization failed",
+                "name" => $name,
+                "dir" => $dir,
+                "dbDirs" => $currDbDirs
+            ));
         }
-
 
         $data = array(
             "parent_id" => $parent_id,
@@ -819,7 +794,6 @@ class MediaAPI
 
     private static function findDirectiories($path)
     {
-
         $list = glob($path . '/*', GLOB_ONLYDIR);
         foreach ($list as $file) {
             $list = array_merge($list, self::findDirectiories($file));
@@ -841,12 +815,8 @@ class MediaAPI
         }
     }
 
-
     public static function getMini($path, $width, $height, $crop = false, $points = false)
     {
-
-
-
         if (!file_exists($path)) {
             $_path = str_replace(self::$basePath, self::$baseURL, $path);
 
@@ -855,20 +825,22 @@ class MediaAPI
             }
         }
 
-
         //http://static.esotiq.com/data//System/Arrow_Package_Application_Product/18724-99X.jpg
         ///var/www/static/./data/uploads/System/Arrow_Package_Application_Category/18724-99X-1.jpg
 
         $dir = ARROW_CACHE_PATH . "/img/";
         $info = pathinfo($path);
-        $file = $dir . str_replace(".", "-{$width}x{$height}" . ($crop ? "_crop" : "") . ($points ? implode("_", $points) : "") . ".", $info['basename']);
+        $file =
+            $dir .
+            str_replace(
+                ".",
+                "-{$width}x{$height}" . ($crop ? "_crop" : "") . ($points ? implode("_", $points) : "") . ".",
+                $info['basename']
+            );
         //$file = $dir . str_replace(".", "-{$width}x{$height}".($crop?"_crop":"").($points?implode("_",$points):"").".", $info['filename'].".png");
         $file = str_replace(array("(", ")"), array("_", "_"), $file);
 
-
         if (!file_exists($file)) {
-
-
             $imTransform = new ImageTransform();
             $imTransform->load($path);
             $imTransform->setTargetFile($file);
@@ -894,10 +866,7 @@ class MediaAPI
             } else {
                 $imTransform->resizeToWidth = $width;
                 $imTransform->resizeToHeight = $height;
-
             }
-
-
 
             @$imTransform->resize();
 
@@ -907,9 +876,7 @@ class MediaAPI
             }
         }
         return ltrim(str_replace(ARROW_DOCUMENTS_ROOT, "", $file), "/");
-
     }
-
 
     /*
 
@@ -1062,7 +1029,6 @@ class MediaAPI
 
 
     */
-
 }
 
 ?>
