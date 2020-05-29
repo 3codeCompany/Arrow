@@ -143,7 +143,6 @@ class Translations
 
     public static function translateObjectsList($list, $class = false, $lang = false, $debug = false, $placeholderLang = "en")
     {
-
         if (!$lang) {
             $lang = self::$currLanguage;
         }
@@ -153,11 +152,9 @@ class Translations
         }
 
 
-        if (empty($list)) {
+        if (empty($list) || count($list) == 0) {
             return $list;
         }
-
-
 
         //geting first element
         $first = null;
