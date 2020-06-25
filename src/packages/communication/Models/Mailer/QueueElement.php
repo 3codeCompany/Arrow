@@ -17,7 +17,7 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
     public function __construct($data = null, ?array $parameters = null)
     {
         parent::__construct($data, $parameters);
-        $this->folder = ARROW_PROJECT . "/data/mailerQueue/" . date("Y-m");
+        $this->folder =  "/email-content/mailerQueue/" . date("Y-m");
 
     }
 
@@ -35,7 +35,7 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
     public function getContent()
     {
 
-        $this->folder = ARROW_PROJECT . "/data/mailerQueue/" .date("Y-m", strtotime($this["created"]));
+        $this->folder =  "/email-content/mailerQueue/" .date("Y-m", strtotime($this["created"]));
 
         $file = $this->folder . "/" . $this->_id() . ".txt";
         if (file_exists($file)) {
