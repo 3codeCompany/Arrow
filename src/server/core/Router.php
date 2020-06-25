@@ -102,7 +102,7 @@ class Router
             if($path == "/404") {
                 exit("Route not found: `" . $path . "`");
             }else{
-                $errorPage = "https://".$_SERVER["HTTP_HOST"]."/404";
+                $errorPage = "https://".$_SERVER["HTTP_HOST"]."/404?from=".$_SERVER["REQUEST_URI"];
                 header("Location: ".$errorPage);
                 exit();
             }
