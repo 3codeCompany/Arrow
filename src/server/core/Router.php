@@ -99,7 +99,13 @@ class Router
         try {
             $result = $this->symfonyRouter->match($path);
         } catch (ResourceNotFoundException $ex) {
-            exit("Route not found: `" . $path . "`");
+            if($path == "/404") {
+                exit("Route not found: `" . $path . "`");
+            }else{
+                $errorPage = "https://".$_SERVER["HTTP_HOST"]."/404";
+                header("Location: ".$errorPage);
+                exit();
+            }
         }
 
         return new Action($result["_package"], $result["_controller"], $result["_method"], $path, $result);
