@@ -38,7 +38,7 @@ class FilesORMConnector
     private $inputNamespace;
 
     private $encodeFileName = true;
-    private $targetFolder = ARROW_DATA_PATH . "/uploads/storage";
+    private $targetFolder =  "/files/storage";
     private $useRelativePath = true;
     private $downloadPathGenerator;
     private $registredNames = [];
