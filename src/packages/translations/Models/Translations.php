@@ -143,6 +143,8 @@ class Translations
 
     public static function translateObjectsList($list, $class = false, $lang = false, $debug = false, $placeholderLang = "en")
     {
+
+        $db = Project::getInstance()->getDB();
         if (!$lang) {
             $lang = self::$currLanguage;
         }
@@ -186,6 +188,8 @@ class Translations
         }
 
 
+
+
         $keys = [-1];
 
         foreach ($list as $el) {
@@ -197,7 +201,7 @@ class Translations
             }
         }
         $keys = array_unique($keys);
-        $db = Project::getInstance()->getDB();
+
 
 
         $q = "select * from common_lang_objects_translaction where id_object in(" . implode(",",
@@ -286,14 +290,14 @@ class Translations
 
     }
 
-    public static function putEmptyObjectTranslation($obiect)
+    public static function putEmptyObjectTranslation($object)
     {
 
-        if (!$obiect) {
+        if (!$object) {
             return;
         }
-        $langFields = $obiect::getMultiLangFields();
-        $class = $obiect::getClass();
+        $langFields = array_intersect($object::getMultiLangFields(), $object->getLoadedFields());
+        $class = $object::getClass();
 
         if (isset(self::$classMapping[$class])) {
             $class = self::$classMapping[$class];
@@ -306,18 +310,18 @@ class Translations
 
                     $test = ObjectTranslation::get()
                         ->_class($class)
-                        ->_idObject($obiect->getPKey())
+                        ->_idObject($object->getPKey())
                         ->_field($field)
                         ->findFirst();
 
                     if (!$test) {
                         ObjectTranslation::create([
                             ObjectTranslation::F_CLASS => $class,
-                            ObjectTranslation::F_ID_OBJECT => $obiect->getPKey(),
+                            ObjectTranslation::F_ID_OBJECT => $object->getPKey(),
                             ObjectTranslation::F_LANG => $_lang,
                             ObjectTranslation::F_FIELD => $field,
                             ObjectTranslation::F_VALUE => "",
-                            ObjectTranslation::F_SOURCE => $obiect[$field] != null ? $obiect[$field] : ""
+                            ObjectTranslation::F_SOURCE => $object[$field] != null ? $object[$field] : ""
                         ]);
                     }
                 }
