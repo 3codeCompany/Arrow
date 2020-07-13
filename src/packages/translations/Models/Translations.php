@@ -197,7 +197,7 @@ class Translations
                 $keys[] = $el["id"];
             }
             foreach($fields as $field){
-                $el[$field] = "";
+                //$el[$field] = "";
             }
         }
         $keys = array_unique($keys);
