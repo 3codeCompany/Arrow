@@ -61,6 +61,7 @@
         <field name="model_id" type="BIGINT" size="20"/>
         <field name="element_id" type="BIGINT" size="20"/>
         <field name="action" type="VARCHAR" size="255"/>
+        <field name="entry_type" type="VARCHAR" size="55"/>
         <field name="description" type="VARCHAR" size="255"/>
         <field name="add_data_1" type="text"/>
         <field name="add_data_2" type="text"/>
