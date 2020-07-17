@@ -41,8 +41,8 @@ class History extends ORM_Arrow_Common_Models_History_History {
 
     public static function getObjectHistoryCriteria(PersistentObject $object){
         return self::get()
-            ->c(self::F_MODEL_ID, $object->getPKey())
-            ->c(self::F_MODEL, $object->getClass())
+            ->c(self::F_ELEMENT_ID, $object->getPKey())
+            ->c(self::F_CLASS, $object->getClass())
             ;
     }
 
@@ -56,11 +56,8 @@ class History extends ORM_Arrow_Common_Models_History_History {
     public static function  createEntry( PersistentObject $object, $description, $addData1 = false, $addData2 = false){
         $user = Auth::getDefault()->getUser();
         $base =  [
-            History::F_MODEL_ID => $object->getPKey(),
             History::F_ELEMENT_ID => $object->getPKey(),
-            History::F_MODEL => $object::getClass(),
             History::F_CLASS => $object::getClass(),
-            History::F_DATE => date("Y-m-d H:i:s"),
             History::F_CREATED => date("Y-m-d H:i:s"),
             History::F_USER_ID => $user?$user->_id():"-1",
             History::F_ACTION => $description,
