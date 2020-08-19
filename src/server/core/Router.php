@@ -2,6 +2,7 @@
 
 namespace Arrow;
 
+use Arrow\Access\Models\Auth;
 use Arrow\Models\AbstractLayout;
 use Arrow\Models\Action;
 use Arrow\Models\AnnotationRouteManager;
@@ -102,6 +103,12 @@ class Router
             if($path == "/404") {
                 exit("Route not found: `" . $path . "`");
             }else{
+                $u = Auth::getDefault()->getUser();
+                if($u->isInGroup("Developers") || true){
+                    print "Not found: ".$path;
+                    exit();
+                }
+
                 $errorPage = "https://".$_SERVER["HTTP_HOST"]."/404?from=".$_SERVER["REQUEST_URI"];
                 header("Location: ".$errorPage);
                 exit();
