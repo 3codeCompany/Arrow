@@ -39,7 +39,7 @@ class FilesORMConnector
 
     private $encodeFileName = true;
     private $targetFolder =  "/files/storage";
-    private $useRelativePath = true;
+    private $useRelativePath = false;
     private $downloadPathGenerator;
     private $registredNames = [];
 
