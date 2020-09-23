@@ -85,6 +85,7 @@ class Groups extends \Arrow\Models\Controller
      */
     public function delete(Request $request)
     {
+        return ["error" => "not allowed"];
         AccessGroup::get()->findByKey($request->get("key"))->delete();
 
         return [];

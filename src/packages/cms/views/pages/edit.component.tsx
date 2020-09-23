@@ -173,7 +173,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                     <Row noGutters={false}>
                                         {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
                                         {this.props.editEnabled ?
-                                            <BSelect label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
+                                            <BSelect label={__("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name + " (" + el.id +")"}))}/>
                                             : null
                                         }
 
