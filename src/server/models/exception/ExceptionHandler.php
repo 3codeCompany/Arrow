@@ -4,7 +4,10 @@ use Arrow\Access\Models\Auth;
 use Arrow\Exception;
 use Arrow\Kernel;
 use Arrow\Router;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\ErrorHandler\DebugClassLoader;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,49 +40,124 @@ class ExceptionHandler
 
     private function __construct()
     {
-
-            set_exception_handler(array($this, "displayException"));
-           register_shutdown_function([&$this, "fatalHandler"]);
-
-
-
+        set_exception_handler([$this, "handleException"]);
+        register_shutdown_function([&$this, "fatalHandler"]);
     }
 
     public function fatalHandler()
     {
-        $errfile = "unknown file";
-        $errstr = "shutdown";
-        $errno = E_CORE_ERROR;
-        $errline = 0;
-
         $error = error_get_last();
 
         if ($error !== null) {
-            $errno = $error["type"];
-            $errfile = $error["file"];
-            $errline = $error["line"];
-            $errstr = $error["message"];
-            $error["url"] = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli';
-            $error["backtrace"] = debug_print_backtrace();
-            $error["request"] = $_REQUEST;
+            $logger = new Logger('error_logger');
+            $formatter = new JsonFormatter();
+            $formatter->includeStacktraces(true);
+            $handler = new StreamHandler('php://stdout', Logger::INFO);
+            $handler->setFormatter($formatter);
+            $logger->pushHandler($handler);
 
-            $this->logError($error, $error["message"]);
+            $toLog = [
+                "file" => $error["file"],
+                "line" => $error["line"],
+                "message" => $error["message"],
+                "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli',
+            ];
+
+            $logger->error($error["message"], $toLog);
         }
     }
 
-    private function printDeveloperMessage($exception)
+    public function handleException($exception)
     {
-        $str = "";
+        $hash = md5(microtime() . rand(5000, 100000));
+
+        $this->logError($exception, $hash);
+
+        $cli = \Arrow\Kernel::isInCLIMode();
+
+        if (!$cli) {
+            header("X-Arrow-Error: 1");
+        }
+
+        if ($this->clearOutput && !$cli) {
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            ob_start("ob_gzhandler");
+        }
+
+        if ($_ENV["APP_ENV"] !== "dev") {
+            print $this->printPublicMinimumMessage();
+        } else {
+            $request = Kernel::getProject()
+                ->getContainer()
+                ->get(Request::class);
+            if ($request->isXmlHttpRequest()) {
+                print json_encode([
+                    "__arrowException" => [
+                        "msg" => $exception->getMessage(),
+                        "line" => $exception->getLine(),
+                        "file" => $exception->getFile(),
+                        "code" => $exception->getCode(),
+                        "trace" => $exception->getTraceAsString(),
+                        "parameters" => $exception instanceof Exception ? $exception->getData() : [],
+                    ],
+                ]);
+            } else {
+                print $this->getHead();
+                print $this->printDeveloperMessage($exception, $hash);
+                print $this->getFooter();
+            }
+        }
+        exit();
+    }
+
+    private function logError(\Exception $exception, $hash)
+    {
+        $logger = new Logger('error_logger');
+        $formatter = new JsonFormatter();
+        $formatter->includeStacktraces(true);
+        $handler = new StreamHandler('php://stdout', Logger::INFO);
+        $handler->setFormatter($formatter);
+        $logger->pushHandler($handler);
+
+        $toLog = [
+            "id" => $hash,
+            "file" => $exception->getFile(),
+            "line" => $exception->getLine(),
+            "exception" => $exception,
+        ];
+
+        if (strpos($exception->getFile(), "standardHandlers/ErrorHandler") !== false) {
+            $track["file"] = $exception->getTrace()[0]["file"];
+            $track["line"] = $exception->getTrace()[0]["line"];
+        }
+        $logger->error($exception->getMessage(), $toLog);
+    }
+
+    private function printDeveloperMessage($exception, $hash)
+    {
+        $file = $exception->getFile();
+        $line = $exception->getLine();
+        if (strpos($exception->getFile(), "standardHandlers/ErrorHandler") !== false) {
+            $file = $exception->getTrace()[0]["file"];
+            $line = $exception->getTrace()[0]["line"];
+        }
+
+        $str = "<div class='red big'>Message</div>";
+
         if ($exception instanceof \Arrow\Exception || $exception instanceof \ErrorException) {
             $arr = $exception->getData();
-            $str .= "<h2>{$exception->getMessage()}</h2>";
+            $str .= "<div class='white big'>";
+            $str .= "{$exception->getMessage()}";
             unset($arr["msg"]);
 
             if (!empty($arr)) {
                 $str .= "<pre>" . print_r($arr, 1) . "</pre>";
             }
+            $str .= "</div>";
         } else {
-            $str = print_r(get_class($exception) . " " . $exception->getMessage(), 1);
+            $str .= "<div class='white big'>" . $exception->getMessage() . '</div>';
         }
 
         if ($prev = $exception->getPrevious()) {
@@ -95,29 +173,23 @@ class ExceptionHandler
             }
         }
 
-        $currView = false;
-        if ($currView) {
-            $str .=
-                "<div style='margin-top: 20px;'><b>Current template:</b>  " .
-                $currView->get()->getPackage() .
-                "::" .
-                $currView->get()->getPath() .
-                "</div>";
-        }
+        $str .= "<div class='red big'>File</div>";
 
-        $runConf = \Arrow\Kernel::getRunConfiguration();
-        //$str .= "<div style='margin-top: 20px;'><a href='http://localhost:8091/?message={$exception->getFile()}:{$exception->getLine()}' target='_blank' >Go to error</a></div>";
+        $str .= "<div class='white big'>" . $file . ":" . $line . "</div>";
 
-        $str .= "<div style='margin-top: 20px;'><b>File:</b> " . $exception->getFile() . ":" . $exception->getLine() . "</div>";
-        $str .= "<div style='margin-top: 20px;'><b>Run configuration:</b> " . \Arrow\Kernel::getRunConfiguration() . "</div>";
+        $str .= "<div class='red big'>Source</div>";
 
-        $str .= "<div style='margin-top: 20px;'>" . $this->printRequest() . "</div>";
-        $str .= "<div style='margin-top: 20px;'>" . $this->stackTrace($exception) . "</div>";
+        $str .= "<div class='white normal'><pre>" . $this->_highlightSource($file, $line, 20) . "</pre></div>";
+
+        $str .= "<div class='red big'>Request</div>";
+        $str .= "<div class='white normal'>" . $this->printRequest() . "</div>";
+        $str .= "<div class='red big'>Stacktrace</div>";
+        $str .= "<div class='white normal'>" . $this->stackTrace($exception) . "</div>";
 
         return $str;
     }
 
-    private function printPublicMinimumMessage()
+    private function printPublicMinimumMessage($hash)
     {
         $date = date("Y-m-d H:i:s");
 
@@ -127,187 +199,13 @@ class ExceptionHandler
                         An internal error occurred while the Web server was processing your request.<br />
                         Please contact the webmaster to report this problem. <br />
                         Thank you.
-                        <hr />" . $date;
+                        <hr />" .
+            $date .
+            "<br />" .
+            $hash;
         $errstr .= $this->getFooter();
 
         return $errstr;
-    }
-
-    private function printCLIMessage()
-    {
-    }
-
-    private function log($exception)
-    {
-        //\Arrow\Logger::log($this->printDeveloperMessage($exception), \Arrow\Logger::EL_ERROR);
-    }
-
-    public function displayException($exception)
-    {
-        $this->log($exception);
-
-        $cli = \Arrow\Kernel::isInCLIMode();
-
-        if (!$cli) {
-            header("X-Arrow-Error: 1");
-        }
-
-        if ($this->clearOutput && !$cli) {
-            while (ob_get_level()) {
-                ob_end_clean();
-            }
-            ob_start("ob_gzhandler");
-        }
-
-        if ($cli) {
-            print $this->printConsoleMessage($exception);
-            exit();
-        }
-
-        /** @var Request $request */
-        if (class_exists("\Arrow\Kernel")) {
-            $request = Kernel::getProject()
-                ->getContainer()
-                ->get(Request::class);
-            if ($request->isXmlHttpRequest()) {
-                print json_encode([
-                    "__arrowException" => [
-                        "msg" => $exception->getMessage(),
-                        "line" => $exception->getLine(),
-                        "file" => $exception->getFile(),
-                        "code" => $exception->getCode(),
-                        "trace" => $exception->getTraceAsString(),
-                        "parameters" => $exception instanceof Exception ? $exception->getData() : []
-                    ]
-                ]);
-                exit();
-            }
-        }
-
-        ob_start();
-        print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";
-        print $this->getHead();
-        print $this->printDeveloperMessage($exception);
-        print $this->getFooter();
-        $content = ob_get_contents();
-        ob_clean();
-
-        $this->logError($exception, $content);
-
-        //zmienić aby było pobierane przez handlery
-        $user = null;
-
-        $user = Auth::getDefault()->getUser();
-
-        //@todo sprawdzić co w systemie przestawia forcedisplayerrors na true ( nie wyśledzone do tej pory )
-        //if (!Project::$forceDisplayErrors &&  ($user == null || !$user->isInGroup("Developers"))) {
-
-        print $this->getHead() . $this->printDeveloperMessage($exception) . $this->getFooter();
-        exit();
-        if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
-            print $this->printPublicMinimumMessage();
-        } elseif (\Arrow\RequestContext::getDefault()->isXHR() && $exception instanceof \Arrow\Models\ApplicationException) {
-            $this->printXHRException($exception);
-        } else {
-            print "<!--\n" . $exception->getMessage() . "\n" . $exception->getFile() . ":" . $exception->getLine() . "\n-->\n\n\n";
-            print $this->getHead();
-            echo '<h1>Exception occured</h1>';
-            if (!Project::$forceDisplayErrors && ($user == null || !$user->isInGroup("Developers"))) {
-                print $this->printUserMessage($exception);
-            } else {
-                print $this->printDeveloperMessage($exception);
-            }
-            print $this->getFooter();
-        }
-
-        exit();
-    }
-
-    private function logError($exception, $contents)
-    {
-        $logDir = ARROW_PROJECT . "/data/logs/errors";
-
-        $dir = $logDir . "/" . date("Y-m-d");
-        $logFile = date("Y-m-d_H_i_s") . rand(1, 1000) . ".html";
-
-        $dirIterator = new \DirectoryIterator($logDir);
-        foreach ($dirIterator as $fileinfo) {
-            if (!$fileinfo->isDot() && $fileinfo->isDir()) {
-                if ($fileinfo->getMTime() < time() - 3600 * 24 * 60) {
-                    $i = new \DirectoryIterator($fileinfo->getPathname());
-                    foreach ($i as $subFileInfo) {
-                        if ($subFileInfo->isFile()) {
-                            unlink($subFileInfo->getPathname());
-                        }
-                    }
-                    rmdir($fileinfo->getPathname());
-                }
-            }
-        }
-
-        $old = umask(0);
-        if (!file_exists($dir)) {
-            mkdir($dir, 0775, true);
-        }
-
-        file_put_contents($dir . "/" . $logFile, $contents);
-        chmod($dir . "/" . $logFile, 0775);
-
-        umask($old);
-
-        $logger = new \Monolog\Logger('mySiteLog');
-
-        if ($exception instanceof \Exception || $exception instanceof \Error) {
-            $message = $exception->getMessage();
-            $line = $exception->getLine();
-            $file = $exception->getFile();
-        } else {
-            /*if (is_array($exception["type"]) && $exception["type"] != 8192) {
-                return;
-            }*/
-
-            print "\n\n";
-            print_r($exception);
-
-            exit();
-
-            return;
-            //$message = $exception["message"];
-            //$line = $exception["line"];
-            //$file = $exception["file"];
-        }
-
-        //@mail( "artur.kmera@3code.pl", "[ArrowError] ".$_SERVER["HTTP_HOST"], "Full url: http://".$_SERVER["HTTP_HOST"]."/data/logs/errors/" . date("Y-m-d")."/".$file."\n\n\n".$contents );
-    }
-
-    private function printConsoleMessage(\Exception $exception)
-    {
-        print "------EXCEPTION----" . PHP_EOL;
-        print "MSG: " . $exception->getMessage() . PHP_EOL;
-        print "File: " . $exception->getFile() . ":" . $exception->getLine() . PHP_EOL;
-        print "------TRACE----" . PHP_EOL;
-        print "" . $exception->getTraceAsString() . PHP_EOL;
-        if (method_exists($exception, "getState")) {
-            print implode("\n", $exception->getData());
-        }
-    }
-
-    private function printUserMessage($exception)
-    {
-        print "<br />Server problem please contact with administrator";
-        exit();
-    }
-
-    private function printXHRException($exception)
-    {
-        $ret = array(
-            "exception" => array(
-                "message" => $exception->getMessage(),
-                "parameters" => $exception->getContent()->getParameters()
-            )
-        );
-        print json_encode($ret);
-        exit();
     }
 
     private function printRequest()
@@ -316,26 +214,16 @@ class ExceptionHandler
             return false;
         }
 
-        $refresh = '<form  action="' . $_SERVER["REQUEST_URI"] . '" method="post" __ARROW_TARGET__ >';
-        foreach ($_REQUEST as $var => $value) {
-            if (!is_array($value)) {
-                $refresh .= '<input type="hidden" name="' . $var . '" value="' . $value . '">';
-            } else {
-                foreach ($value as $index => $indexVal) {
-                    //$refresh .= '<input type="hidden" name="' . $var . '[' . $index . ']" value="' . $indexVal . '">';
-                }
-            }
-        }
-        $refresh .= '<input type="submit" value="request again __ARROW_SUBMIT__" style="float: left;" />';
-        $refresh .= '</form>';
+        $str = "<table style='width: 100%;'>";
 
-        $refreshNewWindow = str_replace(array("__ARROW_TARGET__", "__ARROW_SUBMIT__"), array('target="_blank"', "[new window]"), $refresh);
-        $refresh = str_replace(array("__ARROW_TARGET__", "__ARROW_SUBMIT__"), array("", ""), $refresh);
+        /** @var Request $request */
+        $request = Kernel::getProject()
+            ->getContainer()
+            ->get(Request::class);
 
-        $str = "<h3><div style='float: left;'> Request</div> {$refresh}  {$refreshNewWindow}</h3><div style='clear: both;'></div><table>";
+        $str .= "<tr><td>[URL]</td><td><pre>" . $request->getSchemeAndHttpHost() . "" . $request->getRequestUri() . "</pre></td></tr>";
 
-        $str .= "<tr><td>[URL]</td><td><pre>" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] . "</pre></td></tr>";
-
+        $str .= "<tr><td colspan='2'><b>Request:</b></td></tr>";
         foreach ($_REQUEST as $var => $value) {
             $str .= "<tr><td>{$var}</td><td><pre>" . print_r($value, 1) . "</pre></td></tr>";
         }
@@ -377,13 +265,18 @@ class ExceptionHandler
     public function printArguments($args, $i = 3)
     {
         $i--;
-        if ($i == 0) {
+        if ($i == 0 || empty($args)) {
             return "";
         }
         $str = "";
         foreach ($args as $key => $arg) {
+            $str .= "<br />";
             if (is_object($arg)) {
                 $str .= get_class($arg); //." ".$arg->__toString();
+            } elseif (is_numeric($arg)) {
+                $str .= $arg;
+            } elseif (is_bool($arg)) {
+                $str .= $arg ? "true" : "false";
             } elseif (is_array($arg)) {
                 $str .= "Array[" . count($arg) . "] {" . $this->printArguments($arg, $i) . "}";
             } elseif (is_string($arg)) {
@@ -393,7 +286,7 @@ class ExceptionHandler
             $str .= ", ";
             //}
         }
-        return $str;
+        return $str . "<br />";
     }
 
     /**
@@ -405,23 +298,17 @@ class ExceptionHandler
      */
     public function stackTrace($exception, $showLines = 10)
     {
-        $html =
-            '<style type="text/css">' .
-            '.stacktrace p { margin: 0; padding: 0; }' .
-            '.source { border: 1px solid #000; overflow: auto; background: #fff;' .
-            ' font-family: monospace; font-size: 12px; margin: 0 0 25px 0 }' .
-            '.lineno { color: #333; }' .
-            '</style>' .
-            '<div class="stacktrace">' .
-            '<div class="source">' .
-            $this->_highlightSource($exception->getFile(), $exception->getLine(), $showLines) .
-            '</div>';
+        $html = '<div class="stacktrace">';
 
-        $html .= "<h3>Stacktrace</h3><table>";
+        $html .= "<table style='width: 100%'>";
         foreach ($exception->getTrace() as $key => $trace) {
-            $html .= "<tr><td>";
-            $html .= isset($trace["class"]) ? $trace["class"] . "::" . $trace["function"] : "" . $trace["function"];
-            $html .= '( ' . (isset($trace["args"]) ? $this->printArguments($trace["args"]) : '') . ' )</td>';
+            $reference = isset($trace["class"]) ? $trace["class"] . "::" . $trace["function"] : "" . $trace["function"];
+            if (strpos($reference, "ErrorHandler::raiseError") !== false) {
+                continue;
+            }
+            $html .= "<tr>";
+            $html .= "<td>" . $reference . "</td>";
+            $html .= '<td>(' . (isset($trace["args"]) ? $this->printArguments($trace["args"]) : '') . ' )</td>';
             if (!isset($trace["file"])) {
                 $html .= '<td class="file">---</td></tr>';
                 continue;
@@ -429,27 +316,11 @@ class ExceptionHandler
             $html .=
                 '
                 <td class="file">
-                    <a href="" onclick="document.getElementById(\'source' .
-                $key .
-                '\').style.display=\'block\'; return false;" >File: ' .
+                    ' .
                 $trace['file'] .
                 ' Line: ' .
                 $trace['line'] .
-                '</a> 
-                        <a href="phpstorm://open?url=file://' .
-                $trace['file'] .
-                '&line=' .
-                $trace['line'] .
-                '"><span style="font-size: 20px">&#x261B;</span></a> 
-                    </td>';
-            $html .= "</tr>";
-            $html .= "<tr>";
-            $html .=
-                '<td colspan="2"><div class="source" id="source' .
-                $key .
-                '">' .
-                $this->_highlightSource($trace['file'], $trace['line'], 5) .
-                '</div></td>';
+                '</td>';
             $html .= "</tr>";
         }
         $html .= "<table>";
@@ -470,6 +341,19 @@ class ExceptionHandler
    		background-color: white;
    		font-size:12px;
    		font-family:"Verdana";
+   		width: 1200px;
+   		margin: 10px auto; 
+   		background-color: lightgrey;
+	}
+	body > div{
+	    background-color: #f3f1f1;
+	}
+	table  td{
+	    vertical-align: top;
+	    padding: 8px;
+	}
+	table  tr:nth-child(even){
+	    background-color: lightgrey;
 	}
 	.source{
 	    display: none;
@@ -478,7 +362,7 @@ class ExceptionHandler
 	    text-decoration:none;
 	 }
 	.file{
-	    font-size:9px;
+	    font-size:11px;
 	}
 	h1{
 		color:red;
@@ -499,16 +383,40 @@ class ExceptionHandler
 		font-weight: bold;
 		padding: 4px;
 	}
+	
+	pre{
+	    padding: 0px;
+	    margin: 0;
+	    font-size: 13px;
+	}
+	
+	.white{
+	    background-color: white; 
+	    color: black;
+	}
+	
+	
+	.red{
+	    background-color: #650101; 
+	    color: white;
+	}
+	.big{
+	    font-size: 20px;  padding: 10px;
+	}
+	.stacktrace{
+	    font-size: 14px;
+	}
 
+ 
    	</style>
-</head><body>
+</head><body><div>
 HEAD;
-        return str_replace(array("\n", "\t"), "", $head);
+        return str_replace(["\n", "\t"], "", $head);
     }
 
     private function getFooter()
     {
-        $footer = "</body></html>";
+        $footer = "</div></body></html>";
         return $footer;
     }
 }
