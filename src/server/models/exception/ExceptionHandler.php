@@ -125,6 +125,7 @@ class ExceptionHandler
             "id" => $hash,
             "file" => $exception->getFile(),
             "line" => $exception->getLine(),
+            "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli',
             "exception" => $exception,
         ];
 
