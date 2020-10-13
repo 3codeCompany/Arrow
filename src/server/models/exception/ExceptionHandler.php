@@ -87,7 +87,7 @@ class ExceptionHandler
         }
 
         if ($_ENV["APP_ENV"] !== "dev") {
-            print $this->printPublicMinimumMessage();
+            print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
                 ->getContainer()
@@ -112,7 +112,7 @@ class ExceptionHandler
         exit();
     }
 
-    private function logError(\Exception $exception, $hash)
+    private function logError(\Throwable $exception, $hash)
     {
         $logger = new Logger('error_logger');
         $formatter = new JsonFormatter();
