@@ -56,9 +56,11 @@ class ExceptionHandler
             $handler->setFormatter($formatter);
             $logger->pushHandler($handler);
 
+            $auth = Auth::getDefault();
             $toLog = [
                 "file" => $error["file"],
                 "line" => $error["line"],
+                "user" => $auth->isLogged() ? $auth->getUser()->_login() : "---",
                 "message" => $error["message"],
                 "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli',
             ];
@@ -69,7 +71,6 @@ class ExceptionHandler
 
     public function handleException($exception)
     {
-
         $hash = md5(microtime() . rand(5000, 100000));
 
         $this->logError($exception, $hash);
@@ -88,7 +89,7 @@ class ExceptionHandler
             ob_start("ob_gzhandler");
         }
 
-        if ($_ENV["APP_ENV"] !== "dev" ) {
+        if ($_ENV["APP_ENV"] !== "dev") {
             print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
@@ -123,8 +124,10 @@ class ExceptionHandler
         $handler->setFormatter($formatter);
         $logger->pushHandler($handler);
 
+        $auth = Auth::getDefault();
         $toLog = [
             "id" => $hash,
+            "user" => $auth->isLogged() ? $auth->getUser()->_login() : "---",
             "file" => $exception->getFile(),
             "line" => $exception->getLine(),
             "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli',
