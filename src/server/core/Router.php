@@ -104,7 +104,7 @@ class Router
                 exit("Route not found: `" . $path . "`");
             }else{
                 $u = Auth::getDefault()->getUser();
-                if($u->isInGroup("Developers") || true){
+                if($u && $u->isInGroup("Developers") ){
                     print "Not found: ".$path;
                     exit();
                 }
