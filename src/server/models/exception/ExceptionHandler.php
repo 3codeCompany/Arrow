@@ -88,7 +88,7 @@ class ExceptionHandler
             ob_start("ob_gzhandler");
         }
 
-        if ($_ENV["APP_ENV"] !== "dev" && false) {
+        if ($_ENV["APP_ENV"] !== "dev" ) {
             print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
