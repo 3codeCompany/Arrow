@@ -17,11 +17,11 @@ class ExceptionHandler
 {
     const DISPLAY = "display";
     const REDIRECT = "redirect";
-    public $clearOutput = false;
+    public $clearOutput = true;
     /**
      * Object instance keeper
      *
-     * @var SessionHandler
+     * @var ExceptionHandler
      */
     private static $oInstance = null;
 
@@ -69,6 +69,7 @@ class ExceptionHandler
 
     public function handleException($exception)
     {
+
         $hash = md5(microtime() . rand(5000, 100000));
 
         $this->logError($exception, $hash);
@@ -83,10 +84,11 @@ class ExceptionHandler
             while (ob_get_level()) {
                 ob_end_clean();
             }
+            http_response_code(500);
             ob_start("ob_gzhandler");
         }
 
-        if ($_ENV["APP_ENV"] !== "dev") {
+        if ($_ENV["APP_ENV"] !== "dev" && false) {
             print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
@@ -129,10 +131,11 @@ class ExceptionHandler
             "exception" => $exception,
         ];
 
-        if (strpos($exception->getFile(), "standardHandlers/ErrorHandler") !== false) {
-            $track["file"] = $exception->getTrace()[0]["file"];
-            $track["line"] = $exception->getTrace()[0]["line"];
+        if (strpos($toLog["file"], "standardHandlers/ErrorHandler") !== false) {
+            $toLog["file"] = $exception->getTrace()[0]["file"];
+            $toLog["line"] = $exception->getTrace()[0]["line"];
         }
+
         $logger->error($exception->getMessage(), $toLog);
     }
 
