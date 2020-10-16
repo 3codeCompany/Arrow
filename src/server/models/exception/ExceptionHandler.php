@@ -89,7 +89,7 @@ class ExceptionHandler
             ob_start("ob_gzhandler");
         }
 
-        if ($_ENV["APP_ENV"] !== "dev") {
+        if ($_ENV["APP_ENV"] !== "dev" && false) {
             print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
@@ -135,8 +135,12 @@ class ExceptionHandler
         ];
 
         if (strpos($toLog["file"], "standardHandlers/ErrorHandler") !== false) {
-            $toLog["file"] = $exception->getTrace()[0]["file"];
-            $toLog["line"] = $exception->getTrace()[0]["line"];
+            $trace = $exception->getTrace();
+            if ($trace[0]["function"] == "raiseError") {
+                array_shift($trace);
+            }
+            $toLog["file"] = $trace[0]["file"];
+            $toLog["line"] = $trace[0]["line"];
         }
 
         $logger->error($exception->getMessage(), $toLog);
@@ -147,8 +151,12 @@ class ExceptionHandler
         $file = $exception->getFile();
         $line = $exception->getLine();
         if (strpos($exception->getFile(), "standardHandlers/ErrorHandler") !== false) {
-            $file = $exception->getTrace()[0]["file"];
-            $line = $exception->getTrace()[0]["line"];
+            $trace = $exception->getTrace();
+            if ($trace[0]["function"] == "raiseError") {
+                array_shift($trace);
+            }
+            $file = $trace[0]["file"];
+            $line = $trace[0]["line"];
         }
 
         $str = "<div class='red big'>Message</div>";
