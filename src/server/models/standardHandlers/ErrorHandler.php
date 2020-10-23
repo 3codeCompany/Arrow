@@ -36,9 +36,7 @@ class ErrorHandler
      */
     public function __construct()
     {
-        error_reporting(E_ALL ^ E_STRICT);
-        ini_set("display_errors", 1);
-        set_error_handler([$this, "raiseError"]);
+
     }
 
     /**

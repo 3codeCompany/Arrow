@@ -42,6 +42,32 @@ class ExceptionHandler
     {
         set_exception_handler([$this, "handleException"]);
         register_shutdown_function([&$this, "fatalHandler"]);
+        error_reporting(E_ALL ^ E_STRICT);
+        ini_set("display_errors", 1);
+        set_error_handler([$this, "raiseError"]);
+    }
+
+    /**
+     * @param int $err_no
+     * @param string $err_msg
+     * @param string $err_file
+     * @param int $err_line
+     * @return void
+     */
+    public function raiseError($severity, $message, $file, $line)
+    {
+        if (
+            error_reporting() != 0 &&
+            error_reporting() & ($severity == $severity) &&
+            $severity != 8192 /*&& $err_no != 2048*/
+        ) {
+            //0 - jak jest @ to == 0 // 2048 - warning about timezone settings
+            //` " . $err_file . ":" . $err_line
+            throw new \ErrorException($message, 0, $severity, $file, $line);
+
+            throw $exception;
+        }
+        return true;
     }
 
     public function fatalHandler()
@@ -62,7 +88,7 @@ class ExceptionHandler
                 "line" => $error["line"],
                 "user" => $auth->isLogged() ? $auth->getUser()->_login() : "---",
                 "message" => $error["message"],
-                "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli',
+                "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli'
             ];
 
             $logger->error($error["message"], $toLog);
@@ -89,7 +115,7 @@ class ExceptionHandler
             ob_start("ob_gzhandler");
         }
 
-        if ($_ENV["APP_ENV"] !== "dev" && false) {
+        if (false) {
             print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
@@ -103,8 +129,8 @@ class ExceptionHandler
                         "file" => $exception->getFile(),
                         "code" => $exception->getCode(),
                         "trace" => $exception->getTraceAsString(),
-                        "parameters" => $exception instanceof Exception ? $exception->getData() : [],
-                    ],
+                        "parameters" => $exception instanceof Exception ? $exception->getData() : []
+                    ]
                 ]);
             } else {
                 print $this->getHead();
@@ -131,7 +157,7 @@ class ExceptionHandler
             "file" => $exception->getFile(),
             "line" => $exception->getLine(),
             "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli',
-            "exception" => $exception,
+            "exception" => $exception
         ];
 
         if (strpos($toLog["file"], "standardHandlers/ErrorHandler") !== false) {
@@ -150,18 +176,10 @@ class ExceptionHandler
     {
         $file = $exception->getFile();
         $line = $exception->getLine();
-        if (strpos($exception->getFile(), "standardHandlers/ErrorHandler") !== false) {
-            $trace = $exception->getTrace();
-            if ($trace[0]["function"] == "raiseError") {
-                array_shift($trace);
-            }
-            $file = $trace[0]["file"];
-            $line = $trace[0]["line"];
-        }
 
         $str = "<div class='red big'>Message</div>";
 
-        if ($exception instanceof \Arrow\Exception || $exception instanceof \ErrorException) {
+        if ($exception instanceof \Arrow\Exception) {
             $arr = $exception->getData();
             $str .= "<div class='white big'>";
             $str .= "{$exception->getMessage()}";
@@ -236,7 +254,12 @@ class ExceptionHandler
             ->getContainer()
             ->get(Request::class);
 
-        $str .= "<tr><td>[URL]</td><td><pre>" . $request->getSchemeAndHttpHost() . "" . $request->getRequestUri() . "</pre></td></tr>";
+        $str .=
+            "<tr><td>[URL]</td><td><pre>" .
+            $request->getSchemeAndHttpHost() .
+            "" .
+            $request->getRequestUri() .
+            "</pre></td></tr>";
 
         $str .= "<tr><td colspan='2'><b>Request:</b></td></tr>";
         foreach ($_REQUEST as $var => $value) {
@@ -255,13 +278,15 @@ class ExceptionHandler
      */
     protected function _highlightSource($fileName, $lineNumber, $showLines)
     {
+
         $lines = file_get_contents($fileName);
         $lines = highlight_string($lines, true);
+        $lines = str_replace([ "\n\r", "\r\n", "\n", "\r"], "<br />", $lines);
+
         $lines = explode("<br />", $lines);
 
         $offset = max(0, $lineNumber - ceil($showLines / 2));
-
-        $lines = array_slice($lines, $offset, $showLines);
+        $lines = array_slice($lines, $offset+1, $showLines);
 
         $html = '';
         foreach ($lines as $line) {
