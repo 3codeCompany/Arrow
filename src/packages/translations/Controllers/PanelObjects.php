@@ -453,7 +453,8 @@ class PanelObjects extends BaseController
             ->find();
 
         foreach ($langs as $l) {
-            Translations::translateObject($obj, $l->_code(), false);
+            $obj = $model::get()->findByKey($key);
+            Translations::translateObject($obj, $l->_code(), "en");
             $row = [
                 "lang" => $l->_name(),
                 "langId" => $l->_id(),
@@ -485,7 +486,7 @@ class PanelObjects extends BaseController
     {
         $obj = $model::get()->findByKey($key);
 
-        $data = $request->get("data");
+        $data = $request->get("data", []);
         foreach ($data as $lang => $entries) {
             Translations::saveObjectTranslation($obj, $entries, $lang);
         }
