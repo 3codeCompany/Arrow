@@ -26,7 +26,7 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
     {
 
         if (!file_exists($this->folder)) {
-            mkdir($this->folder);
+            mkdir($this->folder, 0777, true);
         }
 
         file_put_contents($this->folder . "/" . $this->_id() . ".txt", $content);
