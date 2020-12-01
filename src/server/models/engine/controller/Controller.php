@@ -175,8 +175,9 @@ abstract class Controller implements IController
         print "<h1>404 Not found</h1>";
 
         print "Contact with administrator ";
-        if($action){
-            print "[ {$action->getPath()} ]";
+        if ($action) {
+            $path = htmlentities($action->getPath());
+            print "[ {$path} ]";
         }
         exit("");
 
