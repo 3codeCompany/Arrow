@@ -46,7 +46,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
         this.props._startLoadingIndicator();
 
-        const comm = new Comm(this.props._baseURL + "/loginAction");
+        const comm = new Comm("/auth/login");
         comm.setData({ data });
 
         this.setState({ loading: true, error: false });
