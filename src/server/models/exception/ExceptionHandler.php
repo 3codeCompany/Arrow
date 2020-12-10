@@ -103,7 +103,7 @@ class ExceptionHandler
 
         $cli = \Arrow\Kernel::isInCLIMode();
 
-        if (!$cli) {
+        if (!$cli && false) {
             header("X-Arrow-Error: 1");
         }
 
@@ -115,7 +115,7 @@ class ExceptionHandler
             ob_start("ob_gzhandler");
         }
 
-        if ($_ENV["APP_ENV"] !== "dev" ) {
+        if ($_ENV["APP_ENV"] !== "dev" && false ) {
             print $this->printPublicMinimumMessage($hash);
         } else {
             $request = Kernel::getProject()
