@@ -1,18 +1,18 @@
 import * as React from "react";
-import { Navbar } from "frontend/lib/Navbar";
-import {Column, Table} from "frontend/lib/Table";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import {Column, Table} from "serenity-controls/lib/Table";
 
-import {confirm, Modal} from "frontend/src/ctrl/Overlays";
-import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
-import {Comm} from "frontend/lib/lib";
-import {Row} from "frontend/lib/Row";
+import {confirm, Modal} from "serenity-controls/lib/ctrl/Overlays";
+import {BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "serenity-controls/lib/BForm";
+import {Comm} from "serenity-controls/lib/lib";
+import {Row} from "serenity-controls/lib/Row";
 
-import {IArrowViewComponentProps} from "frontend/lib/backoffice";
-import {CommandBar} from "frontend/lib/CommandBar";
-import {Datasource} from "frontend/src/lib/Datasource";
-import {LoaderContainer} from "frontend/src/ctrl/LoaderContainer";
-import { Icon } from "frontend/lib/Icon";
-import {fI18n} from "frontend/lib/lib/I18n";
+import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
+import {CommandBar} from "serenity-controls/lib/CommandBar";
+import {Datasource} from "serenity-controls/lib/lib/Datasource";
+import {LoaderContainer} from "serenity-controls/lib/ctrl/LoaderContainer";
+import { Icon } from "serenity-controls/lib/Icon";
+import {fI18n} from "serenity-controls/lib/lib/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;

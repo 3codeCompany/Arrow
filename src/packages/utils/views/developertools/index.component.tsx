@@ -1,14 +1,14 @@
-import { Navbar } from "frontend/lib/Navbar";
-import { Panel } from "frontend/lib/Panel";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import { Panel } from "serenity-controls/lib/Panel";
 
 import * as React from "react";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
-import { BForm, BSwitch, FieldPlaceholder } from "frontend/lib/BForm";
-import { CommandBar } from "frontend/lib/CommandBar";
-import {Comm} from "frontend/lib/lib";
-import { Row } from "frontend/lib/Row";
-import { Copyable } from "frontend/lib/Copyable";
-import { Icon } from "frontend/lib/Icon";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
+import { BForm, BSwitch, FieldPlaceholder } from "serenity-controls/lib/BForm";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
+import {Comm} from "serenity-controls/lib/lib";
+import { Row } from "serenity-controls/lib/Row";
+import { Copyable } from "serenity-controls/lib/Copyable";
+import { Icon } from "serenity-controls/lib/Icon";
 import * as path from "path";
 
 interface IProps extends IArrowViewComponentProps {

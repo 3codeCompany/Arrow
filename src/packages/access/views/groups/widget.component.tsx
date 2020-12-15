@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import { Icon } from "frontend/lib/Icon";
-import { Comm } from "frontend/lib/lib";
-import { confirmDialog } from "frontend/lib/ConfirmDialog";
+import { Icon } from "serenity-controls/lib/Icon";
+import { Comm } from "serenity-controls/lib/lib";
+import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 
-import { BCheckboxGroup, BSelect } from "frontend/lib/BForm";
+import { BCheckboxGroup, BSelect } from "serenity-controls/lib/BForm";
 
 export default class ArrowViewComponent extends React.Component<any, any> {
     public static defaultProps = {

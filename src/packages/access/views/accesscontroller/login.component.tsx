@@ -1,9 +1,9 @@
 import * as React from "react";
-import { BForm } from "frontend/lib/BForm";
-import { Comm } from "frontend/lib/lib";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
-import { fI18n } from "frontend/lib/lib/I18n";
-import { PrintJSON } from "frontend/lib/PrintJSON";
+import { BForm } from "serenity-controls/lib/BForm";
+import { Comm } from "serenity-controls/lib/lib";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
+import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { PrintJSON } from "serenity-controls/lib/PrintJSON";
 
 declare var LANGUAGE: string;
 declare var window: any;

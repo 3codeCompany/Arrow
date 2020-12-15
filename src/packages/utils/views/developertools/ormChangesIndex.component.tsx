@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
-import { Row } from "frontend/lib/Row";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
-import { PrintJSON } from "frontend/lib/PrintJSON";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import { Row } from "serenity-controls/lib/Row";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
+import { PrintJSON } from "serenity-controls/lib/PrintJSON";
 
 interface IComponentProps extends IArrowViewComponentProps {
     missMatches: any;

@@ -1,13 +1,13 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
+import { Navbar } from "serenity-controls/lib/Navbar";
 
-import {Column, Table} from "frontend/lib/Table";
-import {Row} from "frontend/lib/Row";
-import {Comm} from "frontend/lib/lib";
-import {CommandBar} from "frontend/lib/CommandBar";
-import {Icon} from "frontend/lib/Icon";
-import {confirmDialog} from "frontend/lib/ConfirmDialog";
+import {Column, Table} from "serenity-controls/lib/Table";
+import {Row} from "serenity-controls/lib/Row";
+import {Comm} from "serenity-controls/lib/lib";
+import {CommandBar} from "serenity-controls/lib/CommandBar";
+import {Icon} from "serenity-controls/lib/Icon";
+import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
 
 export default class  extends React.Component<any, any> {
     public table: Table;

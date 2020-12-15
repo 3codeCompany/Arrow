@@ -1,14 +1,14 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
+import { Navbar } from "serenity-controls/lib/Navbar";
 
-import { Column, Table } from "frontend/lib/Table";
-import { Panel } from "frontend/lib/Panel";
-import { Icon } from "frontend/lib/Icon";
-import { Row } from "frontend/lib/Row";
-import { Comm } from "frontend/lib/lib";
-import { confirmDialog } from "frontend/lib/ConfirmDialog";
-import { CommandBar } from "frontend/lib/CommandBar";
+import { Column, Table } from "serenity-controls/lib/Table";
+import { Panel } from "serenity-controls/lib/Panel";
+import { Icon } from "serenity-controls/lib/Icon";
+import { Row } from "serenity-controls/lib/Row";
+import { Comm } from "serenity-controls/lib/lib";
+import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
 
 export default class ArrowViewComponent extends React.Component<any, any> {
     public table: Table;

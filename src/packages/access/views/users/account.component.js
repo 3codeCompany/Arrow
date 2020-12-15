@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 
-import Navbar from "frontend/src/ctrl/Navbar"
-import {BForm, BText, BSwitch, BCheckboxGroup,} from "frontend/src/layout/BootstrapForm"
-import Panel from "frontend/src/ctrl/Panel"
-import {Row} from "frontend/src/layout/BootstrapLayout"
+import Navbar from "serenity-controls/lib/ctrl/Navbar"
+import {BForm, BText, BSwitch, BCheckboxGroup,} from "serenity-controls/lib/layout/BootstrapForm"
+import Panel from "serenity-controls/lib/ctrl/Panel"
+import {Row} from "serenity-controls/lib/layout/BootstrapLayout"
 
 export default class ArrowViewComponent extends Component {
     constructor(props) {

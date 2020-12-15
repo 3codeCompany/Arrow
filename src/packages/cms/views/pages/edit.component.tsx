@@ -1,18 +1,18 @@
 import * as React from "react";
-import { Navbar } from "frontend/lib/Navbar";
-import {Column, Table} from "frontend/lib/Table";
-import {BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "frontend/lib/BForm";
-import {Comm} from "frontend/lib/lib";
-import {Row} from "frontend/lib/Row";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import {Column, Table} from "serenity-controls/lib/Table";
+import {BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig} from "serenity-controls/lib/BForm";
+import {Comm} from "serenity-controls/lib/lib";
+import {Row} from "serenity-controls/lib/Row";
 
-import {IArrowViewComponentProps} from "frontend/lib/backoffice";
-import {CommandBar} from "frontend/lib/CommandBar";
+import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
+import {CommandBar} from "serenity-controls/lib/CommandBar";
 import {Arrow} from "../../../../data/cache/db/ts-definitions";
-import {Panel} from "frontend/lib/Panel";
-import {TabPane, Tabs} from "frontend/lib/Tabs";
+import {Panel} from "serenity-controls/lib/Panel";
+import {TabPane, Tabs} from "serenity-controls/lib/Tabs";
 import IPage = Arrow.CMS.Models.Persistent.IPage;
-import {fI18n} from "frontend/lib/lib/I18n";
-import {confirmDialog} from "frontend/lib/ConfirmDialog";
+import {fI18n} from "serenity-controls/lib/lib/I18n";
+import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
 
 interface IProps extends IArrowViewComponentProps {
     page: IPage;

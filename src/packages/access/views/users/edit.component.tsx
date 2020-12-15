@@ -1,10 +1,10 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
-import {BForm, BText, BSwitch, BCheckboxGroup} from "frontend/lib/BForm";
-import { Panel } from "frontend/lib/Panel";
-import {Row} from "frontend/lib/Row";
-import {Icon} from "frontend/lib/Icon";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import {BForm, BText, BSwitch, BCheckboxGroup} from "serenity-controls/lib/BForm";
+import { Panel } from "serenity-controls/lib/Panel";
+import {Row} from "serenity-controls/lib/Row";
+import {Icon} from "serenity-controls/lib/Icon";
 
 export default class  extends React.Component<any, any> {
     public form: BForm;

@@ -1,21 +1,21 @@
 import * as React from "react";
-import { Navbar } from "frontend/lib/Navbar";
-import {Column, Table} from "frontend/lib/Table";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import {Column, Table} from "serenity-controls/lib/Table";
 
-import {BFile, BFileListField, BForm, BSelect, BSwitch} from "frontend/lib/BForm";
+import {BFile, BFileListField, BForm, BSelect, BSwitch} from "serenity-controls/lib/BForm";
 
-import { download } from "frontend/lib/Downloader";
-import {Comm} from "frontend/lib/lib";
-import {Select} from "frontend/lib/fields";
-import {translate} from "frontend/src/utils/Translator";
-import {IArrowViewComponentProps} from "frontend/lib/backoffice";
-import {Icon} from "frontend/lib/Icon";
-import {CommandBar} from "frontend/lib/CommandBar";
-import {FilterHelper} from "frontend/lib/filters";
-import {fI18n} from "frontend/lib/lib/I18n";
-import {confirmDialog} from "frontend/lib/ConfirmDialog";
-import {Modal} from "frontend/lib/Modal";
-import { downloadOld } from "frontend/lib/Downloader/Downloader";
+import { download } from "serenity-controls/lib/Downloader";
+import {Comm} from "serenity-controls/lib/lib";
+import {Select} from "serenity-controls/lib/fields";
+import {translate} from "serenity-controls/lib/utils/Translator";
+import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
+import {Icon} from "serenity-controls/lib/Icon";
+import {CommandBar} from "serenity-controls/lib/CommandBar";
+import {FilterHelper} from "serenity-controls/lib/filters";
+import {fI18n} from "serenity-controls/lib/lib/I18n";
+import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
+import {Modal} from "serenity-controls/lib/Modal";
+import { downloadOld } from "serenity-controls/lib/Downloader/Downloader";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;

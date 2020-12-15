@@ -1,20 +1,20 @@
 import * as React from "react";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { useContext, useEffect, useRef, useState } from "react";
-import { CommandBar } from "frontend/lib/CommandBar";
-import ColumnHelper, { Column, Table } from "frontend/lib/Table";
-import { Navbar } from "frontend/lib/Navbar";
-import { TabPane, Tabs } from "frontend/lib/Tabs";
-import { Modal } from "frontend/lib/Modal";
-import { BForm } from "frontend/lib/BForm";
-import { BText } from "frontend/lib/BForm";
-import { Icon } from "frontend/lib/Icon";
-import { Comm } from "frontend/lib/lib";
-import { LoadingIndicator } from "frontend/lib/LoadingIndicator";
-import { Row } from "frontend/lib/Row";
-import { PanelContext } from "frontend/lib/backoffice/PanelContext";
-import { BSwitch } from "frontend/lib/BForm";
-import { getPanelContext } from "frontend/lib/backoffice/PanelContext";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
+import ColumnHelper, { Column, Table } from "serenity-controls/lib/Table";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import { TabPane, Tabs } from "serenity-controls/lib/Tabs";
+import { Modal } from "serenity-controls/lib/Modal";
+import { BForm } from "serenity-controls/lib/BForm";
+import { BText } from "serenity-controls/lib/BForm";
+import { Icon } from "serenity-controls/lib/Icon";
+import { Comm } from "serenity-controls/lib/lib";
+import { LoadingIndicator } from "serenity-controls/lib/LoadingIndicator";
+import { Row } from "serenity-controls/lib/Row";
+import { PanelContext } from "serenity-controls/lib/backoffice/PanelContext";
+import { BSwitch } from "serenity-controls/lib/BForm";
+import { getPanelContext } from "serenity-controls/lib/backoffice/PanelContext";
 
 interface IViewProps extends IArrowViewComponentProps {}
 

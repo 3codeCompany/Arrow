@@ -1,18 +1,18 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
-import { Column, Table } from "frontend/lib/Table";
-import { Icon } from "frontend/lib/Icon";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import { Column, Table } from "serenity-controls/lib/Table";
+import { Icon } from "serenity-controls/lib/Icon";
 
-import { Comm } from "frontend/lib/lib";
-import { CheckboxGroup } from "frontend/lib/fields";
-import { CommandBar } from "frontend/lib/CommandBar";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
+import { Comm } from "serenity-controls/lib/lib";
+import { CheckboxGroup } from "serenity-controls/lib/fields";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 
-import { FilterHelper } from "frontend/lib/filters";
-import { fI18n } from "frontend/lib/lib/I18n";
-import { confirmDialog } from "frontend/lib/ConfirmDialog";
-import { PrintJSON } from "frontend/lib/PrintJSON";
+import { FilterHelper } from "serenity-controls/lib/filters";
+import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
+import { PrintJSON } from "serenity-controls/lib/PrintJSON";
 
 interface Props extends IArrowViewComponentProps {
     agroups: { [key: string]: string };

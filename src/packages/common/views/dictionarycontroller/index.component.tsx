@@ -1,16 +1,16 @@
 import * as React from "react";
 
-import {Navbar} from "frontend/lib/Navbar";
-import {Row} from "frontend/lib/Row";
-import {IArrowViewComponentProps} from "frontend/lib/backoffice";
-import {BForm, BText, BTextarea} from "frontend/lib/BForm";
+import {Navbar} from "serenity-controls/lib/Navbar";
+import {Row} from "serenity-controls/lib/Row";
+import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
+import {BForm, BText, BTextarea} from "serenity-controls/lib/BForm";
 
-import {Column, Table} from "frontend/lib/Table";
-import {CommandBar} from "frontend/lib/CommandBar";
-import {Icon} from "frontend/lib/Icon";
-import {Comm} from "frontend/lib/lib";
-import {Modal} from "frontend/lib/Modal";
-import {confirmDialog} from "frontend/lib/ConfirmDialog";
+import {Column, Table} from "serenity-controls/lib/Table";
+import {CommandBar} from "serenity-controls/lib/CommandBar";
+import {Icon} from "serenity-controls/lib/Icon";
+import {Comm} from "serenity-controls/lib/lib";
+import {Modal} from "serenity-controls/lib/Modal";
+import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
 
 interface IComponentProps extends IArrowViewComponentProps {
     parent: any;

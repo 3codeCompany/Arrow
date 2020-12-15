@@ -1,19 +1,19 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
+import { Navbar } from "serenity-controls/lib/Navbar";
 
-import { Table, Column } from "frontend/lib/Table";
+import { Table, Column } from "serenity-controls/lib/Table";
 
-import { BFile, BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig } from "frontend/lib/BForm";
-import { Comm } from "frontend/lib/lib";
+import { BFile, BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig } from "serenity-controls/lib/BForm";
+import { Comm } from "serenity-controls/lib/lib";
 
-import { CommandBar } from "frontend/lib/CommandBar";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
-import { Icon } from "frontend/lib/Icon";
-import { download } from "frontend/lib/Downloader";
-import { fI18n } from "frontend/lib/lib/I18n";
-import { Modal } from "frontend/lib/Modal";
-import { confirmDialog } from "frontend/lib/ConfirmDialog";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
+import { Icon } from "serenity-controls/lib/Icon";
+import { download } from "serenity-controls/lib/Downloader";
+import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { Modal } from "serenity-controls/lib/Modal";
+import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;

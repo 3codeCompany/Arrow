@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { Navbar } from "frontend/lib/Navbar";
-import {IArrowViewComponentProps} from "frontend/lib/backoffice";
+import { Navbar } from "serenity-controls/lib/Navbar";
+import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
 import {
     BForm,
     BSwitch,
@@ -12,11 +12,11 @@ import {
     BSelect,
     BDate,
     BFileList
-} from "frontend/lib/BForm";
-import {Panel} from "frontend/lib/Panel";
-import {Row} from "frontend/lib/Row";
-import {CommandBar} from "frontend/lib/CommandBar";
-import {fI18n} from "frontend/lib/lib/I18n";
+} from "serenity-controls/lib/BForm";
+import {Panel} from "serenity-controls/lib/Panel";
+import {Row} from "serenity-controls/lib/Row";
+import {CommandBar} from "serenity-controls/lib/CommandBar";
+import {fI18n} from "serenity-controls/lib/lib/I18n";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;

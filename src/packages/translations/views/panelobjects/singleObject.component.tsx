@@ -1,12 +1,12 @@
 import * as React from "react";
 
-import { Column, IDataQuery, ITableDataInput, Table, ColumnHelper } from "frontend/lib/Table";
+import { Column, IDataQuery, ITableDataInput, Table, ColumnHelper } from "serenity-controls/lib/Table";
 
-import { Comm } from "frontend/lib/lib";
-import { IArrowViewComponentProps } from "frontend/lib/backoffice";
-import { CommandBar } from "frontend/lib/CommandBar";
-import { fI18n } from "frontend/lib/lib/I18n";
-import { PrintJSON } from "frontend/lib/PrintJSON";
+import { Comm } from "serenity-controls/lib/lib";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
+import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { PrintJSON } from "serenity-controls/lib/PrintJSON";
 
 interface IProps extends IArrowViewComponentProps {
     data: any;
