@@ -101,9 +101,10 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             ref={(el) => this.form = el}
                             action={this.props._baseURL + `/${this.props.object.id}/${this.state.editPurpose}`}
                             namespace={"data"}
-                            onValidatorError={() => {
-                                this.props._notification("Zmiana", "Wystąpił problem", {level: "error"});
+                            onValidatorError={(error) => {
+                                this.props._notification("Zmiana ustawień", "Wystąpił problem", {level: "error"});
                             }}
+                            /*onValidatorError={(error) => this.props._notification(error.response.errors.join(" | "), "Błąd", {level: "error"})}*/
                             onSuccess={() => {
                                 this.props._notification("Zmiana", "Dane zostały zmienione");
                                 this.props._reloadProps();
@@ -116,6 +117,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                     <Row>
                                         <Panel title={"Dane podstawowe"} icon={"Edit"}>
                                             <Row>
+                                                <div className={"col-md-4"} style={{paddingLeft: 0}}>
                                                 <BSwitch
                                                     options={[
                                                         {value: "1", label: "Tak"},
@@ -123,14 +125,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
                                                 />
-                                                <div>
+                                                </div>
+                                                <div className={"col-md-4"}>
                                                     <BText label={__("Data od")} {...form("start")}/>
                                                 </div>
-                                                <div>
+                                                <div className={"col-md-4"}>
                                                     <BText label={__("Data do")} {...form("stop")}/>
                                                 </div>
                                             </Row>
-
+                                            <BText label={__("Czas wyświetlania") + " [ms]    (5000ms = 5s)"} {...form("duration")} />
                                             <BSelect label={__("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
                                             <BSelect label={__("Kraj")} {...form("country")} options={this.props.countries}/>
                                             <BSelect label={__("Język")} {...form("lang")} options={this.props.countries}/>

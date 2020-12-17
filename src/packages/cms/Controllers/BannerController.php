@@ -202,8 +202,7 @@ class BannerController extends BaseController
             $e = $data["banner"];
             $s = $data["sort"];
             $banner = Banner::get()
-                ->findByKey($e)
-            ;
+                ->findByKey($e);
             $banner->setValue("sort", $s);
             $banner->save();
             return[true];
@@ -221,18 +220,28 @@ class BannerController extends BaseController
             $banner = Banner::get()
                 ->findByKey($key);
 
-//        if (ARROW_IN_DEV_STATE) {
-//            $files = [
-//                "images" => []
-//            ];
-//        }
-
             FormHelper::bindFilesToObject($banner, $files, $uploaded);
+
+            $validator = Validator::create([]);
+            $duration = isset($data["duration"]) ? trim($data["duration"]) : false;
+
+            if ($duration && $duration !== "") {
+                if ((strpos($duration, ".") !== false) || (strpos($duration, ",") !== false)) {
+                    $validator->addFieldError("duration", "Usuń kropkę/przecinek");
+                }
+                if (!is_numeric($duration) || $duration < 1000) {
+                    $validator->addFieldError("duration", "Wartość musi być liczbą całkowitą większą lub równą 1000");
+                }
+                if ($validator->fails()){
+                    return $validator->response();
+                }
+            }
 
             $banner->setValues($data);
             $banner->save();
 
             return [true];
+
         }
     }
 

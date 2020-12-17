@@ -35,6 +35,7 @@
         <field name="link" type="VARCHAR" size="155"/>
         <field name="start" type="DATETIME"/>
         <field name="stop" type="DATETIME"/>
+        <field name="duration" type="INTEGER" size="11"/>
         <field name="description" type="VARCHAR" size="255"/>
     </table>
 
