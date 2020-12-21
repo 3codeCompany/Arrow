@@ -117,21 +117,16 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                     <Row>
                                         <Panel title={"Dane podstawowe"} icon={"Edit"}>
                                             <Row>
-                                                <div className={"col-md-4"} style={{paddingLeft: 0}}>
                                                 <BSwitch
                                                     options={[
                                                         {value: "1", label: "Tak"},
                                                         {value: "0", label: "Nie"},
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
+                                                    style={{paddingLeft: 0, marginLeft: 0}}
                                                 />
-                                                </div>
-                                                <div className={"col-md-4"}>
-                                                    <BText label={__("Data od")} {...form("start")}/>
-                                                </div>
-                                                <div className={"col-md-4"}>
-                                                    <BText label={__("Data do")} {...form("stop")}/>
-                                                </div>
+                                                <BText label={__("Data od")} {...form("start")} style={{maxWidth: "95%"}}/>
+                                                <BText label={__("Data do")} {...form("stop")} style={{maxWidth: "95%"}}/>
                                             </Row>
                                             <BText label={__("Czas wyświetlania") + " [ms]    (5000ms = 5s)"} {...form("duration")} />
                                             <BSelect label={__("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
