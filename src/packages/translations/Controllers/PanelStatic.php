@@ -380,5 +380,97 @@ class PanelStatic extends BaseController
             "debug" => false,
         ];
     }
+
+
+    /**
+     * @Route("/uploadFileBasedOnEnglish")
+     */
+    public function uploadFileBasedOnEnglish(Request $request)
+    {
+        if (Auth::getDefault()->getUser()->_login() != "pawel.witkowicz@3code.pl") {
+            print "method only for admin"; exit();
+        }
+        $data = $request->get("data");
+        if ($data["language"] == null){
+            return [
+                "status" => "fail",
+            ];
+        }
+
+        $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
+
+        $currentDate = date("Y-m-d");
+        $currentTime = date("H:i:s");
+        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
+        $target = "data/translate_uploads/" . $backupName;
+
+
+        // file stored
+        try {
+            $inputFileType = \PHPExcel_IOFactory::identify($file);
+            $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
+            $objPHPExcel = $objReader->load($file);
+        } catch (\Exception $e) {
+            die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME) . '": ' . $e->getMessage());
+        }
+        $sheet = $objPHPExcel->getSheet(0);
+
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
+
+
+        $table = $table = LanguageText::getTable();
+        $db = Project::getInstance()->getDB();
+
+        $currLang = $data["language"];
+
+        $sheetColumns = $sheetData[0];
+
+        $fieldMap = [
+            self::COLUMN_EXPORT_ID,
+            self::COLUMN_EXPORT_ORIGINAL,
+            self::COLUMN_EXPORT_TRANSLATION,
+            self::COLUMN_EXPORT_MODULE
+        ];
+
+        $uploadedColumns = [];
+        foreach ($sheetColumns as $column => $value) {
+            if (in_array($value, $fieldMap)) {
+                $uploadedColumns[$value] = $column;
+            }
+        }
+
+        if (count($uploadedColumns) != count($fieldMap)) {
+            print_r("error - document structure is wrong");
+            exit();
+        }
+
+        $query = $db->prepare("update $table set value=? where id=? and lang=?");
+        $db->beginTransaction();
+
+        foreach ($sheetData as $row) {
+            //print_r($row);
+            //print_r(md5($row[$uploadedColumns[self::COLUMN_EXPORT_ORIGINAL]]));
+            $result = LanguageText::get()
+                ->c(LanguageText::F_HASH, md5($row[$uploadedColumns[self::COLUMN_EXPORT_ORIGINAL]]))
+                ->c(LanguageText::F_LANG, $currLang)
+                ->findFirst();
+
+            //print_r($result);
+
+            if ($result) {
+                $query->execute([
+                    $row[$uploadedColumns[self::COLUMN_EXPORT_TRANSLATION]],
+                    $result->_id(),
+                    $currLang,
+                ]);
+            }
+        }
+        $db->commit();
+        move_uploaded_file($file, $target);
+
+        return [
+            "status" => "done",
+        ];
+    }
 }
 

@@ -192,6 +192,93 @@ class PanelObjects extends BaseController
     }
 
     /**
+     * @Route("/downloadLangFileWithEnglishValues")
+     */
+    public function downloadLangFileWithEnglishValues(Request $request)
+    {
+
+        $data = json_decode($request->get("payload"), true);
+        $model = $data["model"];
+
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("AS - CMS");
+        $sh = $objPHPExcel->setActiveSheetIndex(0);
+
+        $criteria = ObjectTranslation::get()
+            ->_source("", Criteria::C_NOT_EQUAL)
+            ->_lang($data["lang"]);
+
+
+        $tmp = explode("\\", $model);
+        $class = "%" . end($tmp);
+        $criteria->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
+        $criteria->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
+
+        /*if ($model == Property::getClass()) {
+            $criteria->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
+        }*/
+
+        if ($data["onlyEmpty"]) {
+            $criteria->_value([null, ""], Criteria::C_IN);
+        }
+
+
+        // Add some data
+
+        $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
+
+
+        $columns = [
+            ObjectTranslation::F_ID,
+            ObjectTranslation::F_FIELD,
+            ObjectTranslation::F_SOURCE,
+            ObjectTranslation::F_VALUE,
+            "english_value"
+        ];
+
+        $sh->setCellValueByColumnAndRow(0, 1, ObjectTranslation::F_ID);
+        $sh->setCellValueByColumnAndRow(1, 1, ObjectTranslation::F_FIELD);
+        $sh->setCellValueByColumnAndRow(2, 1, ObjectTranslation::F_SOURCE);
+        $sh->setCellValueByColumnAndRow(3, 1, ObjectTranslation::F_VALUE);
+        $sh->setCellValueByColumnAndRow(4, 1, "english_value");
+        foreach ($result as $index => $r) {
+            //$columns[2] = $r["field"];
+            foreach ($columns as $key => $c) {
+                if ($c == "english_value") {
+                    $englishTranslation = ObjectTranslation::get()
+                        ->_class($r[ObjectTranslation::F_CLASS])
+                        ->_idObject($r[ObjectTranslation::F_ID_OBJECT])
+                        ->_lang("gb")
+                        ->findFirst();
+                    $sh->setCellValueByColumnAndRow($key, $index+2, $englishTranslation?$englishTranslation->_value():"");
+                } else {
+                    $sh->setCellValueByColumnAndRow($key, $index+2, $r[$c]);
+                }
+            }
+
+            //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
+        }
+        /*foreach ($columns as $key => $c) {
+            $sh->getColumnDimensionByColumn($key)->setAutoSize(true);
+        }*/
+
+
+        // Rename worksheet
+        $sh->setTitle('Tłumaczenia ');
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $objPHPExcel->setActiveSheetIndex(0);
+        // Redirect output to a client’s web browser (Excel5)
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="tłumaczenia_' . $data['lang'] . '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save("php://output");
+        exit;
+
+    }
+
+    /**
      * @Route("/downloadLangFile")
      */
     public function downloadLangFile(Request $request)

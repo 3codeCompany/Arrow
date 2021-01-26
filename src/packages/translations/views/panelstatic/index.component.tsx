@@ -131,6 +131,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         {key: "f1", label: "Pobierz arkusz", icon: "Download", onClick: () => this.setState({langToDownload: "xx"})},
                         {key: "f2", label: "Załaduj plik", icon: "Upload", onClick: () => this.setState({isUploading: -1})},
                         {key: "f3", label: "Historia tłumaczeń", icon: "History", onClick: () => this.setState({historyModalVisible: true})},
+                        {key: "f4", label: "Załaduj plik z j.angielskim", icon: "Upload", onClick: () => this.setState({isUploading: -1})},
                     ]}
                 /> : null }
                 <Navbar>
@@ -201,6 +202,54 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                             this.setState({langToDownload: e.value});
                                             console.log(this.state.langToDownload);
                                             }
+                                        }
+                                        require={true}
+                                        {...form("language")}
+                                    />
+                                    <BFileList name="files" {...form("files")}/>
+                                    <button className="btn btn-primary pull-right"><Icon name={"Upload"}/> Laduj</button>
+                                </div>
+                            )
+                        }}
+                        </BForm>
+                    </div>
+
+                </Modal>
+
+                <Modal
+                    title={"Załaduj plik językowy - wersja z j.angielskim"}
+                    show={s.isUploading != false}
+                    onHide={() => this.setState({isUploading: false, fileToUpload: false})}
+                    showHideLink={true}
+                    top={100}
+
+                >
+                    <div style={{padding: 10, maxWidth: 500}} className="container">
+                        <BForm
+                            ref={(el) => this.form = el}
+                            action={this.props._baseURL + `/uploadFileBasedOnEnglish`}
+                            namespace={"data"}
+                            onSuccess={(el) => {
+                                if (el.response.status == "done"){
+                                    this.props._notification("Sukces", "Plik załadowano poprawnie.");
+                                    this.handleBackup(el.form.state.data.language);
+                                    console.log(el.response);
+                                } else {
+                                    this.props._notification("Błąd", "Wybierz język.", {level: "error"});
+                                    console.log(el.response);
+                                }
+                            }}
+                        >{(form) => {
+                            return (
+                                <div>
+                                    <BSelect
+                                        label={"Język do wczytania"}
+                                        value={this.state.langToDownload}
+                                        options={{xx: "--Wybierz język ---", ...this.props.language}}
+                                        onChange={(e) => {
+                                            this.setState({langToDownload: e.value});
+                                            console.log(this.state.langToDownload);
+                                        }
                                         }
                                         require={true}
                                         {...form("language")}

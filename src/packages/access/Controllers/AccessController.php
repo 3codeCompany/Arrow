@@ -73,16 +73,21 @@ class AccessController extends \Arrow\Models\Controller
         $authHandler->doLogout();
         $res = $authHandler->doLogin($data["login"], $data["password"]);
 
-
         if (!$authHandler->isLogged()) {
             $validator->addError("Nieprawidłowy login lub hasło");
             $this->json($validator->response());
         }
 
+        if ($authHandler->getUser()->isInGroup("Partnerzy sprzedaży")) {
+            return [
+                "redirectTo" => trim($request->get("from", Router::getDefault()->getBasePath() . "/admin", "/")),
+                "userGroup" => "sales_partner"
+            ];
+        }
+
         return [
             "redirectTo" => trim($request->get("from", Router::getDefault()->getBasePath() . "/admin", "/"))
         ];
-
 
     }
 

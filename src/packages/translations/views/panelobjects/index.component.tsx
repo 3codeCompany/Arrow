@@ -12,6 +12,8 @@ import {IArrowViewComponentProps} from "frontend/src/lib/PanelComponentLoader";
 import {Icon} from "frontend/src/ctrl/Icon";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {FilterHelper} from "../../../../../../../../node_modules_shared/frontend/src/ctrl/filters/FilterHelper";
+import {Row} from "frontend/src/layout/BootstrapLayout";
+import {Panel} from "frontend/src/ctrl/Panel";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -203,8 +205,17 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                 <div className="panel-body-margins">
                     <div key={0} style={{display: "inline-block"}}>
-                        <Select className={"form-control"} value={this.state.selectedObject.value}
-                                onChange={this.handleModelChange.bind(this)} options={this.props.objects}/>
+                        <Row>
+                        <BSelect
+                            className={"form-control"}
+                            style={{width: "100px"}}
+                            value={this.state.selectedObject.value}
+                            onChange={this.handleModelChange.bind(this)}
+                            options={this.props.objects}
+                            //options={{xx: {value: "sdsd", label: "1212"}, ...this.props.objects}}
+                            emptyValueBlock={true}
+                        />
+                        </Row>
                     </div>
                     {this.state.selected.length > 0 &&
                     <a key={1} className="btn btn-danger btn-sm" onClick={() => this.handleDelete(this.state.selected)}>

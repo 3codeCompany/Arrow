@@ -63,8 +63,11 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                     this.props._setPanelOption("onlyBody", false);
                 },
             );*/
+
             if (this.props.redirectTo && false) {
                 //window.location.href = this.props.redirectTo;
+            } else if (typeof response.userGroup !== 'undefined' && response.userGroup === "sales_partner") {
+                window.location.href = this.props._basePath + "/admin/dashboard#/shop/admin/orders"
             } else {
                 window.location.href = this.props._basePath + "/admin/dashboard";
             }
