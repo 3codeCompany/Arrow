@@ -135,7 +135,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     ]}
                 /> : null }
                 <Navbar>
-                    <span>{__("Cms")}</span>
+                    <span>{"Cms"}</span>
                     <span>{__("Lista dostępnych tłumaczeń")}</span>
                 </Navbar>
                 <div className="panel-body-margins">

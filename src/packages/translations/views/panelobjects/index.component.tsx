@@ -197,7 +197,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 />
 
                 <Navbar>
-                    <span>{__("Cms")}</span>
+                    <span>{"Cms"}</span>
                     <span>{__("Tłumaczenia")}</span>
                     <span>{__("Obiekty")}</span>
                 </Navbar>

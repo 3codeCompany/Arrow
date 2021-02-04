@@ -169,7 +169,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     ]}
                 />
                 <Navbar>
-                    <span>{__("CMS")}</span>
+                    <span>{"CMS"}</span>
                     <span>{__("Strony wwww")}</span>
                 </Navbar>
                 <div style={{ padding: "0 10px" }}>

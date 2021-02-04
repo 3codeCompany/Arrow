@@ -60,9 +60,15 @@ class PageController extends BaseController
 
     private function addAccessCondition(Criteria $criteria, $key)
     {
+        $countries = ["all"];
+        if ($this->country == "lv" || $this->country == "lt" || $this->country == "ee") {
+            $countries = array_merge($countries, ["lt", "lv", "ee"]);
+        } else {
+            $countries[] = $this->country;
+        }
         switch ($criteria->getModel()) {
             case Page::class:
-                $criteria->c(Page::F_COUNTRY, ["all", $this->country], Criteria::C_IN);
+                $criteria->c(Page::F_COUNTRY, $countries, Criteria::C_IN);
                 break;
         }
     }
@@ -103,13 +109,15 @@ class PageController extends BaseController
 
         $helper->addDefaultOrder(Page::F_SORT);
         $helper->setFetchType(DataSet::AS_OBJECT);
-        $data = $helper->getListData($criteria);
 
         if ($this->country !== "pl") {
             $helper->addColumn("content");
             $helper->addColumn("contents_additional");
             $helper->addColumn("seo_title");
+            $data = $helper->getListData($criteria);
             Translations::translateObjectsList($data["data"], Page::class, $this->country);
+        } else {
+            $data = $helper->getListData($criteria);
         }
         //MediaAPI::prepareMedia($data["data"]);
         return $this->json($data);
