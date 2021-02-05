@@ -4,6 +4,7 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
+use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\AdministrationPopupLayout;
@@ -363,6 +364,11 @@ class PanelObjects extends BaseController
      */
     public function uploadFile(Request $request, Project $project)
     {
+
+        if (!Auth::getDefault()->getUser()->isInGroup("Administrators")) {
+            print "method only for admins"; exit();
+        }
+
         $data = $request->get("data");
         if ($data["language"] == null){
             return [
@@ -416,6 +422,7 @@ class PanelObjects extends BaseController
 
         $stm = $db->prepare("update $t set value=?  where id=? and lang=?");
         foreach ($sheetData as $row) {
+            //print_r($row[0]);
             if ($row[0]) {
                 $stm->execute([
                     $row[$uploadedColumns[ObjectTranslation::F_VALUE]],

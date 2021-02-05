@@ -253,6 +253,80 @@ class PanelStatic extends BaseController
     }
 
     /**
+     * @Route("/downloadLangFileWithEnglishValues")
+     */
+    public function downloadLangFileWithEnglishValues(Request $request)
+    {
+        //$data = json_decode($request->get("payload"), true);
+
+        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel->getProperties()->setCreator("CMS");
+        $sh = $objPHPExcel->setActiveSheetIndex(0);
+
+        $criteria = LanguageText::get()
+            ->_lang($request->get("lang"));
+
+        if ($request->get("onlyEmpty")) {
+            $criteria->_value([null, ""], Criteria::C_IN);
+        }
+        // Add some data
+
+        $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
+
+        $columns = [
+            LanguageText::F_ID,
+            LanguageText::F_ORIGINAL,
+            LanguageText::F_VALUE,
+            LanguageText::F_MODULE,
+            "english_value"
+        ];
+
+        $sh->setCellValueByColumnAndRow(0, 1, self::COLUMN_EXPORT_ID);
+        $sh->setCellValueByColumnAndRow(1, 1, self::COLUMN_EXPORT_ORIGINAL);
+        $sh->setCellValueByColumnAndRow(2, 1, self::COLUMN_EXPORT_TRANSLATION);
+        $sh->setCellValueByColumnAndRow(3, 1, self::COLUMN_EXPORT_MODULE);
+        $sh->setCellValueByColumnAndRow(4, 1, "english_value");
+        foreach ($result as $index => $r) {
+            foreach ($columns as $key => $c) {
+                if ($c == "english_value") {
+                    $englishTranslation = LanguageText::get()
+                        ->_hash($r["hash"])
+                        ->_lang("gb")
+                        ->findFirst();
+                    $sh->setCellValueByColumnAndRow($key, $index + 2, $englishTranslation ? $englishTranslation->_value() : "");
+                } else {
+                    $sh->setCellValueByColumnAndRow($key, $index + 2, $r[$c]);
+                }
+            }
+
+            //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
+        }
+        $objPHPExcel->getActiveSheet()->getStyle('B1:D5000')
+            ->getAlignment()->setWrapText(true);
+
+        foreach ($columns as $key => $c) {
+            //$sh->getColumnDimensionByColumn($key)->setAutoSize(true);
+            //$sh->getColumnDimensionByColumn($key)->setWidth(200);
+        }
+
+        $sh->getColumnDimensionByColumn(1)->setWidth(70);
+        $sh->getColumnDimensionByColumn(2)->setWidth(70);
+
+
+        // Rename worksheet
+        $sh->setTitle('Tłumaczenia ');
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $objPHPExcel->setActiveSheetIndex(0);
+        // Redirect output to a client’s web browser (Excel5)
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="tłumaczenia_' . $request->get("lang"). '.xls"');
+        header('Cache-Control: max-age=0');
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save("php://output");
+        exit;
+    }
+
+    /**
      * @Route("/langBackUp")
      */
     public function langBackUp(Request $request)
