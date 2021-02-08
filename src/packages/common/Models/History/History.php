@@ -45,8 +45,19 @@ class History extends ORM_Arrow_Common_Models_History_History
             ->c(self::F_CLASS, $object->getClass());
     }
 
+    public static function createEntryFlex(PersistentObject $object, $data)
+    {
+        $user = Auth::getDefault()->getUser();
+        $base = [
+            History::F_ELEMENT_ID => $object->getPKey(),
+            History::F_CLASS => $object::getClass(),
+            History::F_CREATED => date("Y-m-d H:i:s"),
+            History::F_USER_ID => $user ? $user->_id() : "-1",
+        ];
 
-    
+        $data = array_merge($base, $data);
+        return self::create($data);
+    }
 
     /**
      * @param PersistentObject $object
