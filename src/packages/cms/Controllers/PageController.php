@@ -152,6 +152,9 @@ class PageController extends BaseController
      */
     public function edit(Request $request)
     {
+        if ($this->country == "ee" || $this->country == "lv" || $this->country == "lt") {
+           print "permission denied"; exit();
+        }
         $page = Page::get()
             ->findByKey($request->get("key"));
 
@@ -186,6 +189,11 @@ class PageController extends BaseController
             } else if ($this->country == "by") {
                 $langs = Language::get()
                     ->_code(["by", "ru"], Criteria::C_IN)
+                    ->setColumns(["name", "code"])
+                    ->find();
+            } else if ($this->country == "lv" || $this->country == "lt" || $this->country == "ee") {
+                $langs = Language::get()
+                    ->_code(["lv", "lt", "ee"], Criteria::C_IN)
                     ->setColumns(["name", "code"])
                     ->find();
             } else {

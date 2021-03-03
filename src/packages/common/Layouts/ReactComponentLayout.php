@@ -71,7 +71,26 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         $data["config"] = ConfigProvider::get("panel");
         $data["onlyBody"] = $this->onlyBody;
         if ($user) {
-            $data["allowedElements"] = (new AdministrationExtensionPoint())->getPreparedData();
+            $preparedElements = (new AdministrationExtensionPoint())->getPreparedData();
+            if ($user->isInGroup("Partnerzy sprzedaży" )) {
+                $userCountry = substr($user->_login(), -2);
+                if ($userCountry == "lv") {
+                    foreach ($preparedElements["menu"] as &$leftMenu) {
+                        $allowedForLV = [];
+                        foreach ($leftMenu["elements"] as $key => $subLeftMenu) {
+                            $routesToHideLv = ["/shop/admin/products/states", "/shop/product-group", "/shop/admin/promotions", "/cms/pages"];
+                            if (in_array($subLeftMenu["route"], $routesToHideLv)) {
+                                continue;
+                                //unset($leftMenu["elements"][$key]);
+                            } else {
+                                $allowedForLV[] = $subLeftMenu;
+                            }
+                        }
+                        $leftMenu["elements"] = $allowedForLV;
+                    }
+                }
+            }
+            $data["allowedElements"] = $preparedElements;
         } else {
             $data["allowedElements"] = ["menu" => [], "dashboard" => []];
         }
