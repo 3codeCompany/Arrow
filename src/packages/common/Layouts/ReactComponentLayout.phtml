@@ -20,7 +20,8 @@ unset($input["layout"])
 
 
 <script>
-    window.reactBackOfficeVar =  <?=json_encode([
+    window.env = <?=json_encode($data["layout"]["env"]);?>;
+    window.reactBackOfficeVar = <?=json_encode([
         "basePath" => $request->getBasePath(),
         "inputProps" => $input,
         "panel" => [
@@ -44,16 +45,16 @@ unset($input["layout"])
 
 <? if (!$data["layout"]["ARROW_DEV_MODE_FRONT"]) { ?>
 
-    <?if(isset($_REQUEST["tesxx"])){?>
+    <? if (isset($_REQUEST["tesxx"])) { ?>
     <script src="<?= $request->getBasePath() ?>/assets/dist2/<?= $data["layout"]["jsCompilationData"][0] ?>"></script>
 <link rel="stylesheet"
       href="<?= $request->getBasePath() ?>/assets/dist2/bundle-<?= $data["layout"]["jsCompilationData"][1] ?>.css"/>
-    <?}else{?>
+<? }else{ ?>
     <script src="<?= $request->getBasePath() ?>/assets/dist/<?= $data["layout"]["jsCompilationData"][0] ?>"></script>
 <link rel="stylesheet"
       href="<?= $request->getBasePath() ?>/assets/dist/bundle-<?= $data["layout"]["jsCompilationData"][1] ?>.css"/>
 
-<?}?>
+<? } ?>
 
 
 <? } else { ?>
