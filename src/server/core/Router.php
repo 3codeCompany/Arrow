@@ -105,6 +105,7 @@ class Router
             }else{
                 $u = Auth::getDefault()->getUser();
                 if($u && $u->isInGroup("Developers") ){
+                    header("HTTP/1.0 404 Not Found");
                     print "Not found: ".$path;
                     exit();
                 }
