@@ -62,5 +62,7 @@ class DebugRoute extends Command
                 $output->writeln('No matching routes found for: '.($filter ? $filter : '*'));
             }
         }
+        return 0;
     }
+
 }

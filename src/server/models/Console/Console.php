@@ -22,7 +22,6 @@ class Console
     {
         \Arrow\Kernel::init();
         \Arrow\Router::getDefault(\Arrow\Kernel::$project->getContainer());
-        \Symfony\Component\Debug\Debug::enable();
         $application = new Application();
         $application->add(new DebugRoute());
         $application->add(new ClearCache());

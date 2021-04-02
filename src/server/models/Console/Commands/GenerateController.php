@@ -10,21 +10,18 @@ namespace Arrow\Models\Commands;
 
 
 use Arrow\Models\Commands\Generators\CRUDControllerGenerator;
-use Arrow\Router;
-use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\PhpNamespace;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Debug\Debug;
+
 
 class GenerateController extends Command
 {
     protected function configure()
     {
-        Debug::enable();
+
         $this
             ->setName('generate:controller')
             ->setDescription('Generate controller ')
