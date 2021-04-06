@@ -8,7 +8,6 @@
 
 namespace Arrow\Media\Models\Helpers;
 
-
 use Arrow\Access\Models\Auth;
 use Arrow\Common\Models\Exceptions\NotImplementedException;
 use Arrow\Common\Models\Helpers\FormHelper;
@@ -26,11 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Validation;
 
-
 class FilesORMConnector
 {
-
-
     const CONN_SINGLE = 1;
     const CONN_MULTI = 2;
 
@@ -38,7 +34,7 @@ class FilesORMConnector
     private $inputNamespace;
 
     private $encodeFileName = true;
-    private $targetFolder =  "/files/storage";
+    private $targetFolder = "/files/storage";
     private $useRelativePath = false;
     private $downloadPathGenerator;
     private $registredNames = [];
@@ -46,8 +42,7 @@ class FilesORMConnector
     /**
      * @var Validation
      */
-    private  $validatorData;
-
+    private $validatorData;
 
     /** @var DB $db */
     private $db;
@@ -59,14 +54,11 @@ class FilesORMConnector
         $this->downloadPathGenerator = function (string $path, array $data, PersistentObject $object) {
             return "/common/download/" . $data["elementId"];
         };
-
     }
 
     function useRelativePaths($flag)
     {
-
         $this->useRelativePath = $flag;
-
     }
 
     function setTargetFolder(string $targetFolder)
@@ -76,9 +68,7 @@ class FilesORMConnector
 
     function setEncodeFilename($flag)
     {
-
         $this->encodeFileName = $flag;
-
     }
 
     function getRelativePath($base, $path)
@@ -124,11 +114,10 @@ class FilesORMConnector
                     "title" => "",
                     "type" => $isImage ? "image" : "document",
                     "uploaded" => true,
-                    "path" => $file->path
+                    "path" => $file->path,
                 ];
             }
         }
-
 
         self::$files[$name][$key] = $result;
 
@@ -141,7 +130,7 @@ class FilesORMConnector
 
     public function registerField(PersistentObject $object, $fieldName, FilesORMConnectorConfig $config = null)
     {
-        if($config == null){
+        if ($config == null) {
             $config = new FilesORMConnectorConfig();
         }
 
@@ -152,7 +141,6 @@ class FilesORMConnector
         $this->registredNames[] = $fieldName;
 
         /** @var  PersistentObject $this */
-
 
         $object->addVirtualField(
             $fieldName,
@@ -167,14 +155,13 @@ class FilesORMConnector
                     } else {
                         return [];
                     }
-                } else if ($connType & self::CONN_SINGLE) {
+                } elseif ($connType & self::CONN_SINGLE) {
                     if (isset(self::$files[$name][$key][$field])) {
                         return self::$files[$name][$key][$field][0];
                     } else {
                         return null;
                     }
                 }
-
             },
             function ($field, $value, $obj) use ($name, $connType) {
                 if ($value == "") {
@@ -187,13 +174,11 @@ class FilesORMConnector
                     self::refreshFilesConnection($obj);
                 }
 
-
                 $preservedKeys = array_map(function ($el) {
                     return $el["key"];
                 }, $value);
 
                 if (isset(self::$files[$name][$key][$field])) {
-
                     $currentKeys = array_map(function ($el) {
                         return $el["key"];
                     }, self::$files[$name][$key][$field]);
@@ -208,11 +193,10 @@ class FilesORMConnector
                     }
                 }
 
-
                 /** @var Request $request */
                 $request = Kernel::$project->getContainer()->get(Request::class);
 
-                $uploadedList = $request->files->get($this->inputNamespace);
+                $uploadedList = $request->files->get($this->inputNamespace ?? "");
 
                 if ($uploadedList !== null && isset($uploadedList[$field])) {
                     foreach ($uploadedList[$field] as $element) {
@@ -227,10 +211,8 @@ class FilesORMConnector
                 }
 
                 self::refreshFilesConnection($obj);
-
             }
         );
-
     }
 
     public function getObjectFiles(PersistentObject $object)
@@ -238,7 +220,7 @@ class FilesORMConnector
         $name = $object instanceof InterfaceIdentifiableClass ? $object->getClassID() : $object::getClass();
         $key = $object->getPKey();
 
-        if(!isset(self::$files[$name][$key])) {
+        if (!isset(self::$files[$name][$key])) {
             self::refreshFilesConnection($object);
         }
 
@@ -247,7 +229,6 @@ class FilesORMConnector
 
     public function bindUploadedFileToObject(PersistentObject $object, UploadedFile $file, string $connectionName)
     {
-
         $classId = $object instanceof InterfaceIdentifiableClass ? $object->getClassID() : $object::getClass();
 
         if ($this->encodeFileName) {
@@ -268,10 +249,8 @@ class FilesORMConnector
             }
         }
 
-
         /** @var Auth $auth */
         $auth = Kernel::$project->getContainer()->get(Auth::class);
-
 
         $userId = $auth->getUser() ? $auth->getUser()->getPKey() : -1;
 
@@ -292,7 +271,6 @@ class FilesORMConnector
                 Element::F_FILE => $name,
                 Element::F_PATH => $folderToSave . DIRECTORY_SEPARATOR . $name,
                 Element::F_SIZE => $file->getSize(),
-
             ]);
 
             $conn = ElementConnection::create([
@@ -304,10 +282,8 @@ class FilesORMConnector
 
             $moved = $file->move($this->targetFolder, $name);
 
-
             $this->db->commit();
         } catch (\Exception $ex) {
-
             $this->db->rollBack();
             if (file_exists($file->getPathname())) {
                 unlink($file->getPathname());
@@ -319,9 +295,7 @@ class FilesORMConnector
             }
 
             throw $ex;
-
         }
-
     }
 
     public function deleteElementConnection($elementId)
@@ -343,7 +317,6 @@ class FilesORMConnector
 
     private static function getMedia($objectList, array $fieldsToGet = null)
     {
-
         if (empty($objectList)) {
             return false;
         }
@@ -361,7 +334,8 @@ class FilesORMConnector
             return $el->getPKey();
         }, $objectList);
 
-        $classId = $testElement instanceof InterfaceIdentifiableClass ? $testElement->getClassID() : $testElement::getClass();
+        $classId =
+            $testElement instanceof InterfaceIdentifiableClass ? $testElement->getClassID() : $testElement::getClass();
 
         /** @var DB $db */
         $db = Kernel::$project->getContainer()->get(DB::class);
@@ -371,7 +345,8 @@ class FilesORMConnector
             $connName = "AND media_element_connections.`name` IN ('" . implode("','", $fieldsToGet) . "')";
         }
 
-        $q = "
+        $q =
+            "
 		SELECT 
 		media_element_connections.`id` as 'Conn:id', 
 		media_element_connections.`name` AS `Conn:name`, 
@@ -386,15 +361,18 @@ class FilesORMConnector
 		FROM media_elements
 		left JOIN media_element_connections ON (media_elements.id=media_element_connections.element_id ) 
 		WHERE
-		media_element_connections.`model` = '" . addslashes($classId) . "'
-		AND media_element_connections.`object_id` IN ('" . implode("','", $objectsKeys) . "')
+		media_element_connections.`model` = '" .
+            addslashes($classId) .
+            "'
+		AND media_element_connections.`object_id` IN ('" .
+            implode("','", $objectsKeys) .
+            "')
 		{$connName} 
 		ORDER BY  media_element_connections.`sort` ASC,media_elements.sort ASC";
 
-
         $result = $db->query($q)->fetchAll(\PDO::FETCH_ASSOC);
 
-        $return = array();
+        $return = [];
         foreach ($result as $row) {
             if (!isset($return[$row["Conn:object_id"]])) {
                 $return[$row["Conn:object_id"]][$row["Conn:name"]] = [];
@@ -409,11 +387,9 @@ class FilesORMConnector
             $fInfo->path = $row["Element:path"];
 
             $return[$row["Conn:object_id"]][$row["Conn:name"]][] = $fInfo;
-
         }
 
         return $return;
-
     }
 
     /**
@@ -432,8 +408,4 @@ class FilesORMConnector
         $this->validatorData = $validatorData;
         return $this;
     }
-
-
-
-
 }
