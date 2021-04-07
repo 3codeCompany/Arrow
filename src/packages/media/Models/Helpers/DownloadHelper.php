@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
+
 class DownloadHelper
 {
 
@@ -24,9 +25,9 @@ class DownloadHelper
         // To generate a file download, you need the mimetype of the file
         $mimeTypeGuesser = new FileinfoMimeTypeGuesser();
 
-        if ($mimeTypeGuesser->isSupported()) {
+        if ($mimeTypeGuesser->isGuesserSupported()) {
             // Guess the mimetype of the file according to the extension of the file
-            $response->headers->set('Content-Type', $mimeTypeGuesser->guess($path));
+            $response->headers->set('Content-Type', $mimeTypeGuesser->guessMimeType($path));
         } else {
             // Set the mimetype of the file manually, in this case for a text file is text/plain
             $response->headers->set('Content-Type', 'text/plain');
