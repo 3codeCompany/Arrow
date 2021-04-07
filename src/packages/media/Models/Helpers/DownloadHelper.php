@@ -6,8 +6,8 @@ namespace Arrow\Media\Models\Helpers;
 
 use Arrow\Media\Models\Element;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 
 class DownloadHelper
 {
