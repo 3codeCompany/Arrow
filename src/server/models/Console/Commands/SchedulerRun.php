@@ -50,6 +50,6 @@ class SchedulerRun extends Command
             $scheduler->run();
         }
 
-
+        return 0;
     }
 }
