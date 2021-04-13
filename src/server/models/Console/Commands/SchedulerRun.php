@@ -41,7 +41,7 @@ class SchedulerRun extends Command
 
         if ($input->getOption("is-subprocess") && !$input->getOption("task-id")) {
             $output->writeln("Unable to run list with subproces flag");
-            return;
+            return 1;
         }
 
         if ($input->getOption("task-id")) {
