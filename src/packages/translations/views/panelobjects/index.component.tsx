@@ -39,15 +39,25 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
             isTableEditable: false,
             tableRowContainer: null,
+            withEnglishValues: false
         };
 
     }
+
+    /*public handleDownload() {
+        download(this.props._baseURL + "/downloadLangFile", {
+            lang: this.state.langToDownload,
+            onlyEmpty: this.state.downloadOnlyEmpty,
+            model: this.state.selectedObject.value,
+        });
+    }*/
 
     public handleDownload() {
         download(this.props._baseURL + "/downloadLangFile", {
             lang: this.state.langToDownload,
             onlyEmpty: this.state.downloadOnlyEmpty,
             model: this.state.selectedObject.value,
+            withEnglishValues: this.state.withEnglishValues,
         });
     }
 
@@ -250,14 +260,21 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                         {this.state.langToDownload != "xx" && [
                             <BSwitch
-                                label={__("Ściągni tylko nie uzupełnione wartości")}
+                                label={__("Ściągnij tylko nie uzupełnione wartości")}
                                 value={this.state.downloadOnlyEmpty}
                                 onChange={(e) => this.setState({downloadOnlyEmpty: e.value})}
                                 options={{0: "Nie", 1: "Tak"}}
                             />,
 
                         ]}
-
+                        {this.state.langToDownload != "xx" && this.state.langToDownload != "gb" && [
+                            <BSwitch
+                                label={__("Dodaj kolumne z angielskimi tłumaczeniami")}
+                                value={this.state.withEnglishValues}
+                                onChange={(e) => this.setState({withEnglishValues: e.value})}
+                                options={{0: "Nie", 1: "Tak"}}
+                            />,
+                        ]}
                         {this.state.langToDownload != "xx" &&
                         <button onClick={this.handleDownload.bind(this)} className="btn btn-primary pull-right"><i
                             className="fa fa-download"/> Pobierz</button>

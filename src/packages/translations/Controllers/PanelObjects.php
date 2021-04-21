@@ -4,7 +4,6 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
-use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
 use Arrow\Common\AdministrationLayout;
 use Arrow\Common\AdministrationPopupLayout;
@@ -194,92 +193,6 @@ class PanelObjects extends BaseController
         $this->json($r);
     }
 
-    /**
-     * @Route("/downloadLangFileWithEnglishValues")
-     */
-    public function downloadLangFileWithEnglishValues(Request $request)
-    {
-
-        $data = json_decode($request->get("payload"), true);
-        $model = $data["model"];
-
-
-        $objPHPExcel = new \PHPExcel();
-        $objPHPExcel->getProperties()->setCreator("AS - CMS");
-        $sh = $objPHPExcel->setActiveSheetIndex(0);
-
-        $criteria = ObjectTranslation::get()
-            ->_source("", Criteria::C_NOT_EQUAL)
-            ->_lang($data["lang"]);
-
-
-        $tmp = explode("\\", $model);
-        $class = "%" . end($tmp);
-        $criteria->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
-        $criteria->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
-
-        /*if ($model == Property::getClass()) {
-            $criteria->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
-        }*/
-
-        if ($data["onlyEmpty"]) {
-            $criteria->_value([null, ""], Criteria::C_IN);
-        }
-
-
-        // Add some data
-
-        $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
-
-
-        $columns = [
-            ObjectTranslation::F_ID,
-            ObjectTranslation::F_FIELD,
-            ObjectTranslation::F_SOURCE,
-            ObjectTranslation::F_VALUE,
-            "english_value"
-        ];
-
-        $sh->setCellValueByColumnAndRow(0, 1, ObjectTranslation::F_ID);
-        $sh->setCellValueByColumnAndRow(1, 1, ObjectTranslation::F_FIELD);
-        $sh->setCellValueByColumnAndRow(2, 1, ObjectTranslation::F_SOURCE);
-        $sh->setCellValueByColumnAndRow(3, 1, ObjectTranslation::F_VALUE);
-        $sh->setCellValueByColumnAndRow(4, 1, "english_value");
-        foreach ($result as $index => $r) {
-            //$columns[2] = $r["field"];
-            foreach ($columns as $key => $c) {
-                if ($c == "english_value") {
-                    $englishTranslation = ObjectTranslation::get()
-                        ->_class($r[ObjectTranslation::F_CLASS])
-                        ->_idObject($r[ObjectTranslation::F_ID_OBJECT])
-                        ->_lang("gb")
-                        ->findFirst();
-                    $sh->setCellValueByColumnAndRow($key, $index+2, $englishTranslation?$englishTranslation->_value():"");
-                } else {
-                    $sh->setCellValueByColumnAndRow($key, $index+2, $r[$c]);
-                }
-            }
-
-            //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
-        }
-        /*foreach ($columns as $key => $c) {
-            $sh->getColumnDimensionByColumn($key)->setAutoSize(true);
-        }*/
-
-
-        // Rename worksheet
-        $sh->setTitle('Tłumaczenia ');
-        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
-        $objPHPExcel->setActiveSheetIndex(0);
-        // Redirect output to a client’s web browser (Excel5)
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="tłumaczenia_' . $data['lang'] . '.xls"');
-        header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save("php://output");
-        exit;
-
-    }
 
     /**
      * @Route("/downloadLangFile")
@@ -289,7 +202,7 @@ class PanelObjects extends BaseController
 
         $data = json_decode($request->get("payload"), true);
         $model = $data["model"];
-
+        //$model = $helper->getInputData()['additionalConditions']['model']; //todo check
 
         $objPHPExcel = new \PHPExcel();
         $objPHPExcel->getProperties()->setCreator("AS - CMS");
@@ -303,7 +216,12 @@ class PanelObjects extends BaseController
         $tmp = explode("\\", $model);
         $class = "%" . end($tmp);
         $criteria->c(ObjectTranslation::F_CLASS, $class, Criteria::C_LIKE);
-        $criteria->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $model::getMultilangFields());
+        $columnsToJoin = $model::getMultilangFields();
+        if ($model == Product::getClass()) {
+            $columnsToJoin[] = Product::F_GROUP_KEY;
+            $columnsToJoin[] = Product::F_COLOR;
+        }
+        $criteria->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E", $columnsToJoin);
 
         /*if ($model == Property::getClass()) {
             $criteria->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
@@ -313,43 +231,52 @@ class PanelObjects extends BaseController
             $criteria->_value([null, ""], Criteria::C_IN);
         }
 
-
-        // Add some data
-
         $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
 
-
+        //add sku
         $columns = [
             ObjectTranslation::F_ID,
             ObjectTranslation::F_FIELD,
-            ObjectTranslation::F_SOURCE,
-            ObjectTranslation::F_VALUE,
         ];
-
-        $sh->setCellValueByColumnAndRow(0, 1, ObjectTranslation::F_ID);
-        $sh->setCellValueByColumnAndRow(1, 1, ObjectTranslation::F_FIELD);
-        $sh->setCellValueByColumnAndRow(2, 1, ObjectTranslation::F_SOURCE);
-        $sh->setCellValueByColumnAndRow(3, 1, ObjectTranslation::F_VALUE);
-        foreach ($result as $index => $r) {
-            //$columns[2] = $r["field"];
-            foreach ($columns as $key => $c) {
-
-                $sh->setCellValueByColumnAndRow($key, $index+2, $r[$c]);
-
+        $columns[] = ObjectTranslation::F_SOURCE;
+        $columns[] = ObjectTranslation::F_VALUE;
+        if ($data["withEnglishValues"] && $data["lang"] != "gb") {
+            $columns[] = "english_value";
+            $englishTranslations = ObjectTranslation::get()
+                ->setColumns([ObjectTranslation::F_VALUE, ObjectTranslation::F_ID_OBJECT, ObjectTranslation::F_CLASS, ObjectTranslation::F_FIELD])
+                ->_class($class, Criteria::C_LIKE)
+                ->_lang("gb")
+                ->find();
+            $ETA = [];
+            foreach ($englishTranslations as $et) {
+                $ETA[$et[ObjectTranslation::F_ID_OBJECT] . "_" . $et[ObjectTranslation::F_FIELD]] = $et[ObjectTranslation::F_VALUE];
             }
-
-            //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
         }
-        /*foreach ($columns as $key => $c) {
-            $sh->getColumnDimensionByColumn($key)->setAutoSize(true);
-        }*/
+        if ($model == Product::getClass()) {
+            $columns[] = "sku";
+        }
 
+        foreach ($columns as $columnNumber => $columnName) {
+            $sh->setCellValueByColumnAndRow($columnNumber, 1, $columnName);
+        }
+        foreach ($result as $index => $r) {
+            foreach ($columns as $key => $c) {
+                switch ($c) {
+                    case "english_value":
+                        $sh->setCellValueByColumnAndRow($key, $index + 2, $ETA[$r[ObjectTranslation::F_ID_OBJECT] . "_" . $r[ObjectTranslation::F_FIELD]] ?? "");
+                        break;
+                    case "sku":
+                        $sh->setCellValueByColumnAndRow($key, $index + 2, ($r["E:group_key"] . "-" . $r["E:color"]));
+                        break;
+                    default:
+                        $sh->setCellValueByColumnAndRow($key, $index+2, $r[$c]);
+                        break;
+                }
+            }
+        }
 
-        // Rename worksheet
         $sh->setTitle('Tłumaczenia ');
-        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
         $objPHPExcel->setActiveSheetIndex(0);
-        // Redirect output to a client’s web browser (Excel5)
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="tłumaczenia_' . $data['lang'] . '.xls"');
         header('Cache-Control: max-age=0');
@@ -364,11 +291,6 @@ class PanelObjects extends BaseController
      */
     public function uploadFile(Request $request, Project $project)
     {
-
-        if (!Auth::getDefault()->getUser()->isInGroup("Administrators")) {
-            print "method only for admins"; exit();
-        }
-
         $data = $request->get("data");
         if ($data["language"] == null){
             return [
