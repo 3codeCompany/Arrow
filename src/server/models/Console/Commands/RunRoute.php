@@ -40,5 +40,8 @@ class RunRoute extends Command
             if (!$input->getOption("without-info"))
                 $output->writeln('Finished.');
         }
+        return 0;
     }
+
+
 }
