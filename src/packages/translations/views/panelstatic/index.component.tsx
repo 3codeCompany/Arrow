@@ -4,7 +4,16 @@ import { Navbar } from "serenity-controls/lib/Navbar";
 
 import { Table, Column } from "serenity-controls/lib/Table";
 
-import { BFile, BFileListField, BForm, BSelect, BSwitch, BText, BTextarea, BWysiwig } from "serenity-controls/lib/BForm";
+import {
+    BFile,
+    BFileListField,
+    BForm,
+    BSelect,
+    BSwitch,
+    BText,
+    BTextarea,
+    BWysiwig,
+} from "serenity-controls/lib/BForm";
 import { Comm } from "serenity-controls/lib/lib";
 
 import { CommandBar } from "serenity-controls/lib/CommandBar";
@@ -100,7 +109,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         const lang = this.state.langToDownload;
         //window.open(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
 
-        download(this.props._basePath + this.props._baseURL + "/downloadLangFile?lang=" + lang);
+        download(
+            this.props._basePath + this.props._baseURL + "/downloadLangFile",
+            { lang },
+            {
+                fileName: "lang-export-" + lang + ".xls",
+            },
+        ).then(() => {
+            this.setState({ langToDownload: null });
+        });
     }
 
     handleBackup(lang: string): any {
@@ -262,9 +279,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             onPage={100}
                             showFooter={false}
                             columns={[
-                                Column.text("language", fI18n.t("Język"))
-                                    .width(70)
-                                    .className("center uppercase"),
+                                Column.text("language", fI18n.t("Język")).width(70).className("center uppercase"),
                                 Column.email("user", fI18n.t("Użytkownik")),
                                 Column.date("date", fI18n.t("Data")),
                                 Column.date("time", fI18n.t("Czas")),

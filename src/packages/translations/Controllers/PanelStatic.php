@@ -2,19 +2,17 @@
 
 namespace Arrow\Translations\Controllers;
 
-
 use App\Controllers\BaseController;
 use App\Models\Persistent\TransactionText;
 use Arrow\Common\Layouts\ReactComponentLayout;
 
 use Arrow\Common\Models\Helpers\TableListORMHelper;
+use Arrow\Media\Models\Helpers\DownloadHelper;
 use Arrow\Models\Dispatcher;
 use Arrow\Models\Operation;
 use Arrow\Models\Project;
 use Arrow\Models\View;
-use Arrow\ORM\Persistent\Criteria,
-    \Arrow\Access\Models\Auth,
-    \Arrow\RequestContext;
+use Arrow\ORM\Persistent\Criteria, Arrow\Access\Models\Auth, Arrow\RequestContext;
 use Arrow\Access\Models\AccessGroup;
 use Arrow\ORM\Persistent\DataSet;
 use Arrow\Package\Application\PresentationLayout;
@@ -32,8 +30,9 @@ use Arrow\Translations\Models\Translations;
 use Arrow\Media\Element;
 use Arrow\Media\ElementConnection;
 use Arrow\Media\MediaAPI;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-use function file_get_contents;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -49,7 +48,9 @@ class PanelStatic extends BaseController
 
     public function __construct()
     {
-        $this->user = Auth::getDefault()->getUser()->_login();
+        $this->user = Auth::getDefault()
+            ->getUser()
+            ->_login();
         $tmp = explode("_", $this->user);
 
         if (count($tmp) >= 2) {
@@ -64,10 +65,12 @@ class PanelStatic extends BaseController
     {
         $db = Project::getInstance()->getDB();
         $t = LanguageText::getTable();
-        $db->query("DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang");
+        $db->query(
+            "DELETE n1 FROM common_lang_texts n1, common_lang_texts n2 WHERE n1.id > n2.id AND n1.hash=n2.hash and n1.lang=n2.lang"
+        );
 
         return [
-            'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
+            "language" => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
             "country" => $this->country,
         ];
     }
@@ -80,10 +83,12 @@ class PanelStatic extends BaseController
         $c = LanguageText::get();
         $helper = new TableListORMHelper();
 
-        $user = Auth::getDefault()->getUser()->_login();
+        $user = Auth::getDefault()
+            ->getUser()
+            ->_login();
         $tmp = explode("_", $user);
         if (count($tmp) == 2) {
-            if ($tmp[1] == "ua"){
+            if ($tmp[1] == "ua") {
                 $c->_lang(["ua", "ru"], Criteria::C_IN);
             } elseif ($tmp[1] == "by") {
                 $c->_lang(["by", "ru"], Criteria::C_IN);
@@ -110,50 +115,38 @@ class PanelStatic extends BaseController
     public function uploadLangFile(Request $request)
     {
         $data = $request->get("data");
-        if ($data["language"] == null){
+        if ($data["language"] == null) {
             return [
                 "status" => "fail",
             ];
         } else {
-        $file = ($_FILES["data"]["tmp_name"]["files"][0]["nativeObj"]);
+            $file = $_FILES["data"]["tmp_name"]["files"][0]["nativeObj"];
 
-        $currentDate = date("d-m-Y");
-        $currentTime = date("H:i:s");
-        $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
-        $target = "data/translate_uploads/" . $backupName;
+            $currentDate = date("d-m-Y");
+            $currentTime = date("H:i:s");
+            $backupName = $currentDate . "_" . $currentTime . "_" . $this->user . "_" . $data["language"] . ".xls";
 
+            // file stored
+            try {
+                $objPHPExcel = \PhpOffice\PhpSpreadsheet\IOFactory::load($file);
+            } catch (\Exception $e) {
+                die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME) . '": ' . $e->getMessage());
+            }
 
-        // file stored
-        try {
-            $inputFileType = \PHPExcel_IOFactory::identify($file);
-            $objReader = \PHPExcel_IOFactory::createReader($inputFileType);
-            $objPHPExcel = $objReader->load($file);
-        } catch (\Exception $e) {
-            die('Error loading file "' . pathinfo($file, PATHINFO_BASENAME) . '": ' . $e->getMessage());
-        }
-        $sheet = $objPHPExcel->getSheet(0);
+            $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
 
-        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, false);
+            $table = LanguageText::getTable();
+            $db = Project::getInstance()->getDB();
 
+            $currLang = $data["language"];
 
-        $table = $table = LanguageText::getTable();
-        $db = Project::getInstance()->getDB();
+            $query = $db->prepare("update $table set value=? where id=? and lang=?");
+            $db->beginTransaction();
 
-        $currLang = $data["language"];
-
-        $query = $db->prepare("update $table set value=? where id=? and lang=?");
-        $db->beginTransaction();
-
-        foreach ($sheetData as $row) {
-            $query->execute([
-                $row[2],
-                $row[0],
-                $currLang,
-            ]);
-        }
-        $db->commit();
-        move_uploaded_file($file, $target);
-
+            foreach ($sheetData as $row) {
+                $query->execute([$row[2], $row[0], $currLang]);
+            }
+            $db->commit();
 
             return [
                 "status" => "done",
@@ -168,12 +161,11 @@ class PanelStatic extends BaseController
     {
         //$data = json_decode($request->get("payload"), true);
 
-        $objPHPExcel = new \PHPExcel();
+        $objPHPExcel = new Spreadsheet();
         $objPHPExcel->getProperties()->setCreator("CMS");
         $sh = $objPHPExcel->setActiveSheetIndex(0);
 
-        $criteria = LanguageText::get()
-            ->_lang($request->get("lang"));
+        $criteria = LanguageText::get()->_lang($request->get("lang"));
 
         if ($request->get("onlyEmpty")) {
             $criteria->_value([null, ""], Criteria::C_IN);
@@ -182,48 +174,48 @@ class PanelStatic extends BaseController
 
         $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
 
-        $columns = [
-            LanguageText::F_ID,
-            LanguageText::F_ORIGINAL,
-            LanguageText::F_VALUE,
-            LanguageText::F_MODULE,
-        ];
+        $columns = [LanguageText::F_ID, LanguageText::F_ORIGINAL, LanguageText::F_VALUE, LanguageText::F_MODULE];
 
-        $sh->setCellValueByColumnAndRow(0, 1, "id");
-        $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
-        $sh->setCellValueByColumnAndRow(2, 1, "Tłumaczenie");
-        $sh->setCellValueByColumnAndRow(3, 1, "Moduł");
+        $sh->setCellValueByColumnAndRow(1, 1, "id");
+        $sh->setCellValueByColumnAndRow(2, 1, "Orginał");
+        $sh->setCellValueByColumnAndRow(3, 1, "Tłumaczenie");
+        $sh->setCellValueByColumnAndRow(4, 1, "Moduł");
         foreach ($result as $index => $r) {
             foreach ($columns as $key => $c) {
-                $sh->setCellValueByColumnAndRow($key, $index + 2, $r[$c]);
+                $sh->setCellValueByColumnAndRow($key + 1, $index + 2, $r[$c]);
             }
 
             //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
         }
-        $objPHPExcel->getActiveSheet()->getStyle('B1:D5000')
-            ->getAlignment()->setWrapText(true);
+        $objPHPExcel
+            ->getActiveSheet()
+            ->getStyle("B1:D5000")
+            ->getAlignment()
+            ->setWrapText(true);
 
         foreach ($columns as $key => $c) {
             //$sh->getColumnDimensionByColumn($key)->setAutoSize(true);
             //$sh->getColumnDimensionByColumn($key)->setWidth(200);
         }
 
-        $sh->getColumnDimensionByColumn(1)->setWidth(70);
         $sh->getColumnDimensionByColumn(2)->setWidth(70);
-
+        $sh->getColumnDimensionByColumn(3)->setWidth(70);
 
         // Rename worksheet
-        $sh->setTitle('Tłumaczenia ');
+        $sh->setTitle("Tłumaczenia ");
         // Set active sheet index to the first sheet, so Excel opens this as the first sheet
         $objPHPExcel->setActiveSheetIndex(0);
-        // Redirect output to a client’s web browser (Excel5)
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="tłumaczenia_' . $request->get("lang"). '.xls"');
-        header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-        $objWriter->save("php://output");
-        exit;
 
+        $writer = new Xlsx($objPHPExcel);
+        $name = "translations_{$request->get("lang")}.xls";
+        $file = ARROW_CACHE_PATH . "/" . $name;
+        $writer->save($file);
+
+        $dh = new DownloadHelper();
+        $response = $dh->getDownloadResponseFromPath($name, $file);
+        $response->deleteFileAfterSend(true);
+
+        return $response;
     }
 
     /**
@@ -237,8 +229,7 @@ class PanelStatic extends BaseController
         $objPHPExcel->getProperties()->setCreator("CMS");
         $sh = $objPHPExcel->setActiveSheetIndex(0);
 
-        $criteria = LanguageText::get()
-            ->_lang($request->get("lang"));
+        $criteria = LanguageText::get()->_lang($request->get("lang"));
 
         if ($request->get("onlyEmpty")) {
             $criteria->_value([null, ""], Criteria::C_IN);
@@ -247,12 +238,7 @@ class PanelStatic extends BaseController
 
         $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
 
-        $columns = [
-            LanguageText::F_ID,
-            LanguageText::F_ORIGINAL,
-            LanguageText::F_VALUE,
-            LanguageText::F_MODULE,
-        ];
+        $columns = [LanguageText::F_ID, LanguageText::F_ORIGINAL, LanguageText::F_VALUE, LanguageText::F_MODULE];
 
         $sh->setCellValueByColumnAndRow(0, 1, "id");
         $sh->setCellValueByColumnAndRow(1, 1, "Orginał");
@@ -265,8 +251,11 @@ class PanelStatic extends BaseController
 
             //$sh->setCellValueByColumnAndRow($key +1 , $index, Reclaim::re$r[$c]);
         }
-        $objPHPExcel->getActiveSheet()->getStyle('B1:D5000')
-            ->getAlignment()->setWrapText(true);
+        $objPHPExcel
+            ->getActiveSheet()
+            ->getStyle("B1:D5000")
+            ->getAlignment()
+            ->setWrapText(true);
 
         foreach ($columns as $key => $c) {
             //$sh->getColumnDimensionByColumn($key)->setAutoSize(true);
@@ -282,19 +271,17 @@ class PanelStatic extends BaseController
         $target = "data/translate_backups/" . $backupName;
 
         // Rename worksheet
-        $sh->setTitle('Tłumaczenia ');
+        $sh->setTitle("Tłumaczenia ");
         // Set active sheet index to the first sheet, so Excel opens this as the first sheet
         $objPHPExcel->setActiveSheetIndex(0);
         // Redirect output to a client’s web browser (Excel5)
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="tłumaczeniaa_' . $request->get("lang"). '.xls"');
-        header('Cache-Control: max-age=0');
-        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        header("Content-Type: application/vnd.ms-excel");
+        header('Content-Disposition: attachment;filename="tłumaczeniaa_' . $request->get("lang") . '.xls"');
+        header("Cache-Control: max-age=0");
+        $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, "Excel5");
         $objWriter->save($target);
-        exit;
-
+        exit();
     }
-
 
     /**
      * @Route("/delete")
@@ -317,12 +304,10 @@ class PanelStatic extends BaseController
      */
     public function inlineUpdate(Request $request)
     {
-        $obj = LanguageText::get()
-            ->findByKey($request->get("key"));
+        $obj = LanguageText::get()->findByKey($request->get("key"));
 
         $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
         $obj->save();
-
 
         $this->json([1]);
     }
@@ -330,16 +315,17 @@ class PanelStatic extends BaseController
     /**
      * @Route("/history")
      */
-    public function history(){
+    public function history()
+    {
         $dir = "data/translate_uploads";
 
         $files = scandir($dir);
 
         $returnData = [];
 
-        foreach ($files as $file){
+        foreach ($files as $file) {
             $slicedFile = explode("_", $file);
-            if (count($slicedFile) >= 3){
+            if (count($slicedFile) >= 3) {
                 $returnData[] = [
                     "full_name" => $file,
                     "language" => explode(".", $slicedFile[3])[0],
@@ -350,11 +336,10 @@ class PanelStatic extends BaseController
             }
         }
 
-        return[
+        return [
             "countAll" => count($files) - 2,
             "data" => $returnData,
             "debug" => false,
         ];
     }
 }
-
