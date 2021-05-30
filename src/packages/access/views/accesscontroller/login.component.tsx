@@ -4,6 +4,7 @@ import { Comm } from "serenity-controls/lib/lib";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { PrintJSON } from "serenity-controls/lib/PrintJSON";
+import { configGetAll } from "../../../../../../../../serenity-controls/lib/backoffice/Config";
 
 declare var LANGUAGE: string;
 declare var window: any;
@@ -77,6 +78,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
 
     public render() {
         const s = this.state;
+        const currLang = configGetAll().translations.currentLanguage;
 
         return (
             <div className="login-view">
@@ -84,7 +86,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                     {window.reactBackOfficeVar.panel.languages.map((el) => (
                         <a
                             key={el}
-                            className={el.toLowerCase() == LANGUAGE ? "active" : ""}
+                            className={el.toLowerCase() == currLang ? "active" : ""}
                             onClick={() => this.handleLangChange(el)}
                         >
                             {el.toUpperCase()}
