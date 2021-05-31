@@ -83,7 +83,7 @@ class Translations
 
     }
 
-    public static function translateText($text, $lang = false, $addidtionalData = [])
+    public static function translateText($text, $lang = false, $additionalData = [])
     {
         if (!$lang) {
             $lang = self::$currLanguage;
@@ -101,7 +101,7 @@ class Translations
             //->c(LanguageText::F_MODULE, self::$module)
                 
             ->findFirst();
-        if ($result and !empty($addidtionalData)) {
+        if ($result and !empty($additionalData)) {
             //$result[LanguageText::F_MODULE] = implode(",", $addidtionalData);
             $result->save();
         }
@@ -119,12 +119,17 @@ class Translations
                 if ($_lang == "pl") {
                     continue;
                 }
-                LanguageText::createIfNotExists(array(
+                $obj = LanguageText::createIfNotExists(array(
                     LanguageText::F_HASH => md5($text),
                     LanguageText::F_ORIGINAL => $text,
                     LanguageText::F_LANG => $_lang,
                     //LanguageText::F_MODULE => implode(",", $addidtionalData)
                 ));
+
+                if($additionalData){
+                    $obj->_module(implode(",", $additionalData));
+                    $obj->save();
+                }
             }
             //if not english and can't find in current
             if ($lang != "en") {
