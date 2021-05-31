@@ -4,7 +4,7 @@ import { Comm } from "serenity-controls/lib/lib";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { PrintJSON } from "serenity-controls/lib/PrintJSON";
-import { configGetAll } from "../../../../../../../../serenity-controls/lib/backoffice/Config";
+import { configGetAll } from "serenity-controls/lib/backoffice/Config";
 
 declare var LANGUAGE: string;
 declare var window: any;
