@@ -176,7 +176,13 @@ class Users extends \Arrow\Models\Controller
     public function delete(Request $request)
     {
         $user = User::get()->findByKey($request->get("key"));
-        $user->delete();
+
+        if (strpos($user[User::F_LOGIN], "_deleted_user") === false) {
+            $user[User::F_LOGIN] = $user[User::F_LOGIN] . "_deleted_user";
+            $user[User::F_PASSWORD] = "deleted$%^@deleted()";
+            $user->save();
+        }
+
         $this->json([1]);
     }
 
