@@ -56,5 +56,3 @@ class QueueElement extends ORM_Arrow_Communication_Models_Mailer_QueueElement
 
 
 }
-
-?>
