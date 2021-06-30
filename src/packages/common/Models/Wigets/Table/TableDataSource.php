@@ -58,6 +58,8 @@ class TableDataSource extends Criteria
                 }
 
             }
+        }else{
+            $criteria->setColumns([($criteria->getModel())::getPKField()]);
         }
 
 
