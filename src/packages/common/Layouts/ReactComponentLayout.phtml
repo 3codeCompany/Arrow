@@ -20,24 +20,27 @@ unset($input["layout"])
 
 
 <script>
-    window.env = <?=json_encode($data["layout"]["env"]);?>;
-    window.reactBackOfficeVar = <?=json_encode([
-        "basePath" => $request->getBasePath(),
-        "inputProps" => $input,
-        "panel" => [
-            "language" => $data["layout"]["language"],
-            "languages" => $data["layout"]["languages"],
-            "icon" => $data["layout"]["config"]["icon"],
-            "title" => $data["layout"]["config"]["title"],
-            "menu" => $data["layout"]["allowedElements"]["menu"],
-            "dashboard" => $data["layout"]["allowedElements"]["dashboard"],
-            "onlyBody" => $data["layout"]["onlyBody"],
-            "user" => [
-                "login" => $data["layout"]["user"]["login"],
-                "isDev" => $data["layout"]["user"]["isDev"]
+    window.env = <?= json_encode($data["layout"]["env"]) ?>;
+    window.reactBackOfficeVar = <?= json_encode(
+        [
+            "basePath" => $request->getBasePath(),
+            "inputProps" => $input,
+            "panel" => [
+                "language" => $data["layout"]["language"],
+                "languages" => $data["layout"]["languages"],
+                "icon" => $data["layout"]["config"]["icon"],
+                "title" => $data["layout"]["config"]["title"],
+                "menu" => $data["layout"]["allowedElements"]["menu"],
+                "dashboard" => $data["layout"]["allowedElements"]["dashboard"],
+                "onlyBody" => $data["layout"]["onlyBody"],
+                "user" => [
+                    "login" => isset($data["layout"]["user"]["login"]) ? $data["layout"]["user"]["login"] : false,
+                    "isDev" => isset($data["layout"]["user"]["isDev"]) ? $data["layout"]["user"]["isDev"] : false,
+                ],
             ],
         ],
-    ], JSON_PRETTY_PRINT) ?>;
+        JSON_PRETTY_PRINT
+    ) ?>;
 </script>
 
 <div id="root"></div>
