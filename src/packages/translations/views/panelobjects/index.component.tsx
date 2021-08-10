@@ -1,20 +1,17 @@
 import * as React from "react";
 import { Navbar } from "serenity-controls/lib/Navbar";
-import {Column, Table} from "serenity-controls/lib/Table";
+import { Column, Table } from "serenity-controls/lib/Table";
 
-import {BFile, BFileListField, BForm, BSelect, BSwitch} from "serenity-controls/lib/BForm";
-
-import { download } from "serenity-controls/lib/Downloader";
-import {Comm} from "serenity-controls/lib/lib";
-import {Select} from "serenity-controls/lib/fields";
-import {translate} from "serenity-controls/lib/utils/Translator";
-import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
-import {Icon} from "serenity-controls/lib/Icon";
-import {CommandBar} from "serenity-controls/lib/CommandBar";
-import {FilterHelper} from "serenity-controls/lib/filters";
-import {fI18n} from "serenity-controls/lib/lib/I18n";
-import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
-import {Modal} from "serenity-controls/lib/Modal";
+import { BFileListField, BForm, BSelect, BSwitch } from "serenity-controls/lib/BForm";
+import { Comm } from "serenity-controls/lib/lib";
+import { Select } from "serenity-controls/lib/fields";
+import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
+import { Icon } from "serenity-controls/lib/Icon";
+import { CommandBar } from "serenity-controls/lib/CommandBar";
+import { FilterHelper } from "serenity-controls/lib/filters";
+import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
+import { Modal } from "serenity-controls/lib/Modal";
 import { downloadOld } from "serenity-controls/lib/Downloader/Downloader";
 
 interface IProps extends IArrowViewComponentProps {
@@ -295,7 +292,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         {...form("language")}
                                     />
                                     <BFileListField name="files" {...form("files")}/>
-                                    <button className="btn btn-primary pull-right"><Icon name={"Upload"}/> {fI18n.t("Laduj")}</button>
+                                    <button className="btn btn-primary pull-right"><CommonIcons.upload /> {fI18n.t("Laduj")}</button>
                                 </div>
                             )
                         }}
@@ -326,7 +323,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                     .template((value, row) => {
                                         return (
                                             <a href={this.props._basePath + `/data/translate_object_uploads/${row["full_name"]}`} target={"_blank"}>
-                                                <Icon name={"Download"}/>
+                                                <CommonIcons.download />
                                             </a>
                                         );
                                     }).width(60).className("center").noFilter(true)

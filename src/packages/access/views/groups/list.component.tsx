@@ -4,7 +4,7 @@ import { Navbar } from "serenity-controls/lib/Navbar";
 
 import { Column, Table } from "serenity-controls/lib/Table";
 import { Panel } from "serenity-controls/lib/Panel";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { Row } from "serenity-controls/lib/Row";
 import { Comm } from "serenity-controls/lib/lib";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
@@ -53,10 +53,10 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                         columns={[
                             Column.id("id", "Id"),
                             Column.text("name", "Nazwa"),
-                            Column.template("Zobacz", () => <Icon name={"Edit"} />)
+                            Column.template("Zobacz", () => <CommonIcons.edit />)
                                 .onClick((row) => this.props._goto(this.props._baseURL + "/edit", { key: row.id }))
                                 .className("center darkgreen"),
-                            Column.template("", () => <Icon name={"Delete"} />)
+                            Column.template("", () => <CommonIcons.delete />)
                                 .onClick(this.handleDelete.bind(this))
                                 .className("center darkred"),
                         ]}

@@ -18,7 +18,7 @@ import { Comm } from "serenity-controls/lib/lib";
 
 import { CommandBar } from "serenity-controls/lib/CommandBar";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { download } from "serenity-controls/lib/Downloader";
 import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { Modal } from "serenity-controls/lib/Modal";
@@ -212,7 +212,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                         {this.state.langToDownload != "xx" && (
                             <button className="btn btn-primary pull-right" onClick={() => this.handleDownload()}>
-                                <Icon name={"Download"} /> Pobierz
+                                <CommonIcons.download /> Pobierz
                             </button>
                         )}
                     </div>
@@ -257,7 +257,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         />
                                         <BFileListField name="files" {...form("files")} />
                                         <button className="btn btn-primary pull-right">
-                                            <Icon name={"Upload"} /> Laduj
+                                            <CommonIcons.upload /> Laduj
                                         </button>
                                     </div>
                                 );
@@ -292,7 +292,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                 }
                                                 target={"_blank"}
                                             >
-                                                <Icon name={"Download"} />
+                                                <CommonIcons.download />
                                             </a>
                                         );
                                     })

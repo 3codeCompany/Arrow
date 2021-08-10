@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Navbar } from "serenity-controls/lib/Navbar";
 import { Column, Table } from "serenity-controls/lib/Table";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 
 import { Comm } from "serenity-controls/lib/lib";
 import { CheckboxGroup } from "serenity-controls/lib/fields";
@@ -176,7 +176,7 @@ export default class extends React.Component<Props, any> {
                                                     selectedNames.join(", ")
                                                 ) : (
                                                     <div className={"left"} style={{ color: "lightgrey" }}>
-                                                        <Icon name={"ChromeClose"} />
+                                                        <CommonIcons.close/>
                                                     </div>
                                                 )}
                                             </div>

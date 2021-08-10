@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { Comm } from "serenity-controls/lib/lib";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 

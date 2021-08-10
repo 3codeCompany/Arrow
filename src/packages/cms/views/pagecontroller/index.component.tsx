@@ -8,7 +8,7 @@ import { Row } from "serenity-controls/lib/Row";
 
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { CommandBar } from "serenity-controls/lib/CommandBar";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { FilterHelper } from "serenity-controls/lib/filters";
 import {fI18n} from "serenity-controls/lib/lib/I18n";
 import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
@@ -34,7 +34,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         this.columns = [
             Column.text("name", fI18n.t("Nazwa")).template((val, row) => (
                 <div style={{ marginLeft: 30 * (row.depth - 1) }}>
-                    {row.type == "folder" ? <Icon name={"OpenFolderHorizontal"} /> : <Icon name={"FileASPX"} />}{" "}
+                    {row.type == "folder" ? <CommonIcons.folder /> : <CommonIcons.document />}{" "}
                     {val}{" "}
                 </div>
             )),
@@ -60,7 +60,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             Column.text("link", fI18n.t("Link")),
 
             Column.template("", () => {
-                return <Icon name={"OpenInNewWindow"} />;
+                return <CommonIcons.openInNewWindow />;
             })
                 .className("center")
                 .onClick((row) => {
@@ -68,7 +68,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 }),
 
             props.editEnabled
-                ? Column.template("", () => <Icon name={"ChevronDown"} />)
+                ? Column.template("", () => <CommonIcons.chevronDown />)
                       .className("center")
                       .onClick((row) => {
                           Comm._post(this.props._baseURL + "/moveDown", { key: row.id }).then((result) => {
@@ -77,7 +77,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                       })
                 : null,
             props.editEnabled
-                ? Column.template("", () => <Icon name={"ChevronUp"} />)
+                ? Column.template("", () => <CommonIcons.chevronUp />)
                       .className("center")
                       .onClick((row) => {
                           Comm._post(this.props._baseURL + "/moveUp", { key: row.id }).then((result) => {
@@ -86,14 +86,14 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                       })
                 : null,
 
-            Column.template("", () => <Icon name={"Edit"} />)
+            Column.template("", () => <CommonIcons.edit />)
                 .className("center")
                 .onClick((row) => {
                     this.props._goto(this.props._baseURL + "/edit", { key: row.id });
                 }),
 
             props.editEnabled
-                ? Column.template("", () => <Icon name={"Delete"} />)
+                ? Column.template("", () => <CommonIcons.delete />)
                       .className("center darkred")
                       .onClick((row) => this.handleDelete(row))
                 : null,

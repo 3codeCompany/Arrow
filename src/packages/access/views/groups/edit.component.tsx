@@ -4,7 +4,7 @@ import { Navbar } from "serenity-controls/lib/Navbar";
 import { BForm, BText, BTextarea } from "serenity-controls/lib/BForm";
 import { Panel } from "serenity-controls/lib/Panel";
 import { Row } from "serenity-controls/lib/Row";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 
 export default class extends React.Component<any, any> {
     constructor(props) {

@@ -8,7 +8,7 @@ import { CommandBar } from "serenity-controls/lib/CommandBar";
 import {Comm} from "serenity-controls/lib/lib";
 import { Row } from "serenity-controls/lib/Row";
 import { Copyable } from "serenity-controls/lib/Copyable";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import * as path from "path";
 
 interface IProps extends IArrowViewComponentProps {

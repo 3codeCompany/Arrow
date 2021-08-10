@@ -63,10 +63,10 @@ export default class  extends React.Component<any, any> {
                                 }
                             }),
 
-                            Column.template("Zobacz", () => <div><Icon name={"Edit"} /> </div>)
+                            Column.template("Zobacz", () => <div><CommonIcons.edit /> </div>)
                               .onClick((row) => this.props._goto("/access/users/edit", {key: row.id}))
                               .className("center darkgreen"),
-                            Column.template("", () => <Icon name={"Delete"} /> )
+                            Column.template("", () => <CommonIcons.delete /> )
                               .onClick(this.handleDelete.bind(this))
                               .className("center darkred"),
                         ]}

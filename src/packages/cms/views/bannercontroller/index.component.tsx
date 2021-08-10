@@ -7,7 +7,7 @@ import {Comm} from "serenity-controls/lib/lib";
 
 import {IArrowViewComponentProps} from "serenity-controls/lib/backoffice";
 import {CommandBar} from "serenity-controls/lib/CommandBar";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import {FilterHelper} from "serenity-controls/lib/filters";
 import {FilterPanel} from "serenity-controls/lib/filters";
 import {fI18n} from "serenity-controls/lib/lib/I18n";
@@ -147,7 +147,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                }).className("center").width(100),
                                Column.template("", () => {
                                    return (
-                                       <Icon name={"ChevronUp"}/>
+                                       <CommonIcons.chevronUp />
                                    )
                                }).className("center")
                                    .onClick((row, val) => {
@@ -159,7 +159,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    }),
                                Column.template("", () => {
                                    return (
-                                       <Icon name={"ChevronDown"}/>
+                                       <CommonIcons.chevronDown />
                                    )
                                }).className("center")
                                    .onClick((row, val) => {
@@ -171,7 +171,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                    }),
                                Column.template("Edytuj",() => {
                                    return (
-                                       <Icon name={"edit"}/>
+                                       <CommonIcons.edit />
                                    )
                                }).className("center")
                                    .onClick((row, val) => {
@@ -179,7 +179,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                }),
                                Column.template("Usuń",() => {
                                    return (
-                                       <Icon name={"delete"}/>
+                                       <CommonIcons.delete />
                                    )
                                }).className("center darkred")
                                    .onClick((row, val) => {

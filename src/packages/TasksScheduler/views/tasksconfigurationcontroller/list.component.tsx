@@ -8,13 +8,14 @@ import { TabPane, Tabs } from "serenity-controls/lib/Tabs";
 import { Modal } from "serenity-controls/lib/Modal";
 import { BForm } from "serenity-controls/lib/BForm";
 import { BText } from "serenity-controls/lib/BForm";
-import { Icon } from "serenity-controls/lib/Icon";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { Comm } from "serenity-controls/lib/lib";
 import { LoadingIndicator } from "serenity-controls/lib/LoadingIndicator";
 import { Row } from "serenity-controls/lib/Row";
 import { PanelContext } from "serenity-controls/lib/backoffice/PanelContext";
 import { BSwitch } from "serenity-controls/lib/BForm";
 import { getPanelContext } from "serenity-controls/lib/backoffice/PanelContext";
+import { FcInfo, FiPlay, RiErrorWarningLine } from "react-icons/all";
 
 interface IViewProps extends IArrowViewComponentProps {}
 
@@ -260,7 +261,7 @@ const Log = ({ setTextToDisplay, key }: any) => {
                         if (val.length > 0) {
                             return (
                                 <a className={"sync-error-icon"}>
-                                    <Icon name={"Error"} />
+                                    <RiErrorWarningLine />
                                 </a>
                             );
                         }
@@ -274,7 +275,7 @@ const Log = ({ setTextToDisplay, key }: any) => {
                         if (val.length > 0) {
                             return (
                                 <a className={"sync-info-icon"}>
-                                    <Icon name={"InfoSolid"} />
+                                    <FcInfo />
                                 </a>
                             );
                         }
@@ -316,7 +317,7 @@ const Harmonogram = ({ table, isRunning, setRunning, setTextToDisplay, setEdited
                     if (isRunning == row.id) {
                         return "---";
                     }
-                    return <Icon name="Play" />;
+                    return <FiPlay />;
                 })
                     .onClick((row, columnData, RowComponent) => {
                         setRunning(row.id);
@@ -339,14 +340,14 @@ const Harmonogram = ({ table, isRunning, setRunning, setTextToDisplay, setEdited
                     if (isRunning == row.id) {
                         return "---";
                     }
-                    return <Icon name="OpenInNewWindow" />;
+                    return <CommonIcons.openInNewWindow />;
                 })
                     .onClick((row, columnData, RowComponent) => {
                         window.open(panel.baseURL + "/run/" + row.id);
                     })
                     .className("center")
                     .width(80),
-                Column.template("Edytuj", () => <Icon name="Edit" />)
+                Column.template("Edytuj", () => <CommonIcons.edit />)
                     .onClick((row) => {
                         setEditedData(row);
                         setModalVisible(true);

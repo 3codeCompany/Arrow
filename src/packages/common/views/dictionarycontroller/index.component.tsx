@@ -104,14 +104,14 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                                         </>
                                     );
                                 }),
-                            Column.template("", () => <Icon name={"ChevronDown"}/>)
+                            Column.template("", () => <CommonIcons.chevronDown />)
                                 .className("center")
                                 .onClick((row) => {
                                     Comm._post(this.props._baseURL + "/move-down/" + row.id).then((result) => {
                                         this.list.load();
                                     });
                                 }),
-                            Column.template("", () => <Icon name={"ChevronUp"}/>)
+                            Column.template("", () => <CommonIcons.chevronUp />)
                                 .className("center")
                                 .onClick((row) => {
                                     Comm._get(this.props._baseURL + "/move-up/" + row.id).then((result) => {
@@ -121,11 +121,11 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
 
                             Column.text("value", "Wartość"),
                             Column.text("data", "Dane").template((val) => <pre style={{whiteSpace: "pre-wrap"}}>{val}</pre>),
-                            Column.template("", () => <Icon name={"Edit"}/>)
+                            Column.template("", () => <CommonIcons.edit />)
                                 .className("center")
                                 .width(40)
                                 .onClick((row) => this.setState({add: true, edited: row})),
-                            Column.template("", () => <Icon name={"Delete"}/>)
+                            Column.template("", () => <CommonIcons.delete />)
                                 .className("center darkred")
                                 .width(40)
                                 .onClick(this.handleDelete)
