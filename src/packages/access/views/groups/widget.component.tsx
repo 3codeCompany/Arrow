@@ -65,7 +65,6 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                             }
                             this.props._closeModal("/access/groups/widget/" + this.props.mask + "/" + this.props.owner);
                         },
-
                     );
                 },
                 onCancel: () => {
@@ -112,29 +111,17 @@ export default class ArrowViewComponent extends React.Component<any, any> {
                         <hr />
 
                         <div style={{ display: "flex" }}>
-                            <a
-                                className="btn btn-primary"
-                                style={{ width: "100%", textAlign: "center" }}
-                                onClick={this.handleSubmit}
-                            >
+                            <a className="btn btn-primary" style={{ width: "100%", textAlign: "center" }} onClick={this.handleSubmit}>
                                 Ok
                             </a>
-                            <a
-                                className="btn btn-default"
-                                style={{ width: "100%", textAlign: "center" }}
-                                onClick={this.handleCancel}
-                            >
+                            <a className="btn btn-default" style={{ width: "100%", textAlign: "center" }} onClick={this.handleCancel}>
                                 Cancel
                             </a>
                         </div>
                     </>
                 ) : (
-                    <a
-                        onClick={() => this.editAccessRights(this.props.mask, this.props.owner)}
-                        className="btn btn-primary"
-                        style={{ marginTop: 10 }}
-                    >
-                        <Icon name="Unlock" /> Zmień uprawnienia
+                    <a onClick={() => this.editAccessRights(this.props.mask, this.props.owner)} className="btn btn-primary" style={{ marginTop: 10 }}>
+                        Zmień uprawnienia
                     </a>
                 )}
             </div>

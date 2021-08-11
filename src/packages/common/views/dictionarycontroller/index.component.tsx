@@ -90,7 +90,7 @@ export default class ArrowViewComponent extends React.Component<IComponentProps,
                                     return (
                                         <>
                                             <div className="pull-right">
-                                                <Icon name={"ChromeBackMirrored"}/>
+                                                icon
                                             </div>
                                             {row.system_name ? (
                                                 <span>

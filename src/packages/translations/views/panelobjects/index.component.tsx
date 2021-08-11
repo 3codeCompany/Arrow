@@ -111,7 +111,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             // this.state.selectedObject.label == "Cechy" ? Column.text("C:name", "Kategoria") : null,
             this.state.selectedObject.value == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.template("Nazwa", (value, row) => {
                 return <div>
-                    <div>{row["E:name"]} <a href={"https://www.esotiq.com/pl/pl/_/_-" + row.id_object} className="pull-right" target="_blank"><Icon name={"Share"}/></a></div>
+                    <div>{row["E:name"]} <a href={"https://www.esotiq.com/pl/pl/_/_-" + row.id_object} className="pull-right" target="_blank">icon</a></div>
                     <small>{row["E:group_key"]}-{row["E:color"]}</small>
                 </div>;
             }).addFilter(FilterHelper.text("E:name", fI18n.t("Nazwa")).get()) : null,
@@ -170,7 +170,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             //Column.text('original', 'Orginał'),
             //Column.text('module', 'Moduł'),
 
-            /*Column.template("", () => <Icon name={"Dalete"} />)
+            /*Column.template("", () => "delete")
                 .className("center darkred")
                 .onClick((row) => this.handleDelete([row])),*/
         ];
