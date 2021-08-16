@@ -13,63 +13,18 @@ use Arrow\ViewManager;
  */
 abstract class AbstractLayout
 {
-    /**
-     * @var array
-     */
-    protected $data = [];
-    /**
-     * @var string
-     */
-    protected $template;
+    abstract public function createLayout(ViewManager $manager);
 
-    public function __construct(?string $template, array $data = [])
+    abstract public function getLayoutFile();
+
+    public function getFileName($path)
     {
-        $this->template = $template;
-        $this->data = $data;
+        return $path . ".phtml";
     }
 
-    public function setTemplate(string $template)
+    public function getFirstTemplateContent(Action $action)
     {
-        $this->template = $template;
-        return $this;
+        return false;
     }
 
-    /**
-     * @return string
-     */
-    public function getTemplate()
-    {
-        return $this->template;
-    }
-
-    public function includeTemplate()
-    {
-        if (file_exists($this->template)) {
-            include $this->template;
-        } else {
-            print "<pre>Template not exists: \n\n Absolute path: " .
-                $this->template .
-                " \n\n Realative path: " .
-                str_replace(ARROW_PROJECT . "/", "", $this->template) .
-                "</pre>";
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getData(): array
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param array $data
-     */
-    public function setData(array $data): void
-    {
-        $this->data = $data;
-    }
-
-    abstract public function render();
 }

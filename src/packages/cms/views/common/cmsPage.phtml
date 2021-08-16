@@ -1,0 +1,16 @@
+<div class="span9">
+    <div class="content">
+        <h1><?= $this["page"]["header"] ?></h1>
+        <div contenteditable="true">
+            <?= $this["page"]["content"] ?>
+        </div>
+    </div>
+</div>
+<div class="span3">
+    <div>
+        <?= \Arrow\Models\Dispatcher::getDefault()->get("/layoutElements/newsModule")->fetch() ?>
+    </div>
+</div>
+
+
+

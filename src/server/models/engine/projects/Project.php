@@ -4,11 +4,9 @@ namespace Arrow\Models;
 
 use Arrow\ConfigProvider;
 use Arrow\Exception;
-use Arrow\Kernel;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerAwareInterface;
-use Symfony\Component\DependencyInjection\Container;
 
 /**
  * Arrow project class
@@ -26,13 +24,22 @@ class Project
 
     const IErrorHandler = "errorHandler";
     const ISessionHandler = "sessionHandler";
-
+    const IAuthHandler = "authHandler";
+    const IAccessHandler = "accessHandler";
     const IExceptionHandler = "exceptionHandler";
+    const IRemoteResponseHandler = "remoteResponseHandler";
+
+
+    const CACHE_REFRESH_CONF = 1;
+    const CACHE_REFRESH_TEMPLATES = 2;
+    const CACHE_REFRESH_STATIC = 4;
+    const CACHE_REFRESH_TEMPLATES_FORCE = 10; //8+2 ( normal template refresh )
+
+
+    public static $cacheFlag = 0;
+
 
     public static $forceDisplayErrors = 1;
-    public static $onlyAppRoutes = false;
-
-    private $postInit = [];
 
     /**
      * Project configuration array
@@ -40,6 +47,14 @@ class Project
      * @var array
      */
     private $configuration;
+
+
+    /**
+     * Project id
+     *
+     * @var string
+     */
+    private $id;
 
 
     /**
@@ -53,16 +68,17 @@ class Project
     /**
      * Reference to default project database connection
      *
-     * @var \PDO[]
+     * @var \PDO
      */
-    private $dbConnection;
+    private $defaultDbConnection;
+
+    private $accesManager;
 
 
-    private static $instance = null;
+    private static $instance;
 
     /**
      * @return Project|\Arrow\Models\Project
-     * @throws Exception
      */
     public static function getInstance()
     {
@@ -73,77 +89,29 @@ class Project
     }
 
 
-    /**
-     * @var Container
-     */
-    private $serviceContainer;
-
-    /**
-     * @param mixed $serviceContainer
-     */
-    public function setServiceContainer($serviceContainer): void
+    public function __construct()
     {
-        $this->serviceContainer = $serviceContainer;
-    }
-
-    /**
-     * @return Container
-     */
-    public function getContainer()
-    {
-        return $this->serviceContainer;
-    }
-
-    public function __construct($serviceContainer)
-    {
-
-        if (self::$instance !== null) {
-            throw new Exception("Can't init project mor than once");
-        }
-
-        $this->serviceContainer = $serviceContainer;
         self::$instance = $this;
 
         $this->configuration = ConfigProvider::get();
 
-
-
-
         if ($this->configuration) {
-
             $this->id = $this->configuration["name"];
 
             date_default_timezone_set($this->configuration["timezone"]);
 
-
-
             require_once ARROW_APPLICATION_PATH . "/bootstrap.php";
 
-
-            /*if(!Kernel::isInCLIMode()) {
-                $this->getHandler(self::IErrorHandler);
-                $this->getHandler(self::IExceptionHandler);
-            }*/
             $this->getHandler(self::IErrorHandler);
             $this->getHandler(self::IExceptionHandler);
-            $this->getHandler(self::ISessionHandler);
-
+            //$this->getHandler(self::ISessionHandler);
+            $this->getHandler(self::IAuthHandler);
+            $this->accesManager = $this->getHandler(self::IAccessHandler);
 
         }
 
     }
 
-    public function postInit()
-    {
-        foreach ($this->postInit as $fn) {
-            $fn();
-        }
-    }
-
-    public function addPostInit(callable $fn)
-    {
-        $this->postInit[] = $fn;
-    }
 
     public function getPackages()
     {
@@ -196,44 +164,51 @@ class Project
 
 
     /**
-     * @return Object
+     * Returns access manager
      *
-     * @throws Exception
+     * @return AccessManager
      */
-    public function initializeDB($name = 'default')
+    public function getAccessManager()
+    {
+        return $this->accesManager;
+    }
+
+
+    /**
+     * @return Object
+     */
+    public function setUpDB($name = false)
     {
 
-        $dbConf = $this->configuration['db'][$name];
-        if (!$dbConf) {
-            throw new \Arrow\Exception(new ExceptionContent("DB - $name - not implemented"));
+        if ($name) {
+            throw new \Arrow\Exception(new ExceptionContent("Not implementet [db with name]"));
         }
 
+        $dbConf = $this->configuration["db"];
         try {
-            $this->dbConnection[$name] = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [
-                \PDO::MYSQL_ATTR_LOCAL_INFILE => 1,
-                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
-            ]);
+            $this->defaultDbConnection = new DB($dbConf['dsn'], $dbConf['user'], $dbConf['password'], [\PDO::MYSQL_ATTR_LOCAL_INFILE => 1]);
         } catch (\Exception $ex) {
-            exit("DB - $name - connection problem: " . $ex->getMessage());
+            //todo Rozwiązać inaczej :]
+            exit("DB connection problem " . $ex->getMessage());
         }
-        $this->dbConnection[$name]->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        /*$this->dbConnection[$name]->exec("SET NAMES utf8");
-        $this->dbConnection[$name]->exec("SET CHARACTER SET utf8");*/
+        $this->defaultDbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->defaultDbConnection->exec("SET NAMES utf8");
+        $this->defaultDbConnection->exec("SET CHARACTER SET utf8");
 
     }
 
     /**
      * @param bool $name
-     * @return \PDO
      * @throws \Arrow\Exception
+     * @return \PDO
      */
-    public function getDB($name = 'default')
+    public function getDB($name = false)
     {
-        if (!array_key_exists($name, $this->dbConnection)) {
-            $this->initializeDB($name);
+        if (!$name) {
+            return $this->defaultDbConnection;
         }
 
-        return $this->dbConnection[$name];
+        throw new \Arrow\Exception(new ExceptionContent("Not implementet"));
     }
 
     public function clearCache()
@@ -264,7 +239,7 @@ class Project
                         if ($loggerData["active"]) {
                             $logger = new Logger($loggerName);
                             if ($loggerData["handler"] == '\Monolog\Handler\HipChatHandler') {
-
+                                continue;
                                 $handler = new \Monolog\Handler\HipChatHandler(
                                     $loggerData["token"], $loggerData["room"], $loggerData["name"], true,
                                     $loggerData["level"], true, true, 'text',

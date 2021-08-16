@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <schema>
     <table name="common_objects_track" class="Arrow\Common\Models\Track\Track">
-        <field name="id" type="BIGINT" primaryKey="true" autoIncrement="true"/>
-        <field name="user_id" type="int" required="true"/>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="user_id" type="INTEGER" required="true"/>
         <field name="date" type="TIMESTAMP" required="true"/>
         <field name="action" type="VARCHAR" required="true" size="50"/>
         <field name="info" type="VARCHAR" size="255"/>
         <field name="class" type="VARCHAR" required="true" size="40"/>
-        <field name="object_id" type="BIGINT" required="true"/>
+        <field name="object_id" type="INTEGER" required="true"/>
         <index name="f_key_index_utils_track_user_id" type="">
             <index-field name="user_id"/>
         </index>
@@ -19,31 +19,31 @@
         </foreign-key>
     </table>
 
-    <table name="common_objects_archive" class="Arrow\Common\Models\Track\Archive">
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+    <table name="common_objects_archive" class="Arrow\Common\Models\Track\Archive" >
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="date" type="TIMESTAMP" required="true"/>
         <field name="class" type="VARCHAR" required="true" size="40"/>
-        <field name="object_id" type="int" required="true"/>
+        <field name="object_id" type="INTEGER" required="true"/>
         <field name="data" type="TEXT" required="true"/>
         <index name="f_key_index_utils_archive_class" type="">
             <index-field name="class"/>
         </index>
     </table>
-    <table name="common_user_settings" class="Arrow\Common\Models\UserSetting">
+    <table name="common_user_settings" class="Arrow\Common\Models\UserSetting" >
         <trackers>
-            <tracker class="Arrow\Common\Models\Track\ORMObjectsTracker"/>
-            <tracker class="Arrow\Common\Models\Track\ORMObjectsArchiver"/>
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsTracker" />
+            <tracker  class="Arrow\Common\Models\Track\ORMObjectsArchiver" />
         </trackers>
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
-        <field name="id_user" type="int"/>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="id_user" type="INTEGER"/>
         <field name="name" type="VARCHAR" size="50"/>
         <field name="value" type="VARCHAR" size="4000"/>
     </table>
 
 
     <table name="common_settings" class="Arrow\Common\Models\Settings">
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
-        <field name="visible" type="int" size="1"/>
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
+        <field name="visible" type="integer" size="1"/>
         <field name="name" type="VARCHAR" size="255"/>
         <field name="label" type="VARCHAR" size="255"/>
         <field name="type" type="VARCHAR" size="255"/>
@@ -51,40 +51,16 @@
         <field name="value" type="VARCHAR" size="255"/>
     </table>
 
-    <table name="common_history" class="Arrow\Common\Models\History\History">
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
+        <table name="common_history" class="Arrow\Common\Models\History\History">
+        <field name="id" type="INTEGER" primaryKey="true" autoIncrement="true"/>
         <field name="created" type="DATETIME"/>
-        <field name="user_id" type="int" size="11"/>
+
+        <field name="user_id" type="integer" size="11"/>
         <field name="class" type="VARCHAR" size="50"/>
-        <field name="element_id" type="BIGINT" size="20"/>
-        <field name="action" type="VARCHAR" size="255"/>
-        <field name="entry_type" type="VARCHAR" size="55"/>
+        <field name="element_id" type="VARCHAR" size="255"/>
         <field name="description" type="VARCHAR" size="255"/>
         <field name="add_data_1" type="text"/>
         <field name="add_data_2" type="text"/>
+
     </table>
-
-
-    <table name="app_dictionaries" class="Arrow\Common\Models\Dictionaries\Dictionary">
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
-        <field name="parent_id" type="int" size="11"/>
-        <field name="depth" type="int" size="11"/>
-        <field name="sort" type="int" size="11"/>
-        <field name="active" type="int" size="1"/>
-        <field name="system_name" type="VARCHAR" size="255"/>
-        <field name="label" type="VARCHAR" size="255"/>
-        <field name="value" type="VARCHAR" size="255"/>
-        <field name="data" type="TEXT"/>
-    </table>
-    <table name="app_dictionaries_models" class="Arrow\Common\Models\Dictionaries\DictionaryModelValue">
-        <field name="id" type="int" primaryKey="true" autoIncrement="true"/>
-        <field name="model" type="VARCHAR" size="50"/>
-        <field name="model_id" type="BIGINT" size="20"/>
-        <field name="field" type="VARCHAR" size="50"/>
-        <field name="dictionary_id" type="int" size="11"/>
-        <field name="value" type="VARCHAR" size="255"/>
-        <field name="data" type="VARCHAR" size="1255"/>
-    </table>
-
-
 </schema>

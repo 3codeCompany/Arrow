@@ -1,43 +1,19 @@
 {
-    "name": "arrow/engine",
-    "type": "library",
-    "minimum-stability": "stable",
-    "description": "Arrow engine project",
-    "authors": [
-        {
-            "name": "Artur Kmera",
-            "email": "artur.kmera@3code.pl"
-        }
-    ],
-    "require": {
-        "symfony/yaml": "^5.0",
-        "symfony/routing": "^5.0",
-        "symfony/config": "^5.0",
-        "doctrine/annotations": "^1.8",
-        "symfony/http-foundation": "^5.0",
-        "symfony/cache": "^5.0",
-        "adbario/php-dot-notation": "^2.2",
-        "symfony/dependency-injection": "^5.0",
-        "symfony/console": "^5.0"
-    },
-    "require-dev": {
-        "nette/php-generator": "^3.1",
-        "symfony/debug": "^4.4"
-    },
-    "autoload": {
-        "classmap": [
-            "src/server/"
-        ],
-        "psr-4": {
-            "Arrow\\Access\\": "src/packages/access",
-            "Arrow\\CMS\\": "src/packages/cms",
-            "Arrow\\Common\\": "src/packages/common",
-            "Arrow\\Communication\\": "src/packages/communication",
-            "Arrow\\Media\\": "src/packages/media",
-            "Arrow\\Translations\\": "src/packages/translations",
-            "Arrow\\Utils\\": "src/packages/utils",
-            "Arrow\\Synchronization\\": "src/packages/synchronization",
-            "Arrow\\TasksScheduler\\": "src/packages/TasksScheduler"
-        }
+  "name": "arrow/engine",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Artur Kmera",
+      "email": "artur.kmera@3code.pl"
     }
+  ],
+  "require": {
+    "symfony/yaml": "^3.2"
+  },
+  "autoload": {
+    "classmap": [
+      "src/"
+    ]
+  }
+
 }

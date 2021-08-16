@@ -3,16 +3,15 @@
 namespace Arrow;
 
 use Arrow\Models\Project;
-use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Yaml\Yaml;
 
-class ConfigProvider
+class ConfigProvider extends Object
 {
 
     private static $cacheFile = "";
     private static $conf = array();
     private static $refreshConfFile = false;
-    private static $writeConfFile = false;
+    private static $writeConfFile = true;
     private static $cacheMkTime = false;
 
 
@@ -24,9 +23,25 @@ class ConfigProvider
 
     public static function get($index = null)
     {
-        if ($index == null)
-            return self::$conf["project"];
-        return self::$conf["project"][$index];
+
+        $first = array_values(self::$conf)[0];
+        if ($index == null) {
+
+
+
+          /*  if (!isset(self::$conf["project"])) {
+                print("<h1>wrong</h1>");
+
+                if (isset($_REQUEST["xxx"])) {
+                    print "<pre>";
+                    var_dump(self::$conf);
+                }
+                exit("here");
+            }*/
+
+            return $first;
+        }
+        return $first[$index];
     }
 
     public static function init()
@@ -42,20 +57,8 @@ class ConfigProvider
             self::$conf = unserialize(file_get_contents(self::$cacheFile));
             self::$cacheMkTime = filemtime(self::$cacheFile);
         } else {
+            self::$conf = Yaml::parse(file_get_contents($configFile));
 
-            if (file_exists(ARROW_PROJECT . '/.env')) {
-                (new Dotenv())->usePutenv(true)->overload(ARROW_PROJECT . '/.env');
-            }
-
-            $content = file_get_contents($configFile);
-
-            $content = preg_replace_callback("/%env\((.+?)\)%/", function ($regs) {
-                return $_ENV[$regs[1]];
-            }, $content);
-
-
-            self::$conf = Yaml::parse($content);
-            self::setWriteConfFile(true);
 
             /*foreach (Project::getInstance()->getPackages() as $package) {
                 if (!file_exists($package["dir"] . "/conf/project.yaml")) {
@@ -65,15 +68,14 @@ class ConfigProvider
                 self::$conf = array_merge_recursive (self::$conf, $data);
             }*/
 
-            $runConfig = Kernel::getRunConfiguration();
+            $runConfig = Controller::getRunConfiguration();
 
             if (isset(self::$conf["project"]["run-config"][$runConfig])) {
                 foreach (self::$conf["project"]["run-config"][$runConfig] as $index => $value) {
-                    if (is_array($value)) {
+                    if (is_array($value))
                         self::$conf["project"][$index] = array_replace_recursive(self::$conf["project"][$index], $value);
-                    } else {
+                    else
                         self::$conf["project"][$index] = $value;
-                    }
 
                 }
             }
@@ -84,9 +86,8 @@ class ConfigProvider
 
     public static function end()
     {
-        if ((self::$refreshConfFile || self::$writeConfFile)) {
+        if ((self::$refreshConfFile || self::$writeConfFile))
             file_put_contents(self::$cacheFile, serialize(self::$conf));
-        }
     }
 
 

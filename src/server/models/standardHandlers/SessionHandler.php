@@ -1,8 +1,8 @@
 <?php namespace Arrow\Models;
 
-use Arrow\Kernel;
+use Arrow\Controller;
 
-class SessionHandler
+class SessionHandler implements ISessionHandler
 {
     /**
      * Object instance keeper
@@ -40,7 +40,8 @@ class SessionHandler
     private function __construct()
     {
 
-        if(Kernel::isInCLIMode())
+
+        if(Controller::isInCLIMode())
             return;
         $this->db = Project::getInstance()->getDB();
 
@@ -65,6 +66,9 @@ class SessionHandler
 
         session_name(self::$sessionCookieName);
         session_set_cookie_params(time() + $time, "/");
+
+
+
 
         if (isset($_REQUEST["sessionId"])) {
             session_id($_REQUEST["sessionId"]);
