@@ -44,7 +44,7 @@ class ConfigProvider
         } else {
 
             if (file_exists(ARROW_PROJECT . '/.env')) {
-                (new Dotenv(true))->overload(ARROW_PROJECT . '/.env');
+                (new Dotenv())->usePutenv(true)->overload(ARROW_PROJECT . '/.env');
             }
 
             $content = file_get_contents($configFile);
