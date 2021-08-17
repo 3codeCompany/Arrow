@@ -162,7 +162,9 @@ class ExceptionHandler implements IExceptionHandler
         $content = ob_get_contents();
         ob_clean();
 
-        $this->logError($exception, $content);
+        if (strpos($exception->getMessage(), "app::/reclaim/service/generatePDFDocument has no layout") === false) {
+            $this->logError($exception, $content);
+        }
 
         //zmienić aby było pobierane przez handlery
         $user = null;
