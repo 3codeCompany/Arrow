@@ -15,7 +15,9 @@ import { Row } from "serenity-controls/lib/Row";
 import { PanelContext } from "serenity-controls/lib/backoffice/PanelContext";
 import { BSwitch } from "serenity-controls/lib/BForm";
 import { getPanelContext } from "serenity-controls/lib/backoffice/PanelContext";
-import { FcInfo, FiPlay, RiErrorWarningLine } from "react-icons/all";
+import { RiErrorWarningLine } from "react-icons/ri";
+import { FcInfo } from "react-icons/fc";
+import { FiPlay } from "react-icons/fi";
 
 interface IViewProps extends IArrowViewComponentProps {}
 
@@ -33,7 +35,7 @@ export default function view(props: IViewProps) {
                     {
                         key: "f1",
                         label: "Add",
-                        icon: "Add",
+                        icon: CommonIcons.add,
                         onClick: () => {
                             setEditedData({});
                             setModalVisible(true);
@@ -47,7 +49,7 @@ export default function view(props: IViewProps) {
             </Navbar>
             <div className="panel-body-margins">
                 <Tabs>
-                    <TabPane title="Harmonogram" icon="Clock">
+                    <TabPane title="Harmonogram" icon={CommonIcons.history}>
                         <Harmonogram
                             setTextToDisplay={setTextToDisplay}
                             table={table}
@@ -60,14 +62,12 @@ export default function view(props: IViewProps) {
                     {/*<TabPane title="Zadania do wykonania" icon="Task">
                         Tutaj zadania do wykonania
                     </TabPane>*/}
-                    <TabPane title="Dziennik zdarzeń" icon="List">
+                    <TabPane title="Dziennik zdarzeń" icon={CommonIcons.list}>
                         <Log setTextToDisplay={setTextToDisplay} />
                     </TabPane>
                 </Tabs>
             </div>
-            {isModalVisible && (
-                <AddModal setModalVisible={setModalVisible} editedData={editedData} viewProps={props} table={table} />
-            )}
+            {isModalVisible && <AddModal setModalVisible={setModalVisible} editedData={editedData} viewProps={props} table={table} />}
             {isRunning != 0 && (
                 <Modal show={true}>
                     <LoadingIndicator text="Running" />
@@ -91,7 +91,7 @@ interface IModalProops {
     table: React.MutableRefObject<Table>;
 }
 
-const AddModal = function(props: IModalProops) {
+const AddModal = function (props: IModalProops) {
     const formRef = useRef<BForm>(null);
     const panel = getPanelContext();
     const [cronInfo, setCronInfo] = useState<any>({});
@@ -111,13 +111,7 @@ const AddModal = function(props: IModalProops) {
     }, [data.schedule_config]);
 
     return (
-        <Modal
-            show={true}
-            onHide={() => props.setModalVisible(false)}
-            title="Edycja zadania"
-            showHideLink={true}
-            top={200}
-        >
+        <Modal show={true} onHide={() => props.setModalVisible(false)} title="Edycja zadania" showHideLink={true} top={200}>
             <div style={{ padding: "10px 3px", width: 500 }}>
                 <BForm
                     data={data}
@@ -144,7 +138,10 @@ const AddModal = function(props: IModalProops) {
                                     <BSwitch
                                         label="Aktywny"
                                         {...form("active", 1)}
-                                        options={[{ value: 0, label: "Nie" }, { value: 1, label: "Tak" }]}
+                                        options={[
+                                            { value: 0, label: "Nie" },
+                                            { value: 1, label: "Tak" },
+                                        ]}
                                     />
 
                                     <BText label="Maksymalny czas (s)" {...form("max_execute_time", "500")} />
@@ -166,9 +163,7 @@ const AddModal = function(props: IModalProops) {
                                 </Row>
                                 <Row noGutters={false}>
                                     {cronInfo.error != undefined && (
-                                        <div style={{ backgroundColor: "darkred", color: "white", padding: 10 }}>
-                                            {cronInfo.error}
-                                        </div>
+                                        <div style={{ backgroundColor: "darkred", color: "white", padding: 10 }}>{cronInfo.error}</div>
                                     )}
                                 </Row>
                                 <Row noGutters={false}>
@@ -324,14 +319,7 @@ const Harmonogram = ({ table, isRunning, setRunning, setTextToDisplay, setEdited
                         RowComponent.forceUpdate();
                         Comm._get(panel.baseURL + "/run/" + row.id).then((result) => {
                             setRunning(0);
-                            setTextToDisplay(
-                                "Time: " +
-                                    parseInt(result.log.time, 10) / 1000 +
-                                    " s\n\n" +
-                                    result.log.output +
-                                    "\n" +
-                                    result.log.errors,
-                            );
+                            setTextToDisplay("Time: " + parseInt(result.log.time, 10) / 1000 + " s\n\n" + result.log.output + "\n" + result.log.errors);
                         });
                     })
                     .className("center")
