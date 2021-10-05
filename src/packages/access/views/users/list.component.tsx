@@ -7,6 +7,7 @@ import {Row} from "frontend/src/layout/BootstrapLayout";
 import Comm from "frontend/src/lib/Comm";
 import {CommandBar} from "frontend/src/ctrl/CommandBar";
 import {Icon} from "frontend/src/ctrl/Icon";
+import {FilterHelper} from "frontend/src/ctrl/filters/FilterHelper";
 
 export default class  extends React.Component<any, any> {
     public table: Table;
@@ -26,6 +27,9 @@ export default class  extends React.Component<any, any> {
     }
 
     public render() {
+        const accessGroupsOptions = Object.entries(this.props.accessGroups).map(([value, label]) => ({value, label}));
+        accessGroupsOptions.shift();
+
         return (
           <div>
               <CommandBar
@@ -60,8 +64,9 @@ export default class  extends React.Component<any, any> {
                                 } else {
                                     return <div className="lightgrey center"><i className="fa fa-times" /></div>;
                                 }
-                            }),
-
+                            })
+                                .addFilter(FilterHelper.select("group", "Aktywność", accessGroupsOptions, true).get())
+                            ,
                             Column.template("Zobacz", () => <div><Icon name={"Edit"} /> </div>)
                               .onClick((row) => this.props._goto("/access/users/edit", {key: row.id}))
                               .className("center darkgreen"),

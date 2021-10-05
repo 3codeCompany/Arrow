@@ -131,6 +131,9 @@ class Users extends \Arrow\Models\Controller
         if ($groups) {
             $criteria->_join(AccessUserGroup::getClass(), ["id" => AccessUserGroup::F_USER_ID], "AG", ["id"]);
             $criteria->c("AG:" . AccessUserGroup::F_GROUP_ID, $groups, Criteria::C_IN);
+            if (count($groups) > 1) {
+                $criteria->addGroupBy("id");
+            }
         }
 
         $response = TableDataSource::prepareResponse($criteria, $data);
