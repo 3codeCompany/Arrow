@@ -51,6 +51,7 @@ class Page extends ORM_Arrow_CMS_Models_Persistent_Page implements IMultilangObj
     {
 
         $this->filesConnector = $this->getFilesConnector();
+        $this->filesConnector->registerField($this, "menuFile");
         $this->filesConnector->registerField($this, "header");
         $this->filesConnector->registerField($this, "gallery");
         $this->filesConnector->registerField($this, "to_download");

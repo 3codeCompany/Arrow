@@ -15,6 +15,7 @@ import { TabPane, Tabs } from "serenity-controls/lib/Tabs";
 import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 import { IFile } from "serenity-controls/lib/FileListField";
+import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 
 interface IProps extends IArrowViewComponentProps {
     page: any;
@@ -28,23 +29,23 @@ interface IEditFormHOC {
     backURL?: string;
 }
 
-const EditFormHOC = ({  }: IEditFormHOC = {}) => <TOriginalProps extends object>(
-    Component: React.ComponentClass<TOriginalProps> | React.StatelessComponent<TOriginalProps>,
-) => {
-    type ResultProps = TOriginalProps & IArrowViewComponentProps;
-    return class extends React.Component<ResultProps, any> {
-        public static defaultProps: Partial<IArrowViewComponentProps> = {};
+const EditFormHOC =
+    ({}: IEditFormHOC = {}) =>
+    <TOriginalProps extends object>(Component: React.ComponentClass<TOriginalProps> | React.StatelessComponent<TOriginalProps>) => {
+        type ResultProps = TOriginalProps & IArrowViewComponentProps;
+        return class extends React.Component<ResultProps, any> {
+            public static defaultProps: Partial<IArrowViewComponentProps> = {};
 
-        public render(): JSX.Element {
-            const props = this.props;
-            return (
-                <div style={{ display: "relative" }}>
-                    <Component {...props} />
-                </div>
-            );
-        }
+            public render(): JSX.Element {
+                const props = this.props;
+                return (
+                    <div style={{ display: "relative" }}>
+                        <Component {...props} />
+                    </div>
+                );
+            }
+        };
     };
-};
 
 class ArrowViewComponent extends React.Component<IProps, any> {
     private columns: Column[];
@@ -170,10 +171,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     </Row>
 
                     <div className="">
-                        <BForm
-                            data={s.page}
-                            onChange={(form) => this.setState({ page: form.form.getData(), dirty: true })}
-                        >
+                        <BForm data={s.page} onChange={(form) => this.setState({ page: form.form.getData(), dirty: true })}>
                             {(form) => (
                                 <Row>
                                     <div>
@@ -193,11 +191,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             </Row>
                                             {this.props.editEnabled ? (
                                                 <Row noGutters={false}>
-                                                    <BSwitch
-                                                        label={fI18n.t("Aktywna")}
-                                                        {...form("active")}
-                                                        options={{ 0: "Nie", 1: "Tak" }}
-                                                    />
+                                                    <BSwitch label={fI18n.t("Aktywna")} {...form("active")} options={{ 0: "Nie", 1: "Tak" }} />
                                                     <BSwitch
                                                         label={fI18n.t("Typ")}
                                                         {...form("type")}
@@ -224,27 +218,29 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                 <BText label={fI18n.t("Link")} {...form("link")} />
                                                 <BSwitch
                                                     label={fI18n.t("Aktywna")}
-                                                    options={[{ value: 0, label: "Nie" }, { value: 1, label: "Tak" }]}
+                                                    options={[
+                                                        { value: 0, label: "Nie" },
+                                                        { value: 1, label: "Tak" },
+                                                    ]}
                                                     {...form("active")}
                                                 />
                                             </Row>
                                             {page.type == "page" && (
                                                 <Row noGutters={false}>
                                                     {this.props.editEnabled ? (
-                                                        <BSelect
-                                                            label={fI18n.t("Typ zawartości")}
-                                                            {...form("content_type")}
-                                                            options={contentTypes}
-                                                        />
+                                                        <BSelect label={fI18n.t("Typ zawartości")} {...form("content_type")} options={contentTypes} />
                                                     ) : null}
                                                 </Row>
                                             )}
                                         </Panel>
                                         {page.type == "container" && (
-                                            <Panel noPadding={true} title={fI18n.t("Obrazy")}>
+                                            <Panel noPadding={true} title={fI18n.t("Obraz w menu")}>
                                                 <Row noGutters={false}>
                                                     <BFileListField
-                                                        {...form("files[menuFile]")}
+                                                        {...form("menuFile")}
+                                                        transformFilePath={(file: IFile) => {
+                                                            return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
+                                                        }}
                                                         maxLength={1}
                                                         type={"gallery"}
                                                     />
@@ -259,33 +255,21 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                     <BText label={fI18n.t("SEO Keywords")} {...form("seo_keywords")} />
                                                 </Row>
                                                 <Row noGutters={false}>
-                                                    <BTextarea
-                                                        label={fI18n.t("SEO description")}
-                                                        {...form("seo_description")}
-                                                    />
+                                                    <BTextarea label={fI18n.t("SEO description")} {...form("seo_description")} />
                                                 </Row>
                                                 <Row noGutters={false}>
-                                                    <BTextarea
-                                                        label={fI18n.t("Dodatkowy tekst na stronie")}
-                                                        {...form("seo_page_text")}
-                                                    />
+                                                    <BTextarea label={fI18n.t("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
                                                 </Row>
 
                                                 <Row>
-                                                    <Panel noPadding={true} title={"Nagłówek"} icon={"FileImage"}>
+                                                    <Panel noPadding={true} title={"Nagłówek"} icon={CommonIcons.document}>
                                                         <Row noGutters={false}>
                                                             <BFileListField
                                                                 {...form("header")}
                                                                 type={"gallery"}
                                                                 maxLength={1}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return (
-                                                                        this.props._baseURL +
-                                                                        "/file/" +
-                                                                        this.props.page.id +
-                                                                        "/get-file/" +
-                                                                        file.key
-                                                                    );
+                                                                    return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
                                                                 }}
                                                             />
                                                         </Row>
@@ -298,13 +282,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 {...form("images")}
                                                                 type={"gallery"}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return (
-                                                                        this.props._baseURL +
-                                                                        "/file/" +
-                                                                        this.props.page.id +
-                                                                        "/get-file/" +
-                                                                        file.key
-                                                                    );
+                                                                    return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
                                                                 }}
                                                             />
                                                         </Row>
@@ -317,13 +295,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 {...form("attachments")}
                                                                 type={"filelist"}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return (
-                                                                        this.props._baseURL +
-                                                                        "/file/" +
-                                                                        this.props.page.id +
-                                                                        "/get-file/" +
-                                                                        file.key
-                                                                    );
+                                                                    return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
                                                                 }}
                                                             />
                                                         </Row>
