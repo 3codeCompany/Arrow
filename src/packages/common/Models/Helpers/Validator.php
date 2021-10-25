@@ -8,13 +8,11 @@
 
 namespace Arrow\Common\Models\Helpers;
 
-
 use Adbar\Dot;
 use Arrow\RequestContext;
 
 class Validator
 {
-
     public static $communicates = [
         "required" => "To pole jest wymagane",
         "int" => "To pole musi zawierać liczbę całkowitą",
@@ -26,13 +24,10 @@ class Validator
 
     protected $validators = [];
 
-
     protected $errors = [];
     protected $formErrors = [];
 
-
     protected $toCheck = [];
-
 
     protected $input;
 
@@ -51,17 +46,16 @@ class Validator
                 return is_numeric($input[$field]) || empty($input[$field]);
             },
             "email" => function ($input, $field) {
-                return (filter_var($input[$field], FILTER_VALIDATE_EMAIL)) || empty($input[$field]);
+                return filter_var($input[$field], FILTER_VALIDATE_EMAIL) || empty($input[$field]);
             },
             "date" => function ($input, $field) {
                 throw new \Exception("to implement");
             },
             "url" => function ($input, $field) {
-                return (filter_var($input[$field], FILTER_VALIDATE_URL)) || empty($input[$field]);
+                return filter_var($input[$field], FILTER_VALIDATE_URL) || empty($input[$field]);
             },
         ];
     }
-
 
     /**
      * @return Validator
@@ -69,8 +63,6 @@ class Validator
     public static function create($input)
     {
         return new Validator($input);
-
-
     }
 
     /**
@@ -81,7 +73,6 @@ class Validator
         $input = (new Dot($this->input))->flatten();
         $ok = true;
         foreach ($this->toCheck as $type => $checkArr) {
-
             foreach ($checkArr as $index => $value) {
                 if (is_int($index)) {
                     $field = $value;
@@ -105,7 +96,6 @@ class Validator
         }
 
         return $ok;
-
     }
 
     public function fails(): bool
@@ -117,19 +107,34 @@ class Validator
     {
         $formated = $this->response();
         if (RequestContext::getDefault()->isXHR()) {
-
         }
     }
 
     public function response()
     {
-        return ["errors" => $this->formErrors, "fieldErrors" => $this->errors];
-    }
+        $newResponse = [];
 
+        foreach ($this->formErrors as $error) {
+            $newResponse[] = [
+                "msg" => $error,
+                "field" => null,
+            ];
+        }
+
+        foreach ($this->errors as $field => $errors) {
+            foreach ($errors as $error) {
+                $newResponse[] = [
+                    "msg" => $error,
+                    "field" => $field,
+                ];
+            }
+        }
+
+        return ["errors" => $this->formErrors, "fieldErrors" => $this->errors, "validationErrors" => $newResponse];
+    }
 
     private function flattenFields($array)
     {
-
         $dot = new Dot($array);
         $flat = $dot->flatten();
         $tmp = [];
@@ -139,7 +144,6 @@ class Validator
             $prefix = join(".", $x);
             $tmp[] = ($prefix ? $prefix . "." : "") . $value;
         }
-
 
         return $tmp;
     }
@@ -269,7 +273,6 @@ class Validator
         }
         $this->toCheck[$name] = array_merge($this->toCheck[$name], $field);
         return $this;
-
     }
 
     public function addFieldError($field, $error)
