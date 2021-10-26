@@ -9,10 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-
 class AccessAPI
 {
-
     const GROUP_EVERYONE = "Everyone";
     const GROUP_EVERYONE_KEY = 1;
     const GROUP_DEVELOPERS = "Developers";
@@ -20,11 +18,12 @@ class AccessAPI
     const GROUP_ADMINISTRATORS = "Administrators";
     const GROUP_ADMINISTRATORS_KEY = 4;
 
-
     public static function checkAccessToPoints(array $points): array
     {
         /** @var Auth $auth */
-        $auth = Kernel::getProject()->getContainer()->get(Auth::class);
+        $auth = Kernel::getProject()
+            ->getContainer()
+            ->get(Auth::class);
         $accessSum = $auth->getUser()->getAccessGroupsSum();
 
         $locatedPoints = AccessPoint::get()
@@ -38,48 +37,36 @@ class AccessAPI
                 if ($locatedPoints[$el]->_controlEnabled() == "0") {
                     $tmp[$el] = true;
                 } else {
-                    $tmp[$el] = self::checkAccessDataHelper($accessSum, (int)$locatedPoints[$el]->_groups());
+                    $tmp[$el] = self::checkAccessDataHelper($accessSum, (int) $locatedPoints[$el]->_groups());
                 }
-
             } else {
                 $point = new AccessPoint([
-                    AccessPoint::F_POINT_TYPE => 'route',
-                    AccessPoint::F_POINT_ACTION => '',
+                    AccessPoint::F_POINT_TYPE => "route",
+                    AccessPoint::F_POINT_ACTION => "",
                     AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => $el,
-                    AccessPoint::F_ADDITIONAL_INFO => '',
-                    AccessPoint::F_CONTROL_ENABLED => 1
+                    AccessPoint::F_ADDITIONAL_INFO => "",
+                    AccessPoint::F_CONTROL_ENABLED => 1,
                 ]);
                 $point->save();
                 $tmp[$el] = false;
             }
-
         }
         return $tmp;
     }
 
-
     private static function checkAccessDataHelper(int $authorizedElementGroups, int $accessElementGroups): bool
     {
-        if ($accessElementGroups & 1 == 1) {
+        if ($accessElementGroups & (1 == 1)) {
             return true;
         }
 
         if (
             !(
-                ($authorizedElementGroups & AccessAPI::GROUP_ADMINISTRATORS_KEY) == AccessAPI::GROUP_ADMINISTRATORS_KEY
-                ||
+                ($authorizedElementGroups & AccessAPI::GROUP_ADMINISTRATORS_KEY) == AccessAPI::GROUP_ADMINISTRATORS_KEY ||
                 ($authorizedElementGroups & AccessAPI::GROUP_DEVELOPERS_KEY) == AccessAPI::GROUP_DEVELOPERS_KEY
-            )
-            &&
-            (
-                !(
-                    $accessElementGroups & $authorizedElementGroups
-                )
-                ||
-                $accessElementGroups == 0
-            )
+            ) &&
+            (!($accessElementGroups & $authorizedElementGroups) || $accessElementGroups == 0)
         ) {
-
             return false;
         }
 
@@ -88,14 +75,12 @@ class AccessAPI
 
     public static function checkAccess($pointType, $pointAction, $pointObjectFriendlyId, $pointObject = null, $additionalInfo = "")
     {
-
-
         if (Kernel::isInCLIMode()) {
             return true;
         }
 
         //@todo wywalic obsluge bazy danych do handlera póki co ten if musi wystarczyc
-        if (!class_exists('Arrow\ORM\Persistent\Criteria')) {
+        if (!class_exists("Arrow\ORM\Persistent\Criteria")) {
             return true;
         }
 
@@ -112,41 +97,31 @@ class AccessAPI
                 AccessPoint::F_POINT_ACTION => $pointAction,
                 AccessPoint::F_POINT_OBJECT_FRIENDLY_ID => $pointObjectFriendlyId,
                 AccessPoint::F_ADDITIONAL_INFO => $additionalInfo,
-                AccessPoint::F_CONTROL_ENABLED => 1
+                AccessPoint::F_CONTROL_ENABLED => 1,
             ]);
             $point->save();
         }
 
         if ($point["control_enabled"]) {
-
             $authService = Auth::getDefault();
             if (!$authService->isLogged()) {
                 return false;
             } else {
                 $user = $authService->getUser();
                 $accessSum = $user->getAccessGroupsSum();
-                $pointGroups = (int)$point[AccessPoint::F_GROUPS];
+                $pointGroups = (int) $point[AccessPoint::F_GROUPS];
 
-                if ($pointGroups & 1 == 1) {
+                if ($pointGroups & (1 == 1)) {
                     return true;
                 }
 
                 if (
                     !(
-                        ($accessSum & AccessAPI::GROUP_ADMINISTRATORS_KEY) == AccessAPI::GROUP_ADMINISTRATORS_KEY
-                        ||
+                        ($accessSum & AccessAPI::GROUP_ADMINISTRATORS_KEY) == AccessAPI::GROUP_ADMINISTRATORS_KEY ||
                         ($accessSum & AccessAPI::GROUP_DEVELOPERS_KEY) == AccessAPI::GROUP_DEVELOPERS_KEY
-                    )
-                    &&
-                    (
-                        !(
-                            $pointGroups & $accessSum
-                        )
-                        ||
-                        $pointGroups == 0
-                    )
+                    ) &&
+                    (!($pointGroups & $accessSum) || $pointGroups == 0)
                 ) {
-
                     return false;
                 }
             }
@@ -156,18 +131,28 @@ class AccessAPI
 
     public static function accessDenyProcedure($denyInfo = "")
     {
+        $request = Kernel::getProject()
+            ->getContainer()
+            ->get(Request::class);
+
+        if ("json" === $request->getContentType()) {
+            if (Auth::getDefault()->isLogged()) {
+                header("HTTP/1.0 403 Forbidden");
+                echo "Access forbidden!";
+            } else {
+                header("HTTP/1.1 401 Unauthorized");
+                echo "You are not authorized!";
+            }
+            exit();
+        }
 
         header("X-Auth-Deny: 1");
 
         if (!Auth::getDefault()->isLogged()) {
-
-
             if (isset($_SERVER["REQUEST_URI"])) {
                 $_SESSION["arrow"]["access"]["requestedUrl"] = $_SERVER["REQUEST_URI"] . $_SERVER["QUERY_STRING"];
             }
 
-
-            $request = Request::createFromGlobals();
             //if xhr or post query
             if ($request->isXmlHttpRequest()) {
                 (new JsonResponse(["accessDeny" => $denyInfo]))->send();
@@ -177,7 +162,6 @@ class AccessAPI
             } else {
                 $login = ConfigProvider::get("redirects")["login"];
 
-
                 $redirect = $request->getBasePath() . $login;
                 if ($request->getPathInfo() != $login) {
                     $redirect .= "?" . http_build_query(["from" => $request->getPathInfo() . "?" . $request->getRequestUri()]);
@@ -186,22 +170,17 @@ class AccessAPI
                 $response = new RedirectResponse($redirect);
                 $response->prepare($request);
 
-
                 $response->send();
 
                 exit();
-
             }
 
             exit();
-
         } else {
             //$logoutLink = \Arrow\Router::link('access/auth/logout');
             exit("Access deny to: `" . $denyInfo . "`");
         }
     }
-
-
 }
 
 ?>

@@ -1,17 +1,16 @@
 <?php
 namespace Arrow\Access\Models;
+use Arrow\Common\Models\Track\Track;
 use Arrow\Exception;
 use Arrow\Models\SessionHandler;
-use \Arrow\ORM\Persistent\Criteria;
-use Arrow\Common\Models\Track\Track;
 use Arrow\ORM\DB\DB;
+use Arrow\ORM\Persistent\Criteria;
 use Arrow\RequestContext;
 use Arrow\Router;
-
+use Firebase\JWT\JWT;
 
 class Auth
 {
-
     /**
      * Object instance keeper
      *
@@ -31,7 +30,6 @@ class Auth
      * @var User
      */
     private $shadowUser = null;
-
 
     private $loginErrorMessage = "";
 
@@ -55,16 +53,29 @@ class Auth
     private function __construct()
     {
         $id = SessionHandler::getDefault()->getUserId();
-        if($id)
-            $this->user = User::get()->findByKey($id);
 
+        if ($id) {
+            $this->user = User::get()->findByKey($id);
+        } else {
+            $headers = getallheaders();
+
+            if (isset($headers["authorization"])) {
+                try {
+                    $secretKey = $_ENV["JWT_SECRET"];
+                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), $secretKey, ["HS512"]);
+                    $this->user = User::get()->findByKey($decoded->data->userId);
+                } catch (Exception $ex) {
+                }
+            }
+        }
 
         if (isset($_SESSION["auth"]["shadowUser"]) && is_string($_SESSION["auth"]["shadowUser"])) {
             $this->shadowUser = unserialize($_SESSION["auth"]["shadowUser"]);
         }
 
-        if(is_null($this->user))
+        if (is_null($this->user)) {
             $this->loginByRememberCookie();
+        }
     }
 
     /**
@@ -82,7 +93,6 @@ class Auth
     {
         self::$maxBadLog = $maxBadLog;
     }
-
 
     /**
      * Getter for user object
@@ -102,53 +112,50 @@ class Auth
         return $this->shadowUser;
     }
 
-    public function setRememberCookie(){
-        if($this->isLogged()){
+    public function setRememberCookie()
+    {
+        if ($this->isLogged()) {
             $this->user["remember_key"] = md5(microtime());
             $this->user->save();
-            $key = substr($this->user["login"],0,2)."_".$this->user["remember_key"];
-            setcookie(self::$rememberCookieName, $key, time()+3600*24*7, Router::getBasePath() );
-        }else{
+            $key = substr($this->user["login"], 0, 2) . "_" . $this->user["remember_key"];
+            setcookie(self::$rememberCookieName, $key, time() + 3600 * 24 * 7, Router::getBasePath());
+        } else {
             throw new Exception("User not logged");
         }
     }
 
-    private function loginByRememberCookie(){
-        if( !isset($_COOKIE[self::$rememberCookieName]) )
+    private function loginByRememberCookie()
+    {
+        if (!isset($_COOKIE[self::$rememberCookieName])) {
             return false;
+        }
 
         $str = $_COOKIE[self::$rememberCookieName];
-        $hash = substr($str,3);
-        $loginPart = substr($str,0, 2);
-
-
+        $hash = substr($str, 3);
+        $loginPart = substr($str, 0, 2);
 
         $user = Criteria::query(User::getClass())
             ->c("remember_key", $hash)
             ->findFirst();
 
-        if(!$user || substr($user["login"],0,2) != $loginPart)
+        if (!$user || substr($user["login"], 0, 2) != $loginPart) {
             return false;
-        else{
+        } else {
             $this->user = $user;
             SessionHandler::getDefault()->assignUser($user["id"]);
             $this->setRememberCookie();
             return true;
         }
-
-
     }
 
-    private function destroyRememberCookie(){
+    private function destroyRememberCookie()
+    {
         //unset($_COOKIE[self::$rememberCookieName]);
         //return setcookie(self::$rememberCookieName, NULL, -1, Router::getDefault()->getBasePath());
     }
 
-
-
     public function restoreShadowUser()
     {
-
         $this->user = $this->shadowUser;
 
         $_SESSION["auth"]["user"] = serialize($this->user);
@@ -172,19 +179,16 @@ class Auth
 
     public function doLogin($login, $password, $loginAs = false, $user = false)
     {
+        $this->loginErrorMessage = "";
 
-        $this->loginErrorMessage  = "";
-
-
-
-        if(!$user){
+        if (!$user) {
             $user = User::get()
-                ->_login( $login)
+                ->_login($login)
                 ->find();
 
             $result = $user->toArray();
-            if (count($result) > 1){
-                throw new \Arrow\Exception( [ "msg" => "Istnieją identyczne loginy: " . $login ]);
+            if (count($result) > 1) {
+                throw new \Arrow\Exception(["msg" => "Istnieją identyczne loginy: " . $login]);
             }
 
             if (count($result) == 0) {
@@ -201,26 +205,22 @@ class Auth
         $initVal[Track::F_USER_ID] = $user["id"];
         if (isset($_SERVER["REMOTE_ADDR"])) {
             $ext["IP"] = $_SERVER["REMOTE_ADDR"];
-        }else {
+        } else {
             $ext["IP"] = "not given";
         }
 
-
-        if($user[User::F_BAD_LOG] >= self::$maxBadLog){
+        if ($user[User::F_BAD_LOG] >= self::$maxBadLog) {
             $this->loginErrorMessage = "Zbyt dużo błędnych logowań.";
             return false;
         }
 
-
         if (!empty($user["password"]) && (User::comparePassword($user["password"], $password) || $loginAs) && $user["active"] == "1") {
-
             $ext["result"] = true;
             $initVal["info"] = serialize($ext);
             $track = new Track($initVal);
             $track->save();
 
-
-            if($loginAs){
+            if ($loginAs) {
                 $this->shadowUser = $this->user;
                 $_SESSION["auth"]["shadowUser"] = serialize($this->user);
             }
@@ -234,7 +234,6 @@ class Auth
 
             $user["bad_log"] = 0;
             $user->save();
-
 
             return true;
         } elseif ($user["active"] == "0") {
@@ -251,7 +250,6 @@ class Auth
             $this->loginErrorMessage = "Podany login lub hasło nie zgadzają się.";
             return false;
         }
-
     }
 
     /**
@@ -267,7 +265,6 @@ class Auth
         $this->destroyRememberCookie();
     }
 
-
     /**
      * IAuth handler implementation
      *
@@ -278,7 +275,6 @@ class Auth
     {
         return !is_null($this->user);
     }
-
 
     public function getLoginErrorMessage()
     {
