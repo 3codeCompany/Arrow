@@ -57,7 +57,7 @@ class Auth
         if ($id) {
             $this->user = User::get()->findByKey($id);
         } else {
-            $headers = getallheaders();
+            $headers = \getallheaders();
 
             if (isset($headers["authorization"])) {
                 try {
