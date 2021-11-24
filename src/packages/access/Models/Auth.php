@@ -1,12 +1,12 @@
 <?php
 namespace Arrow\Access\Models;
 use Arrow\Common\Models\Track\Track;
-use Arrow\Exception;
 use Arrow\Models\SessionHandler;
 use Arrow\ORM\DB\DB;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\RequestContext;
 use Arrow\Router;
+use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 
 class Auth
@@ -64,7 +64,9 @@ class Auth
                     $secretKey = $_ENV["JWT_SECRET"];
                     $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), $secretKey, ["HS512"]);
                     $this->user = User::get()->findByKey($decoded->data->userId);
-                } catch (Exception $ex) {
+                } catch (ExpiredException $ex) {
+                    AccessAPI::accessDenyProcedure("Token expired");
+                    exit();
                 }
             }
         }
