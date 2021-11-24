@@ -131,12 +131,20 @@ class AccessAPI
 
     public static function accessDenyProcedure($denyInfo = "")
     {
-        $request = Kernel::getProject()
-            ->getContainer()
-            ->get(Request::class);
+        $project = Kernel::getProject();
+
+        if ($project) {
+            // project initiated
+            $request = $project->getContainer()->get(Request::class);
+        } else {
+            // project not initiated
+            $request = Request::createFromGlobals();
+        }
+
+
 
         if ("json" === $request->getContentType()) {
-            if (Auth::getDefault()->isLogged()) {
+            if ($project && Auth::getDefault()->isLogged()) {
                 header("HTTP/1.0 403 Forbidden");
                 echo "Access forbidden!";
             } else {
