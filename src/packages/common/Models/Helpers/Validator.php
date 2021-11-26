@@ -10,6 +10,7 @@ namespace Arrow\Common\Models\Helpers;
 
 use Adbar\Dot;
 use Arrow\RequestContext;
+use Symfony\Component\HttpFoundation\Response;
 
 class Validator
 {
@@ -131,6 +132,11 @@ class Validator
         }
 
         return ["errors" => $this->formErrors, "fieldErrors" => $this->errors, "validationErrors" => $newResponse];
+    }
+
+    public function getHTTPResponse()
+    {
+        return new Response(json_encode($this->response()), Response::HTTP_UNPROCESSABLE_ENTITY, ["content-type" => "application/json"]);
     }
 
     private function flattenFields($array)
