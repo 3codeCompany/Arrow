@@ -261,8 +261,17 @@ class AccessController extends \Arrow\Models\Controller
         $user = User::get()->findByKey($key);
         $auth->doLogin($user["login"], false, true);
 
-        return [true];
+        $jwtGenerator = new JWToken($user);
+        $content = $jwtGenerator->generate();
 
+        return [
+            "jwt" => $content,
+            "user" => [
+                "id" => $auth->getUser()->_id(),
+                "login" => $auth->getUser()->_login(),
+                "groups" => $auth->getUser()->getAccessGroups(),
+            ],
+        ];
     }
 
 

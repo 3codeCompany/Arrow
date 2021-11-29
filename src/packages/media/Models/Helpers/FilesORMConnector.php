@@ -196,18 +196,32 @@ class FilesORMConnector
                 /** @var Request $request */
                 $request = Kernel::$project->getContainer()->get(Request::class);
 
+                $list = [];
                 $uploadedList = $request->files->get($this->inputNamespace ?? "");
-
                 if ($uploadedList !== null && isset($uploadedList[$field])) {
-                    foreach ($uploadedList[$field] as $element) {
-                        /** @var UploadedFile $uploaded */
-                        if (isset($element["nativeObj"])) {
-                            $uploaded = $element["nativeObj"];
-                        } else {
-                            $uploaded = $element;
+                    $list = $uploadedList[$field];
+                }
+
+                if (empty($uploadedList)) {
+                    foreach ($value as $element) {
+                        if (isset($element["content"]) && $element["uploaded"] == false) {
+                            $tmpPath = ARROW_CACHE_PATH . "/tmp_upload_" . rand(1000, 10000) . time() . rand(1000, 100000);
+                            file_put_contents($tmpPath, base64_decode($element["content"]));
+                            $list[] = new UploadedFile($tmpPath, $element["title"], $element["mime"], null, true);
                         }
-                        $this->bindUploadedFileToObject($obj, $uploaded, $field);
                     }
+                }
+
+                foreach ($list as $element) {
+                    //new UploadedFile();
+
+                    /** @var UploadedFile $uploaded */
+                    if (is_array($element) && isset($element["nativeObj"])) {
+                        $uploaded = $element["nativeObj"];
+                    } else {
+                        $uploaded = $element;
+                    }
+                    $this->bindUploadedFileToObject($obj, $uploaded, $field);
                 }
 
                 self::refreshFilesConnection($obj);
@@ -334,8 +348,7 @@ class FilesORMConnector
             return $el->getPKey();
         }, $objectList);
 
-        $classId =
-            $testElement instanceof InterfaceIdentifiableClass ? $testElement->getClassID() : $testElement::getClass();
+        $classId = $testElement instanceof InterfaceIdentifiableClass ? $testElement->getClassID() : $testElement::getClass();
 
         /** @var DB $db */
         $db = Kernel::$project->getContainer()->get(DB::class);
