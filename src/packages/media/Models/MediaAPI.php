@@ -438,9 +438,12 @@ class MediaAPI
             //            exit();
         }
 
-        $class = is_object($first) ? get_class($first) : $class;
+        if(!$class) {
+            $class = is_object($first) ? get_class($first) : $class;
+        }
         $tmp = explode('\\', $class);
         $class = end($tmp);
+
 
         if ($first instanceof InterfaceIdentifiableClass) {
             $class = $first->getClassID();
@@ -502,7 +505,7 @@ class MediaAPI
 
         $result = $db->query($q);
 
-        // print_r($result);
+
 
         $tmp = [];
         foreach ($result as $row) {
