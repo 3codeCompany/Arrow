@@ -3,6 +3,7 @@
 namespace Arrow\Access\Controllers;
 
 
+use App\Models\Access\JWToken;
 use Arrow\Access\Models\AccessGroup;
 use Arrow\Access\Models\AccessUserGroup;
 use Arrow\Access\Models\Auth;
