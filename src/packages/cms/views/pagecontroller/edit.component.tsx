@@ -269,7 +269,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 type={"gallery"}
                                                                 maxLength={1}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
+                                                                    return "https://media.as-pl.com/pub/" + file.key + "/"
                                                                 }}
                                                             />
                                                         </Row>
@@ -282,7 +282,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 {...form("images")}
                                                                 type={"gallery"}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
+                                                                    return "https://media.as-pl.com/pub/" + file.key + "/"
                                                                 }}
                                                             />
                                                         </Row>
@@ -295,7 +295,8 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 {...form("attachments")}
                                                                 type={"filelist"}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
+                                                                    return "https://media.as-pl.com/pub/" + file.key + "/"
+                                                                    //return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
                                                                 }}
                                                             />
                                                         </Row>
