@@ -4,26 +4,15 @@ namespace Arrow\Translations\Controllers;
 
 
 use App\Controllers\BaseController;
+use App\Models\Persistent\Category;
+use App\Models\Persistent\Product;
+use App\Models\Persistent\Property;
 use Arrow\Access\Models\Auth;
-use Arrow\Common\AdministrationLayout;
-use Arrow\Common\AdministrationPopupLayout;
-use Arrow\Common\BreadcrumbGenerator;
-use Arrow\Common\Links;
 use Arrow\Common\Models\Helpers\FormHelper;
 use Arrow\Common\Models\Helpers\TableListORMHelper;
-use Arrow\Common\PopupFormBuilder;
-use Arrow\Common\TableDatasource;
-use Arrow\Media\Element;
-use Arrow\Media\ElementConnection;
-use Arrow\Models\Dispatcher;
-use Arrow\Models\Operation;
 use Arrow\Models\Project;
-use Arrow\Models\View;
 use Arrow\ORM\Persistent\Criteria;
 use Arrow\ORM\Persistent\DataSet;
-use Arrow\Shop\Models\Persistent\Category;
-use Arrow\Shop\Models\Persistent\Product;
-use Arrow\Shop\Models\Persistent\Property;
 use Arrow\Translations\Models\Language;
 use Arrow\Translations\Models\LanguageText;
 use Arrow\Translations\Models\ObjectTranslation;
@@ -63,28 +52,23 @@ class PanelObjects extends BaseController
      */
     public function index()
     {
-
+        print "old version";
+        exit();
         //$this->action->assign('fields' , LanguageText::getFields());
-
-
-        $db = Project::getInstance()->getDB();
-        $t = ObjectTranslation::getTable();
         //$db->exec("DELETE n1 FROM common_lang_objects_translaction n1, common_lang_objects_translaction n2 WHERE n1.id > n2.id AND n1.source=n2.source and n1.lang=n2.lang and n1.id_object=n2.id_object and n1.field=n2.field and n1.value is not NULL");
 
-
-        $db = Project::getInstance()->getDB();
+        /*$db = Project::getInstance()->getDB();
         $t = ObjectTranslation::getTable();
-        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id  and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");
+        $db->query("DELETE n1 FROM {$t} n1, {$t} n2 WHERE n1.id > n2.id  and n1.lang=n2.lang and n1.field=n2.field and n1.id_object=n2.id_object and n1.class=n2.class");*/
 
 
         return [
             'language' => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
             "objects" => FormHelper::assocToOptions(array(
-                Category::getClass() => Translations::translateText("Kategorie"),
-                Property::getClass() => Translations::translateText("Cechy"),
-                Product::getClass() => Translations::translateText("Produkty"),
+                //Category::getClass() => Translations::translateText("Kategorie"),
+                //Property::getClass() => Translations::translateText("Cechy"),
+                //Product::getClass() => Translations::translateText("Produkty"),
                 //\Arrow\Shop\Models\Persistent\Product::getClass() => "Produkty"
-
             ))
         ];
     }
@@ -94,7 +78,7 @@ class PanelObjects extends BaseController
      */
     public function list()
     {
-
+        return [];
         $helper = new TableListORMHelper();
         $crit = ObjectTranslation::get();
         $model = $helper->getInputData()['additionalConditions']['model'];
@@ -105,6 +89,7 @@ class PanelObjects extends BaseController
         $crit->_join($model, [ObjectTranslation::F_ID_OBJECT => "id"], "E");//$model::getMultilangFields()
 
 
+        /*
         $user = Auth::getDefault()->getUser()->_login();
         $tmp = explode("_", $user);
         if (count($tmp) == 2) {
@@ -115,14 +100,14 @@ class PanelObjects extends BaseController
             } else {
                 $crit->_lang($tmp[1]);
             }
-        }
+        }*/
 
 
         $helper->addDefaultOrder(ObjectTranslation::F_LANG);
         $helper->addDefaultOrder(ObjectTranslation::F_ID_OBJECT);
         $helper->addDefaultOrder(ObjectTranslation::F_FIELD);
 
-        if ($model == Product::getClass()) {
+        /*if ($model == Product::getClass()) {
             $helper->addFilter("E:name", function ($nothing, $filter) use ($crit) {
                 if (strpos($filter["value"], "-") !== false) {
                     $chunks = explode("-", $filter["value"]);
@@ -130,7 +115,7 @@ class PanelObjects extends BaseController
                     $crit->c("E:color", $chunks[1], Criteria::C_LIKE);
                 }
             });
-        }
+        }*/
 
         /*if ($model == Property::getClass()) {
             $crit->_join(Category::getClass(), ["E:" . Property::F_CATEGORY_ID => "id"], "C", [Category::F_NAME]);
@@ -179,7 +164,6 @@ class PanelObjects extends BaseController
 
         $result = $criteria->find()->toArray(DataSet::AS_ARRAY);
 
-
         $columns = [
             "id",
             "field",
@@ -221,6 +205,11 @@ class PanelObjects extends BaseController
      */
     public function uploadFile(Request $request, Project $project)
     {
+        return [
+            "status" => "fail",
+        ];
+
+
         $data = $request->get("data");
         if ($data["language"] == null) {
             return [
@@ -281,7 +270,7 @@ class PanelObjects extends BaseController
      */
     public function langBackUp(Request $request)
     {
-
+        exit;
         $data = json_decode($request->get("payload"), true);
         $model = $data["model"];
 
@@ -390,6 +379,12 @@ class PanelObjects extends BaseController
      */
     public function history()
     {
+        return [
+            "countAll" => 0,
+            "data" => [],
+            "debug" => false,
+        ];
+
         $dir = "data/translate_object_uploads";
 
         $files = scandir($dir);
@@ -423,7 +418,6 @@ class PanelObjects extends BaseController
      */
     public function singleObject($model, $key)
     {
-
         $obj = $model::get()->findByKey($key);
         $langFields = $model::getMultiLangFields();
 
