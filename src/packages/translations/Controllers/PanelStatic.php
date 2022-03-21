@@ -342,4 +342,31 @@ class PanelStatic extends BaseController
             "debug" => false,
         ];
     }
+
+
+    /**
+     * @Route("/singleValue/{originalValue}")
+     */
+    public function singleValue($originalValue, Request $request)
+    {
+        return [
+            "language" => Language::get()->findAsFieldArray(Language::F_NAME, Language::F_CODE),
+            "originalValue" => $originalValue,
+            "country" => $this->country,
+        ];
+    }
+
+    /**
+     * @Route("/asyncSingleValue/{originalValue}")
+     */
+    public function asyncSingleValue($originalValue)
+    {
+        $c = LanguageText::get()->_hash(md5($originalValue));
+        $helper = new TableListORMHelper();
+
+        $data = $helper->getListData($c);
+
+        return $data;
+    }
+
 }
