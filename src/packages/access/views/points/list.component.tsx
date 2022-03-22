@@ -61,7 +61,7 @@ export default class extends React.Component<Props, any> {
                     items={[
                         {
                             key: "f1",
-                            label: fI18n.t("Synchronizuj struktórę uprawnień"),
+                            label: fI18n.t("Synchronizuj strukturę uprawnień"),
                             icon: "Sync",
                             onClick: () => {
                                 Comm._get(this.props._baseURL + "/sync-access-points");
