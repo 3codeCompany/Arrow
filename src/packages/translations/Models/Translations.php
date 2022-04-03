@@ -214,6 +214,8 @@ class Translations
                 $fields) . "') order by value desc";
 
 
+
+
         $stm = $db->query($q);
 
         $data = [];
@@ -229,6 +231,7 @@ class Translations
 
         foreach ($list as $el) {
             if (!isset($data[$el["id"]])) {
+
                 self::putEmptyObjectTranslation($el);
             }
 
@@ -315,6 +318,7 @@ class Translations
 
                     $test = ObjectTranslation::get()
                         ->_class($class)
+                        ->_lang($_lang)
                         ->_idObject($object->getPKey())
                         ->_field($field)
                         ->findFirst();
@@ -332,6 +336,11 @@ class Translations
                 }
             }
         }
+
+////        print "<pre>";
+////        print_r($el);
+////        print_r($lang);
+//        exit("<br />here");;
     }
 
     public static function saveObjectTranslation(IMultilangObject $object, $data, $lang = null)
