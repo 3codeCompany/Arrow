@@ -10,9 +10,13 @@ class StringHelper
     public static function toRewrite($str)
     {
 
-        $str = iconv("UTF-8", "ASCII//IGNORE//TRANSLIT", trim($str));
-
+        //$str = iconv("UTF-8", "ASCII//IGNORE//TRANSLIT", trim($str));
+        //$str = self::removeAccents($str);
+        //exit($str);
+        $str = trim($str);
+        $str = self::removeAccents($str);
         $str = preg_replace("/[^A-Za-z0-9?! ]/", "", $str);
+
         $str = strtolower($str);
         $str = str_replace(" ", "_", $str);
 
