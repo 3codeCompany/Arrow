@@ -73,8 +73,9 @@ class ExceptionHandler
     public function fatalHandler()
     {
         $error = error_get_last();
+        $url = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli';
 
-        if ($error !== null) {
+        if ($error !== null && $url !== "cli") {
             $logger = new Logger('error_logger');
             $formatter = new JsonFormatter();
             $formatter->includeStacktraces(true);
@@ -88,7 +89,7 @@ class ExceptionHandler
                 "line" => $error["line"],
                 "user" => $auth->isLogged() ? $auth->getUser()->_login() : "---",
                 "message" => $error["message"],
-                "url" => isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] : 'cli'
+                "url" => $url
             ];
 
             $logger->error($error["message"], $toLog);
