@@ -68,7 +68,6 @@ class ReactComponentLayout extends \Arrow\Models\AbstractLayout
         ] : null;
 
         $data["env"] = [
-            "AUTH_SERVICE" => $_ENV["AUTH_SERVICE"],
             "USER_NOTIFICATION_SERVICE" => $_ENV["USER_NOTIFICATION_SERVICE"],
             "QUEUE_API" => $_ENV["QUEUE_API"],
             "STATEBOX_LISTENER_SERVICE" => $_ENV["STATEBOX_LISTENER_SERVICE"],
