@@ -362,6 +362,11 @@ class PanelStatic extends BaseController
     public function asyncSingleValue($originalValue)
     {
         $c = LanguageText::get()->_hash(md5($originalValue));
+        $result = $c->find();
+        if($result->count() == 0){
+            Translations::translateText($originalValue, "en");
+        }
+
         $helper = new TableListORMHelper();
 
         $data = $helper->getListData($c);
