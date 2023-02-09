@@ -8,6 +8,8 @@ use Arrow\Models\Action;
 use Arrow\Models\AnnotationRouteManager;
 use Arrow\Models\IResponseHandler;
 use Arrow\Models\Project;
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\ConfigCacheFactory;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -100,23 +102,52 @@ class Router
         try {
             $result = $this->symfonyRouter->match($path);
         } catch (ResourceNotFoundException $ex) {
-            if($path == "/404") {
+            if ($path == "/404") {
                 exit("Route not found: `" . $path . "`");
-            }else{
+            } else {
                 $u = Auth::getDefault()->getUser();
-                if($u && $u->isInGroup("Developers") ){
-                    header("HTTP/1.0 404 Not Found");
-                    print "Not found: ".$path;
+
+                if ($_ENV["APP_ENV"] === "development") {
+                    foreach(["/symfony/url*", "/symfony/tmp/url*"] as $cachePath ) {
+                        $files = glob(ARROW_CACHE_PATH . $cachePath); // get all file names
+                        foreach ($files as $file) {
+                            // iterate files
+                            if (is_file($file)) {
+                                unlink($file); // delete file
+                            }
+                        }
+                    }
+
+                    $annotationRouteManager = new AnnotationRouteManager($this->request, "tmp");
+                    $tmpRouter = $annotationRouteManager->getRouter();
+
+                    try {
+                        $result = $tmpRouter->getMatcher()->match($path);
+                    } catch (ResourceNotFoundException $ex1) {
+                        $this->notFoundException($u, $path);
+                        exit();
+                    }
+                } else {
+                    $this->notFoundException($u, $path);
                     exit();
                 }
-
-                $errorPage = "https://".$_SERVER["HTTP_HOST"]."/404?from=".$_SERVER["REQUEST_URI"];
-                header("Location: ".$errorPage);
-                exit();
             }
         }
 
         return new Action($result["_package"], $result["_controller"], $result["_method"], $path, $result);
+    }
+
+    private function notFoundException($user, $path)
+    {
+        if ($user && $user->isInGroup("Developers")) {
+            header("HTTP/1.0 404 Not Found");
+            print "Not found: " . $path;
+            exit();
+        }
+
+        $errorPage = "https://" . $_SERVER["HTTP_HOST"] . "/404?from=" . $_SERVER["REQUEST_URI"];
+        header("Location: " . $errorPage);
+        exit();
     }
 
     public function process(Request $request = null)
@@ -125,11 +156,7 @@ class Router
             $request = $this->request;
         }
 
-        $this->action = $this->symfonyRouter(
-            isset($_SERVER["REDIRECT_URL"]) && $_SERVER["REDIRECT_URL"]
-                ? $_SERVER["REDIRECT_URL"]
-                : $request->getPathInfo()
-        );
+        $this->action = $this->symfonyRouter(isset($_SERVER["REDIRECT_URL"]) && $_SERVER["REDIRECT_URL"] ? $_SERVER["REDIRECT_URL"] : $request->getPathInfo());
 
         $this->action->setServiceContainer($this->container);
 
@@ -150,7 +177,7 @@ class Router
                 }
 
                 if (!($return instanceof IResponseHandler)) {
-                    $return = new Response($return->render(), Response::HTTP_OK, array('content-type' => 'text/html'));
+                    $return = new Response($return->render(), Response::HTTP_OK, ["content-type" => "text/html"]);
                 }
             }
 

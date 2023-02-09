@@ -25,7 +25,7 @@ class AnnotationRouteManager
     /**
      * AnnotationRouteManager constructor.
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request, $additionalSubdir = false)
     {
         $sourceFolders = [];
 
@@ -46,8 +46,17 @@ class AnnotationRouteManager
 
         $context = new RequestContext();
         $context->fromRequest($request);
+        $cacheDir = ARROW_CACHE_PATH . "/symfony";
 
-        $this->router = new Router($loader, $sourceFolders, ['cache_dir' => ARROW_CACHE_PATH . "/symfony"], $context);
+        if($additionalSubdir !== false){
+            $new = $cacheDir . "/". $additionalSubdir;
+            if(!file_exists($new)){
+                mkdir($new);
+            }
+            $cacheDir = $new;
+        }
+
+        $this->router = new Router($loader, $sourceFolders, ['cache_dir' => $cacheDir], $context);
     }
 
     /**
