@@ -2,7 +2,10 @@
 
 <head>
     <meta name="viewport" content="width=device-width">
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
+    <meta name="commit" content="{commit}"  />
+    <meta name="buildDate" content="{buildDate}"  />
+
     <title><?= $this->data["layout"]["config"]["title"] ?></title>
     <? if ($this->data["layout"]["config"]["favicon"]) { ?>
         <link href="<?= $this->data["layout"]["config"]["favicon"] ?>" rel="icon" type="image/x-icon"/>
