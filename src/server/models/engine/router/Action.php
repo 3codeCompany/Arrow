@@ -25,8 +25,6 @@ use function var_dump;
 
 class Action
 {
-
-
     private $path;
     private $method;
     private $controller;
@@ -41,7 +39,6 @@ class Action
      */
     private $serviceContainer;
 
-
     public function __construct($package, $controller, $method, $path, $routeParameters)
     {
         $this->path = $path;
@@ -49,7 +46,6 @@ class Action
         $this->controller = $controller;
         $this->package = $package;
         $this->routeParameters = $routeParameters;
-
     }
 
     /**
@@ -70,7 +66,6 @@ class Action
 
     private function resolveClassDependancy(ReflectionClass $dependencyClass)
     {
-
         $dependencyClassName = $dependencyClass->getName();
 
         // see service container for exact implementation
@@ -94,7 +89,6 @@ class Action
 
     public function fetch(Request $request)
     {
-
         /**
          * Access check
          */
@@ -129,18 +123,19 @@ class Action
             $preparedArgs[$key] = [];
             foreach ($argumentClassHint as $index => $hint) {
                 if ($hint) {
-                    if($hint->getName() == Request::class){
+                    if ($hint->getName() == Request::class) {
                         $injection = $request;
-                    }else {
+                    } else {
                         $injection = $this->resolveClassDependancy($hint);
                     }
                     if ($injection === null) {
-                        throw new AutowiringFailedException($hint->getName(), "Service '{$hint->getName()}' not found [ Controller: {$this->controller}::{$this->method}] ");
+                        throw new AutowiringFailedException(
+                            $hint->getName(),
+                            "Service '{$hint->getName()}' not found [ Controller: {$this->controller}::{$this->method}] "
+                        );
                     } else {
                         $preparedArgs[$key][$index] = $injection;
                     }
-
-
                 } else {
                     if ($key != "constructor") {
                         $name = $methodArguments[$index]->getName();
@@ -155,17 +150,13 @@ class Action
             }
         }
 
-
         $instance = new $this->controller(...$preparedArgs["constructor"]);
 
         if ($instance instanceof Controller) {
             $instance->eventRunBeforeAction($this, $request);
         }
 
-
-
         return $instance->{$this->method}(...$preparedArgs["method"]);
-
     }
 
     public function getTemplatePath()
@@ -177,16 +168,17 @@ class Action
     {
         $packages = Project::getInstance()->getPackages();
         $controllerExploded = explode("\\Controllers\\", $defaults["_controller"]);
-        return ($defaults["_package"] == "app" ? "/app" :  $packages[$defaults["_package"]]) .
-            "/views/" . str_replace("\\", "/", strtolower($controllerExploded[1])) .
-            "/" . $defaults["_method"];
+        return ($defaults["_package"] == "app" ? "/app" : $packages[$defaults["_package"]]) .
+            "/views/" .
+            str_replace("\\", "/", strtolower($controllerExploded[1])) .
+            "/" .
+            $defaults["_method"];
     }
 
     public function getRequest()
     {
         return RequestContext::getDefault();
     }
-
 
     public function getPackage()
     {
@@ -203,7 +195,6 @@ class Action
         return $this->package . $this->path;
     }
 
-
     function __toString()
     {
         return $this->path;
@@ -211,8 +202,6 @@ class Action
 
     public function isAccessible()
     {
-        return AccessAPI::checkAccess("view", "show", $this->routeParameters["_routePath"], "");
+        return AccessAPI::checkAccess("view", "show", $this->routeParameters["_routePath"], "") || $this->routeParameters["_routePath"] == "/health-check";
     }
-
-
 }
