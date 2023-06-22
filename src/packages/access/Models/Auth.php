@@ -8,6 +8,7 @@ use Arrow\RequestContext;
 use Arrow\Router;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class Auth
 {
@@ -53,16 +54,27 @@ class Auth
     private function __construct()
     {
         $id = SessionHandler::getDefault()->getUserId();
-
+        $secretKey = $_ENV["JWT_SECRET"];
         if ($id) {
+            if (isset($_COOKIE["jwt"])) {
+                $decoded = JWT::decode($_COOKIE["jwt"], new Key($secretKey, "HS512"));
+                $tokenId = $decoded->data->userId;
+                if ($tokenId != $id) {
+                    //or logout when not the same ?
+                    SessionHandler::getDefault()->assignUser($tokenId);
+                    $id = $tokenId;
+                }
+            } else {
+                //$this->doLogout(); //needed for some synchro purposes ?
+            }
             $this->user = User::get()->findByKey($id);
+
         } elseif (function_exists("getallheaders")) {
             $headers = getallheaders();
 
             if (isset($headers["authorization"])) {
                 try {
-                    $secretKey = $_ENV["JWT_SECRET"];
-                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), $secretKey, ["HS512"]);
+                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), new Key($secretKey, "HS512"));
                     $this->user = User::get()->findByKey($decoded->data->userId);
                 } catch (ExpiredException $ex) {
                     AccessAPI::accessDenyProcedure("Token expired");
