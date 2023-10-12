@@ -307,6 +307,11 @@ class PanelStatic extends BaseController
     {
         $obj = LanguageText::get()->findByKey($request->get("key"));
 
+        RedisCacheConnector::connect();
+        RedisCacheConnector::$adapter->invalidateTags(["erp-panel-translations"]);
+        //RedisCacheConnector::$adapter->deleteItem("erp-panel-translations");
+        //"erp_panel_translations" . $lang
+
         $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
         $obj->save();
 
