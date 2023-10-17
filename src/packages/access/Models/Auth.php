@@ -9,6 +9,7 @@ use Arrow\Router;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Firebase\JWT\SignatureInvalidException;
 
 class Auth
 {
@@ -67,10 +68,13 @@ class Auth
                     //$decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), $secretKey, $x);
 
                     $_headers  = new \stdClass();
-                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), new Key($secretKey, 'HS256'), $_headers );
+                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), new Key($secretKey, 'HS512'), $_headers );
                     $this->user = User::get()->findByKey($decoded->data->userId);
                 } catch (ExpiredException $ex) {
                     AccessAPI::accessDenyProcedure("Token expired");
+                    exit();
+                }catch (SignatureInvalidException $ex){
+                    AccessAPI::accessDenyProcedure("Token signature verification failed ");
                     exit();
                 }
             }
