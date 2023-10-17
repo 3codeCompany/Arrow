@@ -66,8 +66,8 @@ class Auth
                     $x = ["HS512"];
                     //$decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), $secretKey, $x);
 
-                    $headers  = new \stdClass();
-                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), new Key($secretKey, 'HS256'), $headers );
+                    $_headers  = new \stdClass();
+                    $decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), new Key($secretKey, 'HS256'), $_headers );
                     $this->user = User::get()->findByKey($decoded->data->userId);
                 } catch (ExpiredException $ex) {
                     AccessAPI::accessDenyProcedure("Token expired");
