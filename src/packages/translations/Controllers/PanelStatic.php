@@ -33,6 +33,7 @@ use Arrow\Media\MediaAPI;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+use Shared\Models\Cache\RedisCacheConnector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -308,6 +309,10 @@ class PanelStatic extends BaseController
 
         $obj->setValue(LanguageText::F_VALUE, $request->get("newValue"));
         $obj->save();
+
+
+        RedisCacheConnector::connect();
+        RedisCacheConnector::$adapter->invalidateTags(["erp-panel-translations"]);
 
         $this->json([1]);
     }

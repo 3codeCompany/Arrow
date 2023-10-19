@@ -111,6 +111,9 @@ class Translations
             //$result->save();
             //Logger::get('console',new ConsoleStream())->log( $text." ".$result["value"]);
 
+            if(empty($result["value"])){
+                return "[ Translate in panel ] ".$text;
+            }
 
             return $result["value"];
         } else {
@@ -136,7 +139,7 @@ class Translations
                 return self::translateText($text, "en");
             }
         }
-        return $text;
+        return "[ Translate in panel ] ".$text;
     }
 
     public static function translateObject($object, $lang = false, $placeHolderLang = "en")
