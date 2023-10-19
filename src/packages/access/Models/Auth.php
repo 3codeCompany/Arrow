@@ -64,7 +64,7 @@ class Auth
             if (isset($headers["authorization"])) {
                 try {
                     $secretKey = $_ENV["JWT_SECRET"];
-                    $x = ["HS512"];
+                    //$x = ["HS512"];
                     //$decoded = JWT::decode(str_replace("Token ", "", $headers["authorization"]), $secretKey, $x);
 
                     $_headers  = new \stdClass();
