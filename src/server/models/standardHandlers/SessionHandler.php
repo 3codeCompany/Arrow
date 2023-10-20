@@ -70,6 +70,7 @@ class SessionHandler
             session_id($_REQUEST["sessionId"]);
         }
 
+        session_cache_limiter('');
         session_start();
 
     }
