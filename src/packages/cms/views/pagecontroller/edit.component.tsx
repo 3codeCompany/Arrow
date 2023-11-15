@@ -12,10 +12,10 @@ import { CommandBar } from "serenity-controls/lib/CommandBar";
 
 import { Panel } from "serenity-controls/lib/Panel";
 import { TabPane, Tabs } from "serenity-controls/lib/Tabs";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 import { IFile } from "serenity-controls/lib/FileListField";
 import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     page: any;
@@ -73,9 +73,9 @@ class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(trans("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", { key: row.id }).then(() => {
-                this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
+                this.props._notification(trans("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
             });
         });
@@ -112,7 +112,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
         Comm._post(this.props._baseURL + "/save", toSend).then((response) => {
             this.props._reloadProps();
             this.setState({ dirty: false });
-            this.props._notification(toSend.page.name, fI18n.t("Zapisano pomyślnie"));
+            this.props._notification(toSend.page.name, trans("Zapisano pomyślnie"));
             this.props._stopLoadingIndicator();
         });
     }
@@ -129,20 +129,20 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     items={[
                         {
                             key: "f0",
-                            label: fI18n.t("Wróć"),
+                            label: trans("Wróć"),
                             icon: "Back",
                             onClick: () => this.props._goto(this.props._baseURL + "/index"),
                         },
                         {
                             key: "f1",
-                            label: fI18n.t("Zapisz") + ` [${this.state.language}]`,
+                            label: trans("Zapisz") + ` [${this.state.language}]`,
                             icon: "Save",
                             onClick: () => this.handleSave(),
                         },
                         this.state.dirty
                             ? {
                                   key: "f3",
-                                  label: fI18n.t("Anuluj") + ` `,
+                                  label: trans("Anuluj") + ` `,
                                   icon: "Save",
                                   onClick: () => {
                                       this.props._reloadProps();
@@ -155,8 +155,8 @@ class ArrowViewComponent extends React.Component<IProps, any> {
 
                 <div className={"panel-body-margins"}>
                     <Navbar>
-                        <span>{fI18n.t("CMS")}</span>
-                        <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{fI18n.t("Strony www")}</a>
+                        <span>{trans("CMS")}</span>
+                        <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{trans("Strony www")}</a>
                         <span>{page.name}</span>
                     </Navbar>
 
@@ -175,12 +175,12 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                             {(form) => (
                                 <Row>
                                     <div>
-                                        <Panel noPadding={true} title={fI18n.t("Dane")}>
+                                        <Panel noPadding={true} title={trans("Dane")}>
                                             <Row noGutters={false}>
-                                                <BText label={fI18n.t("Nazwa")} {...form("name")} />
+                                                <BText label={trans("Nazwa")} {...form("name")} />
                                                 {this.props.editEnabled ? (
                                                     <BSelect
-                                                        label={fI18n.t("Kraj")}
+                                                        label={trans("Kraj")}
                                                         {...form("country")}
                                                         options={languages.map((el) => ({
                                                             value: el.code,
@@ -191,13 +191,13 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             </Row>
                                             {this.props.editEnabled ? (
                                                 <Row noGutters={false}>
-                                                    <BSwitch label={fI18n.t("Aktywna")} {...form("active")} options={{ 0: "Nie", 1: "Tak" }} />
+                                                    <BSwitch label={trans("Aktywna")} {...form("active")} options={{ 0: "Nie", 1: "Tak" }} />
                                                     <BSwitch
-                                                        label={fI18n.t("Typ")}
+                                                        label={trans("Typ")}
                                                         {...form("type")}
                                                         options={{
-                                                            page: fI18n.t("Strona"),
-                                                            container: fI18n.t("Folder"),
+                                                            page: trans("Strona"),
+                                                            container: trans("Folder"),
                                                         }}
                                                     />
                                                 </Row>
@@ -206,7 +206,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                 {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
                                                 {this.props.editEnabled ? (
                                                     <BSelect
-                                                        label={fI18n.t("Element nadrzędny")}
+                                                        label={trans("Element nadrzędny")}
                                                         {...form("parent_id")}
                                                         options={parents.map((el) => ({
                                                             value: el.id,
@@ -215,9 +215,9 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                     />
                                                 ) : null}
 
-                                                <BText label={fI18n.t("Link")} {...form("link")} />
+                                                <BText label={trans("Link")} {...form("link")} />
                                                 <BSwitch
-                                                    label={fI18n.t("Aktywna")}
+                                                    label={trans("Aktywna")}
                                                     options={[
                                                         { value: 0, label: "Nie" },
                                                         { value: 1, label: "Tak" },
@@ -228,13 +228,13 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                             {page.type == "page" && (
                                                 <Row noGutters={false}>
                                                     {this.props.editEnabled ? (
-                                                        <BSelect label={fI18n.t("Typ zawartości")} {...form("content_type")} options={contentTypes} />
+                                                        <BSelect label={trans("Typ zawartości")} {...form("content_type")} options={contentTypes} />
                                                     ) : null}
                                                 </Row>
                                             )}
                                         </Panel>
                                         {page.type == "container" && (
-                                            <Panel noPadding={true} title={fI18n.t("Obraz w menu")}>
+                                            <Panel noPadding={true} title={trans("Obraz w menu")}>
                                                 <Row noGutters={false}>
                                                     <BFileListField
                                                         {...form("menuFile")}
@@ -249,16 +249,16 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                         )}
 
                                         {page.type == "page" && (
-                                            <Panel noPadding={true} title={fI18n.t("SEO")}>
+                                            <Panel noPadding={true} title={trans("SEO")}>
                                                 <Row noGutters={false}>
-                                                    <BText label={fI18n.t("SEO Title")} {...form("seo_title")} />
-                                                    <BText label={fI18n.t("SEO Keywords")} {...form("seo_keywords")} />
+                                                    <BText label={trans("SEO Title")} {...form("seo_title")} />
+                                                    <BText label={trans("SEO Keywords")} {...form("seo_keywords")} />
                                                 </Row>
                                                 <Row noGutters={false}>
-                                                    <BTextarea label={fI18n.t("SEO description")} {...form("seo_description")} />
+                                                    <BTextarea label={trans("SEO description")} {...form("seo_description")} />
                                                 </Row>
                                                 <Row noGutters={false}>
-                                                    <BTextarea label={fI18n.t("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
+                                                    <BTextarea label={trans("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
                                                 </Row>
 
                                                 <Row>

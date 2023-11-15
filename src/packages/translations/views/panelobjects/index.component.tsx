@@ -9,10 +9,10 @@ import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { Icon } from "serenity-controls/lib/Icon";
 import { CommandBar } from "serenity-controls/lib/CommandBar";
 import { FilterHelper } from "serenity-controls/lib/filters";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 import { Modal } from "serenity-controls/lib/Modal";
 import { downloadOld } from "serenity-controls/lib/Downloader/Downloader";
+import { trans } from "../../front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -62,7 +62,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     public handleUpload(files) {
         this.props._startLoadingIndicator();
         Comm._post(this.props._baseURL + "/uploadFile", {file: this.state.fileToUpload}).then(() => {
-            this.props._notification(fI18n.t("Pomyślnie załadowano plik"));
+            this.props._notification(trans("Pomyślnie załadowano plik"));
             this.props._stopLoadingIndicator();
         });
     }
@@ -82,7 +82,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         row.edited = false;
         this.table.forceUpdate();
         Comm._post(this.props._baseURL + "/inlineUpdate", {key: row.id, newValue: row.changedText}).then(() => {
-            this.props._notification(fI18n.t("Pomyślnie zmodyfikowano element"));
+            this.props._notification(trans("Pomyślnie zmodyfikowano element"));
             row.value = row.changedText;
             row.loading = false;
             row.containerReference.forceUpdate();
@@ -105,16 +105,16 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
             this.state.selectedObject == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.hidden("E:color") : null,
             Column.hidden("id_object"),
             Column.id("id", "Id"),
-            Column.text("lang", fI18n.t("Język [kod]")).width(140),
-            Column.map("lang", fI18n.t("Język"), this.props.language),
-            Column.text("field", fI18n.t("Pole")),
+            Column.text("lang", trans("Język [kod]")).width(140),
+            Column.map("lang", trans("Język"), this.props.language),
+            Column.text("field", trans("Pole")),
             // this.state.selectedObject.label == "Cechy" ? Column.text("C:name", "Kategoria") : null,
             this.state.selectedObject.value == "Arrow\\Shop\\Models\\Persistent\\Product" ? Column.template("Nazwa", (value, row) => {
                 return <div>
                     <div>{row["E:name"]} <a href={"https://www.esotiq.com/pl/pl/_/_-" + row.id_object} className="pull-right" target="_blank">icon</a></div>
                     <small>{row["E:group_key"]}-{row["E:color"]}</small>
                 </div>;
-            }).addFilter(FilterHelper.text("E:name", fI18n.t("Nazwa")).get()) : null,
+            }).addFilter(FilterHelper.text("E:name", trans("Nazwa")).get()) : null,
             Column.template("Orignał", (val, row) => {
                 field = "E:" + row.field;
                 this.setState({
@@ -124,8 +124,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 return (
                     row["E:" + row.field]
                 )
-            }).width("30%").addFilter(FilterHelper.text(this.state.field, fI18n.t("Orignał")).get()),
-            Column.text("value", fI18n.t("Wartość"))
+            }).width("30%").addFilter(FilterHelper.text(this.state.field, trans("Orignał")).get()),
+            Column.text("value", trans("Wartość"))
                 .template((val, row) => <div>
                     {row.loading && <div><i className="fa fa-spinner fa-spin"/></div>}
                     {this.state.isTableEditable === row.id && <>
@@ -181,24 +181,24 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     items={[
                         {
                             key: "f1",
-                            label: fI18n.t("Pobierz arkusz"),
+                            label: trans("Pobierz arkusz"),
                             icon: "Download",
                             onClick: () => this.setState({langToDownload: "xx"})
                         },
                         {
                             key: "f2",
-                            label: fI18n.t("Załaduj plik"),
+                            label: trans("Załaduj plik"),
                             icon: "Upload",
                             onClick: () => this.setState({isUploading: true})
                         },
-                        {key: "f3", label: fI18n.t("Historia tłumaczeń"), icon: "History", onClick: () => this.setState({historyModalVisible: true})},
+                        {key: "f3", label: trans("Historia tłumaczeń"), icon: "History", onClick: () => this.setState({historyModalVisible: true})},
                     ]}
                 />
 
                 <Navbar>
-                    <span>{fI18n.t("Cms")}</span>
-                    <span>{fI18n.t("Tłumaczenia")}</span>
-                    <span>{fI18n.t("Obiekty")}</span>
+                    <span>{trans("Cms")}</span>
+                    <span>{trans("Tłumaczenia")}</span>
+                    <span>{trans("Obiekty")}</span>
                 </Navbar>
 
 
@@ -225,22 +225,22 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 </div>
 
                 <Modal
-                    title={fI18n.t("Pobranie pliku języka")}
+                    title={trans("Pobranie pliku języka")}
                     show={s.langToDownload != false}
                     onHide={() => this.setState({langToDownload: false})}
                     showHideLink={true}
                 >
                     <div style={{padding: 10, maxWidth: 500}} className="container">
                         <BSelect
-                            label={fI18n.t("Język do pobrania")}
+                            label={trans("Język do pobrania")}
                             value={this.state.langToDownload}
-                            options={{xx: fI18n.t("--Wybierz język ---"), ...this.props.language}}
+                            options={{xx: trans("--Wybierz język ---"), ...this.props.language}}
                             onChange={(e) => this.setState({langToDownload: e.value})}
                         />
 
                         {this.state.langToDownload != "xx" && [
                             <BSwitch
-                                label={fI18n.t("Ściągni tylko nie uzupełnione wartości")}
+                                label={trans("Ściągni tylko nie uzupełnione wartości")}
                                 value={this.state.downloadOnlyEmpty}
                                 onChange={(e) => this.setState({downloadOnlyEmpty: e.value})}
                                 options={{0: "Nie", 1: "Tak"}}
@@ -257,7 +257,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 </Modal>
 
                 <Modal
-                    title={fI18n.t("Załaduj plik językowy")}
+                    title={trans("Załaduj plik językowy")}
                     show={s.isUploading != false}
                     onHide={() => this.setState({isUploading: false, fileToUpload: false})}
                     showHideLink={true}
@@ -271,19 +271,19 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             namespace={"data"}
                             onSuccess={(el) => {
                                 if (el.response.status == "done"){
-                                    this.props._notification(fI18n.t("Sukces"), fI18n.t("Plik załadowano poprawnie"));
+                                    this.props._notification(trans("Sukces"), trans("Plik załadowano poprawnie"));
                                     this.handleBackup(el.form.state.data.language);
                                 } else {
-                                    this.props._notification(fI18n.t("Błąd"), fI18n.t("Wybierz język"), {level: "error"});
+                                    this.props._notification(trans("Błąd"), trans("Wybierz język"), {level: "error"});
                                 }
                             }}
                         >{(form) => {
                             return (
                                 <div>
                                     <BSelect
-                                        label={fI18n.t("Język do wczytania")}
+                                        label={trans("Język do wczytania")}
                                         value={this.state.langToDownload}
-                                        options={{xx: fI18n.t("--Wybierz język ---"), ...this.props.language}}
+                                        options={{xx: trans("--Wybierz język ---"), ...this.props.language}}
                                         onChange={(e) => {
                                             this.setState({langToDownload: e.value});
                                         }
@@ -292,7 +292,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         {...form("language")}
                                     />
                                     <BFileListField name="files" {...form("files")}/>
-                                    <button className="btn btn-primary pull-right"><CommonIcons.upload /> {fI18n.t("Laduj")}</button>
+                                    <button className="btn btn-primary pull-right"><CommonIcons.upload /> {trans("Laduj")}</button>
                                 </div>
                             )
                         }}
@@ -302,7 +302,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 </Modal>
 
                 <Modal
-                    title={fI18n.t("Historia tłumaczeń")}
+                    title={trans("Historia tłumaczeń")}
                     show={this.state.historyModalVisible}
                     onHide={() => this.setState({historyModalVisible: false})}
                     showHideLink={true}
@@ -315,11 +315,11 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             onPage={100}
                             showFooter={false}
                             columns={[
-                                Column.text("language", fI18n.t("Język")).width(70).className("center uppercase"),
-                                Column.email("user", fI18n.t("Użytkownik")),
-                                Column.date("date", fI18n.t("Data")),
-                                Column.date("time", fI18n.t("Czas")),
-                                Column.text("full_name", fI18n.t("Pobierz"))
+                                Column.text("language", trans("Język")).width(70).className("center uppercase"),
+                                Column.email("user", trans("Użytkownik")),
+                                Column.date("date", trans("Data")),
+                                Column.date("time", trans("Czas")),
+                                Column.text("full_name", trans("Pobierz"))
                                     .template((value, row) => {
                                         return (
                                             <a href={this.props._basePath + `/data/translate_object_uploads/${row["full_name"]}`} target={"_blank"}>

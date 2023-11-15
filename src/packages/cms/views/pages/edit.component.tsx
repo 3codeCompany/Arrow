@@ -11,8 +11,8 @@ import {Arrow} from "../../../../data/cache/db/ts-definitions";
 import {Panel} from "serenity-controls/lib/Panel";
 import {TabPane, Tabs} from "serenity-controls/lib/Tabs";
 import IPage = Arrow.CMS.Models.Persistent.IPage;
-import {fI18n} from "serenity-controls/lib/lib/I18n";
 import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     page: IPage;
@@ -70,9 +70,9 @@ class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(trans("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", {key: row.id}).then(() => {
-                this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
+                this.props._notification(trans("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
             });
         });
@@ -111,7 +111,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
         Comm._post(this.props._baseURL + "/save", toSend).then((response) => {
             this.props._reloadProps();
             this.setState({dirty: false});
-            this.props._notification(toSend.page.name, fI18n.t("Zapisano pomyślnie"));
+            this.props._notification(toSend.page.name, trans("Zapisano pomyślnie"));
             this.props._stopLoadingIndicator();
         });
     }
@@ -127,10 +127,10 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     isSearchBoxVisible={false}
 
                     items={[
-                        {key: "f0", label: fI18n.t("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "/index")},
-                        {key: "f1", label: fI18n.t("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
+                        {key: "f0", label: trans("Wróć"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "/index")},
+                        {key: "f1", label: trans("Zapisz") + ` [${this.state.language}]`, icon: "Save", onClick: () => this.handleSave()},
                         this.state.dirty ? {
-                            key: "f3", label: fI18n.t("Anuluj") + ` `, icon: "Save", onClick: () => {
+                            key: "f3", label: trans("Anuluj") + ` `, icon: "Save", onClick: () => {
                                 this.props._reloadProps();
                                 this.setState({dirty: false});
                             },
@@ -139,7 +139,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                     ]}/>
                 <Navbar>
                     <span>Cms</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{fI18n.t("Strony www")}</a>
+                    <a onClick={() => this.props._goto(this.props._baseURL + "/index")}>{trans("Strony www")}</a>
                     <span>{page.name}</span>
                 </Navbar>
 
@@ -158,54 +158,54 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                         {(form) => <Row>
                             <div>
 
-                                <Panel noPadding={true} title={fI18n.t("Dane")}>
+                                <Panel noPadding={true} title={trans("Dane")}>
 
                                     <Row noGutters={false}>
-                                        <BText label={fI18n.t("Nazwa")} {...form("name")} />
+                                        <BText label={trans("Nazwa")} {...form("name")} />
                                     </Row>
                                     {this.props.editEnabled ?
                                         <Row noGutters={false}>
-                                            <BSwitch label={fI18n.t("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
-                                            <BSwitch label={fI18n.t("Typ")} {...form("type")} options={{page: fI18n.t("Strona"), container: fI18n.t("Folder")}}/>
+                                            <BSwitch label={trans("Aktywna")} {...form("active")} options={{0: "Nie", 1: "Tak"}}/>
+                                            <BSwitch label={trans("Typ")} {...form("type")} options={{page: trans("Strona"), container: trans("Folder")}}/>
                                         </Row>
                                         : null
                                     }
                                     <Row noGutters={false}>
                                         {/*<BSelect label="Język" {...form("language")} options={languages.map((el) => ({value: el.id, label: el.name}))}/>*/}
                                         {this.props.editEnabled ?
-                                            <BSelect label={fI18n.t("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
+                                            <BSelect label={trans("Element nadrzędny")} {...form("parent_id")} options={parents.map((el) => ({value: el.id, label: el.name}))}/>
                                             : null
                                         }
 
-                                        <BText label={fI18n.t("Link")} {...form("front_link")} />
+                                        <BText label={trans("Link")} {...form("front_link")} />
 
                                     </Row>
 
                                 </Panel>
                                 {page.type == "page" &&
-                                <Panel noPadding={true} title={fI18n.t("SEO")}>
+                                <Panel noPadding={true} title={trans("SEO")}>
                                     <Row noGutters={false}>
-                                        <BText label={fI18n.t("SEO Title")} {...form("seo_title")} />
-                                        <BText label={fI18n.t("SEO Keywords")} {...form("seo_keywords")} />
+                                        <BText label={trans("SEO Title")} {...form("seo_title")} />
+                                        <BText label={trans("SEO Keywords")} {...form("seo_keywords")} />
                                     </Row>
                                     <Row noGutters={false}>
-                                        <BTextarea label={fI18n.t("SEO description")} {...form("seo_description")} />
+                                        <BTextarea label={trans("SEO description")} {...form("seo_description")} />
                                     </Row>
                                     <Row noGutters={false}>
-                                        <BTextarea label={fI18n.t("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
+                                        <BTextarea label={trans("Dodatkowy tekst na stronie")} {...form("seo_page_text")} />
                                     </Row>
                                 </Panel>
                                 }
                                 {/*{page.type != "page" &&*/}
-                                {/*<Panel title={fI18n.t("Pliki")}>*/}
+                                {/*<Panel title={trans("Pliki")}>*/}
 
-                                    {/*<BFileListField label={fI18n.t("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
+                                    {/*<BFileListField label={trans("Nagłówek")} {...form("files[header]")} maxLength={1} type="gallery"/>*/}
 
-                                    {/*<BFileListField label={fI18n.t("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
+                                    {/*<BFileListField label={trans("Galeria")} {...form("files[images]")} type={"gallery"}/>*/}
 
-                                    {/*<BFileListField label={fI18n.t("Do pobrania")} {...form("files[files]")} />*/}
+                                    {/*<BFileListField label={trans("Do pobrania")} {...form("files[files]")} />*/}
 
-                                    {/*<BFileListField label={fI18n.t("Pliki przypisane")} {...form("files[assigned]")}  />*/}
+                                    {/*<BFileListField label={trans("Pliki przypisane")} {...form("files[assigned]")}  />*/}
                                 {/*</Panel>*/}
                                 {/*}*/}
                             </div>

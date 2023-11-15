@@ -20,9 +20,9 @@ import { CommandBar } from "serenity-controls/lib/CommandBar";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { download } from "serenity-controls/lib/Downloader";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { Modal } from "serenity-controls/lib/Modal";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
+import { trans } from "../../front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -45,9 +45,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
         this.columns = [
             Column.id("id", "Id"),
-            Column.text("lang", fI18n.t("Kod języka")),
-            Column.map("lang", fI18n.t("Język"), this.props.language),
-            Column.text("value", fI18n.t("Wartość"))
+            Column.text("lang", trans("Kod języka")),
+            Column.map("lang", trans("Język"), this.props.language),
+            Column.text("value", trans("Wartość"))
                 .template((val, row) => {
                     return (
                         <div>
@@ -70,7 +70,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         className="btn btn-primary btn-xs btn-block pull-left"
                                         style={{ margin: 0, width: "50%" }}
                                     >
-                                        {fI18n.t("Zapisz")}
+                                        {trans("Zapisz")}
                                     </a>
                                     <a
                                         onClick={(e) => {
@@ -81,7 +81,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         className="btn btn-default btn-xs btn-block pull-right"
                                         style={{ margin: 0, width: "50%" }}
                                     >
-                                        {fI18n.t("Anuluj")}
+                                        {trans("Anuluj")}
                                     </a>
                                 </div>,
                             ]}
@@ -96,8 +96,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     row.container = rowContainer;
                     rowContainer.forceUpdate();
                 }),
-            Column.text("original", fI18n.t("Orginał")),
-            Column.text("module", fI18n.t("Moduł")),
+            Column.text("original", trans("Orginał")),
+            Column.text("module", trans("Moduł")),
 
             Column.template("", () => <i className="ms-Icon ms-Icon--Delete" style={{ fontSize: 14 }} />)
                 .className("center darkred")
@@ -182,8 +182,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     />
                 ) : null}
                 <Navbar>
-                    <span>{fI18n.t("Cms")}</span>
-                    <span>{fI18n.t("Lista dostępnych tłumaczeń")}</span>
+                    <span>{trans("Cms")}</span>
+                    <span>{trans("Lista dostępnych tłumaczeń")}</span>
                 </Navbar>
                 <div className="panel-body-margins">
                     <Table
@@ -279,11 +279,11 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             onPage={100}
                             showFooter={false}
                             columns={[
-                                Column.text("language", fI18n.t("Język")).width(70).className("center uppercase"),
-                                Column.email("user", fI18n.t("Użytkownik")),
-                                Column.date("date", fI18n.t("Data")),
-                                Column.date("time", fI18n.t("Czas")),
-                                Column.text("full_name", fI18n.t("Pobierz"))
+                                Column.text("language", trans("Język")).width(70).className("center uppercase"),
+                                Column.email("user", trans("Użytkownik")),
+                                Column.date("date", trans("Data")),
+                                Column.date("time", trans("Czas")),
+                                Column.text("full_name", trans("Pobierz"))
                                     .template((value, row) => {
                                         return (
                                             <a

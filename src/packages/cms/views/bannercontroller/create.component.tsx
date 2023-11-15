@@ -16,7 +16,7 @@ import {
 import {Panel} from "serenity-controls/lib/Panel";
 import {Row} from "serenity-controls/lib/Row";
 import {CommandBar} from "serenity-controls/lib/CommandBar";
-import {fI18n} from "serenity-controls/lib/lib/I18n";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -39,14 +39,14 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         return (
             <div>
                 <CommandBar items={[
-                    {key: "f0", label: fI18n.t("Wróc"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "")},
-                    {key: "f1", label: fI18n.t("Zapisz"), icon: "Save", onClick: () => this.form.submit()},
+                    {key: "f0", label: trans("Wróc"), icon: "Back", onClick: () => this.props._goto(this.props._baseURL + "")},
+                    {key: "f1", label: trans("Zapisz"), icon: "Save", onClick: () => this.form.submit()},
                 ]}/>
 
                 <Navbar>
-                    <span>{fI18n.t("Sklep")}</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{fI18n.t("Bannery")}</a>
-                    <span>{fI18n.t("Dodaj banner")}</span>
+                    <span>{trans("Sklep")}</span>
+                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{trans("Bannery")}</a>
+                    <span>{trans("Dodaj banner")}</span>
                 </Navbar>
 
                 <div className={"panel-body-margins"}>
@@ -68,33 +68,33 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                             <Row>
                                                 <BSwitch
                                                     options={[
-                                                        {value: "1", label: fI18n.t("Tak")},
-                                                        {value: "0", label: fI18n.t("nie")},
+                                                        {value: "1", label: trans("Tak")},
+                                                        {value: "0", label: trans("nie")},
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
                                                 />
-                                                <BDate label={fI18n.t("Od")} {...form("start")}/>
-                                                <BDate label={fI18n.t("Do")} {...form("stop")}/>
+                                                <BDate label={trans("Od")} {...form("start")}/>
+                                                <BDate label={trans("Do")} {...form("stop")}/>
                                             </Row>
 
-                                            <BSelect label={fI18n.t("Kraj")} {...form("country")}
+                                            <BSelect label={trans("Kraj")} {...form("country")}
                                                      options={this.props.countries}/>
-                                            <BSelect label={fI18n.t("Język")} {...form("lang")}
+                                            <BSelect label={trans("Język")} {...form("lang")}
                                                      options={this.props.countries}/>
-                                            <BSelect label={fI18n.t("Miejsce")} {...form("place")}
+                                            <BSelect label={trans("Miejsce")} {...form("place")}
                                                      options={this.props.places}/>
 
-                                            <BText label={fI18n.t("Tytuł")} {...form("title")} />
-                                            <BText label={fI18n.t("Podtytuł")} {...form("subtitle")}/>
-                                            <BText label={fI18n.t("Link")} {...form("link")}/>
-                                            <BTextarea label={fI18n.t("Opis")} {...form("description")}/>
+                                            <BText label={trans("Tytuł")} {...form("title")} />
+                                            <BText label={trans("Podtytuł")} {...form("subtitle")}/>
+                                            <BText label={trans("Link")} {...form("link")}/>
+                                            <BTextarea label={trans("Opis")} {...form("description")}/>
                                         </Panel>
 
                                         <div>
-                                            <Panel title={fI18n.t("Banner")} icon={"Upload"}>
+                                            <Panel title={trans("Banner")} icon={"Upload"}>
                                                 <BFileListField {...form("files[image]")} type={"gallery"}/>
                                             </Panel>
-                                            <Panel title={fI18n.t("Video")} icon={"Upload"} noPadding={true}>
+                                            <Panel title={trans("Video")} icon={"Upload"} noPadding={true}>
                                                 <Row noGutters={false}>
                                                     <BFileListField buttonTitle={"Dodaj"} type={"gallery"}/>
                                                 </Row>

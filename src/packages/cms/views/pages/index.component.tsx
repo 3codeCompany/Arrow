@@ -12,7 +12,7 @@ import { CommandBar } from "serenity-controls/lib/CommandBar";
 import { Datasource } from "serenity-controls/lib/lib/Datasource";
 import { LoaderContainer } from "serenity-controls/lib/ctrl/LoaderContainer";
 import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
@@ -32,15 +32,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
 
         this.columns = [
-            Column.text("name", fI18n.t("Nazwa")).template((val, row) => (
+            Column.text("name", trans("Nazwa")).template((val, row) => (
                 <div style={{ marginLeft: 30 * (row.depth - 1) }}>
                     {row.type == "container" ? <CommonIcons.folder />: <CommonIcons.document />} {val}{" "}
                 </div>
             )),
             Column.id("id", "Id").noFilter(),
-            Column.bool("active", fI18n.t("Aktywna")),
-            Column.map("type", fI18n.t("Typ"), { page: fI18n.t("Strona"), container: fI18n.t("Folder") }),
-            Column.text("link", fI18n.t("Link")),
+            Column.bool("active", trans("Aktywna")),
+            Column.map("type", trans("Typ"), { page: trans("Strona"), container: trans("Folder") }),
+            Column.text("link", trans("Link")),
 
             props.editEnabled
                 ? Column.template("", () => <CommonIcons.chevronDown />)
@@ -77,9 +77,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(trans("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", { key: row.id }).then(() => {
-                this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
+                this.props._notification(trans("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
             });
         });
@@ -104,18 +104,18 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 <CommandBar
                     isSearchBoxVisible={false}
                     onSearch={(search) => alert("To implement " + search)}
-                    items={[{ key: "f1", label: fI18n.t("Dodaj") + "", icon: "Add", onClick: () => this.setState({ currEdited: -1 }) }]}
+                    items={[{ key: "f1", label: trans("Dodaj") + "", icon: "Add", onClick: () => this.setState({ currEdited: -1 }) }]}
                 />
                 <Navbar>
                     <span>Cms</span>
-                    <span>{fI18n.t("Strony www")}</span>
+                    <span>{trans("Strony www")}</span>
                 </Navbar>
                 <div style={{ padding: "0 10px" }}>
                     <Table columns={this.columns} remoteURL={this.props._baseURL + "/asyncIndex"} ref={(table) => (this.table = table)} />
                 </div>
 
                 <Modal
-                    title={(s.currEdited == -1 ? fI18n.t("Dodanie") : fI18n.t("Edycja")) + fI18n.t(" strony www")}
+                    title={(s.currEdited == -1 ? trans("Dodanie") : trans("Edycja")) + trans(" strony www")}
                     show={s.currEdited != false}
                     onHide={() => this.setState({ currEdited: false })}
                     showHideLink={true}
@@ -125,7 +125,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         action={this.props._baseURL + "/add"}
                         namespace={"data"}
                         onSuccess={(e) => {
-                            this.props._notification(this.state.currEditedData.name, fI18n.t("Zapisano pomyślnie"));
+                            this.props._notification(this.state.currEditedData.name, trans("Zapisano pomyślnie"));
                             this.setState({ currEdited: -1 });
                             this.table.load();
                         }}
@@ -133,14 +133,14 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         {(form) => (
                             <div style={{ padding: 10, width: 300 }} className="">
                                 <Row noGutters={false} md={[10, 2]}>
-                                    <BText label={fI18n.t("Nazwa")} {...form("name")} />
+                                    <BText label={trans("Nazwa")} {...form("name")} />
                                 </Row>
 
                                 <div className="hr-line-dashed" />
                                 <button onClick={() => this.setState({ currEdited: false })} className="btn btn-default pull-right">
-                                    {fI18n.t("Anuluj")}
+                                    {trans("Anuluj")}
                                 </button>
-                                <button className="btn btn-primary pull-right">{fI18n.t("Zapisz")}</button>
+                                <button className="btn btn-primary pull-right">{trans("Zapisz")}</button>
                             </div>
                         )}
                     </BForm>

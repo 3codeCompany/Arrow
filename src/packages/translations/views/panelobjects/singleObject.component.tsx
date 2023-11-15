@@ -5,8 +5,8 @@ import { Column, IDataQuery, ITableDataInput, Table, ColumnHelper } from "sereni
 import { Comm } from "serenity-controls/lib/lib";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { CommandBar } from "serenity-controls/lib/CommandBar";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { PrintJSON } from "serenity-controls/lib/PrintJSON";
+import { trans } from "../../front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     data: any;
@@ -39,7 +39,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         Comm._post(this.props._baseURL + `/single-object-save/${encodeURI(this.props.model)}/${this.props.objectKey}`, {
             data: this.state.changedData,
         }).then(() => {
-            this.props._notification(fI18n.t("Zapisano tłumaczenia"));
+            this.props._notification(trans("Zapisano tłumaczenia"));
         });
     };
 
@@ -52,7 +52,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     items={[
                         {
                             key: "f1",
-                            label: fI18n.t("Zapisz"),
+                            label: trans("Zapisz"),
                             icon: "Save",
                             onClick: this.handleSave,
                         },

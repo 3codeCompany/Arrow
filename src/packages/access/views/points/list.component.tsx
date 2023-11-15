@@ -10,9 +10,9 @@ import { CommandBar } from "serenity-controls/lib/CommandBar";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 
 import { FilterHelper } from "serenity-controls/lib/filters";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { confirmDialog } from "serenity-controls/lib/ConfirmDialog";
 import { PrintJSON } from "serenity-controls/lib/PrintJSON";
+import { trans } from "../../../translations/front/trans";
 
 interface Props extends IArrowViewComponentProps {
     agroups: { [key: string]: string };
@@ -61,7 +61,7 @@ export default class extends React.Component<Props, any> {
                     items={[
                         {
                             key: "f1",
-                            label: fI18n.t("Synchronizuj struktórę uprawnień"),
+                            label: trans("Synchronizuj struktórę uprawnień"),
                             icon: "Sync",
                             onClick: () => {
                                 Comm._get(this.props._baseURL + "/sync-access-points");

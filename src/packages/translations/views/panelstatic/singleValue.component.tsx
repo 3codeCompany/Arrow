@@ -3,7 +3,7 @@ import * as React from "react";
 import { Table, Column } from "serenity-controls/lib/Table";
 import { Comm } from "serenity-controls/lib/lib";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
+import { trans } from "../../front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -24,9 +24,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
         this.columns = [
             Column.id("id", "Id").width(100),
-            Column.text("lang", fI18n.t("Kod języka")).width(100).className("center"),
-            Column.map("lang", fI18n.t("Język"), this.props.language).width(100),
-            Column.text("value", fI18n.t("Wartość"))
+            Column.text("lang", trans("Kod języka")).width(100).className("center"),
+            Column.map("lang", trans("Język"), this.props.language).width(100),
+            Column.text("value", trans("Wartość"))
                 .template((val, row) => {
                     return (
                         <div>
@@ -49,7 +49,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         className="btn btn-primary btn-xs btn-block pull-left"
                                         style={{ margin: 0, width: "50%" }}
                                     >
-                                        {fI18n.t("Zapisz")}
+                                        {trans("Zapisz")}
                                     </a>
                                     <a
                                         onClick={(e) => {
@@ -60,7 +60,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                         className="btn btn-default btn-xs btn-block pull-right"
                                         style={{ margin: 0, width: "50%" }}
                                     >
-                                        {fI18n.t("Anuluj")}
+                                        {trans("Anuluj")}
                                     </a>
                                 </div>,
                             ]}
@@ -75,7 +75,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     row.container = rowContainer;
                     rowContainer.forceUpdate();
                 }),
-            Column.text("original", fI18n.t("Orginał")).noSorter().noFilter(),
+            Column.text("original", trans("Orginał")).noSorter().noFilter(),
         ];
     }
 

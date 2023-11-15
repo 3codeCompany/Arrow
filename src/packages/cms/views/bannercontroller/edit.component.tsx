@@ -14,7 +14,7 @@ import {
 import {Panel} from "serenity-controls/lib/Panel";
 import {Row} from "serenity-controls/lib/Row";
 import {CommandBar} from "serenity-controls/lib/CommandBar";
-import {fI18n} from "serenity-controls/lib/lib/I18n";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     language: any;
@@ -60,9 +60,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 ]}/>
 
                 <Navbar>
-                    <span>{fI18n.t("Sklep")}</span>
-                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{fI18n.t("Bannery")}</a>
-                    <span>{fI18n.t("Edycja")} "{this.props.object.title}"</span>
+                    <span>{trans("Sklep")}</span>
+                    <a onClick={() => this.props._goto(this.props._baseURL + "")}>{trans("Bannery")}</a>
+                    <span>{trans("Edycja")} "{this.props.object.title}"</span>
 
                 </Navbar>
 
@@ -95,19 +95,19 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                                     ]}
                                                     label={"Aktywna"} {...form("active")}
                                                 />
-                                                <BDate label={fI18n.t("Od")} {...form("start")}/>
-                                                <BDate label={fI18n.t("Do")} {...form("stop")}/>
+                                                <BDate label={trans("Od")} {...form("start")}/>
+                                                <BDate label={trans("Do")} {...form("stop")}/>
                                             </Row>
 
-                                            <BSelect label={fI18n.t("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
-                                            <BSelect label={fI18n.t("Kraj")} {...form("country")} options={this.props.countries}/>
-                                            <BSelect label={fI18n.t("Język")} {...form("lang")} options={this.props.countries}/>
-                                            <BSelect label={fI18n.t("Miejsce")} {...form("place")} options={this.props.places}/>
+                                            <BSelect label={trans("Widoczność")} {...form("visibility")} options={{"all": "Uniwersalny", "male": "Mężczyzna", "female": "Kobieta"}}/>
+                                            <BSelect label={trans("Kraj")} {...form("country")} options={this.props.countries}/>
+                                            <BSelect label={trans("Język")} {...form("lang")} options={this.props.countries}/>
+                                            <BSelect label={trans("Miejsce")} {...form("place")} options={this.props.places}/>
 
-                                            <BText label={fI18n.t("Tytuł")} {...form("title")} />
-                                            <BText label={fI18n.t("Podtytuł")} {...form("subtitle")}/>
-                                            <BText label={fI18n.t("Link")} {...form("link")}/>
-                                            <BTextarea label={fI18n.t("Opis")} {...form("description")}/>
+                                            <BText label={trans("Tytuł")} {...form("title")} />
+                                            <BText label={trans("Podtytuł")} {...form("subtitle")}/>
+                                            <BText label={trans("Link")} {...form("link")}/>
+                                            <BTextarea label={trans("Opis")} {...form("description")}/>
                                         </Panel>
 
                                         <div>

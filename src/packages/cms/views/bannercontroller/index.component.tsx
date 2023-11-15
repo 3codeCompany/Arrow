@@ -10,8 +10,8 @@ import {CommandBar} from "serenity-controls/lib/CommandBar";
 import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import {FilterHelper} from "serenity-controls/lib/filters";
 import {FilterPanel} from "serenity-controls/lib/filters";
-import {fI18n} from "serenity-controls/lib/lib/I18n";
 import {Modal} from "serenity-controls/lib/Modal";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
@@ -71,8 +71,8 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         }},
                 ]}/>
                 <Navbar>
-                    <span>{fI18n.t("Sklep")}</span>
-                    <span>{fI18n.t("Bannery")}</span>
+                    <span>{trans("Sklep")}</span>
+                    <span>{trans("Bannery")}</span>
 
                     <button
                         className={"filterBtn"}
@@ -82,7 +82,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             });
                         }}
                     >
-                        {fI18n.t("Filtry")}
+                        {trans("Filtry")}
                     </button>
                 </Navbar>
 
@@ -196,7 +196,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
 
                 <Modal
                     show={this.state.filterModalVisible}
-                    title={fI18n.t("Filtry")}
+                    title={trans("Filtry")}
                     animate={true}
                     animation={"fadeInDown"}
                     right={25}
@@ -211,7 +211,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                             this.setState({filters: {...this.state.filters, ...filters}});
                         }}
                         items={[
-                            FilterHelper.text("file_name", fI18n.t("Nazwa pliku"), false),
+                            FilterHelper.text("file_name", trans("Nazwa pliku"), false),
                         ]}
                     />
                 </Modal>

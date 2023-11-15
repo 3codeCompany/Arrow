@@ -10,9 +10,9 @@ import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { CommandBar } from "serenity-controls/lib/CommandBar";
 import { CommonIcons } from "serenity-controls/lib/lib/CommonIcons";
 import { FilterHelper } from "serenity-controls/lib/filters";
-import {fI18n} from "serenity-controls/lib/lib/I18n";
 import {confirmDialog} from "serenity-controls/lib/ConfirmDialog";
 import {Modal} from "serenity-controls/lib/Modal";
+import { trans } from "../../../translations/front/trans";
 
 interface IProps extends IArrowViewComponentProps {
     groups: any;
@@ -32,23 +32,23 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
         };
 
         this.columns = [
-            Column.text("name", fI18n.t("Nazwa")).template((val, row) => (
+            Column.text("name", trans("Nazwa")).template((val, row) => (
                 <div style={{ marginLeft: 30 * (row.depth - 1) }}>
                     {row.type == "folder" ? <CommonIcons.folder /> : <CommonIcons.document />}{" "}
                     {val}{" "}
                 </div>
             )),
             Column.id("id", "Id").noFilter(),
-            Column.text("country", fI18n.t("Kraj"))
+            Column.text("country", trans("Kraj"))
                 .width(70)
                 .className("center"),
-            Column.bool("active", fI18n.t("Aktywna")),
-            Column.text("type", fI18n.t("Typ"))
+            Column.bool("active", trans("Aktywna")),
+            Column.text("type", trans("Typ"))
                 .noFilter()
                 .addFilter(
                     FilterHelper.select(
                         "type",
-                        fI18n.t("Typ"),
+                        trans("Typ"),
                         [
                             { value: "page", label: "page" },
                             { value: "folder", label: "folder" },
@@ -57,7 +57,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         false,
                     ).get(),
                 ),
-            Column.text("link", fI18n.t("Link")),
+            Column.text("link", trans("Link")),
 
             Column.template("", () => {
                 return <CommonIcons.openInNewWindow />;
@@ -102,9 +102,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
     }
 
     public handleDelete(row) {
-        confirmDialog(fI18n.t("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
+        confirmDialog(trans("Czy na pewno usunąć") + ` "${row.name}"?`).then(() => {
             Comm._post(this.props._baseURL + "/delete", { key: row.id }).then(() => {
-                this.props._notification(fI18n.t("Pomyślnie usunięto") + ` "${row.name}"`);
+                this.props._notification(trans("Pomyślnie usunięto") + ` "${row.name}"`);
                 this.table.load();
             });
         });
@@ -132,15 +132,15 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                     items={[
                         {
                             key: "f1",
-                            label: fI18n.t("Dodaj") + "",
+                            label: trans("Dodaj") + "",
                             icon: "Add",
                             onClick: () => this.setState({ currEdited: -1 }),
                         },
                     ]}
                 />
                 <Navbar>
-                    <span>{fI18n.t("CMS")}</span>
-                    <span>{fI18n.t("Strony wwww")}</span>
+                    <span>{trans("CMS")}</span>
+                    <span>{trans("Strony wwww")}</span>
                 </Navbar>
                 <div style={{ padding: "0 10px" }}>
                     <Table
@@ -156,7 +156,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                 </div>
 
                 <Modal
-                    title={(s.currEdited == -1 ? fI18n.t("Dodanie") : fI18n.t("Edycja")) + fI18n.t(" strony www")}
+                    title={(s.currEdited == -1 ? trans("Dodanie") : trans("Edycja")) + trans(" strony www")}
                     show={s.currEdited != false}
                     onHide={() => this.setState({ currEdited: false })}
                     showHideLink={true}
@@ -168,7 +168,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         action={this.props._baseURL + "/add"}
                         namespace={"data"}
                         onSuccess={(e) => {
-                            this.props._notification(this.state.currEditedData.name, fI18n.t("Zapisano pomyślnie"));
+                            this.props._notification(this.state.currEditedData.name, trans("Zapisano pomyślnie"));
                             this.setState({ currEdited: -1 });
                             this.table.load();
                         }}
@@ -176,9 +176,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                         {(form) => (
                             <div style={{ padding: 10, width: 400 }} className="">
                                 <Row noGutters={false}>
-                                    <BText label={fI18n.t("Nazwa")} {...form("name")} />
+                                    <BText label={trans("Nazwa")} {...form("name")} />
                                     <BSwitch
-                                        label={fI18n.t("Typ")}
+                                        label={trans("Typ")}
                                         options={[
                                             { label: "Strona", value: "page" },
                                             { label: "Folder", value: "container" },
@@ -188,7 +188,7 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                 </Row>
                                 <Row noGutters={false}>
                                     <BSelect
-                                        label={fI18n.t("Element nadrzędny")}
+                                        label={trans("Element nadrzędny")}
                                         options={this.props.containers.map((el) => ({value: el.id, label: el.name}))}
                                         {...form("parent_id")}
                                     />
@@ -199,9 +199,9 @@ export default class ArrowViewComponent extends React.Component<IProps, any> {
                                     onClick={() => this.setState({ currEdited: false })}
                                     className="btn btn-default pull-right"
                                 >
-                                    {fI18n.t("Anuluj")}
+                                    {trans("Anuluj")}
                                 </button>
-                                <button className="btn btn-primary pull-right">{fI18n.t("Zapisz")}</button>
+                                <button className="btn btn-primary pull-right">{trans("Zapisz")}</button>
                             </div>
                         )}
                     </BForm>

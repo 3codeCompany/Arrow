@@ -2,9 +2,9 @@ import * as React from "react";
 import { BForm } from "serenity-controls/lib/BForm";
 import { Comm } from "serenity-controls/lib/lib";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
-import { fI18n } from "serenity-controls/lib/lib/I18n";
 import { PrintJSON } from "serenity-controls/lib/PrintJSON";
 import { configGetAll } from "serenity-controls/lib/backoffice/Config";
+import { trans } from "../../../translations/front/trans";
 
 declare var LANGUAGE: string;
 declare var window: any;
@@ -39,7 +39,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
     public handleSubmit = () => {
         const data = this.state.form;
         if (data.login == "" || data.password == "") {
-            this.props._notification(fI18n.t("Wypełnij wszystkie pola"), fI18n.t("Nie udało się zalogować"), {
+            this.props._notification(trans("Wypełnij wszystkie pola"), trans("Nie udało się zalogować"), {
                 level: "error",
             });
             return;
@@ -110,7 +110,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                                     this.setState({ form: { ...s.form, login: e.target.value } })
                                                 }
                                                 name={"login"}
-                                                placeholder={fI18n.t("Podaj swój login")}
+                                                placeholder={trans("Podaj swój login")}
                                             />
                                         </div>
                                         <div className="input">
@@ -121,7 +121,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                                 onChange={(e) =>
                                                     this.setState({ form: { ...s.form, password: e.target.value } })
                                                 }
-                                                placeholder={fI18n.t("Podaj hasło")}
+                                                placeholder={trans("Podaj hasło")}
                                             />
                                         </div>
                                     </div>
@@ -132,7 +132,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                             disabled={this.state.loading}
                                             onClick={this.handleSubmit}
                                         >
-                                            {this.state.loading ? "..." : fI18n.t("zaloguj się")}
+                                            {this.state.loading ? "..." : trans("zaloguj się")}
                                         </button>
                                     </div>
                                     <div style={{ height: 20, paddingTop: 10 }}>
