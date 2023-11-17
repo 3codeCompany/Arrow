@@ -84,7 +84,16 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
         const currLang = configGetAll().translations.currentLanguage;
 
         return (
-            <div className="login-view" style={{ backgroundImage: `url( https://crm.as-pl.com/next/login_background.webp )`, height: "100vh", width: "100vw" }}>
+            <div
+                className="login-view"
+                style={{
+                    backgroundImage: `url( https://crm.as-pl.com/next/login_background.webp )`,
+                    height: "100vh",
+                    width: "100vw",
+                    backgroundPosition: "center",
+                    backgroundSize: "cover",
+                }}
+            >
                 <img
                     width="186"
                     height="75"
