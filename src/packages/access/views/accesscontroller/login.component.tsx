@@ -3,7 +3,6 @@ import { BForm } from "serenity-controls/lib/BForm";
 import { Comm } from "serenity-controls/lib/lib";
 import { IArrowViewComponentProps } from "serenity-controls/lib/backoffice";
 import { fI18n } from "serenity-controls/lib/lib/I18n";
-import { PrintJSON } from "serenity-controls/lib/PrintJSON";
 import { configGetAll } from "serenity-controls/lib/backoffice/Config";
 
 declare var LANGUAGE: string;
@@ -35,6 +34,10 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
             window.location.reload();
         });
     };
+
+    public componentDidMount() {
+        document.getElementsByClassName("w-panel-body-container")[0].style.height = "100%";
+    }
 
     public handleSubmit = () => {
         const data = this.state.form;
@@ -81,20 +84,22 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
         const currLang = configGetAll().translations.currentLanguage;
 
         return (
-            <div className="login-view">
+            <div className="login-view" style={{ backgroundImage: `url( https://crm.as-pl.com/next/login_background.webp )`, height: "100vh", width: "100vw" }}>
+                <img
+                    width="186"
+                    height="75"
+                    style={{ position: "absolute", left: 20, top: 20 }}
+                    src="https://erp-dev.localhost/next/_next/image?url=%2Fnext%2Flogo.png&w=256&q=75"
+                />
                 <div className="lang-select">
                     {window.reactBackOfficeVar.panel.languages.map((el) => (
-                        <a
-                            key={el}
-                            className={el.toLowerCase() == currLang ? "active" : ""}
-                            onClick={() => this.handleLangChange(el)}
-                        >
+                        <a key={el} className={el.toLowerCase() == currLang ? "active" : ""} onClick={() => this.handleLangChange(el)}>
                             {el.toUpperCase()}
                         </a>
                     ))}
                 </div>
 
-                <div className="login-background" style={{ backgroundImage: `url( ${this.props.backgroundImage} )` }}>
+                <div className="login-background" style={{ boxShadow: "none" }}>
                     <div className="login-form-container">
                         <div className="title"> {this.props.applicationTitle}</div>
                         <BForm>
@@ -106,9 +111,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                                 type="text"
                                                 autoFocus={true}
                                                 value={s.form.login}
-                                                onChange={(e) =>
-                                                    this.setState({ form: { ...s.form, login: e.target.value } })
-                                                }
+                                                onChange={(e) => this.setState({ form: { ...s.form, login: e.target.value } })}
                                                 name={"login"}
                                                 placeholder={fI18n.t("Podaj swój login")}
                                             />
@@ -118,26 +121,18 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                                                 type="password"
                                                 name={"password"}
                                                 value={s.form.password}
-                                                onChange={(e) =>
-                                                    this.setState({ form: { ...s.form, password: e.target.value } })
-                                                }
+                                                onChange={(e) => this.setState({ form: { ...s.form, password: e.target.value } })}
                                                 placeholder={fI18n.t("Podaj hasło")}
                                             />
                                         </div>
                                     </div>
 
                                     <div className="button">
-                                        <button
-                                            className="login-button"
-                                            disabled={this.state.loading}
-                                            onClick={this.handleSubmit}
-                                        >
+                                        <button className="login-button" disabled={this.state.loading} onClick={this.handleSubmit}>
                                             {this.state.loading ? "..." : fI18n.t("zaloguj się")}
                                         </button>
                                     </div>
-                                    <div style={{ height: 20, paddingTop: 10 }}>
-                                        {this.state.error ? this.state.error.formErrors.join("") : ""}
-                                    </div>
+                                    <div style={{ height: 20, paddingTop: 10 }}>{this.state.error ? this.state.error.formErrors.join("") : ""}</div>
                                 </div>
                             )}
                         </BForm>
