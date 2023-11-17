@@ -98,7 +98,7 @@ export default class ArrowViewComponent extends React.Component<IViewProps, any>
                     width="186"
                     height="75"
                     style={{ position: "absolute", left: 20, top: 20 }}
-                    src="https://erp-dev.localhost/next/_next/image?url=%2Fnext%2Flogo.png&w=256&q=75"
+                    src="https://crm.as-pl.com/next/_next/image?url=%2Fnext%2Flogo.png&w=384&q=75"
                 />
                 <div className="lang-select">
                     {window.reactBackOfficeVar.panel.languages.map((el) => (
