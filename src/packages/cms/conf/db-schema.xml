@@ -24,6 +24,7 @@
         <field name="edit_access_mask" type="bigint" size="20"/>
         <field name="view_owner" type="int" size="11"/>
         <field name="view_access_mask" type="bigint" size="20"/>
+        <field name="banners_descriptions" type="VARCHAR" size="1255"/>
     </table>
 
 
