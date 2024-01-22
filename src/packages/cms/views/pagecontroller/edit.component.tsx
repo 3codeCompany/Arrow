@@ -269,23 +269,43 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 type={"gallery"}
                                                                 maxLength={1}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return "https://media.as-pl.com/pub/" + file.key + "/"
+                                                                    return "https://media.as-pl.com/pub/" + file.key + "/";
                                                                 }}
                                                             />
                                                         </Row>
                                                     </Panel>
                                                 </Row>
                                                 <Row>
-                                                    <Panel noPadding={true} title={"Obrazy"} icon={"FileImage"}>
+                                                    <Panel noPadding={true} title={+s.page.id != 16 ? "Obrazy" : "Banner"} icon={"FileImage"}>
                                                         <Row noGutters={false}>
                                                             <BFileListField
                                                                 {...form("images")}
                                                                 type={"gallery"}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return "https://media.as-pl.com/pub/" + file.key + "/"
+                                                                    return "https://media.as-pl.com/pub/" + file.key + "/";
                                                                 }}
                                                             />
                                                         </Row>
+                                                        {s.page.id == 16 && (
+                                                            <div>
+                                                                <Row noGutters={false}>
+                                                                    <BTextarea
+                                                                        label="Dodaj opisy do bannerów"
+                                                                        {...form("banners_descriptions")}
+                                                                        style={{ height: 100, maxWidth: 800 }}
+                                                                    />
+                                                                </Row>
+                                                                <Row noGutters={false}>
+                                                                    <div>
+                                                                        <i>
+                                                                            Wpisz tytuły bannerów w odpowiedniej kolejności rozdzielone nowym wierszem lub
+                                                                            średnikiem. Przykładowo:
+                                                                        </i>
+                                                                        <div style={{marginTop: 10, marginBottom: 10}}>Hedquarters;AS-PL UK; AS-PL ES</div>
+                                                                    </div>
+                                                                </Row>
+                                                            </div>
+                                                        )}
                                                     </Panel>
                                                 </Row>
                                                 <Row>
@@ -295,7 +315,7 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                 {...form("attachments")}
                                                                 type={"filelist"}
                                                                 transformFilePath={(file: IFile) => {
-                                                                    return "https://media.as-pl.com/pub/" + file.key + "/"
+                                                                    return "https://media.as-pl.com/pub/" + file.key + "/";
                                                                     //return this.props._baseURL + "/file/" + this.props.page.id + "/get-file/" + file.key;
                                                                 }}
                                                             />
