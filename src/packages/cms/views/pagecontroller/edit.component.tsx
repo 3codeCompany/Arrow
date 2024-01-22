@@ -296,14 +296,12 @@ class ArrowViewComponent extends React.Component<IProps, any> {
                                                                     />
                                                                 </Row>
                                                                 <Row noGutters={false}>
-                                                                    <div style={{ paddingBottom: 10 }}>
+                                                                    <div>
                                                                         <i>
-                                                                            Wpisz tytuły bannerów w odpowiedniej kolejności rozdzielone znakiem Enter lub
+                                                                            Wpisz tytuły bannerów w odpowiedniej kolejności rozdzielone nowym wierszem lub
                                                                             średnikiem. Przykładowo:
                                                                         </i>
-                                                                        <br />
-                                                                        <br />
-                                                                        Hedquarters;AS-PL UK; AS-PL ES
+                                                                        <div style={{marginTop: 10, marginBottom: 10}}>Hedquarters;AS-PL UK; AS-PL ES</div>
                                                                     </div>
                                                                 </Row>
                                                             </div>
