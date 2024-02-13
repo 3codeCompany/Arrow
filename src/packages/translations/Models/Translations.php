@@ -112,7 +112,9 @@ class Translations
             //Logger::get('console',new ConsoleStream())->log( $text." ".$result["value"]);
 
             if(empty($result["value"])){
-                return "[ Translate in panel ] ".$text;
+                if ($lang != "en") {
+                    return self::translateText($text, "en");
+                }
             }
 
             return $result["value"];
